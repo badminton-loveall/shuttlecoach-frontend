@@ -112,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedRole = storedRole as UserRole;
         
         // Batch the state updates
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(parsedUser);
         setRole(parsedRole);
         setToken(storedToken);
