@@ -3,12 +3,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HeadCoachDashboard from './pages/HeadCoachDashboard';
-import AssistantCoachDashboard from './pages/AssistantCoachDashboard';
-import StudentDashboard from './pages/StudentDashboard';
 import StudentsPage from './pages/StudentsPage';
 import FeesPage from './pages/FeesPage';
 import CoachesPage from './pages/CoachesPage';
 import CurriculumPage from './pages/CurriculumPage';
+import StudentDashboard from './pages/StudentDashboard';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
@@ -27,7 +26,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Head Coach Routes */}
+          {/* Coach Routes (Head Coach & Assistant Coach) */}
           <Route
             path="/dashboard"
             element={
@@ -37,7 +36,6 @@ function App() {
             }
           />
 
-          {/* Coach & Student Routes - Students Page */}
           <Route
             path="/students"
             element={
@@ -47,12 +45,20 @@ function App() {
             }
           />
 
-          {/* Coach & Student Routes - Fees Page */}
           <Route
             path="/fees"
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
                 <FeesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/curriculum"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <CurriculumPage />
               </ProtectedRoute>
             }
           />
@@ -63,16 +69,6 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <CoachesPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Head Coach & Assistant Coach - Curriculum */}
-          <Route
-            path="/curriculum"
-            element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
-                <CurriculumPage />
               </ProtectedRoute>
             }
           />
