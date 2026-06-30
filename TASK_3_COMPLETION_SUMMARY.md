@@ -24,7 +24,7 @@ Successfully implemented authentication context with React Context API for the S
 ### 2. ✅ Sample Users Data (src/data/users.json)
 - **Location**: `src/data/users.json`
 - **Content**: 5 sample users with all required roles:
-  1. **head_coach** (HEAD_COACH): Rajesh Kumar - rajesh@shuttlecoach.com
+  1. **head_coach** (HEAD_COACH): Sumit Dali - rajesh@shuttlecoach.com
   2. **assistant_coach1** (ASSISTANT_COACH): Priya Sharma - priya@shuttlecoach.com
   3. **assistant_coach2** (ASSISTANT_COACH): Vikram Singh - vikram@shuttlecoach.com
   4. **student1** (STUDENT): Aarav Patel - aarav.patel@student.com

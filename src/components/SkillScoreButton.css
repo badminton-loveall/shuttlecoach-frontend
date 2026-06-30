@@ -1,0 +1,65 @@
+.skill-score-button-group {
+  display: flex;
+  gap: 4px;
+}
+
+.skill-score-btn {
+  min-width: 40px;
+  padding: 4px 8px;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 4px;
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.skill-score-btn:hover:not(:disabled) {
+  border-color: var(--color-primary, #3b82f6);
+  color: var(--color-primary, #3b82f6);
+}
+
+.skill-score-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.skill-score-btn--active {
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.skill-score-btn--active.skill-score-btn--level-0 {
+  background: #9ca3af;
+}
+
+.skill-score-btn--active.skill-score-btn--level-1 {
+  background: #f59e0b;
+}
+
+.skill-score-btn--active.skill-score-btn--level-2 {
+  background: #3b82f6;
+}
+
+.skill-score-btn--active.skill-score-btn--level-3 {
+  background: #8b5cf6;
+}
+
+.skill-score-btn--active.skill-score-btn--level-4 {
+  background: #10b981;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skill-score-btn {
+    background: var(--color-surface-dark, #1f2937);
+    border-color: var(--color-border-dark, #374151);
+    color: var(--color-text-secondary-dark, #9ca3af);
+  }
+
+  .skill-score-btn:hover:not(:disabled) {
+    border-color: var(--color-primary, #60a5fa);
+    color: var(--color-primary, #60a5fa);
+  }
+}

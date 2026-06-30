@@ -24,7 +24,7 @@ Implemented complete protected route wrapper and navigation structure for the Sh
     - ASSISTANT_COACH: Dashboard, Students, Fees, Curriculum (no Coaches)
     - STUDENT: Dashboard, My Progress, My Fees
   - **User Profile Display**:
-    - User avatar with initials (e.g., "RK" for Rajesh Kumar)
+    - User avatar with initials (e.g., "RK" for Sumit Dali)
     - User name display
     - User role badge (formatted from enum, e.g., "HEAD COACH")
   - **Sign-Out Button**:

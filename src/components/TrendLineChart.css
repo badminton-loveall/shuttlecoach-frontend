@@ -1,0 +1,71 @@
+/* TrendLineChart - Line chart for historical skill trends */
+
+.trend-line-chart {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.trend-line-chart__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary, #f3f4f6);
+}
+
+.trend-line-chart__empty {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9ca3af);
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.trend-line-chart__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.trend-line-chart__toggle {
+  display: inline-flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #374151);
+}
+
+.trend-line-chart__toggle-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: none;
+  background: var(--color-surface, #1f2937);
+  color: var(--color-text-secondary, #9ca3af);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.trend-line-chart__toggle-btn:hover {
+  background: var(--color-surface-hover, #374151);
+}
+
+.trend-line-chart__toggle-btn--active {
+  background: var(--color-primary, #b8e135);
+  color: var(--color-bg, #111827);
+}
+
+.trend-line-chart__category-select {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #374151);
+  background: var(--color-surface, #1f2937);
+  color: var(--color-text-primary, #f3f4f6);
+  cursor: pointer;
+}
+
+.trend-line-chart__container {
+  width: 100%;
+  min-height: 300px;
+}

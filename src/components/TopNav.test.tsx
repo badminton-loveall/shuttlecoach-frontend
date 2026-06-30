@@ -16,7 +16,7 @@ const mockAuthContext: AuthContextInterface = {
     id: 'user-001',
     username: 'head_coach',
     role: 'HEAD_COACH',
-    name: 'Rajesh Kumar',
+    name: 'Sumit Dali',
     email: 'rajesh@shuttlecoach.com',
     profilePhoto: null,
     specialization: null,
@@ -45,14 +45,14 @@ describe('TopNav Component', () => {
     it('should display user name and role', () => {
       renderTopNav(mockAuthContext);
 
-      expect(screen.getByText('Rajesh Kumar')).toBeInTheDocument();
+      expect(screen.getByText('Sumit Dali')).toBeInTheDocument();
       expect(screen.getByText('HEAD COACH')).toBeInTheDocument();
     });
 
     it('should display user initials in avatar', () => {
       renderTopNav(mockAuthContext);
 
-      expect(screen.getByText('RK')).toBeInTheDocument();
+      expect(screen.getByText('SD')).toBeInTheDocument();
     });
 
     it('should handle single word names for initials', () => {

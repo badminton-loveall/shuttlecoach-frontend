@@ -1,0 +1,96 @@
+/* WeaknessTracker - Weakness tracker card listing weak skills (score 0 or 1) */
+
+.weakness-tracker {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.weakness-tracker__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary, #f3f4f6);
+}
+
+.weakness-tracker__empty {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #9ca3af);
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.weakness-tracker__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Weakness Card */
+.weakness-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--color-danger, #ef4444);
+  background: var(--color-surface, #1f2937);
+  transition: background-color 0.15s;
+}
+
+.weakness-card:hover {
+  background: var(--color-surface-hover, #374151);
+}
+
+.weakness-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.weakness-card__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #f3f4f6);
+}
+
+.weakness-card__category {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.weakness-card__metrics {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.weakness-card__score {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-danger, #ef4444);
+}
+
+/* Trend Indicators */
+.weakness-card__trend {
+  font-size: 1rem;
+  font-weight: 700;
+  width: 1.5rem;
+  text-align: center;
+}
+
+.weakness-trend--improving {
+  color: var(--color-success, #22c55e);
+}
+
+.weakness-trend--declining {
+  color: var(--color-danger, #ef4444);
+}
+
+.weakness-trend--stable {
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+.weakness-trend--new {
+  color: var(--color-text-secondary, #9ca3af);
+}

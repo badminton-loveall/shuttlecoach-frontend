@@ -1,0 +1,209 @@
+/* TrainingTab Styles */
+
+.training-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.training-tab-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Tag Input Group */
+.tag-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tag-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--slate-100, #f1f4f6);
+  background: var(--slate-800, #1f262e);
+  border: 1px solid var(--slate-700, #333d47);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.tag-input:focus {
+  border-color: var(--slate-500, #6b7885);
+}
+
+.tag-input::placeholder {
+  color: var(--slate-500, #6b7885);
+}
+
+/* Tag Add Buttons */
+.tag-add-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tag-add-btn-strength {
+  background: rgba(184, 225, 53, 0.15);
+  color: #b8e135;
+}
+
+.tag-add-btn-strength:hover:not(:disabled) {
+  background: rgba(184, 225, 53, 0.25);
+}
+
+.tag-add-btn-weakness {
+  background: rgba(232, 57, 74, 0.15);
+  color: #e8394a;
+}
+
+.tag-add-btn-weakness:hover:not(:disabled) {
+  background: rgba(232, 57, 74, 0.25);
+}
+
+/* Tag Remove Button */
+.tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  font-size: 14px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  padding: 0;
+}
+
+.tag-strength .tag-remove {
+  color: #b8e135;
+}
+
+.tag-weakness .tag-remove {
+  color: #e8394a;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+/* Tag Empty State */
+.tag-empty {
+  font-size: 13px;
+  color: var(--slate-500, #6b7885);
+  font-style: italic;
+}
+
+/* Coach Feedback Textarea */
+.coach-feedback-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  font-family: inherit;
+  color: var(--slate-200, #e4e9ec);
+  background: var(--slate-800, #1f262e);
+  border: 1px solid var(--slate-700, #333d47);
+  border-radius: 8px;
+  border-left: 3px solid #b8e135;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.coach-feedback-textarea:focus {
+  border-color: var(--slate-500, #6b7885);
+  border-left-color: #b8e135;
+}
+
+.coach-feedback-textarea::placeholder {
+  color: var(--slate-500, #6b7885);
+}
+
+/* Light mode support */
+@media (prefers-color-scheme: light) {
+  .tag-input {
+    color: var(--slate-800, #1f262e);
+    background: var(--slate-100, #f1f4f6);
+    border-color: var(--slate-300, #d1d9de);
+  }
+
+  .tag-input:focus {
+    border-color: var(--slate-500, #6b7885);
+  }
+
+  .tag-input::placeholder {
+    color: var(--slate-400, #9ca8b3);
+  }
+
+  .tag-add-btn-strength {
+    background: rgba(122, 163, 29, 0.12);
+    color: #5a7a14;
+  }
+
+  .tag-add-btn-strength:hover:not(:disabled) {
+    background: rgba(122, 163, 29, 0.2);
+  }
+
+  .tag-add-btn-weakness {
+    background: rgba(232, 57, 74, 0.1);
+    color: #c0293a;
+  }
+
+  .tag-add-btn-weakness:hover:not(:disabled) {
+    background: rgba(232, 57, 74, 0.18);
+  }
+
+  .tag-empty {
+    color: var(--slate-400, #9ca8b3);
+  }
+
+  .coach-feedback-textarea {
+    color: var(--slate-700, #333d47);
+    background: var(--slate-100, #f1f4f6);
+    border-color: var(--slate-300, #d1d9de);
+  }
+
+  .coach-feedback-textarea:focus {
+    border-color: var(--slate-400, #9ca8b3);
+    border-left-color: #7aa31d;
+  }
+
+  .coach-feedback-textarea::placeholder {
+    color: var(--slate-400, #9ca8b3);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .training-tab-sections {
+    gap: 24px;
+  }
+
+  .tag-input-group {
+    flex-direction: column;
+  }
+
+  .tag-add-btn {
+    align-self: flex-start;
+  }
+}

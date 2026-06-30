@@ -1,0 +1,183 @@
+/* ============================================================================
+   SkillHistory — Assessment History List & Read-Only Modal
+   Requirements: 8.8, 8.9, 7.8
+   ============================================================================ */
+
+.skill-history {
+  margin-top: 2rem;
+}
+
+.skill-history__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+  margin-bottom: 1rem;
+}
+
+.skill-history__empty {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+.skill-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skill-history__card {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.skill-history__card:hover {
+  background: var(--hover-bg, #f8fafc);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.skill-history__card:focus-visible {
+  outline: 2px solid var(--primary-color, #6366f1);
+  outline-offset: 2px;
+}
+
+.skill-history__cycle {
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+}
+
+.skill-history__date {
+  color: var(--text-secondary, #64748b);
+  text-align: center;
+}
+
+.skill-history__recorder {
+  color: var(--text-secondary, #64748b);
+  text-align: right;
+}
+
+/* ============================================================================
+   Modal Overlay
+   ============================================================================ */
+
+.skill-history__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.skill-history__modal-content {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.skill-history__modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  position: sticky;
+  top: 0;
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px 12px 0 0;
+  z-index: 1;
+}
+
+.skill-history__modal-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a2e);
+  margin: 0;
+}
+
+.skill-history__modal-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: var(--text-secondary, #64748b);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.skill-history__modal-close:hover {
+  background: var(--hover-bg, #f1f5f9);
+  color: var(--text-primary, #1a1a2e);
+}
+
+.skill-history__modal-close:focus-visible {
+  outline: 2px solid var(--primary-color, #6366f1);
+  outline-offset: 2px;
+}
+
+.skill-history__modal-body {
+  padding: 1.25rem;
+}
+
+/* ============================================================================
+   Dark mode
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .skill-history__card {
+    background: var(--card-bg-dark, #1e293b);
+    border-color: var(--border-color-dark, #334155);
+  }
+
+  .skill-history__card:hover {
+    background: var(--hover-bg-dark, #334155);
+  }
+
+  .skill-history__modal-content {
+    background: var(--card-bg-dark, #1e293b);
+  }
+
+  .skill-history__modal-header {
+    background: var(--card-bg-dark, #1e293b);
+    border-color: var(--border-color-dark, #334155);
+  }
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .skill-history__card {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .skill-history__date,
+  .skill-history__recorder {
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  .skill-history__modal-content {
+    max-height: 90vh;
+  }
+}

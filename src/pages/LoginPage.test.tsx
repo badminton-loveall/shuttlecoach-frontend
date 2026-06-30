@@ -234,7 +234,7 @@ describe('LoginPage Component', () => {
         const userStr = localStorage.getItem('auth_user');
         expect(userStr).toBeTruthy();
         const user = JSON.parse(userStr!);
-        expect(user.name).toBe('Rajesh Kumar');
+        expect(user.name).toBe('Sumit Dali');
         expect(user.role).toBe('HEAD_COACH');
       });
     });

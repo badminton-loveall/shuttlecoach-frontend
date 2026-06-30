@@ -16,7 +16,7 @@ const USERS_DATA = [
     "username": "head_coach",
     "password": "password123",
     "role": "HEAD_COACH",
-    "name": "Rajesh Kumar",
+    "name": "Sumit Dali",
     "email": "rajesh@shuttlecoach.com",
     "profilePhoto": null,
     "specialization": null,

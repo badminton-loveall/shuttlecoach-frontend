@@ -47,6 +47,20 @@
   line-height: 1.4;
 }
 
+/* Search and Filter Row */
+.search-filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filter-results-count {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: var(--slate-400, #9ca8b3);
+}
+
 /* Responsive breakpoints */
 
 /* Tablet: 2 columns for stat cards */
@@ -120,5 +134,9 @@
 
   .section-title {
     color: var(--slate-900, #131820);
+  }
+
+  .filter-results-count {
+    color: var(--slate-600, #4a5662);
   }
 }

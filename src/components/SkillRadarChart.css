@@ -1,0 +1,18 @@
+/* SkillRadarChart - Radar visualization for category averages */
+
+.skill-radar-chart {
+  width: 100%;
+  padding: 1rem;
+}
+
+.skill-radar-chart__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-primary, #f3f4f6);
+}
+
+.skill-radar-chart__container {
+  width: 100%;
+  min-height: 300px;
+}

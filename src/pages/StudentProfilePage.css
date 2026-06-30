@@ -1,0 +1,489 @@
+/* StudentProfilePage Styles */
+
+.student-profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Back Button */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-400, #9ca8b3);
+  background: transparent;
+  border: 1px solid var(--slate-700, #333d47);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.back-button:hover {
+  color: var(--slate-100, #f1f4f6);
+  border-color: var(--slate-500, #6b7885);
+  background: var(--slate-800, #1f262e);
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: var(--slate-900, #131820);
+  border-radius: 10px;
+  border: 1px solid var(--slate-800, #1f262e);
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-blue {
+  background: rgba(58, 142, 246, 0.15);
+  color: #3a8ef6;
+}
+
+.profile-avatar-orange {
+  background: rgba(245, 166, 35, 0.15);
+  color: #f5a623;
+}
+
+.profile-avatar-purple {
+  background: rgba(155, 89, 182, 0.15);
+  color: #9b59b6;
+}
+
+.profile-avatar-green {
+  background: rgba(184, 225, 53, 0.15);
+  color: #b8e135;
+}
+
+.profile-avatar-initials {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.profile-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--slate-100, #f1f4f6);
+  line-height: 1.2;
+}
+
+.profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profile-meta-item {
+  font-size: 13px;
+  color: var(--slate-400, #9ca8b3);
+}
+
+.profile-skill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.profile-skill-badge-blue {
+  background: rgba(58, 142, 246, 0.15);
+  color: #3a8ef6;
+}
+
+.profile-skill-badge-orange {
+  background: rgba(245, 166, 35, 0.15);
+  color: #f5a623;
+}
+
+.profile-skill-badge-purple {
+  background: rgba(155, 89, 182, 0.15);
+  color: #9b59b6;
+}
+
+.profile-skill-badge-green {
+  background: rgba(184, 225, 53, 0.15);
+  color: #b8e135;
+}
+
+.profile-baid-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 999px;
+  background: rgba(184, 225, 53, 0.1);
+  color: var(--slate-400, #9ca8b3);
+  border: 1px solid var(--slate-700, #333d47);
+}
+
+/* Tab Navigation */
+.profile-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--slate-800, #1f262e);
+}
+
+.profile-tab {
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate-400, #9ca8b3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-tab:hover {
+  color: var(--slate-200, #e4e9ec);
+}
+
+.profile-tab-active {
+  color: #b8e135;
+  border-bottom-color: #b8e135;
+}
+
+/* Tab Content */
+.profile-tab-content {
+  padding: 24px;
+  background: var(--slate-900, #131820);
+  border-radius: 10px;
+  border: 1px solid var(--slate-800, #1f262e);
+  min-height: 300px;
+}
+
+/* Tab Section Title */
+.tab-section-title {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--slate-100, #f1f4f6);
+}
+
+/* Profile Info Grid */
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate-400, #9ca8b3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.info-value {
+  font-size: 14px;
+  color: var(--slate-200, #e4e9ec);
+}
+
+/* Training Section */
+.training-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tag-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tag-section-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-300, #d1d9de);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 999px;
+}
+
+.tag-strength {
+  background: rgba(184, 225, 53, 0.12);
+  color: #b8e135;
+  border: 1px solid rgba(184, 225, 53, 0.25);
+}
+
+.tag-weakness {
+  background: rgba(232, 57, 74, 0.12);
+  color: #e8394a;
+  border: 1px solid rgba(232, 57, 74, 0.25);
+}
+
+.feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coach-feedback-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate-300, #d1d9de);
+  padding: 16px;
+  background: var(--slate-800, #1f262e);
+  border-radius: 8px;
+  border-left: 3px solid #b8e135;
+}
+
+/* Progress Placeholder */
+.progress-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.placeholder-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--slate-400, #9ca8b3);
+  line-height: 1.5;
+}
+
+.placeholder-text strong {
+  color: var(--slate-200, #e4e9ec);
+}
+
+/* Not Found State */
+.profile-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.profile-not-found h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--slate-100, #f1f4f6);
+}
+
+.profile-not-found p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--slate-400, #9ca8b3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .profile-avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .profile-avatar-initials {
+    font-size: 20px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+
+  .profile-tabs {
+    overflow-x: auto;
+  }
+
+  .profile-tab {
+    padding: 10px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .profile-tab-content {
+    padding: 16px;
+  }
+
+  .profile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tab-section-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .student-profile-page {
+    gap: 16px;
+  }
+
+  .profile-header {
+    padding: 12px;
+  }
+
+  .profile-meta {
+    gap: 8px;
+  }
+
+  .profile-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .profile-tab-content {
+    padding: 12px;
+    min-height: 200px;
+  }
+}
+
+/* Light mode support */
+@media (prefers-color-scheme: light) {
+  .back-button {
+    color: var(--slate-600, #4a5662);
+    border-color: var(--slate-300, #d1d9de);
+  }
+
+  .back-button:hover {
+    color: var(--slate-900, #131820);
+    border-color: var(--slate-500, #6b7885);
+    background: var(--slate-100, #f1f4f6);
+  }
+
+  .profile-header {
+    background: #ffffff;
+    border-color: var(--slate-200, #e4e9ec);
+  }
+
+  .profile-name {
+    color: var(--slate-900, #131820);
+  }
+
+  .profile-meta-item {
+    color: var(--slate-600, #4a5662);
+  }
+
+  .profile-tabs {
+    border-bottom-color: var(--slate-200, #e4e9ec);
+  }
+
+  .profile-tab {
+    color: var(--slate-500, #6b7885);
+  }
+
+  .profile-tab:hover {
+    color: var(--slate-800, #1f262e);
+  }
+
+  .profile-tab-active {
+    color: #7aa31d;
+    border-bottom-color: #7aa31d;
+  }
+
+  .profile-tab-content {
+    background: #ffffff;
+    border-color: var(--slate-200, #e4e9ec);
+  }
+
+  .tab-section-title {
+    color: var(--slate-900, #131820);
+  }
+
+  .info-label {
+    color: var(--slate-500, #6b7885);
+  }
+
+  .info-value {
+    color: var(--slate-800, #1f262e);
+  }
+
+  .tag-section-title {
+    color: var(--slate-700, #333d47);
+  }
+
+  .coach-feedback-text {
+    color: var(--slate-700, #333d47);
+    background: var(--slate-100, #f1f4f6);
+  }
+
+  .placeholder-text {
+    color: var(--slate-600, #4a5662);
+  }
+
+  .placeholder-text strong {
+    color: var(--slate-800, #1f262e);
+  }
+
+  .profile-not-found h2 {
+    color: var(--slate-900, #131820);
+  }
+
+  .profile-not-found p {
+    color: var(--slate-600, #4a5662);
+  }
+
+  .profile-baid-badge {
+    border-color: var(--slate-300, #d1d9de);
+    color: var(--slate-600, #4a5662);
+  }
+}

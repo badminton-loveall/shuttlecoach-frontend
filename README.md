@@ -1,75 +1,31 @@
-# React + TypeScript + Vite +
+# Autopilot-safe React + Vercel + Postgres Prompt Kit
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This kit is designed for autonomous coding agents such as Kiro Autopilot, where task size and scope control matter more than in normal chat mode.
 
-Currently, two official plugins are available:
+## What is different
+- Prompts are chunked more aggressively.
+- Broad tasks are split before implementation.
+- The rules discourage cross-layer changes in one run.
+- The prompt builder can generate autopilot-safe prompts automatically.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Included files
+- `AGENTS.md`
+- `PROJECT_CONTEXT.md`
+- `PROMPT_TEMPLATES.md`
+- `prompt-builder.js`
 
-## React Compiler
+## Usage
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+node prompt-builder.js --task "fix validation message alignment in login form" --files "src/components/LoginForm.tsx" --autopilot-safe
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+node prompt-builder.js --task "deploy app to Vercel with missing preview env vars" --files "vercel.json,.env.example" --autopilot-safe
 ```
+
+```bash
+node prompt-builder.js --task "add company profile feature with UI, API, DB, and deploy changes" --autopilot-safe
+```
+
+The third example should trigger chunking guidance instead of one large implementation.

@@ -129,7 +129,7 @@ describe('AuthContext', () => {
       await waitFor(() => {
         expect(contextValue.user).not.toBeNull();
         expect(contextValue.user?.username).toBe('head_coach');
-        expect(contextValue.user?.name).toBe('Rajesh Kumar');
+        expect(contextValue.user?.name).toBe('Sumit Dali');
         expect(contextValue.role).toBe('HEAD_COACH');
         expect(contextValue.token).not.toBeNull();
         expect(contextValue.isAuthenticated).toBe(true);

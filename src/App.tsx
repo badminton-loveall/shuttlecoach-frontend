@@ -8,6 +8,7 @@ import FeesPage from './pages/FeesPage';
 import CoachesPage from './pages/CoachesPage';
 import CurriculumPage from './pages/CurriculumPage';
 import StudentDashboard from './pages/StudentDashboard';
+import StudentProfilePage from './pages/StudentProfilePage';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
@@ -59,6 +60,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
                 <CurriculumPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Student Profile (accessible by coaches) */}
+          <Route
+            path="/student/:id"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <StudentProfilePage />
               </ProtectedRoute>
             }
           />
