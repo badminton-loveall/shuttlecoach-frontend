@@ -1,21 +1,17 @@
 /**
  * useStudents Hook
- * Manages student CRUD operations with JSON persistence via localStorage.
- * Requirements: 5.1, 5.7, 29.5
+ * Manages student CRUD operations with API backend.
+ * Requirements: 5.1, 5.7, 30.1, 30.2, 31.3, 31.4
  *
- * - Loads initial data from students.json on first mount
- * - Merges with localStorage changes (localStorage takes precedence)
- * - Provides create, update, and get operations
- * - Auto-computes age and bmi on create/update
+ * - Fetches students from API on mount
+ * - Provides create, update, and get operations via API
+ * - Auto-computes age and BMI on server
  * - Validates required fields before saving
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import type { Student, Gender, SkillLevel } from '../types';
-import { calculateAge, calculateBMI } from '../utils/studentUtils';
-import initialStudentsData from '../data/students.json';
-
-const STORAGE_KEY = 'loveall_students';
+import apiClient from '../utils/apiClient';
 
 export interface CreateStudentData {
   fullName: string;
@@ -42,8 +38,22 @@ export interface CreateStudentData {
 
 export interface UpdateStudentData extends Partial<CreateStudentData> {}
 
+export interface StudentFilters {
+  batch?: string;
+  coach?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+interface StudentsResponse {
+  students: Student[];
+  total: number;
+  page: number;
+}
+
 /**
- * Parse a student record from raw JSON, ensuring Date fields are proper Date objects.
+ * Parse a student record from API response, ensuring Date fields are proper Date objects.
  */
 function parseStudentDates(raw: Record<string, unknown>): Student {
   return {
@@ -55,234 +65,138 @@ function parseStudentDates(raw: Record<string, unknown>): Student {
 }
 
 /**
- * Load initial students from JSON file, parsing date strings into Date objects.
+ * Hook providing student CRUD operations with API backend.
  */
-function loadInitialStudents(): Student[] {
-  return (initialStudentsData as Record<string, unknown>[]).map(parseStudentDates);
-}
-
-/**
- * Load students from localStorage. Returns null if nothing stored.
- */
-function loadFromStorage(): Student[] | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
-    const parsed = JSON.parse(stored) as Record<string, unknown>[];
-    return parsed.map(parseStudentDates);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Save students array to localStorage.
- */
-function saveToStorage(students: Student[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
-}
-
-/**
- * Merge localStorage students with initial data.
- * localStorage records take precedence (by id). New records from localStorage
- * that don't exist in initial data are also included.
- */
-function mergeStudents(initial: Student[], stored: Student[]): Student[] {
-  const storedMap = new Map(stored.map((s) => [s.id, s]));
-  const merged: Student[] = [];
-
-  // Start with initial students, overriding with stored versions
-  for (const student of initial) {
-    if (storedMap.has(student.id)) {
-      merged.push(storedMap.get(student.id)!);
-      storedMap.delete(student.id);
-    } else {
-      merged.push(student);
-    }
-  }
-
-  // Add any new students that only exist in storage
-  for (const student of storedMap.values()) {
-    merged.push(student);
-  }
-
-  return merged;
-}
-
-/**
- * Validate required fields for a student record.
- * Throws an error with a descriptive message if validation fails.
- */
-function validateRequiredFields(data: CreateStudentData | UpdateStudentData, isCreate: boolean): void {
-  const errors: string[] = [];
-
-  if (isCreate) {
-    if (!data.fullName || data.fullName.trim() === '') {
-      errors.push('fullName is required');
-    }
-    if (!data.dateOfBirth) {
-      errors.push('dateOfBirth is required');
-    }
-    if (!data.gender) {
-      errors.push('gender is required');
-    }
-    if (!data.contactPhone || data.contactPhone.trim() === '') {
-      errors.push('contactPhone is required');
-    }
-  } else {
-    // For update, validate only the fields that are provided
-    if ('fullName' in data && (!data.fullName || data.fullName.trim() === '')) {
-      errors.push('fullName cannot be empty');
-    }
-    if ('dateOfBirth' in data && !data.dateOfBirth) {
-      errors.push('dateOfBirth cannot be empty');
-    }
-    if ('gender' in data && !data.gender) {
-      errors.push('gender cannot be empty');
-    }
-    if ('contactPhone' in data && (!data.contactPhone || data.contactPhone.trim() === '')) {
-      errors.push('contactPhone cannot be empty');
-    }
-  }
-
-  if (errors.length > 0) {
-    throw new Error(`Validation failed: ${errors.join(', ')}`);
-  }
-}
-
-/**
- * Generate a unique student ID.
- */
-function generateId(): string {
-  return `student-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-}
-
-/**
- * Hook providing student CRUD operations with localStorage persistence.
- */
-export function useStudents() {
+export function useStudents(filters?: StudentFilters) {
   const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
 
-  // Load students on mount
-  useEffect(() => {
-    const initial = loadInitialStudents();
-    const stored = loadFromStorage();
+  /**
+   * Fetch students from API
+   */
+  const fetchStudents = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-    if (stored) {
-      setStudents(mergeStudents(initial, stored));
-    } else {
-      setStudents(initial);
+      // Build query parameters
+      const params = new URLSearchParams();
+      if (filters?.batch) params.append('batch', filters.batch);
+      if (filters?.coach) params.append('coach', filters.coach);
+      if (filters?.search) params.append('search', filters.search);
+      if (filters?.page) params.append('page', filters.page.toString());
+      if (filters?.limit) params.append('limit', filters.limit.toString());
+
+      const response = await apiClient.get<StudentsResponse>(`/students?${params.toString()}`);
+      
+      // Parse date fields
+      const parsedStudents = response.data.students.map((s) =>
+        parseStudentDates(s as unknown as Record<string, unknown>)
+      );
+
+      setStudents(parsedStudents);
+      setTotal(response.data.total);
+    } catch (err) {
+      console.error('Failed to fetch students:', err);
+      setError('Failed to load students. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [filters]);
+
+  // Fetch students on mount and when filters change
+  useEffect(() => {
+    void fetchStudents();
+  }, [fetchStudents]);
 
   /**
    * Get a single student by ID.
    */
   const getStudent = useCallback(
-    (id: string): Student | undefined => {
-      return students.find((s) => s.id === id);
+    async (id: string): Promise<Student | undefined> => {
+      try {
+        const response = await apiClient.get<Student>(`/students/${id}`);
+        return parseStudentDates(response.data as unknown as Record<string, unknown>);
+      } catch (err) {
+        console.error(`Failed to fetch student ${id}:`, err);
+        return undefined;
+      }
     },
-    [students]
+    []
   );
 
   /**
-   * Create a new student record.
-   * Validates required fields, computes age/bmi, persists to localStorage.
+   * Create a new student record via API.
+   * Server handles validation, age/BMI computation, and persistence.
    */
   const createStudent = useCallback(
-    (data: CreateStudentData): Student => {
-      validateRequiredFields(data, true);
+    async (data: CreateStudentData): Promise<Student> => {
+      try {
+        // Convert Date to ISO string if needed
+        const payload = {
+          ...data,
+          dateOfBirth:
+            data.dateOfBirth instanceof Date
+              ? data.dateOfBirth.toISOString()
+              : data.dateOfBirth,
+        };
 
-      const now = new Date();
-      const dob = new Date(data.dateOfBirth);
-      const age = calculateAge(dob);
-      const bmi = data.height && data.weight ? calculateBMI(data.height, data.weight) : undefined;
+        const response = await apiClient.post<Student>('/students', payload);
+        const newStudent = parseStudentDates(response.data as unknown as Record<string, unknown>);
 
-      const newStudent: Student = {
-        id: generateId(),
-        fullName: data.fullName.trim(),
-        dateOfBirth: dob,
-        age,
-        gender: data.gender,
-        contactPhone: data.contactPhone.trim(),
-        email: data.email,
-        guardianName: data.guardianName,
-        guardianPhone: data.guardianPhone,
-        baidNumber: data.baidNumber,
-        batchId: data.batchId,
-        assignedCoachId: data.assignedCoachId,
-        profilePhoto: data.profilePhoto,
-        height: data.height,
-        weight: data.weight,
-        bmi: bmi ?? undefined,
-        bloodGroup: data.bloodGroup,
-        medicalConditions: data.medicalConditions,
-        emergencyContact: data.emergencyContact,
-        strengths: data.strengths ?? [],
-        weaknesses: data.weaknesses ?? [],
-        coachFeedback: data.coachFeedback,
-        skillLevel: data.skillLevel ?? 'Beginner',
-        createdAt: now,
-        updatedAt: now,
-      };
+        // Refresh the students list
+        await fetchStudents();
 
-      const updatedStudents = [...students, newStudent];
-      setStudents(updatedStudents);
-      saveToStorage(updatedStudents);
-
-      return newStudent;
+        return newStudent;
+      } catch (err) {
+        console.error('Failed to create student:', err);
+        throw err;
+      }
     },
-    [students]
+    [fetchStudents]
   );
 
   /**
-   * Update an existing student record.
-   * Validates provided fields, recomputes age/bmi if relevant fields change, persists to localStorage.
+   * Update an existing student record via API.
+   * Server handles validation, age/BMI recomputation, and persistence.
    */
   const updateStudent = useCallback(
-    (id: string, data: UpdateStudentData): Student => {
-      validateRequiredFields(data, false);
+    async (id: string, data: UpdateStudentData): Promise<Student> => {
+      try {
+        // Convert Date to ISO string if needed
+        const payload = {
+          ...data,
+          dateOfBirth:
+            data.dateOfBirth instanceof Date
+              ? data.dateOfBirth.toISOString()
+              : data.dateOfBirth,
+        };
 
-      const index = students.findIndex((s) => s.id === id);
-      if (index === -1) {
-        throw new Error(`Student with id "${id}" not found`);
+        const response = await apiClient.patch<Student>(`/students/${id}`, payload);
+        const updatedStudent = parseStudentDates(response.data as unknown as Record<string, unknown>);
+
+        // Refresh the students list
+        await fetchStudents();
+
+        return updatedStudent;
+      } catch (err) {
+        console.error(`Failed to update student ${id}:`, err);
+        throw err;
       }
-
-      const existing = students[index];
-      const now = new Date();
-
-      // Merge partial data with existing
-      const merged = { ...existing, ...data, updatedAt: now };
-
-      // Recompute age if dateOfBirth changed
-      if (data.dateOfBirth) {
-        merged.dateOfBirth = new Date(data.dateOfBirth);
-        merged.age = calculateAge(merged.dateOfBirth as Date);
-      }
-
-      // Recompute BMI if height or weight changed
-      const height = data.height ?? existing.height;
-      const weight = data.weight ?? existing.weight;
-      if (height && weight && (data.height !== undefined || data.weight !== undefined)) {
-        merged.bmi = calculateBMI(height, weight);
-      }
-
-      const updatedStudent = merged as Student;
-      const updatedStudents = [...students];
-      updatedStudents[index] = updatedStudent;
-
-      setStudents(updatedStudents);
-      saveToStorage(updatedStudents);
-
-      return updatedStudent;
     },
-    [students]
+    [fetchStudents]
   );
 
   return {
     students,
+    loading,
+    error,
+    total,
     getStudent,
     createStudent,
     updateStudent,
+    refetch: fetchStudents,
   };
 }

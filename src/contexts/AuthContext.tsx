@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User, UserRole, AuthContext as AuthContextInterface } from '../types';
+import apiClient from '../utils/apiClient';
 
 /* eslint-disable react-refresh/only-export-components */
 
@@ -7,83 +8,13 @@ import type { User, UserRole, AuthContext as AuthContextInterface } from '../typ
  * AuthContext
  * Manages global authentication state for the application
  * Provides user, role, token, login, logout, and isAuthenticated
+ * Requirements: 30.1, 30.2, 30.8, 30.9
  */
 
-// Sample users data (imported as constant to avoid fetch issues in dev)
-const USERS_DATA = [
-  {
-    "id": "user-001",
-    "username": "head_coach",
-    "password": "password123",
-    "role": "HEAD_COACH",
-    "name": "Sumit Dali",
-    "email": "rajesh@shuttlecoach.com",
-    "profilePhoto": null,
-    "specialization": null,
-    "createdAt": "2026-01-01T08:00:00Z",
-    "lastActive": "2026-01-15T10:30:00Z"
-  },
-  {
-    "id": "user-002",
-    "username": "assistant_coach1",
-    "password": "password123",
-    "role": "ASSISTANT_COACH",
-    "name": "Priya Sharma",
-    "email": "priya@shuttlecoach.com",
-    "profilePhoto": null,
-    "specialization": "Doubles Training",
-    "createdAt": "2026-01-02T08:00:00Z",
-    "lastActive": "2026-01-14T14:20:00Z"
-  },
-  {
-    "id": "user-003",
-    "username": "assistant_coach2",
-    "password": "password123",
-    "role": "ASSISTANT_COACH",
-    "name": "Vikram Singh",
-    "email": "vikram@shuttlecoach.com",
-    "profilePhoto": null,
-    "specialization": "Footwork & Movement",
-    "createdAt": "2026-01-03T08:00:00Z",
-    "lastActive": "2026-01-13T09:15:00Z"
-  },
-  {
-    "id": "user-004",
-    "username": "student1",
-    "password": "password123",
-    "role": "STUDENT",
-    "name": "Aarav Patel",
-    "email": "aarav.patel@student.com",
-    "profilePhoto": null,
-    "specialization": null,
-    "createdAt": "2026-01-05T08:00:00Z",
-    "lastActive": "2026-01-15T16:45:00Z"
-  },
-  {
-    "id": "user-005",
-    "username": "student2",
-    "password": "password123",
-    "role": "STUDENT",
-    "name": "Divya Gupta",
-    "email": "divya.gupta@student.com",
-    "profilePhoto": null,
-    "specialization": null,
-    "createdAt": "2026-01-06T08:00:00Z",
-    "lastActive": "2026-01-12T11:20:00Z"
-  }
-] as const;
-
-interface UserData {
-  id: string;
-  username: string;
-  password: string;
+interface LoginResponse {
+  token: string;
+  user: User;
   role: UserRole;
-  name: string;
-  email?: string | null;
-  profilePhoto?: string | null;
-  specialization?: string | null;
-  createdAt: string;
-  lastActive: string;
 }
 
 // Create the Auth Context
@@ -129,50 +60,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   /**
-   * Login function - authenticates user against users.json
+   * Login function - authenticates user against API
    * @param username - User's username
-   * @param password - User's password (plain text for JSON phase)
+   * @param password - User's password
    */
   const login = async (username: string, password: string): Promise<void> => {
     try {
-      // Type cast users data
-      const users = USERS_DATA as unknown as UserData[];
+      // Call API login endpoint
+      const response = await apiClient.post<LoginResponse>('/auth/login', {
+        username,
+        password,
+      });
 
-      // Find user by username
-      const foundUser = users.find((u) => u.username === username);
+      const { token, user: userData, role: userRole } = response.data;
 
-      // Validate credentials
-      if (!foundUser || foundUser.password !== password) {
-        throw new Error('Invalid username or password');
-      }
-
-      // Create token (simple JWT-like token for Phase 1)
-      const generatedToken = `${foundUser.id}:${Date.now()}`;
-
-      // Create user object without password
-      const userWithoutPassword: User = {
-        id: foundUser.id,
-        username: foundUser.username,
-        role: foundUser.role,
-        name: foundUser.name,
-        email: foundUser.email ?? undefined,
-        profilePhoto: foundUser.profilePhoto ?? undefined,
-        specialization: foundUser.specialization ?? undefined,
-        createdAt: new Date(foundUser.createdAt),
-        lastActive: new Date(foundUser.lastActive),
+      // Parse date strings from API response
+      const userWithParsedDates: User = {
+        ...userData,
+        createdAt: new Date(userData.createdAt),
+        lastActive: new Date(userData.lastActive),
       };
 
-      // Store in state and localStorage
-      setUser(userWithoutPassword);
-      setRole(foundUser.role);
-      setToken(generatedToken);
+      // Store in state
+      setUser(userWithParsedDates);
+      setRole(userRole);
+      setToken(token);
 
       // Persist to localStorage
-      localStorage.setItem('auth_token', generatedToken);
-      localStorage.setItem('auth_user', JSON.stringify(userWithoutPassword));
-      localStorage.setItem('auth_role', foundUser.role);
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('auth_user', JSON.stringify(userWithParsedDates));
+      localStorage.setItem('auth_role', userRole);
     } catch (error) {
       console.error('Login error:', error);
+      // Re-throw the error so UI can display it
       throw error;
     }
   };
