@@ -1,0 +1,384 @@
+/* ============================================================================
+   CREATE FEE MODAL
+   Modal form for creating new fee records
+   ============================================================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.modal-content {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-default);
+  animation: slideUp 0.3s ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-header {
+    border-bottom-color: var(--border-dark);
+  }
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-title {
+    color: var(--text-dark-primary);
+  }
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all var(--transition-base);
+}
+
+.modal-close-btn:hover:not(:disabled) {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-close-btn:hover:not(:disabled) {
+    background-color: var(--surface-dark-hover);
+  }
+}
+
+.modal-close-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   FORM STYLES
+   ============================================================================ */
+
+.modal-form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-label {
+    color: var(--text-dark-primary);
+  }
+}
+
+.form-required {
+  color: var(--color-danger);
+}
+
+.form-optional {
+  color: var(--text-tertiary);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-optional {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.form-input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-input {
+    background-color: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+    color: var(--text-dark-primary);
+  }
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.1);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--surface-card);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-input:disabled {
+    background-color: var(--surface-dark-card);
+  }
+}
+
+.form-input-error {
+  border-color: var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-input-error {
+    background-color: rgba(239, 68, 68, 0.1);
+  }
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: var(--font-body);
+}
+
+.form-helper-text {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: right;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-helper-text {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.form-error-text {
+  font-size: 12px;
+  color: var(--color-danger);
+  line-height: 1.3;
+}
+
+.form-error-banner {
+  padding: 10px 12px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: var(--color-danger);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-error-banner {
+    background-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+  }
+}
+
+.form-warning-banner {
+  padding: 10px 12px;
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+  color: var(--color-warning);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-warning-banner {
+    background-color: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+}
+
+/* ============================================================================
+   FORM ACTIONS
+   ============================================================================ */
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-default);
+  margin-top: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-actions {
+    border-top-color: var(--border-dark);
+  }
+}
+
+.btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  font-weight: 700;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(184, 225, 53, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-secondary {
+    background-color: var(--surface-dark-hover);
+    color: var(--text-dark-primary);
+    border-color: var(--border-dark);
+  }
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--border-default);
+  border-color: var(--border-strong);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--border-dark);
+    border-color: var(--border-dark-strong);
+  }
+}
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .modal-content {
+    max-width: none;
+    border-radius: var(--radius-md);
+    max-height: 100vh;
+  }
+
+  .modal-form {
+    gap: 12px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 10px 12px;
+  }
+}

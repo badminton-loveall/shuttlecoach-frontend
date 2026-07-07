@@ -1,0 +1,329 @@
+/* ============================================================================
+   StudentCard Component Styles
+   Pure CSS implementation using design tokens and BEM methodology
+   Displays student info with avatar, skill level, and progress
+   ============================================================================ */
+
+.student-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+@media (prefers-color-scheme: dark) {
+  .student-card {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+.student-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-float);
+  border-color: var(--border-strong);
+}
+
+@media (prefers-color-scheme: dark) {
+  .student-card:hover {
+    border-color: var(--border-dark-strong);
+  }
+}
+
+.student-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.student-card:active {
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   Avatar Section (Element)
+   ============================================================================ */
+
+.student-card__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-h4);
+  color: var(--text-inverse);
+  flex-shrink: 0;
+}
+
+.student-card__avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+
+.student-card__avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Avatar color variants based on skill level (Modifiers) */
+.student-card__avatar--info {
+  background-color: var(--color-info);
+}
+
+.student-card__avatar--warning {
+  background-color: var(--color-warning);
+}
+
+.student-card__avatar--primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--text-primary);
+}
+
+.student-card__avatar--success {
+  background-color: var(--color-success);
+}
+
+/* ============================================================================
+   Content Section (Element)
+   ============================================================================ */
+
+.student-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.student-card__name {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: var(--weight-semibold);
+  color: var(--text-dark-primary);
+  line-height: var(--line-tight);
+}
+
+@media (prefers-color-scheme: light) {
+  .student-card__name {
+    color: var(--text-primary);
+  }
+}
+
+.student-card__batch {
+  margin: 0;
+  font-size: var(--font-label);
+  color: var(--text-dark-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+@media (prefers-color-scheme: light) {
+  .student-card__batch {
+    color: var(--text-tertiary);
+  }
+}
+
+/* ============================================================================
+   Skill Level Badge (Element)
+   ============================================================================ */
+
+.student-card__skill-badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-label);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+  width: fit-content;
+  line-height: 1;
+}
+
+/* Skill badge variants (Modifiers) */
+.student-card__skill-badge--info {
+  background-color: var(--feedback-info-light);
+  color: var(--color-info-text);
+}
+
+.student-card__skill-badge--warning {
+  background-color: var(--feedback-warning-light);
+  color: var(--color-warning-text);
+}
+
+.student-card__skill-badge--primary {
+  background-color: rgba(184, 225, 53, 0.15);
+  color: var(--color-primary-dark);
+}
+
+.student-card__skill-badge--success {
+  background-color: var(--feedback-success-light);
+  color: var(--color-success-text);
+}
+
+/* ============================================================================
+   Progress Bar (Element)
+   ============================================================================ */
+
+.student-card__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.student-card__progress-bar {
+  flex: 1;
+  height: 6px;
+  background-color: var(--surface-dark-hover);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: light) {
+  .student-card__progress-bar {
+    background-color: var(--surface-hover);
+  }
+}
+
+.student-card__progress-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width var(--transition-smooth);
+}
+
+/* Progress fill variants (Modifiers) */
+.student-card__progress-fill--info {
+  background-color: var(--color-info);
+}
+
+.student-card__progress-fill--warning {
+  background-color: var(--color-warning);
+}
+
+.student-card__progress-fill--primary {
+  background-color: var(--color-primary);
+}
+
+.student-card__progress-fill--success {
+  background-color: var(--color-success);
+}
+
+.student-card__progress-label {
+  font-size: var(--font-label);
+  color: var(--text-dark-tertiary);
+  font-weight: var(--weight-semibold);
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: light) {
+  .student-card__progress-label {
+    color: var(--text-secondary);
+  }
+}
+
+/* ============================================================================
+   BAID Indicator (Element)
+   ============================================================================ */
+
+.student-card__baid-indicator {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 24px;
+  height: 24px;
+  background-color: var(--color-success);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================================================
+   Due for Review Badge (Element)
+   ============================================================================ */
+
+.student-card__due-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--feedback-danger-light);
+  border: 1px solid rgba(232, 57, 74, 0.3);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-sm);
+}
+
+.student-card__due-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.student-card__due-text {
+  font-size: var(--font-label);
+  font-weight: var(--weight-semibold);
+  color: var(--color-danger-text);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .student-card {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .student-card__avatar {
+    width: 48px;
+    height: 48px;
+    font-size: var(--font-body);
+  }
+
+  .student-card__name {
+    font-size: var(--font-small);
+  }
+}
+
+@media (max-width: 480px) {
+  .student-card {
+    padding: var(--space-md);
+  }
+
+  .student-card__avatar {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-small);
+  }
+
+  .student-card__name {
+    font-size: var(--font-small);
+  }
+
+  .student-card__batch {
+    font-size: 10px;
+  }
+
+  .student-card__baid-indicator {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+}

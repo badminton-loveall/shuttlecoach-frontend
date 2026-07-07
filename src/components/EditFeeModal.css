@@ -1,0 +1,75 @@
+/* ============================================================================
+   EDIT FEE MODAL
+   Extends CreateFeeModal styles with edit-specific styling
+   ============================================================================ */
+
+@import './CreateFeeModal.css';
+
+/* ============================================================================
+   READ-ONLY FIELDS
+   ============================================================================ */
+
+.form-read-only {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-read-only {
+    background-color: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+    color: var(--text-dark-primary);
+  }
+}
+
+.form-read-only-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-read-only-sub {
+    color: var(--text-dark-secondary);
+  }
+}
+
+/* ============================================================================
+   CHANGED FIELDS INDICATOR
+   ============================================================================ */
+
+.form-changed {
+  display: inline-block;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* ============================================================================
+   INFO BANNER
+   ============================================================================ */
+
+.form-info-banner {
+  padding: 10px 12px;
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  color: var(--color-info);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-info-banner {
+    background-color: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+}

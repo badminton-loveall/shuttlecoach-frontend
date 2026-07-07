@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import type { User, Student, Batch } from '../types';
+import './AssignmentPanel.css';
 
 /**
- * AssignmentPanel Component
+ * AssignmentPanel Component - REDESIGNED
  * Manages coach assignments to batches and individual students
  * 
- * Requirements: 15.6, 15.7, 15.8, 15.9
- * 
- * Features:
- * - Display current batch and student assignments for selected coach
- * - Assign coach to batches (automatically assigns to all students in batch)
- * - Assign coach to individual students
- * - Unassign coach from batches or students
- * - Updates students.json with assignedCoachId changes
+ * New UX Features:
+ * - Assignment form in separate card at top
+ * - Two-column grid layout for batches and students side-by-side
+ * - Click batch to filter students by that batch
+ * - Consistent action button styling (Edit/Delete links)
+ * - Compact grid design following table patterns
  */
 
 interface AssignmentPanelProps {
@@ -30,57 +29,34 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
 }) => {
   const [selectedBatchId, setSelectedBatchId] = useState<string>('');
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
+  const [selectedBatchFilterId, setSelectedBatchFilterId] = useState<string>('');
 
   if (!selectedCoach) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
-        <div className="text-center text-gray-500 dark:text-gray-400">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-            />
-          </svg>
-          <p className="mt-4 text-sm">Select a coach to manage assignments</p>
-        </div>
+      <div className="assignment-panel-empty">
+        <svg className="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <p className="empty-text">Select a coach to manage assignments</p>
       </div>
     );
   }
 
-  // Get assigned batches for this coach
+  // Data preparation
   const assignedBatches = batches.filter((batch) => batch.assignedCoachId === selectedCoach.id);
-
-  // Get assigned students (individual assignments, not via batch)
-  const assignedStudents = students.filter(
-    (student) => student.assignedCoachId === selectedCoach.id
-  );
-
-  // Get unassigned batches
+  const assignedStudents = students.filter((student) => student.assignedCoachId === selectedCoach.id);
   const unassignedBatches = batches.filter((batch) => !batch.assignedCoachId);
-
-  // Get unassigned students
   const unassignedStudents = students.filter((student) => !student.assignedCoachId);
 
-  // Handle batch assignment
+  // Handlers
   const handleAssignBatch = () => {
     if (!selectedBatchId) return;
-
     const batch = batches.find((b) => b.id === selectedBatchId);
     if (!batch) return;
 
-    // Update batch with coach assignment
     const updatedBatches = batches.map((b) =>
       b.id === selectedBatchId ? { ...b, assignedCoachId: selectedCoach.id } : b
     );
-
-    // Update all students in this batch with coach assignment
     const updatedStudents = students.map((student) =>
       student.batchId === selectedBatchId
         ? { ...student, assignedCoachId: selectedCoach.id }
@@ -91,204 +67,193 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
     setSelectedBatchId('');
   };
 
-  // Handle individual student assignment
   const handleAssignStudent = () => {
     if (!selectedStudentId) return;
-
     const updatedStudents = students.map((student) =>
       student.id === selectedStudentId
         ? { ...student, assignedCoachId: selectedCoach.id }
         : student
     );
-
     onAssignmentChange(updatedStudents, batches);
     setSelectedStudentId('');
   };
 
-  // Handle batch unassignment
   const handleUnassignBatch = (batchId: string) => {
-    // Update batch to remove coach assignment
     const updatedBatches = batches.map((b) =>
       b.id === batchId ? { ...b, assignedCoachId: undefined } : b
     );
-
-    // Update all students in this batch to remove coach assignment
     const updatedStudents = students.map((student) =>
       student.batchId === batchId && student.assignedCoachId === selectedCoach.id
         ? { ...student, assignedCoachId: undefined }
         : student
     );
-
     onAssignmentChange(updatedStudents, updatedBatches);
   };
 
-  // Handle individual student unassignment
   const handleUnassignStudent = (studentId: string) => {
     const updatedStudents = students.map((student) =>
       student.id === studentId ? { ...student, assignedCoachId: undefined } : student
     );
-
     onAssignmentChange(updatedStudents, batches);
   };
 
+  // Filter students based on selected batch
+  const filteredStudents = selectedBatchFilterId
+    ? assignedStudents.filter((s) => s.batchId === selectedBatchFilterId)
+    : assignedStudents;
+
+  // Get batch name from ID
+  const getBatchName = (batchId: string) => {
+    return batches.find((b) => b.id === batchId)?.name || batchId;
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+    <div className="assignment-panel">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Assignments for {selectedCoach.name}
-        </h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Manage batch and student assignments for this coach
-        </p>
-      </div>
-
-      {/* Assign Batch Section */}
-      <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Assign to Batch
-        </h3>
-        <div className="flex gap-3">
-          <select
-            value={selectedBatchId}
-            onChange={(e) => setSelectedBatchId(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            <option value="">Select a batch...</option>
-            {unassignedBatches.map((batch) => (
-              <option key={batch.id} value={batch.id}>
-                {batch.name} ({batch.schedule})
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleAssignBatch}
-            disabled={!selectedBatchId}
-            className="px-4 py-2 bg-primary hover:bg-primary/90 text-gray-900 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            Assign
-          </button>
+      <div className="assignment-header">
+        <div>
+          <h2 className="assignment-title">Assignments for {selectedCoach.name}</h2>
+          <p className="assignment-subtitle">Manage batch and student assignments for this coach</p>
         </div>
-        {unassignedBatches.length === 0 && (
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            All batches are currently assigned
-          </p>
-        )}
       </div>
 
-      {/* Assign Individual Student Section */}
-      <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Assign Individual Student
-        </h3>
-        <div className="flex gap-3">
-          <select
-            value={selectedStudentId}
-            onChange={(e) => setSelectedStudentId(e.target.value)}
-            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-          >
-            <option value="">Select a student...</option>
-            {unassignedStudents.map((student) => (
-              <option key={student.id} value={student.id}>
-                {student.fullName} - {student.skillLevel}
-              </option>
-            ))}
-          </select>
-          <button
-            onClick={handleAssignStudent}
-            disabled={!selectedStudentId}
-            className="px-4 py-2 bg-primary hover:bg-primary/90 text-gray-900 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            Assign
-          </button>
+      {/* Assignment Form Card - Separate Above */}
+      <div className="assignment-form-section">
+        <div className="assignment-form-card">
+          <div className="form-card-header">
+            <h3 className="form-card-title">Assign to Batch</h3>
+            <span className="form-card-badge">{unassignedBatches.length} available</span>
+          </div>
+          <div className="form-card-body">
+            <select
+              value={selectedBatchId}
+              onChange={(e) => setSelectedBatchId(e.target.value)}
+              className="form-select"
+              disabled={unassignedBatches.length === 0}
+            >
+              <option value="">Select a batch...</option>
+              {unassignedBatches.map((batch) => (
+                <option key={batch.id} value={batch.id}>
+                  {batch.name} ({batch.schedule})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleAssignBatch}
+              disabled={!selectedBatchId}
+              className="btn-assign"
+            >
+              Assign
+            </button>
+          </div>
         </div>
-        {unassignedStudents.length === 0 && (
-          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            All students are currently assigned
-          </p>
-        )}
+
+        <div className="assignment-form-card">
+          <div className="form-card-header">
+            <h3 className="form-card-title">Assign Individual</h3>
+            <span className="form-card-badge">{unassignedStudents.length} available</span>
+          </div>
+          <div className="form-card-body">
+            <select
+              value={selectedStudentId}
+              onChange={(e) => setSelectedStudentId(e.target.value)}
+              className="form-select"
+              disabled={unassignedStudents.length === 0}
+            >
+              <option value="">Select a student...</option>
+              {unassignedStudents.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {student.fullName} • {student.skillLevel}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleAssignStudent}
+              disabled={!selectedStudentId}
+              className="btn-assign"
+            >
+              Assign
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Current Assignments Section */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Current Assignments
-        </h3>
-
-        {/* Assigned Batches */}
-        {assignedBatches.length > 0 && (
-          <div className="mb-4">
-            <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Batches ({assignedBatches.length})
-            </h4>
-            <div className="space-y-2">
+      {/* Current Assignments - Two Column Grid */}
+      <div className="assignment-display-section">
+        {/* Left Column: Batches */}
+        <div className="assignment-column">
+          <h4 className="assignment-section-title">Assigned Batches • {assignedBatches.length}</h4>
+          
+          {assignedBatches.length > 0 ? (
+            <div className="assignment-items">
               {assignedBatches.map((batch) => {
-                const studentsInBatch = students.filter((s) => s.batchId === batch.id);
+                const studentsInBatch = students.filter((s) => s.batchId === batch.id && s.assignedCoachId === selectedCoach.id);
+                const isSelected = selectedBatchFilterId === batch.id;
                 return (
                   <div
                     key={batch.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                    onClick={() => setSelectedBatchFilterId(isSelected ? '' : batch.id)}
+                    className={`assignment-item batch-item ${isSelected ? 'active' : ''}`}
                   >
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {batch.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {batch.schedule} • {studentsInBatch.length} students
-                      </p>
+                    <div className="item-content">
+                      <p className="item-name">{batch.name}</p>
+                      <p className="item-meta">{batch.schedule} • {studentsInBatch.length} students</p>
                     </div>
                     <button
-                      onClick={() => handleUnassignBatch(batch.id)}
-                      className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUnassignBatch(batch.id);
+                      }}
+                      className="btn-action btn-action--danger"
+                      title="Delete"
                     >
-                      Unassign
+                      Delete
                     </button>
                   </div>
                 );
               })}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="assignment-empty">
+              <p className="empty-message">No batches assigned</p>
+            </div>
+          )}
+        </div>
 
-        {/* Assigned Students */}
-        {assignedStudents.length > 0 && (
-          <div>
-            <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Individual Students ({assignedStudents.length})
-            </h4>
-            <div className="space-y-2">
-              {assignedStudents.map((student) => (
-                <div
-                  key={student.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {student.fullName}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {student.skillLevel} • {student.batchId ? `Batch: ${student.batchId}` : 'No batch'}
-                    </p>
+        {/* Right Column: Students */}
+        <div className="assignment-column">
+          <h4 className="assignment-section-title">
+            {selectedBatchFilterId
+              ? `${getBatchName(selectedBatchFilterId)} Students • ${filteredStudents.length}`
+              : `Assigned Students • ${assignedStudents.length}`}
+          </h4>
+          
+          {filteredStudents.length > 0 ? (
+            <div className="assignment-items">
+              {filteredStudents.map((student) => (
+                <div key={student.id} className="assignment-item student-item">
+                  <div className="item-content">
+                    <p className="item-name">{student.fullName}</p>
+                    <p className="item-meta">{student.skillLevel} • {student.batchId || 'N/A'}</p>
                   </div>
                   <button
                     onClick={() => handleUnassignStudent(student.id)}
-                    className="px-3 py-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                    className="btn-action btn-action--danger"
+                    title="Delete"
                   >
-                    Unassign
+                    Delete
                   </button>
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* No Assignments State */}
-        {assignedBatches.length === 0 && assignedStudents.length === 0 && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <p className="text-sm">No assignments yet</p>
-            <p className="text-xs mt-1">Use the forms above to assign batches or students</p>
-          </div>
-        )}
+          ) : (
+            <div className="assignment-empty">
+              <p className="empty-message">
+                {selectedBatchFilterId ? 'No students in this batch' : 'No students assigned'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

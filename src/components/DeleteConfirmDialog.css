@@ -1,0 +1,304 @@
+/* Extends modal base styles from CreateFeeModal.css */
+@import './CreateFeeModal.css';
+
+/* ============================================================================
+   DIALOG OVERLAY
+   ============================================================================ */
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+  backdrop-filter: blur(2px);
+}
+
+/* ============================================================================
+   DIALOG CONTENT
+   ============================================================================ */
+
+.dialog-content {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  width: 90%;
+  max-width: 450px;
+  padding: var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  animation: slideUp 0.3s ease-out;
+  border: 1px solid var(--border-default);
+}
+
+/* ============================================================================
+   DIALOG ICON
+   ============================================================================ */
+
+.dialog-icon-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+  border-radius: 50%;
+  margin: 0 auto;
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.dialog-icon-danger svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2;
+}
+
+/* ============================================================================
+   DIALOG TEXT
+   ============================================================================ */
+
+.dialog-title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.dialog-message {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0;
+  line-height: var(--line-normal);
+}
+
+/* ============================================================================
+   DIALOG DETAILS
+   ============================================================================ */
+
+.dialog-details {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.detail-label {
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+}
+
+.detail-value {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+  text-align: right;
+  font-family: var(--font-body);
+}
+
+/* ============================================================================
+   DIALOG ACTIONS
+   ============================================================================ */
+
+.dialog-actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-default);
+}
+
+/* ============================================================================
+   BUTTON STYLES
+   ============================================================================ */
+
+.btn {
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-slate-100);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: white;
+  border: 1px solid var(--color-danger-dark);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--color-danger-dark);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-danger:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   DARK MODE SUPPORT
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .dialog-content {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  }
+
+  .dialog-icon-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .dialog-title {
+    color: var(--text-dark-primary);
+  }
+
+  .dialog-message {
+    color: var(--text-dark-secondary);
+  }
+
+  .dialog-details {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+  }
+
+  .detail-label {
+    color: var(--text-dark-secondary);
+  }
+
+  .detail-value {
+    color: var(--text-dark-primary);
+  }
+
+  .dialog-actions {
+    border-top-color: var(--border-dark);
+  }
+
+  .btn-secondary {
+    background: var(--surface-dark-hover);
+    color: var(--text-dark-primary);
+    border-color: var(--border-dark-strong);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-danger {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: var(--color-danger-dark);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .dialog-content {
+    width: 95%;
+    padding: var(--space-lg);
+    gap: var(--space-md);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detail-value {
+    text-align: left;
+    width: 100%;
+  }
+}

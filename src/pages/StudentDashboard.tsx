@@ -252,43 +252,44 @@ export const StudentDashboard: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
-        {/* Welcome Banner with Name and Photo */}
-        <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
-          <div className="flex items-center gap-6">
-            {/* Profile Photo */}
-            <div className="flex-shrink-0">
-              {student.profilePhoto ? (
-                <img
-                  src={student.profilePhoto}
-                  alt={student.fullName}
-                  className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center border-4 border-white dark:border-gray-700 shadow-lg">
-                  <span className="text-3xl font-bold text-primary">
-                    {student.fullName.charAt(0)}
-                  </span>
-                </div>
-              )}
-            </div>
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
+        <div className="space-y-6">
+          {/* Welcome Banner with Name and Photo */}
+          <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
+            <div className="flex items-center gap-6">
+              {/* Profile Photo */}
+              <div className="flex-shrink-0">
+                {student.profilePhoto ? (
+                  <img
+                    src={student.profilePhoto}
+                    alt={student.fullName}
+                    className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center border-4 border-white dark:border-gray-700 shadow-lg">
+                    <span className="text-3xl font-bold text-primary">
+                      {student.fullName.charAt(0)}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-            {/* Welcome Text */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                Welcome back, {student.fullName}!
-              </h1>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">
-                Keep up the great work! Here's your training overview.
-              </p>
+              {/* Welcome Text */}
+              <div>
+                <h1 className="text-[36px] font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
+                  Welcome back, {student.fullName}!
+                </h1>
+                <p className="text-gray-700 dark:text-gray-300 text-lg">
+                  Keep up the great work! Here's your training overview.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Personal Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Current Skill Level Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+          {/* Personal Stat Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Current Skill Level Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                 Skill Level
@@ -302,8 +303,8 @@ export const StudentDashboard: React.FC = () => {
             </p>
           </div>
 
-          {/* Next Assessment Due Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
+            {/* Next Assessment Due Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                 Next Assessment
@@ -317,8 +318,8 @@ export const StudentDashboard: React.FC = () => {
             </p>
           </div>
 
-          {/* Outstanding Fee Balance Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
+            {/* Outstanding Fee Balance Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                 Fee Balance
@@ -335,8 +336,8 @@ export const StudentDashboard: React.FC = () => {
             )}
           </div>
 
-          {/* Current Batch and Coach Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-green-500">
+            {/* Current Batch and Coach Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-green-500">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                 Batch & Coach
@@ -350,15 +351,15 @@ export const StudentDashboard: React.FC = () => {
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Coach: {assignedCoach?.name || 'Not assigned'}
-            </p>
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Read-only Profile Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            My Profile
-          </h2>
+          {/* Read-only Profile Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              My Profile
+            </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Full Name</p>
@@ -439,39 +440,39 @@ export const StudentDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Most Recent Skill Assessment Radar Chart */}
-        {mostRecentAssessment && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Latest Skill Assessment
-            </h2>
+          {/* Most Recent Skill Assessment Radar Chart */}
+          {mostRecentAssessment && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Latest Skill Assessment
+              </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {mostRecentAssessment.recordedBy}
             </p>
-            <SkillRadarChart scores={mostRecentAssessment.scores} />
-          </div>
-        )}
+              <SkillRadarChart scores={mostRecentAssessment.scores} />
+            </div>
+          )}
 
-        {/* Coach Feedback Section */}
-        {student.coachFeedback && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Coach Feedback
-            </h2>
+          {/* Coach Feedback Section */}
+          {student.coachFeedback && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Coach Feedback
+              </h2>
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
               <p className="text-gray-800 dark:text-gray-200">{student.coachFeedback}</p>
             </div>
           </div>
         )}
 
-        {/* Strengths and Weaknesses */}
-        {(student.strengths.length > 0 || student.weaknesses.length > 0) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {student.strengths.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                  Strengths
-                </h2>
+          {/* Strengths and Weaknesses */}
+          {(student.strengths.length > 0 || student.weaknesses.length > 0) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {student.strengths.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Strengths
+                  </h2>
                 <div className="flex flex-wrap gap-2">
                   {student.strengths.map((strength, index) => (
                     <span
@@ -485,11 +486,11 @@ export const StudentDashboard: React.FC = () => {
               </div>
             )}
 
-            {student.weaknesses.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                  Areas to Improve
-                </h2>
+              {student.weaknesses.length > 0 && (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Areas to Improve
+                  </h2>
                 <div className="flex flex-wrap gap-2">
                   {student.weaknesses.map((weakness, index) => (
                     <span
@@ -505,14 +506,14 @@ export const StudentDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Current Week Curriculum Section */}
-        {currentWeekPlan && (
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  Week {currentWeekNumber} Training Focus
-                </h2>
+          {/* Current Week Curriculum Section */}
+          {currentWeekPlan && (
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100">
+                    Week {currentWeekNumber} Training Focus
+                  </h2>
                 <span className="bg-primary text-slate-900 px-3 py-1 rounded-full text-sm font-semibold">
                   Current Week
                 </span>
@@ -571,9 +572,9 @@ export const StudentDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* No Curriculum Message */}
-        {!currentWeekPlan && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center border-l-4 border-gray-300 dark:border-gray-600">
+          {/* No Curriculum Message */}
+          {!currentWeekPlan && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center border-l-4 border-gray-300 dark:border-gray-600">
             <svg
               className="mx-auto h-12 w-12 text-gray-400 mb-4"
               fill="none"
@@ -592,12 +593,12 @@ export const StudentDashboard: React.FC = () => {
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
               Your coach hasn't assigned a training plan for this cycle yet.
-            </p>
-          </div>
-        )}
+              </p>
+            </div>
+          )}
 
-        {/* Outstanding Balance Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-primary">
+          {/* Outstanding Balance Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-primary">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
@@ -620,11 +621,11 @@ export const StudentDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Fee History Section */}
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Fee History
-          </h2>
+          {/* Fee History Section */}
+          <div>
+            <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Fee History
+            </h2>
 
           {studentFees.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
@@ -677,6 +678,7 @@ export const StudentDashboard: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </DashboardLayout>
   );

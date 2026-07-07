@@ -1,134 +1,176 @@
-/* StatCard Component Styles */
+/* ============================================================================
+   StatCard Component Styles
+   Pure CSS implementation using design tokens and BEM methodology
+   Displays statistics with icon, value, and label
+   ============================================================================ */
 
 .stat-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
-  background-color: var(--slate-900, #131820);
-  border: 1px solid var(--slate-800, #1f262e);
-  transition: all 0.2s ease;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-base);
+}
+
+@media (prefers-color-scheme: dark) {
+  .stat-card {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-float);
+  border-color: var(--border-strong);
 }
 
-.stat-card-icon {
+/* ============================================================================
+   Icon Section (Element)
+   ============================================================================ */
+
+.stat-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   flex-shrink: 0;
+  font-size: 24px;
 }
 
-.stat-card-content {
+/* ============================================================================
+   Content Section (Element)
+   ============================================================================ */
+
+.stat-card__content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
 }
 
-.stat-card-title {
+.stat-card__title {
   margin: 0;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--font-label);
+  font-weight: var(--weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--slate-400, #9ca8b3);
-  margin-bottom: 4px;
-}
-
-.stat-card-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--slate-100, #f1f4f6);
+  letter-spacing: var(--letter-label);
+  color: var(--text-secondary);
   line-height: 1.2;
-  margin: 4px 0;
 }
 
-.stat-card-label {
-  margin: 4px 0 0 0;
-  font-size: 12px;
-  color: var(--slate-400, #9ca8b3);
+@media (prefers-color-scheme: dark) {
+  .stat-card__title {
+    color: var(--text-dark-tertiary);
+  }
 }
 
-/* Color variants */
-.stat-card-blue {
-  --stat-bg: rgba(58, 142, 246, 0.1);
-  --stat-color: #3a8ef6;
+.stat-card__value {
+  font-size: var(--font-display);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  line-height: 1.2;
+  font-family: var(--font-display);
 }
 
-.stat-card-blue .stat-card-icon {
-  background-color: var(--stat-bg);
-  color: var(--stat-color);
+@media (prefers-color-scheme: dark) {
+  .stat-card__value {
+    color: var(--text-dark-primary);
+  }
 }
 
-.stat-card-green {
-  --stat-bg: rgba(16, 185, 129, 0.1);
-  --stat-color: #10b981;
+.stat-card__label {
+  margin: 0;
+  font-size: var(--font-label);
+  color: var(--text-tertiary);
+  line-height: 1.2;
 }
 
-.stat-card-green .stat-card-icon {
-  background-color: var(--stat-bg);
-  color: var(--stat-color);
+@media (prefers-color-scheme: dark) {
+  .stat-card__label {
+    color: var(--text-dark-tertiary);
+  }
 }
 
-.stat-card-orange {
-  --stat-bg: rgba(245, 166, 35, 0.1);
-  --stat-color: #f5a623;
+/* ============================================================================
+   Color Variants (Modifiers)
+   ============================================================================ */
+
+/* Primary Variant (Electric Lime) */
+.stat-card--primary .stat-card__icon {
+  background-color: rgba(184, 225, 53, 0.1);
+  color: var(--color-primary);
 }
 
-.stat-card-orange .stat-card-icon {
-  background-color: var(--stat-bg);
-  color: var(--stat-color);
+/* Success Variant (Green) */
+.stat-card--success .stat-card__icon {
+  background-color: var(--feedback-success-light);
+  color: var(--color-success);
 }
 
-.stat-card-red {
-  --stat-bg: rgba(232, 57, 74, 0.1);
-  --stat-color: #e8394a;
+/* Warning Variant (Orange) */
+.stat-card--warning .stat-card__icon {
+  background-color: var(--feedback-warning-light);
+  color: var(--color-warning);
 }
 
-.stat-card-red .stat-card-icon {
-  background-color: var(--stat-bg);
-  color: var(--stat-color);
+/* Danger Variant (Red) */
+.stat-card--danger .stat-card__icon {
+  background-color: var(--feedback-danger-light);
+  color: var(--color-danger);
 }
 
-/* Responsive */
+/* Info Variant (Blue) */
+.stat-card--info .stat-card__icon {
+  background-color: var(--feedback-info-light);
+  color: var(--color-info);
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
 @media (max-width: 768px) {
   .stat-card {
-    padding: 16px;
-    gap: 12px;
+    padding: var(--space-md);
+    gap: var(--space-md);
   }
 
-  .stat-card-icon {
+  .stat-card__icon {
     width: 40px;
     height: 40px;
+    font-size: 20px;
   }
 
-  .stat-card-value {
-    font-size: 24px;
+  .stat-card__value {
+    font-size: var(--font-h2);
   }
 }
 
-/* Light mode support */
-@media (prefers-color-scheme: light) {
+@media (max-width: 480px) {
   .stat-card {
-    background-color: #ffffff;
-    border-color: var(--slate-200, #e4e9ec);
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-sm);
   }
 
-  .stat-card-title {
-    color: var(--slate-600, #4a5662);
+  .stat-card__icon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
-  .stat-card-value {
-    color: var(--slate-900, #131820);
+  .stat-card__value {
+    font-size: var(--font-h3);
   }
 
-  .stat-card-label {
-    color: var(--slate-500, #6b7885);
+  .stat-card__title,
+  .stat-card__label {
+    font-size: 10px;
   }
 }

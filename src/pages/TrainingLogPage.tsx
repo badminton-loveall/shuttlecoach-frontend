@@ -195,19 +195,19 @@ const TrainingLogPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Page Header */}
-        <div className="mb-6">
+        <div className="mb-12">
           <button
             onClick={() => navigate(`/student/${studentId}`)}
-            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 mb-4 flex items-center gap-2"
+            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 mb-4 flex items-center gap-2 text-sm"
           >
             <span>←</span> Back to Student Profile
           </button>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mb-2">
+          <h1 className="text-[36px] font-bold text-slate-900 dark:text-slate-50 mb-2 leading-tight">
             Training Log - {student.fullName}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
+          <p className="text-base text-slate-600 dark:text-slate-400">
             Record weekly training session notes and track progress
           </p>
         </div>

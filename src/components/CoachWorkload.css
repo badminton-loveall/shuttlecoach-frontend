@@ -1,0 +1,234 @@
+/* ============================================================================
+   COACHWORKLOAD COMPONENT - GRID/TABLE STYLE REDESIGN
+   Modern grid layout with clean table-like structure
+   ============================================================================ */
+
+/* Block */
+.coach-workload {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Header Section */
+.coach-workload__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  padding: 20px 24px 0 24px;
+  letter-spacing: -0.02em;
+}
+
+.coach-workload__subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  padding: 0 24px 16px 24px;
+  font-weight: 500;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Grid List */
+.coach-workload__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+}
+
+.coach-workload__item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background-color: #ffffff;
+  border: none;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.15s ease;
+}
+
+.coach-workload__item:last-child {
+  border-bottom: none;
+}
+
+.coach-workload__item:hover {
+  background-color: #f9fafb;
+}
+
+.coach-workload__item-content {
+  display: contents; /* Use grid layout directly */
+}
+
+/* Badge styling */
+.coach-workload__badge {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.coach-workload__badge--red {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.coach-workload__badge--green {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.coach-workload__badge--yellow {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.coach-workload__badge--gray {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Name styling */
+.coach-workload__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* Status label styling */
+.coach-workload__status-label {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.coach-workload__status-label--red {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.coach-workload__status-label--green {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.coach-workload__status-label--yellow {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.coach-workload__status-label--gray {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Legend at bottom */
+.coach-workload__legend {
+  margin: 0;
+  padding: 16px 24px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #6b7280;
+  background-color: #f9fafb;
+}
+
+.coach-workload__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.coach-workload__legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.coach-workload__legend-dot--green {
+  background-color: #059669;
+}
+
+.coach-workload__legend-dot--yellow {
+  background-color: #d97706;
+}
+
+.coach-workload__legend-dot--red {
+  background-color: #dc2626;
+}
+
+/* Light mode - clean grid styling */
+@media (prefers-color-scheme: light) {
+  .coach-workload {
+    background-color: #ffffff;
+    border-color: #e5e7eb;
+  }
+
+  .coach-workload__title {
+    color: #111827;
+  }
+
+  .coach-workload__subtitle {
+    color: #6b7280;
+    border-bottom-color: #f3f4f6;
+  }
+
+  .coach-workload__item {
+    background-color: #ffffff;
+    border-bottom-color: #f3f4f6;
+  }
+
+  .coach-workload__item:hover {
+    background-color: #f9fafb;
+  }
+
+  .coach-workload__name {
+    color: #374151;
+  }
+
+  .coach-workload__legend {
+    border-top-color: #f3f4f6;
+    color: #6b7280;
+    background-color: #f9fafb;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .coach-workload {
+    background-color: var(--surface-dark-card, #131820);
+    border-color: var(--border-dark, #333d47);
+  }
+
+  .coach-workload__item {
+    background-color: var(--surface-dark-hover, #1f262e);
+    border-color: var(--border-dark, #2a3441);
+  }
+
+  .coach-workload__legend {
+    border-top-color: var(--border-dark, #2a3441);
+  }
+}

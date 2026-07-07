@@ -209,110 +209,152 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       <div className="personal-info-form" data-testid="personal-info-form">
         <h2 className="form-section-title">Personal Information</h2>
 
-        <div className="form-grid">
-          <div className="form-field">
-            <span className="field-label">Full Name</span>
-            <span className="field-value">{student.fullName}</span>
+        <div className="form-cards-grid">
+          {/* Basic Information Card */}
+          <div className="form-group">
+            <h3 className="form-group-title">Basic Information</h3>
+            <div className="form-grid">
+              <div className="form-field">
+                <span className="field-label">Full Name</span>
+                <span className="field-value">{student.fullName}</span>
+              </div>
+
+              <div className="form-field">
+                <span className="field-label">Date of Birth</span>
+                <span className="field-value">{student.dateOfBirth.toLocaleDateString()}</span>
+              </div>
+
+              <div className="form-field">
+                <span className="field-label">Age</span>
+                <span className="field-value computed-value" data-testid="computed-age">
+                  {calculateAge(student.dateOfBirth)} years
+                </span>
+              </div>
+
+              <div className="form-field">
+                <span className="field-label">Gender</span>
+                <span className="field-value">{student.gender}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="form-field">
-            <span className="field-label">Date of Birth</span>
-            <span className="field-value">{student.dateOfBirth.toLocaleDateString()}</span>
+          {/* Contact Information Card */}
+          <div className="form-group">
+            <h3 className="form-group-title">Contact Information</h3>
+            <div className="form-grid">
+              <div className="form-field">
+                <span className="field-label">Contact Phone</span>
+                <span className="field-value">{student.contactPhone}</span>
+              </div>
+
+              {student.email && (
+                <div className="form-field">
+                  <span className="field-label">Email</span>
+                  <span className="field-value">{student.email}</span>
+                </div>
+              )}
+
+              {student.emergencyContact && (
+                <div className="form-field">
+                  <span className="field-label">Emergency Contact</span>
+                  <span className="field-value">{student.emergencyContact}</span>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="form-field">
-            <span className="field-label">Age</span>
-            <span className="field-value computed-value" data-testid="computed-age">
-              {calculateAge(student.dateOfBirth)} years
-            </span>
-          </div>
+          {/* Guardian Information Card */}
+          {(student.guardianName || student.guardianPhone) && (
+            <div className="form-group">
+              <h3 className="form-group-title">Guardian Information</h3>
+              <div className="form-grid">
+                {student.guardianName && (
+                  <div className="form-field">
+                    <span className="field-label">Guardian Name</span>
+                    <span className="field-value">{student.guardianName}</span>
+                  </div>
+                )}
 
-          <div className="form-field">
-            <span className="field-label">Gender</span>
-            <span className="field-value">{student.gender}</span>
-          </div>
-
-          <div className="form-field">
-            <span className="field-label">Contact Phone</span>
-            <span className="field-value">{student.contactPhone}</span>
-          </div>
-
-          {student.email && (
-            <div className="form-field">
-              <span className="field-label">Email</span>
-              <span className="field-value">{student.email}</span>
+                {student.guardianPhone && (
+                  <div className="form-field">
+                    <span className="field-label">Guardian Phone</span>
+                    <span className="field-value">{student.guardianPhone}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {student.baidNumber && (
-            <div className="form-field">
-              <span className="field-label">BAID Number</span>
-              <span className="field-value">{student.baidNumber}</span>
+          {/* Academy Information Card */}
+          {(student.baidNumber || student.batchId) && (
+            <div className="form-group">
+              <h3 className="form-group-title">Academy Information</h3>
+              <div className="form-grid">
+                {student.baidNumber && (
+                  <div className="form-field">
+                    <span className="field-label">BAID Number</span>
+                    <span className="field-value">{student.baidNumber}</span>
+                  </div>
+                )}
+
+                {student.batchId && (
+                  <div className="form-field">
+                    <span className="field-label">Batch</span>
+                    <span className="field-value">{student.batchId}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {student.batchId && (
-            <div className="form-field">
-              <span className="field-label">Batch</span>
-              <span className="field-value">{student.batchId}</span>
+          {/* Physical Information Card */}
+          {(student.height || student.weight || student.bloodGroup) && (
+            <div className="form-group">
+              <h3 className="form-group-title">Physical Information</h3>
+              <div className="form-grid">
+                {student.height && (
+                  <div className="form-field">
+                    <span className="field-label">Height</span>
+                    <span className="field-value">{student.height} cm</span>
+                  </div>
+                )}
+
+                {student.weight && (
+                  <div className="form-field">
+                    <span className="field-label">Weight</span>
+                    <span className="field-value">{student.weight} kg</span>
+                  </div>
+                )}
+
+                {student.height && student.weight && (
+                  <div className="form-field">
+                    <span className="field-label">BMI</span>
+                    <span className="field-value computed-value" data-testid="computed-bmi">
+                      {calculateBMI(student.height!, student.weight!)}
+                    </span>
+                  </div>
+                )}
+
+                {student.bloodGroup && (
+                  <div className="form-field">
+                    <span className="field-label">Blood Group</span>
+                    <span className="field-value">{student.bloodGroup}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
-          {student.guardianName && (
-            <div className="form-field">
-              <span className="field-label">Guardian Name</span>
-              <span className="field-value">{student.guardianName}</span>
-            </div>
-          )}
-
-          {student.guardianPhone && (
-            <div className="form-field">
-              <span className="field-label">Guardian Phone</span>
-              <span className="field-value">{student.guardianPhone}</span>
-            </div>
-          )}
-
-          {student.height && (
-            <div className="form-field">
-              <span className="field-label">Height</span>
-              <span className="field-value">{student.height} cm</span>
-            </div>
-          )}
-
-          {student.weight && (
-            <div className="form-field">
-              <span className="field-label">Weight</span>
-              <span className="field-value">{student.weight} kg</span>
-            </div>
-          )}
-
-          {student.height && student.weight && (
-            <div className="form-field">
-              <span className="field-label">BMI</span>
-              <span className="field-value computed-value" data-testid="computed-bmi">
-                {calculateBMI(student.height!, student.weight!)}
-              </span>
-            </div>
-          )}
-
-          {student.bloodGroup && (
-            <div className="form-field">
-              <span className="field-label">Blood Group</span>
-              <span className="field-value">{student.bloodGroup}</span>
-            </div>
-          )}
-
+          {/* Medical Information Card */}
           {student.medicalConditions && (
-            <div className="form-field form-field-full">
-              <span className="field-label">Medical Conditions</span>
-              <span className="field-value">{student.medicalConditions}</span>
-            </div>
-          )}
-
-          {student.emergencyContact && (
-            <div className="form-field">
-              <span className="field-label">Emergency Contact</span>
-              <span className="field-value">{student.emergencyContact}</span>
+            <div className="form-group">
+              <h3 className="form-group-title">Medical Information</h3>
+              <div className="form-grid">
+                <div className="form-field form-field-full">
+                  <span className="field-label">Medical Conditions</span>
+                  <span className="field-value">{student.medicalConditions}</span>
+                </div>
+              </div>
             </div>
           )}
         </div>

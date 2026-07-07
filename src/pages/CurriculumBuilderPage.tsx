@@ -253,244 +253,244 @@ const CurriculumBuilderPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mb-2">
-            Curriculum Builder
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Create and manage 8-week training curriculum for batches
-          </p>
-        </div>
+      <div className="hc-dashboard">
+        <div className="hc-dashboard-content">
+          {/* Page Header */}
+          <div className="page-header">
+            <div>
+              <h1 className="page-header-title">Curriculum Builder</h1>
+              <p className="page-header-subtitle">Create and manage 8-week training curriculum for batches</p>
+            </div>
+          </div>
 
-        {/* Controls Section */}
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-6 mb-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          {/* Archived Banner */}
-          {isArchived && (
-            <div className="mb-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <svg
-                  className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5 flex-shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+          {/* Controls Section */}
+          <div className="table-filter-section">
+            {/* Archived Banner */}
+            {isArchived && (
+              <div className="mb-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <svg
+                    className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-200">
+                      Archived Plan (Read-Only)
+                    </h3>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">
+                      This curriculum plan is from a past cycle and cannot be edited. It is preserved
+                      for historical reference only.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-6">
+              {/* Cycle Selector */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                  Bi-monthly Cycle
+                </label>
+                <select
+                  value={selectedCycle}
+                  onChange={(e) => setSelectedCycle(e.target.value)}
+                  className="filter-dropdown w-full"
                 >
-                  <path
-                    fillRule="evenodd"
-                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-200">
-                    Archived Plan (Read-Only)
-                  </h3>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 mt-1">
-                    This curriculum plan is from a past cycle and cannot be edited. It is preserved
-                    for historical reference only.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Cycle Selector */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Bi-monthly Cycle
-              </label>
-              <select
-                value={selectedCycle}
-                onChange={(e) => setSelectedCycle(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {availableCycles.map((cycle) => (
-                  <option key={cycle} value={cycle}>
-                    {cycle} {isCycleArchived(cycle) ? '(Archived)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Batch Selector */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Select Batch
-              </label>
-              <select
-                value={selectedBatch}
-                onChange={(e) => setSelectedBatch(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value="">-- Choose Batch --</option>
-                {batches.map((batch) => (
-                  <option key={batch.id} value={batch.id}>
-                    {batch.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Save Button */}
-            <div className="flex items-end">
-              <button
-                onClick={handleSaveBatchPlan}
-                disabled={isSaving || !selectedBatch || isArchived}
-                className="w-full px-6 py-2 bg-primary hover:bg-primary/90 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-slate-900 dark:text-slate-900 font-semibold rounded-lg transition-colors disabled:cursor-not-allowed"
-              >
-                {isSaving ? 'Saving...' : 'Save Batch Plan'}
-              </button>
-            </div>
-          </div>
-
-          {/* Save Message */}
-          {saveMessage && (
-            <div
-              className={`mt-4 p-3 rounded-lg ${
-                saveMessage.includes('Error')
-                  ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                  : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-              }`}
-            >
-              {saveMessage}
-            </div>
-          )}
-        </div>
-
-        {/* Main Content: Drill Library + Week Editor */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Drill Library (Left Side) */}
-          <div className="lg:col-span-1">
-            <DrillLibrary />
-          </div>
-
-          {/* 8-Week Editor (Right Side) */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
-              {/* Week Tabs */}
-              <div className="border-b border-slate-200 dark:border-slate-800">
-                <div className="flex overflow-x-auto">
-                  {weeks.map((week) => (
-                    <button
-                      key={week.weekNumber}
-                      onClick={() => setActiveWeek(week.weekNumber)}
-                      className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                        activeWeek === week.weekNumber
-                          ? 'border-primary text-primary'
-                          : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                      }`}
-                    >
-                      Week {week.weekNumber}
-                    </button>
+                  {availableCycles.map((cycle) => (
+                    <option key={cycle} value={cycle}>
+                      {cycle} {isCycleArchived(cycle) ? '(Archived)' : ''}
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
-              {/* Active Week Content */}
-              {weeks.map(
-                (week) =>
-                  activeWeek === week.weekNumber && (
-                    <div key={week.weekNumber} className="p-6 space-y-6">
-                      {/* Focus Area */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Focus Area
-                        </label>
-                        <input
-                          type="text"
-                          value={week.focusArea}
-                          onChange={(e) =>
-                            handleWeekUpdate(week.weekNumber, 'focusArea', e.target.value)
-                          }
-                          placeholder="e.g., Foundation - Grip and Basic Footwork"
-                          disabled={isArchived}
-                          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                      </div>
+              {/* Batch Selector */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                  Select Batch
+                </label>
+                <select
+                  value={selectedBatch}
+                  onChange={(e) => setSelectedBatch(e.target.value)}
+                  className="filter-dropdown w-full"
+                >
+                  <option value="">-- Choose Batch --</option>
+                  {batches.map((batch) => (
+                    <option key={batch.id} value={batch.id}>
+                      {batch.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                      {/* Drills Drop Zone */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Assigned Drills
-                        </label>
-                        <div
-                          className={`min-h-[150px] border-2 border-dashed rounded-lg p-4 ${
-                            isArchived
-                              ? 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30'
-                              : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'
-                          }`}
-                          onDragOver={(e) => {
-                            if (!isArchived) e.preventDefault();
-                          }}
-                          onDrop={(e) => {
-                            if (isArchived) return;
-                            e.preventDefault();
-                            const drillData = e.dataTransfer.getData('drill');
-                            if (drillData) {
-                              const drill: Drill = JSON.parse(drillData);
-                              handleDrillDrop(week.weekNumber, drill);
+              {/* Save Button */}
+              <div className="flex items-end">
+                <button
+                  onClick={handleSaveBatchPlan}
+                  disabled={isSaving || !selectedBatch || isArchived}
+                  className="btn-create-fee w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? 'Saving...' : 'Save Batch Plan'}
+                </button>
+              </div>
+            </div>
+
+            {/* Save Message */}
+            {saveMessage && (
+              <div
+                className={`mx-6 mb-6 p-3 rounded-lg text-xs ${
+                  saveMessage.includes('Error')
+                    ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                    : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                }`}
+              >
+                {saveMessage}
+              </div>
+            )}
+          </div>
+
+          {/* Main Content: Drill Library + Week Editor */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+            {/* Drill Library (Left Side) */}
+            <div className="lg:col-span-1 mb-8 lg:mb-0">
+              <DrillLibrary />
+            </div>
+
+            {/* 8-Week Editor (Right Side) */}
+            <div className="lg:col-span-2">
+              <div className="table-filter-section">
+                {/* Week Tabs */}
+                <div className="border-b border-slate-200 dark:border-slate-800">
+                  <div className="flex overflow-x-auto">
+                    {weeks.map((week) => (
+                      <button
+                        key={week.weekNumber}
+                        onClick={() => setActiveWeek(week.weekNumber)}
+                        className={`px-4 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
+                          activeWeek === week.weekNumber
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                        }`}
+                      >
+                        Week {week.weekNumber}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Active Week Content */}
+                {weeks.map(
+                  (week) =>
+                    activeWeek === week.weekNumber && (
+                      <div key={week.weekNumber} className="p-6 space-y-4">
+                        {/* Focus Area */}
+                        <div className="mb-4">
+                          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                            Focus Area
+                          </label>
+                          <input
+                            type="text"
+                            value={week.focusArea}
+                            onChange={(e) =>
+                              handleWeekUpdate(week.weekNumber, 'focusArea', e.target.value)
                             }
-                          }}
-                        >
-                          {week.drills.length === 0 ? (
-                            <div className="text-center text-slate-500 dark:text-slate-400 py-8">
-                              {isArchived
-                                ? 'No drills assigned for this week'
-                                : 'Drag and drop drills here from the library'}
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              {week.drills.map((drill) => (
-                                <div
-                                  key={drill.id}
-                                  className="flex items-start justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800"
-                                >
-                                  <div className="flex-1">
-                                    <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                                      {drill.name}
-                                    </h4>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                                      {drill.description}
-                                    </p>
-                                    <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded">
-                                      {drill.category}
-                                    </span>
+                            placeholder="e.g., Foundation - Grip and Basic Footwork"
+                            disabled={isArchived}
+                            className="filter-dropdown w-full"
+                          />
+                        </div>
+
+                        {/* Drills Drop Zone */}
+                        <div className="mb-4">
+                          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                            Assigned Drills
+                          </label>
+                          <div
+                            className={`min-h-[150px] border-2 border-dashed rounded-lg p-4 ${
+                              isArchived
+                                ? 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30'
+                                : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'
+                            }`}
+                            onDragOver={(e) => {
+                              if (!isArchived) e.preventDefault();
+                            }}
+                            onDrop={(e) => {
+                              if (isArchived) return;
+                              e.preventDefault();
+                              const drillData = e.dataTransfer.getData('drill');
+                              if (drillData) {
+                                const drill: Drill = JSON.parse(drillData);
+                                handleDrillDrop(week.weekNumber, drill);
+                              }
+                            }}
+                          >
+                            {week.drills.length === 0 ? (
+                              <div className="text-center text-slate-500 dark:text-slate-400 py-8 text-xs">
+                                {isArchived
+                                  ? 'No drills assigned for this week'
+                                  : 'Drag and drop drills here from the library'}
+                              </div>
+                            ) : (
+                              <div className="flex flex-col gap-2">
+                                {week.drills.map((drill) => (
+                                  <div
+                                    key={drill.id}
+                                    className="flex items-start justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800"
+                                  >
+                                    <div className="flex-1">
+                                      <h4 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+                                        {drill.name}
+                                      </h4>
+                                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                                        {drill.description}
+                                      </p>
+                                      <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded">
+                                        {drill.category}
+                                      </span>
+                                    </div>
+                                    {!isArchived && (
+                                      <button
+                                        onClick={() => handleRemoveDrill(week.weekNumber, drill.id)}
+                                        className="ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs font-medium"
+                                      >
+                                        Remove
+                                      </button>
+                                    )}
                                   </div>
-                                  {!isArchived && (
-                                    <button
-                                      onClick={() => handleRemoveDrill(week.weekNumber, drill.id)}
-                                      className="ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
-                                    >
-                                      Remove
-                                    </button>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Objective */}
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">
+                            Weekly Objective
+                          </label>
+                          <textarea
+                            value={week.objective}
+                            onChange={(e) =>
+                              handleWeekUpdate(week.weekNumber, 'objective', e.target.value)
+                            }
+                            placeholder="e.g., Establish proper grip habits and develop basic court coverage skills"
+                            rows={3}
+                            disabled={isArchived}
+                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                          />
                         </div>
                       </div>
-
-                      {/* Objective */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Weekly Objective
-                        </label>
-                        <textarea
-                          value={week.objective}
-                          onChange={(e) =>
-                            handleWeekUpdate(week.weekNumber, 'objective', e.target.value)
-                          }
-                          placeholder="e.g., Establish proper grip habits and develop basic court coverage skills"
-                          rows={3}
-                          disabled={isArchived}
-                          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                      </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
+              </div>
             </div>
           </div>
         </div>

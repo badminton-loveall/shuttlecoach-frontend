@@ -81,15 +81,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lastActive: new Date(userData.lastActive),
       };
 
-      // Store in state
-      setUser(userWithParsedDates);
-      setRole(userRole);
-      setToken(token);
-
-      // Persist to localStorage
+      // Persist to localStorage FIRST (before state updates)
       localStorage.setItem('auth_token', token);
       localStorage.setItem('auth_user', JSON.stringify(userWithParsedDates));
       localStorage.setItem('auth_role', userRole);
+
+      // Store in state (will trigger re-renders)
+      // The order matters: token, user, then role so isAuthenticated resolves properly
+      setToken(token);
+      setUser(userWithParsedDates);
+      setRole(userRole);
     } catch (error) {
       console.error('Login error:', error);
       // Re-throw the error so UI can display it

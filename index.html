@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoveAll - Badminton Training Management</title>
+    <script>
+      // Force light mode - remove dark class if added
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      // Override system preference
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').matches = false;
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

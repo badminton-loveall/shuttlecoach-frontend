@@ -33,8 +33,8 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   }, [onChange]);
 
   return (
-    <div className="search-input-wrapper">
-      <div className="search-input-icon">
+    <div className="search-input">
+      <div className="search-input__icon">
         <svg
           width="18"
           height="18"
@@ -52,7 +52,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       <input
         ref={inputRef}
         type="text"
-        className="search-input"
+        className="search-input__field"
         value={value}
         onChange={handleChange}
         placeholder={placeholder}
@@ -60,7 +60,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       />
       {value && (
         <button
-          className="search-clear-btn"
+          className="search-input__clear-btn"
           onClick={handleClear}
           aria-label="Clear search"
           type="button"

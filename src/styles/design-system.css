@@ -1,25 +1,157 @@
 /* ============================================================================
-   SHUTTLECOACH DESIGN SYSTEM
-   Comprehensive design tokens and custom utilities
+   SHUTTLECOACH DESIGN SYSTEM - Shadcn Style
+   CSS Variables with HSL values for better theme control
    ============================================================================ */
 
+@layer base {
+  :root {
+    /* Shadcn-style color system using HSL */
+    --background: 36 14% 89%; /* #E8E6DF - Beige background */
+    --foreground: 222.2 84% 4.9%; /* Dark text */
+
+    --card: 36 30% 95%; /* Light card background */
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 75 76% 60%; /* #B8E135 - Electric Lime */
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 75 76% 60%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 100%; /* White background */
+    --foreground: 222.2 84% 4.9%; /* Dark text */
+
+    --card: 0 0% 100%; /* White card */
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%; /* White popover */
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 75 76% 60%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 210 40% 96.1%; /* Light secondary */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%; /* Light muted */
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%; /* Light accent */
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%; /* Light border */
+    --input: 214.3 31.8% 91.4%; /* Light input */
+    --ring: 75 76% 60%;
+  }
+}
+
+/* Apply background colors to html and body */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Apply background colors to html and body */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
 /* ============================================================================
-   1. COLOR PALETTE
+   COMPATIBILITY LAYER - Map shadcn variables to existing tokens
    ============================================================================ */
 
 :root {
-  /* Primary - Electric Lime */
+  /* Map shadcn colors to old variable names for compatibility */
   --color-primary: #B8E135;
-  --color-primary-dark: #9ac61a;
-  --color-primary-light: #d0f766;
+  --color-primary-dark: #9AC61A;
+  --color-primary-light: #CFF05E;
 
-  /* Semantic Colors */
-  --color-success: #B8E135;
-  --color-warning: #F5A623;
-  --color-danger: #E8394A;
-  --color-info: #3A8EF6;
+  --color-success: #22C55E;
+  --color-success-dark: #16A34A;
+  --color-success-light: #86EFAC;
 
-  /* Neutral - Cool Slate */
+  --color-warning: #F59E0B;
+  --color-warning-dark: #D97706;
+  --color-warning-light: #FCD34D;
+
+  --color-danger: #EF4444;
+  --color-danger-dark: #DC2626;
+  --color-danger-light: #FCA5A5;
+
+  --color-info: #3B82F6;
+  --color-info-dark: #2563EB;
+  --color-info-light: #93C5FD;
+
+  /* Surface colors */
+  --surface-background: #E8E6DF;
+  --surface-card: #F8FAFB;
+  --surface-hover: #F1F4F6;
+  --surface-elevated: #FFFFFF;
+
+  /* Text colors */
+  --text-primary: #0A0D11;
+  --text-secondary: #4A5662;
+  --text-tertiary: #6B7885;
+  --text-inverse: #FFFFFF;
+
+  /* Dark mode colors */
+  --surface-dark-card: #131820;
+  --surface-dark-hover: #1F262E;
+  --text-dark-primary: #F8FAFB;
+  --text-dark-secondary: #D1D9DE;
+  --text-dark-tertiary: #9CA8B3;
+
+  /* Border colors */
+  --border-default: #E4E9EC;
+  --border-strong: #D1D9DE;
+  --border-focus: #B8E135;
+  --border-dark: #1F262E;
+  --border-dark-strong: #333D47;
+
+  /* Feedback backgrounds */
+  --feedback-success-light: #F0FDF4;
+  --feedback-warning-light: #FFFBEB;
+  --feedback-danger-light: #FEF2F2;
+  --feedback-info-light: #EFF6FF;
+
+  --color-success-text: #166534;
+  --color-warning-text: #92400E;
+  --color-danger-text: #991B1B;
+  --color-info-text: #1E40AF;
+
+  /* Slate palette */
   --color-slate-50: #F8FAFB;
   --color-slate-100: #F1F4F6;
   --color-slate-200: #E4E9EC;
@@ -32,33 +164,6 @@
   --color-slate-900: #131820;
   --color-slate-950: #0A0D11;
 
-  /* Surface Colors */
-  --surface-background: #FFFFFF;
-  --surface-card: #F8FAFB;
-  --surface-hover: #F1F4F6;
-  --surface-dark-background: #0A0D11;
-  --surface-dark-card: #131820;
-  --surface-dark-hover: #1F262E;
-
-  /* Text Colors */
-  --text-primary: #0A0D11;
-  --text-secondary: #4A5662;
-  --text-tertiary: #9CA8B3;
-  --text-inverse: #FFFFFF;
-  --text-dark-primary: #F8FAFB;
-  --text-dark-secondary: #D1D9DE;
-  --text-dark-tertiary: #9CA8B3;
-
-  /* Border Colors */
-  --border-default: #E4E9EC;
-  --border-dark: #1F262E;
-
-  /* Feedback Colors */
-  --feedback-success-light: #E6F7D0;
-  --feedback-warning-light: #FDF3E4;
-  --feedback-danger-light: #FDE8EA;
-  --feedback-info-light: #E6F2FF;
-
   /* ============================================================================
      2. TYPOGRAPHY
      ============================================================================ */
@@ -67,13 +172,23 @@
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Font Sizes */
-  --font-display: 32px;
-  --font-h1: 24px;
-  --font-h2: 20px;
-  --font-body: 14px;
-  --font-small: 12px;
-  --font-label: 11px;
+  /* Simplified Font Sizes - Only 5 core sizes */
+  --font-xs: 12px;      /* Labels, captions, small text */
+  --font-sm: 14px;      /* Body text, descriptions */
+  --font-base: 16px;    /* Navigation, buttons, primary text */
+  --font-lg: 20px;      /* Section headings, card titles */
+  --font-xl: 28px;      /* Page titles, hero text */
+
+  /* Legacy aliases for compatibility - map to new sizes */
+  --font-label: var(--font-xs);
+  --font-small: var(--font-sm);
+  --font-body: var(--font-base);
+  --font-h5: var(--font-base);
+  --font-h4: var(--font-lg);
+  --font-h3: var(--font-lg);
+  --font-h2: var(--font-xl);
+  --font-h1: var(--font-xl);
+  --font-display: var(--font-xl);
 
   /* Font Weights */
   --weight-regular: 400;
@@ -82,18 +197,26 @@
   --weight-bold: 700;
 
   /* Line Heights */
-  --line-display: 1.2;
-  --line-h1: 1.3;
-  --line-h2: 1.4;
-  --line-body: 1.5;
-  --line-small: 1.4;
-  --line-label: 1.3;
+  --line-tight: 1.2;
+  --line-snug: 1.3;
+  --line-normal: 1.5;
+  --line-relaxed: 1.6;
+
+  /* Legacy aliases */
+  --line-display: var(--line-tight);
+  --line-h1: var(--line-tight);
+  --line-h2: var(--line-snug);
+  --line-h3: var(--line-snug);
+  --line-body: var(--line-normal);
+  --line-small: var(--line-normal);
+  --line-label: var(--line-snug);
 
   /* Letter Spacing */
-  --letter-label: 0.06em;
+  --letter-label: 0.05em;
+  --letter-tight: -0.02em;
 
   /* ============================================================================
-     3. SPACING SYSTEM
+     3. SPACING SYSTEM (4px base unit)
      ============================================================================ */
 
   --space-xs: 4px;
@@ -102,36 +225,42 @@
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --space-3xl: 64px;
 
   /* ============================================================================
-     4. BORDER RADIUS
+     4. BORDER RADIUS (Consistent corners)
      ============================================================================ */
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-pill: 999px;
 
   /* ============================================================================
-     5. SHADOWS
+     5. SHADOWS (Consistent elevation)
      ============================================================================ */
 
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.07);
   --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.14);
   --shadow-focus: 0 0 0 3px rgba(184, 225, 53, 0.3);
+  --shadow-focus-danger: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  --shadow-focus-info: 0 0 0 3px rgba(59, 130, 246, 0.3);
   --shadow-overlay: 0 12px 24px rgba(0, 0, 0, 0.15);
 
   /* ============================================================================
-     6. Z-INDEX SCALE
+     6. Z-INDEX SCALE (Layering system)
      ============================================================================ */
 
+  --z-base: 0;
   --z-dropdown: 100;
+  --z-sticky: 200;
   --z-modal: 1000;
   --z-toast: 1100;
   --z-tooltip: 1200;
 
   /* ============================================================================
-     7. TRANSITIONS
+     7. TRANSITIONS (Consistent timing)
      ============================================================================ */
 
   --transition-fast: 150ms ease-out;
@@ -139,7 +268,7 @@
   --transition-slow: 300ms ease-out;
 
   /* ============================================================================
-     8. BREAKPOINTS
+     8. BREAKPOINTS (Responsive design)
      ============================================================================ */
 
   /* Responsive breakpoints (min-width) */
@@ -148,6 +277,14 @@
   --bp-lg: 1024px;  /* 1024px - small desktops */
   --bp-xl: 1280px;  /* 1280px - desktops */
   --bp-2xl: 1536px; /* 1536px - large screens */
+
+  /* ============================================================================
+     9. LAYOUT CONSTRAINTS (Max widths)
+     ============================================================================ */
+
+  --max-width-content: 1400px;
+  --max-width-narrow: 768px;
+  --max-width-wide: 1600px;
 }
 
 /* ============================================================================
@@ -159,6 +296,7 @@
   font-size: var(--font-display);
   font-weight: var(--weight-bold);
   line-height: var(--line-display);
+  color: var(--text-primary);
 }
 
 .text-h1 {
@@ -166,6 +304,7 @@
   font-size: var(--font-h1);
   font-weight: var(--weight-bold);
   line-height: var(--line-h1);
+  color: var(--text-primary);
 }
 
 .text-h2 {
@@ -173,6 +312,15 @@
   font-size: var(--font-h2);
   font-weight: var(--weight-semibold);
   line-height: var(--line-h2);
+  color: var(--text-primary);
+}
+
+.text-h3 {
+  font-family: var(--font-display);
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  line-height: var(--line-h3);
+  color: var(--text-primary);
 }
 
 .text-body {
@@ -180,6 +328,7 @@
   font-size: var(--font-body);
   font-weight: var(--weight-regular);
   line-height: var(--line-body);
+  color: var(--text-primary);
 }
 
 .text-small {
@@ -187,6 +336,7 @@
   font-size: var(--font-small);
   font-weight: var(--weight-regular);
   line-height: var(--line-small);
+  color: var(--text-secondary);
 }
 
 .text-label {
@@ -196,6 +346,7 @@
   line-height: var(--line-label);
   letter-spacing: var(--letter-label);
   text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 /* Text color utilities */
@@ -211,22 +362,40 @@
   color: var(--text-tertiary);
 }
 
+.text-disabled {
+  color: var(--text-disabled);
+}
+
 .text-inverse {
   color: var(--text-inverse);
 }
 
 /* Dark mode text colors */
 @media (prefers-color-scheme: dark) {
+  .text-display,
+  .text-h1,
+  .text-h2,
+  .text-h3,
+  .text-body {
+    color: var(--text-dark-primary);
+  }
+
   .text-primary {
     color: var(--text-dark-primary);
   }
 
-  .text-secondary {
+  .text-secondary,
+  .text-small,
+  .text-label {
     color: var(--text-dark-secondary);
   }
 
   .text-tertiary {
     color: var(--text-dark-tertiary);
+  }
+
+  .text-disabled {
+    color: var(--text-dark-disabled);
   }
 }
 
@@ -241,6 +410,7 @@
 .p-lg { padding: var(--space-lg); }
 .p-xl { padding: var(--space-xl); }
 .p-2xl { padding: var(--space-2xl); }
+.p-3xl { padding: var(--space-3xl); }
 
 .px-xs { padding-left: var(--space-xs); padding-right: var(--space-xs); }
 .px-sm { padding-left: var(--space-sm); padding-right: var(--space-sm); }
@@ -248,6 +418,7 @@
 .px-lg { padding-left: var(--space-lg); padding-right: var(--space-lg); }
 .px-xl { padding-left: var(--space-xl); padding-right: var(--space-xl); }
 .px-2xl { padding-left: var(--space-2xl); padding-right: var(--space-2xl); }
+.px-3xl { padding-left: var(--space-3xl); padding-right: var(--space-3xl); }
 
 .py-xs { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
 .py-sm { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
@@ -255,6 +426,7 @@
 .py-lg { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
 .py-xl { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
 .py-2xl { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }
+.py-3xl { padding-top: var(--space-3xl); padding-bottom: var(--space-3xl); }
 
 /* Margin utilities */
 .m-xs { margin: var(--space-xs); }
@@ -263,6 +435,7 @@
 .m-lg { margin: var(--space-lg); }
 .m-xl { margin: var(--space-xl); }
 .m-2xl { margin: var(--space-2xl); }
+.m-3xl { margin: var(--space-3xl); }
 
 .mx-xs { margin-left: var(--space-xs); margin-right: var(--space-xs); }
 .mx-sm { margin-left: var(--space-sm); margin-right: var(--space-sm); }
@@ -270,6 +443,7 @@
 .mx-lg { margin-left: var(--space-lg); margin-right: var(--space-lg); }
 .mx-xl { margin-left: var(--space-xl); margin-right: var(--space-xl); }
 .mx-2xl { margin-left: var(--space-2xl); margin-right: var(--space-2xl); }
+.mx-3xl { margin-left: var(--space-3xl); margin-right: var(--space-3xl); }
 
 .my-xs { margin-top: var(--space-xs); margin-bottom: var(--space-xs); }
 .my-sm { margin-top: var(--space-sm); margin-bottom: var(--space-sm); }
@@ -277,6 +451,7 @@
 .my-lg { margin-top: var(--space-lg); margin-bottom: var(--space-lg); }
 .my-xl { margin-top: var(--space-xl); margin-bottom: var(--space-xl); }
 .my-2xl { margin-top: var(--space-2xl); margin-bottom: var(--space-2xl); }
+.my-3xl { margin-top: var(--space-3xl); margin-bottom: var(--space-3xl); }
 
 /* Gap utilities for flexbox/grid */
 .gap-xs { gap: var(--space-xs); }
@@ -285,6 +460,7 @@
 .gap-lg { gap: var(--space-lg); }
 .gap-xl { gap: var(--space-xl); }
 .gap-2xl { gap: var(--space-2xl); }
+.gap-3xl { gap: var(--space-3xl); }
 
 /* ============================================================================
    CARD STYLES
@@ -345,10 +521,15 @@
 .btn-primary {
   background-color: var(--color-primary);
   color: var(--text-primary);
+  border-radius: var(--radius-pill);
+  padding: 10px 24px;
+  font-size: var(--font-sm);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -363,24 +544,42 @@
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--color-slate-100);
+  border-color: var(--border-strong);
 }
 
 .btn-danger {
   background-color: var(--color-danger);
-  color: #FFFFFF;
+  color: var(--text-inverse);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #D32938;
+  background-color: var(--color-danger-dark);
+}
+
+.btn-danger:focus-visible {
+  box-shadow: var(--shadow-focus-danger);
 }
 
 .btn-success {
   background-color: var(--color-success);
-  color: var(--text-primary);
+  color: var(--text-inverse);
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-success-dark);
+}
+
+.btn-info {
+  background-color: var(--color-info);
+  color: var(--text-inverse);
+}
+
+.btn-info:hover:not(:disabled) {
+  background-color: var(--color-info-dark);
+}
+
+.btn-info:focus-visible {
+  box-shadow: var(--shadow-focus-info);
 }
 
 /* Button sizes */
@@ -412,7 +611,7 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--border-focus);
   box-shadow: var(--shadow-focus);
 }
 
@@ -458,23 +657,23 @@
 }
 
 .badge-success {
-  background-color: var(--feedback-success-light);
-  color: #2D5016;
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
 }
 
 .badge-warning {
-  background-color: var(--feedback-warning-light);
-  color: #8B5A00;
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
 }
 
 .badge-danger {
-  background-color: var(--feedback-danger-light);
-  color: #A01024;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
 }
 
 .badge-info {
-  background-color: var(--feedback-info-light);
-  color: #003DA5;
+  background-color: var(--color-info-bg);
+  color: var(--color-info-text);
 }
 
 /* ============================================================================
@@ -506,7 +705,23 @@
 }
 
 .container {
-  max-width: 1280px;
+  max-width: var(--max-width-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.container-narrow {
+  max-width: var(--max-width-narrow);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.container-wide {
+  max-width: var(--max-width-wide);
   margin-left: auto;
   margin-right: auto;
   padding-left: var(--space-md);
@@ -544,7 +759,7 @@
    ============================================================================ */
 
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
 
@@ -690,3 +905,41 @@
 }
 
 /* End of Design System CSS */
+
+
+/* ============================================================================
+   FORCE LIGHT MODE - Override all dark mode preferences
+   ============================================================================ */
+
+html,
+html.light,
+:root {
+  color-scheme: light !important;
+}
+
+html.dark {
+  /* Disable dark mode completely */
+  color-scheme: light !important;
+}
+
+/* Force light mode colors on all elements */
+html,
+body,
+#root {
+  background-color: #E8E6DF !important;
+  color: #0A0D11 !important;
+}
+
+/* Override any dark mode media queries */
+@media (prefers-color-scheme: dark) {
+  html,
+  body,
+  #root {
+    background-color: #E8E6DF !important;
+    color: #0A0D11 !important;
+  }
+  
+  * {
+    color-scheme: light !important;
+  }
+}

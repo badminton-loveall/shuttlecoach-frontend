@@ -17,7 +17,11 @@ export interface User {
   name: string;
   email?: string;
   profilePhoto?: string;
+  phone?: string; // For coaches
   specialization?: string; // For coaches
+  qualifications?: string; // For coaches
+  certifications?: string; // For coaches
+  bio?: string; // For coaches
   createdAt: Date;
   lastActive: Date;
 }
@@ -274,16 +278,69 @@ export interface Batch {
 }
 
 /* ============================================================================
+   EXPENSE TYPES
+   ============================================================================ */
+
+export type ExpenseType = 'SHUTTLE' | 'SUPPLIES' | 'TRAVEL' | 'OTHER';
+
+export interface Expense {
+  id: string;
+  coachId: string;
+  type: ExpenseType;
+  amount: number;
+  date: Date;
+  description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string; // User ID who created it
+}
+
+/* ============================================================================
+   COACH DETAIL PAGE TYPES
+   ============================================================================ */
+
+export type TabName = 'profile' | 'batches' | 'students' | 'payments';
+
+export interface ProfileEditForm {
+  name: string;
+  email: string;
+  phone?: string;
+  specialization: string;
+  qualifications?: string;
+  certifications?: string;
+  bio?: string;
+}
+
+export interface PaymentFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  student?: string;
+  batch?: string;
+  paymentMethod?: PaymentMethod;
+  expenseType?: ExpenseType;
+}
+
+export interface FinancialSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netBalance: number;
+  periodData: Array<{
+    period: 'MONTH' | 'QUARTER' | 'YEAR';
+    label?: string; // Optional: "January 2026", "Q1 2026", "Year-to-Date 2026"
+    income: number;
+    expenses: number;
+    net: number;
+  }>;
+}
+
+/* ============================================================================
    FILTER & PAGINATION TYPES
    ============================================================================ */
 
 export interface StudentFilters {
   search?: string;
   batch?: string;
-  coach?: string;
   skillLevel?: SkillLevel;
-  page?: number;
-  limit?: number;
 }
 
 export interface PaginationParams {

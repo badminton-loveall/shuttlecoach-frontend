@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../types';
-import '../styles/login-page.css';
+import '../styles/pages.css';
 
 /**
  * LoginPage Component
@@ -126,35 +126,37 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page">
-      <div className="login-container">
-        <div className="login-card">
+      <div className="login-page__container">
+        <div className="login-page__card">
           {/* Header */}
-          <div className="login-header">
-            <h1 className="login-title">LoveAll</h1>
-            <p className="login-subtitle">Badminton Training Management</p>
+          <div className="login-page__header">
+            <h1 className="login-page__title">LoveAll</h1>
+            <p className="login-page__subtitle">Badminton Training Management</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="login-form" noValidate>
+          <form onSubmit={handleSubmit} className="login-page__form" noValidate>
             {/* General Error Message */}
             {errors.general && (
-              <div className="error-banner" role="alert">
-                <svg className="error-icon" aria-hidden="true">
-                  <use href="/icons.svg#alert-icon"></use>
+              <div className="alert-base alert--danger" role="alert">
+                <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 6v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>{errors.general}</span>
+                <div className="alert-base__content">
+                  <div className="alert-base__title">{errors.general}</div>
+                </div>
               </div>
             )}
 
             {/* Username Field */}
-            <div className="form-group">
-              <label htmlFor="username" className="form-label">
+            <div className="login-page__form-group">
+              <label htmlFor="username" className="label-base label-base--required">
                 Username
               </label>
               <input
                 id="username"
                 type="text"
-                className={`form-input ${errors.username ? 'has-error' : ''}`}
+                className={`input-base ${errors.username ? 'input-base--error' : ''}`}
                 placeholder="Enter your username"
                 value={formData.username}
                 onChange={(e) => handleInputChange('username', e.target.value)}
@@ -168,14 +170,14 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {/* Password Field */}
-            <div className="form-group">
-              <label htmlFor="password" className="form-label">
+            <div className="login-page__form-group">
+              <label htmlFor="password" className="label-base label-base--required">
                 Password
               </label>
               <input
                 id="password"
                 type="password"
-                className={`form-input ${errors.password ? 'has-error' : ''}`}
+                className={`input-base ${errors.password ? 'input-base--error' : ''}`}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
@@ -191,13 +193,13 @@ export const LoginPage: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-primary btn-login"
+              className="btn-base btn--primary btn--md btn--full"
               disabled={isLoading}
               aria-busy={isLoading}
             >
               {isLoading ? (
                 <>
-                  <span className="spinner" aria-hidden="true"></span>
+                  <span className="login-page__spinner" aria-hidden="true"></span>
                   Logging in...
                 </>
               ) : (
@@ -207,20 +209,20 @@ export const LoginPage: React.FC = () => {
           </form>
 
           {/* Demo Credentials */}
-          <div className="demo-credentials">
-            <p className="demo-title">Demo Credentials</p>
-            <div className="credential-list">
-              <div className="credential-item">
-                <span className="credential-role">Head Coach:</span>
-                <span className="credential-value">head_coach / password123</span>
+          <div className="login-page__demo-credentials">
+            <p className="login-page__demo-title">Demo Credentials</p>
+            <div className="login-page__credential-list">
+              <div className="login-page__credential-item">
+                <span className="login-page__credential-role">Head Coach:</span>
+                <span className="login-page__credential-value">headcoach / password123</span>
               </div>
-              <div className="credential-item">
-                <span className="credential-role">Assistant Coach:</span>
-                <span className="credential-value">assistant_coach1 / password123</span>
+              <div className="login-page__credential-item">
+                <span className="login-page__credential-role">Assistant Coach:</span>
+                <span className="login-page__credential-value">assistant1 / password123</span>
               </div>
-              <div className="credential-item">
-                <span className="credential-role">Student:</span>
-                <span className="credential-value">student1 / password123</span>
+              <div className="login-page__credential-item">
+                <span className="login-page__credential-role">Student:</span>
+                <span className="login-page__credential-value">aarav / password123</span>
               </div>
             </div>
           </div>

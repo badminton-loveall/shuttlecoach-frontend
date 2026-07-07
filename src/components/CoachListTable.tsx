@@ -20,6 +20,8 @@ interface CoachListTableProps {
   batches?: Batch[];
   selectedCoachId?: string;
   onCoachSelect?: (coach: User) => void;
+  onEditCoach?: (coach: User) => void;
+  onDeleteCoach?: (coach: User) => void;
 }
 
 export const CoachListTable: React.FC<CoachListTableProps> = ({ 
@@ -28,6 +30,8 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
   batches = [],
   selectedCoachId,
   onCoachSelect,
+  onEditCoach,
+  onDeleteCoach,
 }) => {
   // Calculate assignment statistics for each coach
   const getCoachStats = React.useMemo(() => {
@@ -103,6 +107,9 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Last Active
               </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -155,6 +162,22 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatLastActive(coach.lastActive)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                    <button
+                      onClick={() => onEditCoach?.(coach)}
+                      className="text-action text-action--primary"
+                      title="Edit coach"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => onDeleteCoach?.(coach)}
+                      className="text-action text-action--danger"
+                      title="Delete coach"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );

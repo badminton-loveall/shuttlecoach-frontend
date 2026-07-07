@@ -22,11 +22,11 @@ export const StudentGrid: React.FC<StudentGridProps> = ({
 }) => {
   if (!students || students.length === 0) {
     return (
-      <div className="student-grid-empty">
-        <div className="empty-state">
-          <div className="empty-icon">👥</div>
-          <h3>No Students Found</h3>
-          <p>No students to display. Start by adding your first student.</p>
+      <div className="student-grid__empty">
+        <div>
+          <div className="student-grid__empty-icon">👥</div>
+          <h3 className="student-grid__empty-title">No Students Found</h3>
+          <p className="student-grid__empty-text">No students to display. Start by adding your first student.</p>
         </div>
       </div>
     );
@@ -37,7 +37,7 @@ export const StudentGrid: React.FC<StudentGridProps> = ({
       {students.map((student) => {
         const reviewStatus = studentReviewStatus.get(student.id);
         return (
-          <div key={student.id} className="student-grid-item">
+          <div key={student.id} className="student-grid__item">
             <StudentCard
               student={student}
               onClick={() => onStudentClick?.(student.id)}

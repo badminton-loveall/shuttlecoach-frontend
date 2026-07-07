@@ -1,0 +1,578 @@
+/* ============================================================================
+   ASSIGNMENT PANEL - COMPACT FILTER STYLE DESIGN
+   ============================================================================ */
+
+.assignment-panel {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-default);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-panel {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ============================================================================
+   HEADER SECTION - MINIMAL
+   ============================================================================ */
+
+.assignment-header {
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 8px;
+  margin-bottom: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-header {
+    border-bottom-color: var(--border-dark);
+  }
+}
+
+.assignment-title {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-title {
+    color: var(--text-dark-primary);
+  }
+}
+
+.assignment-subtitle {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin: 2px 0 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-subtitle {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+/* ============================================================================
+   ASSIGNMENT FORM SECTION - SEPARATE CARD ABOVE
+   ============================================================================ */
+
+.assignment-form-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-form-section {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+  }
+}
+
+@media (max-width: 1024px) {
+  .assignment-form-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
+   ASSIGNMENT FORMS - VERTICAL STACKED
+   ============================================================================ */
+
+.assignment-forms {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.assignment-form-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  transition: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+}
+
+.assignment-form-card:hover {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-form-card {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .assignment-form-card:hover {
+    border-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.form-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  background: transparent;
+  border-bottom: none;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-width: 110px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-card-header {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+}
+
+.form-card-title {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  margin: 0;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-card-title {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.form-card-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--color-primary);
+  color: var(--text-primary);
+  font-size: 8px;
+  font-weight: var(--weight-bold);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.form-card-body {
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+}
+
+.form-select {
+  flex: 1;
+  min-width: 150px;
+  padding: 6px 10px 6px 8px;
+  font-size: var(--font-xs);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-card);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%234A5662' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  padding-right: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-select {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    color: var(--text-dark-primary);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%239CA8B3' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  }
+}
+
+.form-select:hover {
+  border-color: var(--border-strong);
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-select:hover {
+    border-color: var(--border-dark-strong);
+  }
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.1);
+}
+
+.form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-assign {
+  padding: 6px 12px;
+  background-color: var(--color-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-xs);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.btn-assign:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(184, 225, 53, 0.2);
+}
+
+.btn-assign:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-assign:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   CURRENT ASSIGNMENTS - TWO COLUMN GRID DISPLAY
+   ============================================================================ */
+
+.assignment-display-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 1024px) {
+  .assignment-display-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.assignment-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assignment-section-title {
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-section-title {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.assignment-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.assignment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  transition: all 100ms ease-out;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.assignment-item:hover {
+  background: var(--surface-card);
+  border-color: var(--color-primary);
+  box-shadow: 0 1px 2px rgba(184, 225, 53, 0.06);
+}
+
+.assignment-item.active {
+  border-color: var(--color-primary);
+  background: rgba(184, 225, 53, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-item {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+  }
+
+  .assignment-item:hover {
+    background: var(--surface-dark-card);
+    border-color: var(--color-primary);
+  }
+
+  .assignment-item.active {
+    background: rgba(184, 225, 53, 0.15);
+  }
+}
+
+.assignment-item.batch-item {
+  border-left: 2px solid var(--color-info);
+}
+
+.assignment-item.student-item {
+  border-left: 2px solid var(--color-success);
+}
+
+.item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-size: 9px;
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .item-name {
+    color: var(--text-dark-primary);
+  }
+}
+
+.item-meta {
+  font-size: 8px;
+  color: var(--text-tertiary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .item-meta {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+/* ============================================================================
+   ACTION BUTTONS - CONSISTENT TABLE STYLE
+   ============================================================================ */
+
+.btn-action {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 7px;
+  font-weight: var(--weight-semibold);
+  font-family: var(--font-body);
+  text-transform: capitalize;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 100ms ease-out;
+}
+
+.btn-action--danger {
+  color: var(--color-danger);
+}
+
+.btn-action--danger:hover {
+  color: var(--color-danger-dark);
+  text-decoration: underline;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-action--danger {
+    color: #fca5a5;
+  }
+
+  .btn-action--danger:hover {
+    color: #f87171;
+  }
+}
+
+/* ============================================================================
+   EMPTY STATES - COMPACT
+   ============================================================================ */
+
+.assignment-panel-empty {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  padding: 24px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-panel-empty {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+.empty-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--text-tertiary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-icon {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.empty-text {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-text {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.assignment-empty {
+  text-align: center;
+  padding: 12px 8px;
+}
+
+.empty-message {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-message {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.empty-hint {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  margin: 2px 0 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-hint {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE MOBILE
+   ============================================================================ */
+
+@media (max-width: 1024px) {
+  .assignment-form-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .assignment-display-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .assignment-panel {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .assignment-header {
+    padding-bottom: 6px;
+  }
+
+  .assignment-title {
+    font-size: var(--font-sm);
+  }
+
+  .assignment-subtitle {
+    font-size: 10px;
+  }
+
+  .assignment-form-section {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .form-card-badge {
+    font-size: 7px;
+    padding: 1px 4px;
+  }
+
+  .form-select {
+    padding: 5px 8px 5px 6px;
+    font-size: 8px;
+    padding-right: 16px;
+  }
+
+  .btn-assign {
+    padding: 5px 10px;
+    font-size: 7px;
+  }
+
+  .assignment-item {
+    padding: 4px 6px;
+  }
+
+  .item-name {
+    font-size: 8px;
+  }
+
+  .item-meta {
+    font-size: 7px;
+  }
+
+  .btn-action {
+    font-size: 6px;
+  }
+}

@@ -17,6 +17,7 @@ import FEES_DATA from '../data/fees.json';
 import SKILL_ASSESSMENTS_DATA from '../data/skillAssessments.json';
 import TRAINING_LOGS_DATA from '../data/trainingLogs.json';
 import type { Student, FeeRecord, SkillAssessment, TrainingLog } from '../types';
+import '../styles/pages.css';
 
 /**
  * AssistantCoachDashboard Page
@@ -24,6 +25,7 @@ import type { Student, FeeRecord, SkillAssessment, TrainingLog } from '../types'
  * Shows: total assigned students, BAID-registered count (scoped), average progress (scoped)
  * Hides batch count card (Assistant Coaches don't manage batches directly)
  * Includes search and filter functionality with URL query parameter persistence
+ * Pure CSS implementation using design tokens
  */
 
 // Map raw JSON data to proper Student type with parsed dates
@@ -225,22 +227,22 @@ export const AssistantCoachDashboard: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="head-coach-dashboard">
+      <div className="ac-dashboard">
         {/* Welcome Section */}
-        <div className="dashboard-welcome">
-          <h1 className="welcome-title">Welcome, {user?.name}! 👋</h1>
-          <p className="welcome-subtitle">Here's an overview of your assigned students</p>
+        <div className="ac-welcome">
+          <h1 className="ac-welcome-title">Welcome, {user?.name}!</h1>
+          <p className="ac-welcome-subtitle">Here's an overview of your assigned students</p>
         </div>
 
         {/* Stat Cards Grid - 3 cards for Assistant Coach (no batch count) */}
-        <div className="stat-cards-grid">
+        <div className="ac-stats-grid">
           {/* Total Assigned Students */}
           <StatCard
             title="Assigned Students"
             value={stats.totalStudents}
             label="Students under your coaching"
             icon={<StudentIconSvg />}
-            variant="blue"
+            variant="info"
           />
 
           {/* BAID Registered (scoped to assigned students) */}
@@ -249,7 +251,7 @@ export const AssistantCoachDashboard: React.FC = () => {
             value={`${stats.baidRegistered}/${stats.totalStudents}`}
             label={`${stats.baidPercentage}% registered`}
             icon={<BaidIconSvg />}
-            variant="green"
+            variant="success"
           />
 
           {/* Average Progress (scoped to assigned students) */}
@@ -258,28 +260,29 @@ export const AssistantCoachDashboard: React.FC = () => {
             value={stats.averageProgress}
             label={stats.averageProgressLabel.split('(')[1]?.slice(0, -1) || 'Level'}
             icon={<ProgressIconSvg />}
-            variant="blue"
+            variant="info"
           />
         </div>
 
         {/* Student Grid Section */}
-        <div className="dashboard-section">
-          <h2 className="section-title">My Students</h2>
+        <div className="ac-section">
+          <h2 className="ac-section-title">My Students</h2>
 
           {/* Search and Filter Controls (no coach filter) */}
-          <div className="search-filter-row">
+          <div className="ac-search-filter-row">
             <SearchInput value={searchQuery} onChange={handleSearchChange} />
+            {/* Assistant coaches don't filter by coach */}
             <FilterBar
               filters={filters}
               onFilterChange={handleFilterChange}
               batchOptions={batchOptions}
-              coachOptions={[]} // Assistant coaches don't filter by coach
+              coachOptions={[]}
             />
           </div>
 
           {/* Results count when filtered */}
           {(searchQuery || filters.batch || filters.skillLevel) && (
-            <p className="filter-results-count">
+            <p className="ac-filter-results">
               Showing {filteredStudents.length} of {assignedStudents.length} students
             </p>
           )}
@@ -288,9 +291,9 @@ export const AssistantCoachDashboard: React.FC = () => {
         </div>
 
         {/* Progressive Dashboard Features - Phase 6 (Scoped to Assigned Students) */}
-        <div className="dashboard-section">
-          <h2 className="section-title">Dashboard Overview</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <div className="ac-overview">
+          <h2 className="ac-overview-title">Dashboard Overview</h2>
+          <div className="ac-overview-grid">
             {/* Fee Alerts (Assigned Students Only) */}
             <FeeAlerts 
               overdueFees={overdueFees} 

@@ -11,13 +11,21 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--slate-950);
-  color: var(--slate-100);
+  background-color: #E8E6DF;
+  color: var(--slate-900);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .dashboard-layout {
+    background-color: var(--slate-950);
+    color: var(--slate-100);
+  }
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 40px 32px;
+  padding: 24px 20px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
@@ -26,26 +34,18 @@
 /* Responsive padding */
 @media (max-width: 1024px) {
   .dashboard-content {
-    padding: 32px 24px;
+    padding: 20px 16px;
   }
 }
 
 @media (max-width: 768px) {
   .dashboard-content {
-    padding: 24px 20px;
+    padding: 16px 12px;
   }
 }
 
 @media (max-width: 480px) {
   .dashboard-content {
-    padding: 20px 16px;
-  }
-}
-
-/* Light mode support */
-@media (prefers-color-scheme: light) {
-  .dashboard-layout {
-    background-color: var(--slate-50);
-    color: var(--slate-900);
+    padding: 12px 12px;
   }
 }

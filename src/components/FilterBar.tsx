@@ -74,12 +74,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
   return (
     <div className="filter-bar" role="toolbar" aria-label="Filter students">
-      <span className="filter-bar-label">Filters</span>
+      <span className="filter-bar__label">Filters</span>
 
       {/* Batch Filter */}
-      <div className="filter-select-wrapper">
+      <div className="filter-bar__select-wrapper">
         <select
-          className="filter-select"
+          className="filter-bar__select"
           value={filters.batch}
           onChange={handleBatchChange}
           aria-label="Filter by batch"
@@ -91,17 +91,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </option>
           ))}
         </select>
-        <div className="filter-select-arrow">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
+        <svg className="filter-bar__arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </div>
 
       {/* Skill Level Filter */}
-      <div className="filter-select-wrapper">
+      <div className="filter-bar__select-wrapper">
         <select
-          className="filter-select"
+          className="filter-bar__select"
           value={filters.skillLevel}
           onChange={handleSkillLevelChange}
           aria-label="Filter by skill level"
@@ -113,45 +111,43 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             </option>
           ))}
         </select>
-        <div className="filter-select-arrow">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
+        <svg className="filter-bar__arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
       </div>
 
       {/* Coach Filter */}
-      <div className="filter-select-wrapper">
-        <select
-          className="filter-select"
-          value={filters.coach}
-          onChange={handleCoachChange}
-          aria-label="Filter by assigned coach"
-        >
-          <option value="">All Coaches</option>
-          {coachOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <div className="filter-select-arrow">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polyline points="6 9 12 15 18 9" />
+      {coachOptions.length > 0 && (
+        <div className="filter-bar__select-wrapper">
+          <select
+            className="filter-bar__select"
+            value={filters.coach}
+            onChange={handleCoachChange}
+            aria-label="Filter by assigned coach"
+          >
+            <option value="">All Coaches</option>
+            {coachOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <svg className="filter-bar__arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-      </div>
+      )}
 
       {/* Clear All & Active Count */}
       {activeFilterCount > 0 && (
         <button
-          className="filter-clear-all"
+          className="filter-bar__clear-btn"
           onClick={handleClearAll}
           aria-label="Clear all filters"
           type="button"
         >
           Clear
-          <span className="filter-active-count">{activeFilterCount}</span>
+          <span className="filter-bar__badge">{activeFilterCount}</span>
         </button>
       )}
     </div>

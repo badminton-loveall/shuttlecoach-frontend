@@ -7,6 +7,7 @@ import AssistantCoachDashboard from './pages/AssistantCoachDashboard';
 import StudentsPage from './pages/StudentsPage';
 import FeesPage from './pages/FeesPage';
 import CoachesPage from './pages/CoachesPage';
+import CoachDetailPage from './pages/CoachDetailPage';
 import CurriculumBuilderPage from './pages/CurriculumBuilderPage';
 import IndividualCurriculumPage from './pages/IndividualCurriculumPage';
 import TrainingLogPage from './pages/TrainingLogPage';
@@ -15,6 +16,8 @@ import StudentProfilePage from './pages/StudentProfilePage';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
+import DesignSystemTestPage from './pages/DesignSystemTestPage';
+import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
 import './App.css';
 
 /**
@@ -48,6 +51,10 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          
+          {/* Design System Test Page (Dev/Testing - No Auth Required) */}
+          <Route path="/design-system" element={<DesignSystemTestPage />} />
+          <Route path="/modern-design" element={<ModernDesignSystemPage />} />
 
           {/* Coach Routes (Head Coach & Assistant Coach) */}
           <Route
@@ -121,6 +128,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <CoachesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Coach Detail Page */}
+          <Route
+            path="/coach/:coachId"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT']}>
+                <CoachDetailPage />
               </ProtectedRoute>
             }
           />

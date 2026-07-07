@@ -7,6 +7,7 @@ import './TopNav.css';
 /**
  * TopNav Component
  * Displays application header with role-aware navigation, user profile, and sign-out
+ * Uses pure CSS with design tokens and BEM methodology
  */
 
 interface NavLink {
@@ -56,19 +57,19 @@ export const TopNav: React.FC = () => {
 
   return (
     <nav className="topnav">
-      <div className="topnav-container">
+      <div className="topnav__container">
         {/* Logo / Brand */}
-        <Link to="/" className="topnav-logo">
-          <span className="logo-text">LoveAll</span>
+        <Link to="/" className="topnav__logo">
+          <span className="topnav__logo-text">LoveAll</span>
         </Link>
 
         {/* Navigation Links - Desktop */}
-        <div className="topnav-links-desktop">
+        <div className="topnav__links-desktop">
           {visibleLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`topnav-link ${location.pathname === link.path ? 'active' : ''}`}
+              className={`topnav__link ${location.pathname === link.path ? 'topnav__link--active' : ''}`}
             >
               {link.label}
             </Link>
@@ -76,38 +77,36 @@ export const TopNav: React.FC = () => {
         </div>
 
         {/* Right side: User Profile & Sign Out */}
-        <div className="topnav-right">
+        <div className="topnav__right">
           {/* User Info */}
-          <div className="user-info">
-            <div className="user-avatar">{initials}</div>
-            <div className="user-details">
-              <div className="user-name">{user?.name || 'User'}</div>
-              <div className="user-role">{role?.replace('_', ' ') || 'Guest'}</div>
+          <div className="topnav__user-info">
+            <div className="topnav__user-avatar">{initials}</div>
+            <div className="topnav__user-details">
+              <div className="topnav__user-name">{user?.name || 'User'}</div>
+              <div className="topnav__user-role">{role?.replace('_', ' ') || 'Guest'}</div>
             </div>
           </div>
 
           {/* Sign Out Button */}
-          <button className="btn-signout" onClick={handleSignOut} title="Sign out">
+          <button className="btn-base btn-ghost btn-icon-only topnav__btn-signout" onClick={handleSignOut} title="Sign out">
             <svg
-              className="icon-signout"
+              className="topnav__icon"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
             >
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2z"></path>
-              <polyline points="10 12 14 12"></polyline>
-              <polyline points="12 10 14 12 12 14"></polyline>
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"></path>
             </svg>
           </button>
 
           {/* Mobile Menu Toggle */}
           <button
-            className="btn-mobile-menu"
+            className="btn-base btn-ghost btn-icon-only topnav__btn-mobile"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             title="Toggle menu"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg className="topnav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -118,21 +117,29 @@ export const TopNav: React.FC = () => {
 
       {/* Navigation Links - Mobile */}
       {isMobileMenuOpen && (
-        <div className="topnav-links-mobile">
-          {visibleLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`topnav-link-mobile ${location.pathname === link.path ? 'active' : ''}`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <button className="topnav-link-mobile signout-mobile" onClick={handleSignOut}>
-            Sign Out
-          </button>
-        </div>
+        <>
+          {/* Overlay backdrop */}
+          <div 
+            className="topnav__overlay" 
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Side drawer menu */}
+          <div className="topnav__drawer">
+            {visibleLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`topnav__drawer-link ${location.pathname === link.path ? 'topnav__drawer-link--active' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <button className="topnav__drawer-link topnav__drawer-signout" onClick={handleSignOut}>
+              Sign Out
+            </button>
+          </div>
+        </>
       )}
     </nav>
   );

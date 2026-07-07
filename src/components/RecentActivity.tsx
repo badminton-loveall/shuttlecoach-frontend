@@ -5,6 +5,7 @@
 
 import React from 'react';
 import type { Activity } from '../utils/activityUtils';
+import './RecentActivity.css';
 
 interface RecentActivityProps {
   activities: Activity[];
@@ -16,7 +17,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
       case 'assessment':
         return (
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -32,7 +33,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
       case 'training_log':
         return (
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -48,7 +49,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
       case 'student_added':
         return (
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -64,7 +65,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
     }
   };
 
-  const getActivityColor = (type: Activity['type']) => {
+  const getActivityVariant = (type: Activity['type']): 'blue' | 'green' | 'purple' => {
     switch (type) {
       case 'assessment':
         return 'blue';
@@ -89,11 +90,11 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
         year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
       });
     } else if (days > 0) {
-      return `${days} day${days !== 1 ? 's' : ''} ago`;
+      return `${days}d ago`;
     } else if (hours > 0) {
-      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+      return `${hours}h ago`;
     } else if (minutes > 0) {
-      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+      return `${minutes}m ago`;
     } else {
       return 'Just now';
     }
@@ -101,57 +102,32 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) =>
 
   if (activities.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-        <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-          Recent Activity
-        </h3>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          No recent activity to display.
-        </p>
+      <div className="recent-activity">
+        <h3 className="recent-activity__title">Recent Activity</h3>
+        <p className="recent-activity__subtitle">No recent activity</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-4">
-        Recent Activity
-      </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-        Latest updates across all students and coaches
-      </p>
+    <div className="recent-activity">
+      <h3 className="recent-activity__title">Recent Activity</h3>
+      <p className="recent-activity__subtitle">Latest updates</p>
 
-      <div className="space-y-3">
-        {activities.map((activity) => {
-          const color = getActivityColor(activity.type);
-          const iconBgClass =
-            color === 'blue'
-              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-              : color === 'green'
-                ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400';
+      <div className="recent-activity__list">
+        {activities.slice(0, 4).map((activity) => {
+          const variant = getActivityVariant(activity.type);
 
           return (
-            <div
-              key={activity.id}
-              className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700"
-            >
-              <div
-                className={`flex-shrink-0 w-8 h-8 rounded-lg ${iconBgClass} flex items-center justify-center`}
-              >
+            <div key={activity.id} className="recent-activity__item">
+              <div className={`recent-activity__icon-wrapper recent-activity__icon-wrapper--${variant}`}>
                 {getActivityIcon(activity.type)}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {activity.title}
-                </p>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-                  {activity.description}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
-                  {formatTimestamp(activity.timestamp)}
-                </p>
+              <div className="recent-activity__content">
+                <p className="recent-activity__item-title">{activity.title}</p>
+                <p className="recent-activity__description">{activity.description}</p>
               </div>
+              <p className="recent-activity__timestamp">{formatTimestamp(activity.timestamp)}</p>
             </div>
           );
         })}
