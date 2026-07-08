@@ -4,10 +4,9 @@ import CoachListTable from '../components/CoachListTable';
 import AddCoachModal, { type CoachFormData } from '../components/AddCoachModal';
 import EditCoachModal, { type EditCoachFormData } from '../components/EditCoachModal';
 import DeleteCoachConfirmDialog from '../components/DeleteCoachConfirmDialog';
-import CoachProfile from '../components/CoachProfile';
 import AssignmentPanel from '../components/AssignmentPanel';
 import { useRoleGuard } from '../hooks/useRoleGuard';
-import type { User, Student, Batch, FeeRecord } from '../types';
+import type { User, Student, Batch } from '../types';
 
 /**
  * CoachManagementPage (CoachesPage)
@@ -32,7 +31,6 @@ export const CoachesPage: React.FC = () => {
   const [coaches, setCoaches] = useState<User[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
-  const [fees, setFees] = useState<FeeRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

@@ -6,6 +6,13 @@
 
 import type { Student, SkillLevel, StudentFilters } from '../types';
 
+/**
+ * Extended filters that include coach filtering (local to this utility)
+ */
+interface ExtendedStudentFilters extends StudentFilters {
+  coach?: string;
+}
+
 /* ============================================================================
    CALCULATION UTILITIES
    ============================================================================ */
@@ -131,7 +138,7 @@ export const filterStudentsBySkillLevel = (
  */
 export const filterStudentsByMultipleCriteria = (
   students: Student[],
-  filters: StudentFilters
+  filters: ExtendedStudentFilters
 ): Student[] => {
   if (!students) {
     return [];

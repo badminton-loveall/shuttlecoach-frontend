@@ -19,7 +19,7 @@ import type { Student, User } from '../types';
 
 export const StudentsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  useAuth(); // auth context reserved for future use
   const [searchTerm, setSearchTerm] = useState('');
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -32,7 +32,12 @@ export const StudentsPage: React.FC = () => {
   // Parse mock students data
   const students: Student[] = useMemo(() => {
     try {
-      const baseStudents = Array.isArray(STUDENTS_DATA) ? STUDENTS_DATA : [];
+      const baseStudents = Array.isArray(STUDENTS_DATA) ? STUDENTS_DATA.map((s) => ({
+        ...s,
+        dateOfBirth: new Date(s.dateOfBirth as string),
+        createdAt: new Date(s.createdAt as string),
+        updatedAt: new Date(s.updatedAt as string),
+      })) as unknown as Student[] : [];
       return localStudents.length > 0 ? [...baseStudents, ...localStudents] : baseStudents;
     } catch {
       return localStudents;
@@ -42,7 +47,11 @@ export const StudentsPage: React.FC = () => {
   // Parse mock users data (for coach names)
   const users: User[] = useMemo(() => {
     try {
-      return Array.isArray(USERS_DATA) ? USERS_DATA : [];
+      return Array.isArray(USERS_DATA) ? USERS_DATA.map((u) => ({
+        ...u,
+        createdAt: new Date(u.createdAt as string),
+        lastActive: new Date(u.lastActive as string),
+      })) as unknown as User[] : [];
     } catch {
       return [];
     }

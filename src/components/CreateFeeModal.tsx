@@ -129,19 +129,6 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
     }
   };
 
-  // Handle modal open - set defaults
-  const handleOpenModal = () => {
-    const currentMonthYear = getCurrentMonthYear();
-    setFormData({
-      studentId: '',
-      amount: 0,
-      monthYear: currentMonthYear,
-      dueDate: getDefaultDueDate(currentMonthYear),
-      notes: '',
-    });
-    setErrors({});
-  };
-
   // Handle student change
   const handleStudentChange = (studentId: string) => {
     setFormData({ ...formData, studentId });

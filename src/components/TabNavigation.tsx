@@ -59,7 +59,7 @@ export interface TabNavigationProps {
  */
 export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps>(
   ({ tabs, activeTab, onTabChange, className, ariaLabel }, ref) => {
-    const [focusedIndex, setFocusedIndex] = useState(0);
+    const [, setFocusedIndex] = useState(0);
 
     /**
      * Handle tab button click

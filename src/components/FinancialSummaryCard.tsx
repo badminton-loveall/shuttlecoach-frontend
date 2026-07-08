@@ -71,23 +71,6 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
     return 'text-red-700';
   };
 
-  /**
-   * Get period label display
-   */
-  const getPeriodLabel = (period: string, label?: string): string => {
-    if (label) return label;
-    switch (period) {
-      case 'MONTH':
-        return 'Monthly';
-      case 'QUARTER':
-        return 'Quarterly';
-      case 'YEAR':
-        return 'Year-to-Date';
-      default:
-        return period;
-    }
-  };
-
   // Separate period data by type for organized display
   const monthlyData = summary.periodData.filter((p) => p.period === 'MONTH');
   const quarterlyData = summary.periodData.filter((p) => p.period === 'QUARTER');

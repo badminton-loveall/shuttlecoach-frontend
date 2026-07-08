@@ -52,8 +52,6 @@ export const CoachProfile: React.FC<CoachProfileProps> = ({
   onBatchUnassigned,
   onStudentAdded,
   onStudentRemoved,
-  onExpenseAdded,
-  onExpenseUpdated,
   onExpenseDeleted,
   onRefetchData,
 }) => {

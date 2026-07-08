@@ -31,10 +31,6 @@ interface PaymentFilterCriteria extends PaymentFilters {
   expenseType?: ExpenseType;
 }
 
-/**
- * Transaction type that combines both FeeRecord and Expense for sorting
- */
-type Transaction = (FeeRecord | Expense) & { type?: 'fee' | 'expense'; date: Date };
 
 /* ============================================================================
    STUDENT FILTERING
@@ -232,8 +228,7 @@ export const sortTransactions = (
   const copied = [...transactions];
 
   return copied.sort((a, b) => {
-    // Determine if record is FeeRecord or Expense
-    const isFeeA = 'monthYear' in a; // FeeRecord has monthYear, Expense has date
+    // Determine if record is a FeeRecord or Expense by checking for expense-specific type values
     const isExpenseA = 'type' in a && typeof (a as Expense).type === 'string' && 
                        ((a as Expense).type === 'SHUTTLE' || (a as Expense).type === 'SUPPLIES' || 
                         (a as Expense).type === 'TRAVEL' || (a as Expense).type === 'OTHER');

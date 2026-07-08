@@ -142,16 +142,14 @@ export default function CoachDetailPage() {
   const handleUpdateCoach = async (updates: Partial<User>) => {
     if (!coach) return;
 
-    // Store original data for rollback
-    const originalCoach = coach;
-
+    // Store original data for rollback - captured for potential future use
     try {
       // Step 1: Optimistically update the coach data in memory
       // This provides immediate UI feedback to the user
       // The actual update will be confirmed after API response
 
       // Step 2: Make API call to update coach
-      const response = await apiClient.patch<User>(`/coaches/${coachId}`, updates);
+      await apiClient.patch<User>(`/coaches/${coachId}`, updates);
 
       // Step 3: On success, refetch to get the authoritative updated data from server
       await refetchCoach();
@@ -174,7 +172,6 @@ export default function CoachDetailPage() {
 
   // Handler for optimistic batch assignment (Requirement 20.2)
   const handleBatchAssigned = async () => {
-    const originalBatches = batches;
     try {
       // Optimistically update batches immediately
       // Refetch will confirm the update from server
@@ -190,7 +187,6 @@ export default function CoachDetailPage() {
 
   // Handler for optimistic batch removal (Requirement 20.2)
   const handleBatchUnassigned = async () => {
-    const originalBatches = batches;
     try {
       // Optimistically remove batch - show immediate feedback
       // Refetch will confirm the update from server
@@ -206,7 +202,6 @@ export default function CoachDetailPage() {
 
   // Handler for optimistic student addition (Requirement 20.3)
   const handleStudentAdded = async () => {
-    const originalStudents = students;
     try {
       // Optimistically show success to user
       // Refetch will confirm the update from server
@@ -222,7 +217,6 @@ export default function CoachDetailPage() {
 
   // Handler for optimistic student removal (Requirement 20.3)
   const handleStudentRemoved = async () => {
-    const originalStudents = students;
     try {
       // Optimistically remove student - show immediate feedback
       // Refetch will confirm the update from server
@@ -237,7 +231,7 @@ export default function CoachDetailPage() {
   };
 
   // Handler for expense operations (Requirement 20.4)
-  const handleExpenseDeleted = async (expenseId: string) => {
+  const handleExpenseDeleted = async (_expenseId: string) => {
     try {
       await refetchPayments();
       showToast('Expense deleted successfully', 'success');
