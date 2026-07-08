@@ -729,6 +729,54 @@ body {
 }
 
 /* ============================================================================
+   SHARED LAYOUT CLASSES — Canonical Standard (single source of truth)
+   Derived from the Head Coach Dashboard layout. Every value is a token
+   reference (Requirement 1.5); structural grid values (minmax 240px/1fr,
+   column counts) are intrinsic layout, not design tokens.
+   ============================================================================ */
+
+/* Canonical page shell: centered max width + canonical padding */
+.page-container {
+  max-width: var(--max-width-wide);
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-lg) var(--space-md);
+}
+
+/* Vertical stack of page sections */
+.section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* Responsive card / stat grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+/* Responsive behavior — preserves the existing 1024 / 768 / 640 breakpoints */
+@media (max-width: 1024px) {
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: var(--space-xl) var(--space-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
    RESPONSIVE UTILITIES
    ============================================================================ */
 

@@ -194,7 +194,8 @@ input,
 select,
 textarea {
   width: 100%;
-  padding: 12px 16px;
+  /* Padding is now controlled per-component via Tailwind utility classes */
+  /* padding: 12px 16px; */
   border: 1px solid #E4E9EC;
   border-radius: 12px;
   background-color: #FFFFFF;
@@ -668,14 +669,6 @@ body.dark ::-webkit-scrollbar-thumb:hover {
    CONSISTENT CONTENT PADDING & SPACING - Using scale: 2, 4, 8, 12, 16, 18, 24, 36, 42, 64
    ============================================================================ */
 
-/* Page containers - consistent padding across all pages */
-.page-container {
-  padding: 42px 36px;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-
 /* Card/Section padding - consistent for all card-like elements */
 .card-padding {
   padding: 24px;
@@ -702,10 +695,6 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 
 /* Responsive adjustments for page containers */
 @media (max-width: 1024px) {
-  .page-container {
-    padding: 36px 24px;
-  }
-
   .card-padding {
     padding: 24px;
   }
@@ -717,10 +706,6 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 768px) {
-  .page-container {
-    padding: 24px 16px;
-  }
-
   .card-padding {
     padding: 16px;
   }
@@ -740,10 +725,6 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 480px) {
-  .page-container {
-    padding: 24px 16px;
-  }
-
   .card-padding {
     padding: 16px;
   }

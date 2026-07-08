@@ -632,6 +632,71 @@
   }
 }
 
+/* ----------------------------------------------------------------------------
+   CANONICAL MODAL OVERLAY / CONTENT (single source of truth)
+   Backdrop / z-index / positioning preserve the behavior previously leaked
+   from component-level .css files (CreateFeeModal.css, StudentQuickViewModal.css).
+   Radius, shadow, and spacing are expressed exclusively through design tokens.
+   ---------------------------------------------------------------------------- */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--space-md);
+  animation: fadeIn var(--transition-base);
+}
+
+.modal-content {
+  background-color: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  border: 1px solid var(--border-default);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: scaleIn var(--transition-base);
+}
+
+.modal-content--small {
+  max-width: 400px;
+}
+
+.modal-content--large {
+  max-width: 700px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content--large {
+    max-width: 95vw;
+    border-radius: var(--radius-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-content,
+  .modal-content--small,
+  .modal-content--large {
+    max-width: none;
+    max-height: 100vh;
+  }
+}
+
 /* ============================================================================
    TABLE SYSTEM
    ============================================================================ */
@@ -953,3 +1018,369 @@
 }
 
 /* End of Components CSS */
+
+/* ============================================================================
+   SHARED MODAL FORM STYLES
+   Canonical styles for modal-header, modal-form, form-group, form-label,
+   form-input, form-actions, btn inside any modal-content variant.
+   Scoped under .modal-content to avoid colliding with global .form-* classes
+   defined in CreateFeeModal.css, CoachProfile.css, PersonalInfoForm.css.
+   ============================================================================ */
+
+/* Shell: flex column layout, no scroll gap */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* Header */
+.modal-content .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-card);
+  flex-shrink: 0;
+}
+
+.modal-content .modal-title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: var(--line-snug);
+}
+
+.modal-content .modal-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: var(--space-xs) 0 0;
+  line-height: var(--line-normal);
+}
+
+.modal-content .modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.modal-content .modal-close-btn:hover {
+  background: var(--feedback-danger-light);
+  color: var(--color-danger);
+}
+
+/* Form wrapper: zero padding/gap so tabbed body fills flush */
+.modal-content .modal-form {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Form body padding for simple (non-tabbed) modals */
+.modal-content .modal-form-body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Error banner */
+.modal-content .form-error-banner {
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-md) var(--space-lg) 0;
+  background-color: var(--feedback-danger-light);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.modal-content .form-error-banner::before {
+  content: '✕';
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+
+/* Warning banner */
+.modal-content .form-warning-banner {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--feedback-warning-light);
+  border-radius: var(--radius-md);
+  color: var(--color-warning-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+}
+
+/* Info banner */
+.modal-content .form-info-banner {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--feedback-info-light);
+  border-radius: var(--radius-md);
+  color: var(--color-info-text);
+  font-size: var(--font-sm);
+}
+
+/* Form group: no card border/background (override PersonalInfoForm.css) */
+.modal-content .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  transform: none;
+  transition: none;
+}
+
+.modal-content .form-group:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+/* Label: sentence case, small, secondary color */
+.modal-content .form-label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.modal-content .form-optional {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-regular);
+  margin-left: 2px;
+}
+
+.modal-content .form-required {
+  color: var(--color-danger);
+  margin-left: 2px;
+}
+
+/* Inputs */
+.modal-content .form-input,
+.modal-content .form-textarea {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  background-color: var(--surface-card);
+  color: var(--text-primary);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  height: 38px;
+}
+
+.modal-content .form-textarea {
+  height: auto;
+  resize: vertical;
+}
+
+.modal-content .form-input:focus,
+.modal-content .form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.modal-content .form-input::placeholder,
+.modal-content .form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.modal-content .form-input:disabled,
+.modal-content .form-textarea:disabled {
+  background-color: var(--surface-hover);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.modal-content .form-input-error {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+}
+
+.modal-content .form-error-text {
+  font-size: var(--font-xs);
+  color: var(--color-danger);
+  font-weight: var(--weight-medium);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modal-content .form-error-text::before {
+  content: '⚠';
+}
+
+.modal-content .form-helper-text {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.modal-content .form-read-only {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  padding: var(--space-sm) 0;
+  font-weight: var(--weight-medium);
+}
+
+.modal-content .form-read-only-sub {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-left: var(--space-xs);
+}
+
+.modal-content .form-changed {
+  font-size: var(--font-xs);
+  color: var(--color-primary-dark);
+}
+
+/* Footer: full-width separator, vertically centered buttons */
+.modal-content .form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  border-top: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+/* Buttons inside modal */
+.modal-content .btn {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  font-family: var(--font-body);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+}
+
+.modal-content .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-content .btn-primary {
+  background: var(--color-primary);
+  color: var(--text-primary);
+}
+
+.modal-content .btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
+}
+
+.modal-content .btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.modal-content .btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.modal-content .btn-secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.modal-content .btn-danger {
+  background: var(--color-danger);
+  color: var(--text-inverse);
+}
+
+.modal-content .btn-danger:hover:not(:disabled) {
+  background: var(--color-danger-dark);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .modal-content .modal-header {
+    background: var(--surface-dark-card);
+    border-bottom-color: var(--border-dark);
+  }
+
+  .modal-content .modal-title { color: var(--text-dark-primary); }
+  .modal-content .modal-subtitle { color: var(--text-dark-secondary); }
+
+  .modal-content .modal-close-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--color-danger);
+  }
+
+  .modal-content .form-label { color: var(--text-dark-secondary); }
+
+  .modal-content .form-input,
+  .modal-content .form-textarea {
+    background-color: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+    color: var(--text-dark-primary);
+  }
+
+  .modal-content .form-input:focus,
+  .modal-content .form-textarea:focus {
+    border-color: var(--color-primary);
+    background-color: var(--surface-dark-card);
+  }
+
+  .modal-content .form-input::placeholder,
+  .modal-content .form-textarea::placeholder {
+    color: var(--text-dark-tertiary);
+  }
+
+  .modal-content .form-actions { border-top-color: var(--border-dark); }
+
+  .modal-content .btn-secondary {
+    color: var(--text-dark-secondary);
+    border-color: var(--border-dark);
+  }
+
+  .modal-content .btn-secondary:hover:not(:disabled) {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark-strong);
+    color: var(--text-dark-primary);
+  }
+}

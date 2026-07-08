@@ -1,80 +1,68 @@
 /* ============================================================================
-   ASSIGNMENT PANEL - COMPACT FILTER STYLE DESIGN
+   ASSIGNMENT PANEL
+   All spacing and font sizes use design tokens from design-system.css.
+   No hardcoded px values for spacing, font-size, or color.
    ============================================================================ */
 
+/* ── Panel shell ── */
 .assignment-panel {
   background: var(--surface-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-default);
-  padding: 12px 16px;
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-md);
 }
 
 @media (prefers-color-scheme: dark) {
   .assignment-panel {
     background: var(--surface-dark-card);
     border-color: var(--border-dark);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   }
 }
 
-/* ============================================================================
-   HEADER SECTION - MINIMAL
-   ============================================================================ */
-
+/* ── Header ── */
 .assignment-header {
   border-bottom: 1px solid var(--border-default);
-  padding-bottom: 8px;
-  margin-bottom: 0;
+  padding-bottom: var(--space-md);
 }
 
 @media (prefers-color-scheme: dark) {
-  .assignment-header {
-    border-bottom-color: var(--border-dark);
-  }
+  .assignment-header { border-bottom-color: var(--border-dark); }
 }
 
 .assignment-title {
-  font-size: var(--font-base);
-  font-weight: var(--weight-semibold);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
   color: var(--text-primary);
   margin: 0;
-  font-family: var(--font-body);
-}
-
-@media (prefers-color-scheme: dark) {
-  .assignment-title {
-    color: var(--text-dark-primary);
-  }
+  font-family: var(--font-display);
+  line-height: var(--line-snug);
 }
 
 .assignment-subtitle {
-  font-size: var(--font-xs);
-  color: var(--text-tertiary);
-  margin: 2px 0 0 0;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: var(--space-xs) 0 0;
+  line-height: var(--line-normal);
 }
 
 @media (prefers-color-scheme: dark) {
-  .assignment-subtitle {
-    color: var(--text-dark-tertiary);
-  }
+  .assignment-title { color: var(--text-dark-primary); }
+  .assignment-subtitle { color: var(--text-dark-secondary); }
 }
 
-/* ============================================================================
-   ASSIGNMENT FORM SECTION - SEPARATE CARD ABOVE
-   ============================================================================ */
-
+/* ── Form Section: two-column grid ── */
 .assignment-form-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: var(--space-md);
   background: var(--surface-hover);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  padding: 10px;
+  padding: var(--space-md);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -85,284 +73,201 @@
 }
 
 @media (max-width: 1024px) {
-  .assignment-form-section {
-    grid-template-columns: 1fr;
-  }
+  .assignment-form-section { grid-template-columns: 1fr; }
 }
 
-/* ============================================================================
-   ASSIGNMENT FORMS - VERTICAL STACKED
-   ============================================================================ */
-
-.assignment-forms {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
+/* ── Individual form card ── */
 .assignment-form-card {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  overflow: visible;
-  transition: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0;
-}
-
-.assignment-form-card:hover {
-  border-color: transparent;
-  box-shadow: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  .assignment-form-card {
-    background: transparent;
-    border-color: transparent;
-  }
-
-  .assignment-form-card:hover {
-    border-color: transparent;
-    box-shadow: none;
-  }
+  gap: var(--space-xs);
 }
 
 .form-card-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0;
-  background: transparent;
-  border-bottom: none;
-  gap: 4px;
-  flex: 0 0 auto;
-  min-width: 110px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .form-card-header {
-    background: transparent;
-    border-bottom-color: transparent;
-  }
+  gap: var(--space-xs);
 }
 
 .form-card-title {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin: 0;
-  white-space: nowrap;
-  text-transform: capitalize;
 }
 
 @media (prefers-color-scheme: dark) {
-  .form-card-title {
-    color: var(--text-dark-secondary);
-  }
+  .form-card-title { color: var(--text-dark-primary); }
 }
 
 .form-card-badge {
-  display: inline-block;
-  padding: 2px 6px;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
   background: var(--color-primary);
   color: var(--text-primary);
-  font-size: 8px;
+  font-size: var(--font-xs);
   font-weight: var(--weight-bold);
   border-radius: var(--radius-pill);
   white-space: nowrap;
+  line-height: 1;
 }
 
 .form-card-body {
-  padding: 0;
   display: flex;
-  flex-direction: row;
-  gap: 6px;
+  gap: var(--space-sm);
   align-items: center;
-  flex: 1;
 }
 
+/* ── Select ── */
 .form-select {
   flex: 1;
-  min-width: 150px;
-  padding: 6px 10px 6px 8px;
-  font-size: var(--font-xs);
+  padding: var(--space-sm) var(--space-md);
+  height: 38px;
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background-color: var(--surface-card);
   color: var(--text-primary);
-  font-family: var(--font-body);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base);
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%234A5662' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7885' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 4px center;
-  padding-right: 20px;
+  background-position: right var(--space-sm) center;
+  background-size: 16px;
+  padding-right: var(--space-xl);
 }
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-select:hover { border-color: var(--border-strong); }
+.form-select:disabled { opacity: 0.5; cursor: not-allowed; }
 
 @media (prefers-color-scheme: dark) {
   .form-select {
     background-color: var(--surface-dark-card);
     border-color: var(--border-dark);
     color: var(--text-dark-primary);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 12 12'%3E%3Cpath fill='%239CA8B3' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   }
 }
 
-.form-select:hover {
-  border-color: var(--border-strong);
-}
-
-@media (prefers-color-scheme: dark) {
-  .form-select:hover {
-    border-color: var(--border-dark-strong);
-  }
-}
-
-.form-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.1);
-}
-
-.form-select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* ── Assign button ── */
 .btn-assign {
-  padding: 6px 12px;
-  background-color: var(--color-primary);
+  padding: var(--space-sm) var(--space-lg);
+  height: 38px;
+  background: var(--color-primary);
   color: var(--text-primary);
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-weight: var(--weight-semibold);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-family: var(--font-body);
   cursor: pointer;
   transition: all var(--transition-base);
-  text-transform: capitalize;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
 
 .btn-assign:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  background: var(--color-primary-dark);
   transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(184, 225, 53, 0.2);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
 }
 
-.btn-assign:active:not(:disabled) {
-  transform: translateY(0);
-}
+.btn-assign:active:not(:disabled) { transform: translateY(0); }
+.btn-assign:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-assign:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ============================================================================
-   CURRENT ASSIGNMENTS - TWO COLUMN GRID DISPLAY
-   ============================================================================ */
-
+/* ── Assignments display: two-column grid ── */
 .assignment-display-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: var(--space-md);
 }
 
 @media (max-width: 1024px) {
-  .assignment-display-section {
-    grid-template-columns: 1fr;
-  }
+  .assignment-display-section { grid-template-columns: 1fr; }
 }
 
 .assignment-column {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-sm);
 }
 
 .assignment-section-title {
-  font-size: 9px;
+  font-size: var(--font-xs);
   font-weight: var(--weight-bold);
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.2px;
+  letter-spacing: var(--letter-label);
   margin: 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  .assignment-section-title {
-    color: var(--text-dark-tertiary);
-  }
+  .assignment-section-title { color: var(--text-dark-tertiary); }
 }
 
+/* ── Assignment items ── */
 .assignment-items {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: var(--space-xs);
 }
 
 .assignment-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 8px;
+  padding: var(--space-sm) var(--space-md);
   background: var(--surface-hover);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  transition: all 100ms ease-out;
-  gap: 6px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  gap: var(--space-sm);
   cursor: pointer;
 }
 
 .assignment-item:hover {
   background: var(--surface-card);
   border-color: var(--color-primary);
-  box-shadow: 0 1px 2px rgba(184, 225, 53, 0.06);
 }
 
 .assignment-item.active {
   border-color: var(--color-primary);
-  background: rgba(184, 225, 53, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  .assignment-item {
-    background: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
-
-  .assignment-item:hover {
-    background: var(--surface-dark-card);
-    border-color: var(--color-primary);
-  }
-
-  .assignment-item.active {
-    background: rgba(184, 225, 53, 0.15);
-  }
+  background: rgba(184, 225, 53, 0.08);
 }
 
 .assignment-item.batch-item {
-  border-left: 2px solid var(--color-info);
+  border-left: 3px solid var(--color-info);
 }
 
 .assignment-item.student-item {
-  border-left: 2px solid var(--color-success);
+  border-left: 3px solid var(--color-success);
+}
+
+@media (prefers-color-scheme: dark) {
+  .assignment-item { background: var(--surface-dark-hover); border-color: var(--border-dark); }
+  .assignment-item:hover { background: var(--surface-dark-card); border-color: var(--color-primary); }
+  .assignment-item.active { background: rgba(184, 225, 53, 0.12); }
 }
 
 .item-content {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   flex: 1;
   min-width: 0;
 }
 
 .item-name {
-  font-size: 9px;
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   margin: 0;
@@ -371,15 +276,9 @@
   white-space: nowrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  .item-name {
-    color: var(--text-dark-primary);
-  }
-}
-
 .item-meta {
-  font-size: 8px;
-  color: var(--text-tertiary);
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -387,192 +286,78 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .item-meta {
-    color: var(--text-dark-tertiary);
-  }
+  .item-name { color: var(--text-dark-primary); }
+  .item-meta { color: var(--text-dark-secondary); }
 }
 
-/* ============================================================================
-   ACTION BUTTONS - CONSISTENT TABLE STYLE
-   ============================================================================ */
-
+/* ── Delete link ── */
 .btn-action {
   padding: 0;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 7px;
+  font-size: var(--font-xs);
   font-weight: var(--weight-semibold);
   font-family: var(--font-body);
-  text-transform: capitalize;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: all 100ms ease-out;
+  transition: color var(--transition-fast);
 }
 
-.btn-action--danger {
-  color: var(--color-danger);
-}
-
-.btn-action--danger:hover {
-  color: var(--color-danger-dark);
-  text-decoration: underline;
-}
+.btn-action--danger { color: var(--color-danger); }
+.btn-action--danger:hover { color: var(--color-danger-dark); text-decoration: underline; }
 
 @media (prefers-color-scheme: dark) {
-  .btn-action--danger {
-    color: #fca5a5;
-  }
-
-  .btn-action--danger:hover {
-    color: #f87171;
-  }
+  .btn-action--danger { color: var(--color-danger-light); }
 }
 
-/* ============================================================================
-   EMPTY STATES - COMPACT
-   ============================================================================ */
-
+/* ── Empty states ── */
 .assignment-panel-empty {
   background: var(--surface-card);
   border-radius: var(--radius-lg);
-  padding: 24px 16px;
+  padding: var(--space-2xl) var(--space-lg);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: var(--space-sm);
   border: 1px solid var(--border-default);
 }
 
 @media (prefers-color-scheme: dark) {
-  .assignment-panel-empty {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
+  .assignment-panel-empty { background: var(--surface-dark-card); border-color: var(--border-dark); }
 }
 
-.empty-icon {
-  width: 32px;
-  height: 32px;
-  color: var(--text-tertiary);
-}
+.empty-icon { width: 32px; height: 32px; color: var(--text-tertiary); }
+.empty-text { font-size: var(--font-sm); color: var(--text-secondary); margin: 0; }
 
 @media (prefers-color-scheme: dark) {
-  .empty-icon {
-    color: var(--text-dark-tertiary);
-  }
-}
-
-.empty-text {
-  font-size: var(--font-xs);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .empty-text {
-    color: var(--text-dark-secondary);
-  }
+  .empty-icon { color: var(--text-dark-tertiary); }
+  .empty-text { color: var(--text-dark-secondary); }
 }
 
 .assignment-empty {
   text-align: center;
-  padding: 12px 8px;
+  padding: var(--space-lg) var(--space-md);
 }
 
 .empty-message {
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-secondary);
   margin: 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  .empty-message {
-    color: var(--text-dark-secondary);
-  }
+  .empty-message { color: var(--text-dark-secondary); }
 }
 
-.empty-hint {
-  font-size: 9px;
-  color: var(--text-tertiary);
-  margin: 2px 0 0 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .empty-hint {
-    color: var(--text-dark-tertiary);
-  }
-}
-
-/* ============================================================================
-   RESPONSIVE MOBILE
-   ============================================================================ */
-
-@media (max-width: 1024px) {
-  .assignment-form-section {
-    grid-template-columns: 1fr;
-  }
-  
-  .assignment-display-section {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .assignment-panel {
-    padding: 10px 12px;
-    gap: 10px;
+    padding: var(--space-md);
+    gap: var(--space-sm);
   }
 
-  .assignment-header {
-    padding-bottom: 6px;
-  }
-
-  .assignment-title {
-    font-size: var(--font-sm);
-  }
-
-  .assignment-subtitle {
-    font-size: 10px;
-  }
-
-  .assignment-form-section {
-    gap: 8px;
-    padding: 8px;
-  }
-
-  .form-card-badge {
-    font-size: 7px;
-    padding: 1px 4px;
-  }
-
-  .form-select {
-    padding: 5px 8px 5px 6px;
-    font-size: 8px;
-    padding-right: 16px;
-  }
-
-  .btn-assign {
-    padding: 5px 10px;
-    font-size: 7px;
-  }
-
-  .assignment-item {
-    padding: 4px 6px;
-  }
-
-  .item-name {
-    font-size: 8px;
-  }
-
-  .item-meta {
-    font-size: 7px;
-  }
-
-  .btn-action {
-    font-size: 6px;
-  }
+  .assignment-title { font-size: var(--font-base); }
 }

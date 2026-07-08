@@ -47,6 +47,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'academy'>('basic');
 
   // Calculate age from date of birth
   const calculateAge = (dob: Date): number => {
@@ -165,14 +166,40 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       assignedCoachId: '',
     });
     setErrors({});
+    setActiveSection('basic');
     onClose();
   };
 
   if (!isOpen) return null;
 
+  // Section definitions for the left nav
+  const sections = [
+    {
+      id: 'basic' as const,
+      label: 'Basic Info',
+      hasError: !!(errors.fullName || errors.dateOfBirth),
+    },
+    {
+      id: 'contact' as const,
+      label: 'Contact',
+      hasError: !!(errors.contactPhone || errors.email),
+    },
+    {
+      id: 'guardian' as const,
+      label: 'Guardian',
+      hasError: !!(errors.guardianName || errors.guardianPhone),
+    },
+    {
+      id: 'academy' as const,
+      label: 'Academy',
+      hasError: !!(errors.batchId || errors.assignedCoachId),
+    },
+  ];
+
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-content modal-content--large" onClick={(e) => e.stopPropagation()}>
+        {/* Modal Header */}
         <div className="modal-header">
           <div>
             <h2 className="modal-title">Enroll New Student</h2>
@@ -194,240 +221,196 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
             <div className="form-error-banner">{errors.submit}</div>
           )}
 
-          {/* Basic Information Section */}
-          <div className="form-section">
-            <div className="form-section-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" />
-              </svg>
-              <h3 className="form-section-title">Basic Information</h3>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="fullName" className="form-label">
-                  Full Name *
-                </label>
-                <input
-                  id="fullName"
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className={`form-input ${errors.fullName ? 'form-input-error' : ''}`}
-                  placeholder="John Doe"
-                  disabled={isSubmitting}
-                />
-                {errors.fullName && <span className="form-error-text">{errors.fullName}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="dateOfBirth" className="form-label">
-                  Date of Birth *
-                </label>
-                <input
-                  id="dateOfBirth"
-                  type="date"
-                  value={formData.dateOfBirth.toISOString().split('T')[0]}
-                  onChange={(e) => setFormData({ ...formData, dateOfBirth: new Date(e.target.value) })}
-                  className={`form-input ${errors.dateOfBirth ? 'form-input-error' : ''}`}
-                  disabled={isSubmitting}
-                />
-                {errors.dateOfBirth && <span className="form-error-text">{errors.dateOfBirth}</span>}
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="gender" className="form-label">
-                  Gender *
-                </label>
-                <select
-                  id="gender"
-                  value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as Gender })}
-                  className="form-input"
-                  disabled={isSubmitting}
+          {/* Tabbed body: left nav + right content */}
+          <div className="enroll-tabbed-body">
+            {/* Left: section nav — table-row style, label only */}
+            <nav className="enroll-section-nav">
+              {sections.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setActiveSection(s.id)}
+                  className={`enroll-nav-item${activeSection === s.id ? ' enroll-nav-item--active' : ''}`}
                 >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+                  <span className="enroll-nav-label">{s.label}</span>
+                  {s.hasError && <span className="enroll-nav-error-dot" aria-label="has errors" />}
+                </button>
+              ))}
+            </nav>
 
-              <div className="form-group">
-                <label htmlFor="baidNumber" className="form-label">
-                  BAID Number (optional)
-                </label>
-                <input
-                  id="baidNumber"
-                  type="text"
-                  value={formData.baidNumber || ''}
-                  onChange={(e) => setFormData({ ...formData, baidNumber: e.target.value })}
-                  className="form-input"
-                  placeholder="BAD-XXXXXX"
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-          </div>
+            {/* Right: active section content — single column, no extra lines */}
+            <div className="enroll-section-content">
 
-          {/* Contact Information Section */}
-          <div className="form-section">
-            <div className="form-section-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-              </svg>
-              <h3 className="form-section-title">Contact Information</h3>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="contactPhone" className="form-label">
-                  Student Phone *
-                </label>
-                <input
-                  id="contactPhone"
-                  type="tel"
-                  value={formData.contactPhone}
-                  onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                  className={`form-input ${errors.contactPhone ? 'form-input-error' : ''}`}
-                  placeholder="9876543210"
-                  disabled={isSubmitting}
-                />
-                {errors.contactPhone && <span className="form-error-text">{errors.contactPhone}</span>}
-              </div>
+              {activeSection === 'basic' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="fullName" className="form-label">Full Name *</label>
+                    <input
+                      id="fullName"
+                      type="text"
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className={`form-input ${errors.fullName ? 'form-input-error' : ''}`}
+                      placeholder="John Doe"
+                      disabled={isSubmitting}
+                    />
+                    {errors.fullName && <span className="form-error-text">{errors.fullName}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="dateOfBirth" className="form-label">Date of Birth *</label>
+                    <input
+                      id="dateOfBirth"
+                      type="date"
+                      value={formData.dateOfBirth.toISOString().split('T')[0]}
+                      onChange={(e) => setFormData({ ...formData, dateOfBirth: new Date(e.target.value) })}
+                      className={`form-input ${errors.dateOfBirth ? 'form-input-error' : ''}`}
+                      disabled={isSubmitting}
+                    />
+                    {errors.dateOfBirth && <span className="form-error-text">{errors.dateOfBirth}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="gender" className="form-label">Gender *</label>
+                    <select
+                      id="gender"
+                      value={formData.gender}
+                      onChange={(e) => setFormData({ ...formData, gender: e.target.value as Gender })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="baidNumber" className="form-label">BAID Number <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="baidNumber"
+                      type="text"
+                      value={formData.baidNumber || ''}
+                      onChange={(e) => setFormData({ ...formData, baidNumber: e.target.value })}
+                      className="form-input"
+                      placeholder="BAD-XXXXXX"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
 
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email (optional)
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email || ''}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`form-input ${errors.email ? 'form-input-error' : ''}`}
-                  placeholder="john@example.com"
-                  disabled={isSubmitting}
-                />
-                {errors.email && <span className="form-error-text">{errors.email}</span>}
-              </div>
-            </div>
-          </div>
+              {activeSection === 'contact' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="contactPhone" className="form-label">Student Phone *</label>
+                    <input
+                      id="contactPhone"
+                      type="tel"
+                      value={formData.contactPhone}
+                      onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
+                      className={`form-input ${errors.contactPhone ? 'form-input-error' : ''}`}
+                      placeholder="9876543210"
+                      disabled={isSubmitting}
+                    />
+                    {errors.contactPhone && <span className="form-error-text">{errors.contactPhone}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="email" className="form-label">Email <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={formData.email || ''}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className={`form-input ${errors.email ? 'form-input-error' : ''}`}
+                      placeholder="john@example.com"
+                      disabled={isSubmitting}
+                    />
+                    {errors.email && <span className="form-error-text">{errors.email}</span>}
+                  </div>
+                </>
+              )}
 
-          {/* Guardian Information Section */}
-          <div className="form-section">
-            <div className="form-section-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M16 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM9 7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
-              </svg>
-              <h3 className="form-section-title">Guardian Information</h3>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="guardianName" className="form-label">
-                  Guardian Name *
-                </label>
-                <input
-                  id="guardianName"
-                  type="text"
-                  value={formData.guardianName}
-                  onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
-                  className={`form-input ${errors.guardianName ? 'form-input-error' : ''}`}
-                  placeholder="Jane Doe"
-                  disabled={isSubmitting}
-                />
-                {errors.guardianName && <span className="form-error-text">{errors.guardianName}</span>}
-              </div>
+              {activeSection === 'guardian' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="guardianName" className="form-label">Guardian Name *</label>
+                    <input
+                      id="guardianName"
+                      type="text"
+                      value={formData.guardianName}
+                      onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
+                      className={`form-input ${errors.guardianName ? 'form-input-error' : ''}`}
+                      placeholder="Jane Doe"
+                      disabled={isSubmitting}
+                    />
+                    {errors.guardianName && <span className="form-error-text">{errors.guardianName}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="guardianPhone" className="form-label">Guardian Phone *</label>
+                    <input
+                      id="guardianPhone"
+                      type="tel"
+                      value={formData.guardianPhone}
+                      onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                      className={`form-input ${errors.guardianPhone ? 'form-input-error' : ''}`}
+                      placeholder="9876543210"
+                      disabled={isSubmitting}
+                    />
+                    {errors.guardianPhone && <span className="form-error-text">{errors.guardianPhone}</span>}
+                  </div>
+                </>
+              )}
 
-              <div className="form-group">
-                <label htmlFor="guardianPhone" className="form-label">
-                  Guardian Phone *
-                </label>
-                <input
-                  id="guardianPhone"
-                  type="tel"
-                  value={formData.guardianPhone}
-                  onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
-                  className={`form-input ${errors.guardianPhone ? 'form-input-error' : ''}`}
-                  placeholder="9876543210"
-                  disabled={isSubmitting}
-                />
-                {errors.guardianPhone && <span className="form-error-text">{errors.guardianPhone}</span>}
-              </div>
-            </div>
-          </div>
+              {activeSection === 'academy' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="batchId" className="form-label">Batch *</label>
+                    <select
+                      id="batchId"
+                      value={formData.batchId}
+                      onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
+                      className={`form-input ${errors.batchId ? 'form-input-error' : ''}`}
+                      disabled={isSubmitting}
+                    >
+                      <option value="">Select a batch</option>
+                      {batches.map((batch) => (
+                        <option key={batch.id} value={batch.id}>{batch.name}</option>
+                      ))}
+                    </select>
+                    {errors.batchId && <span className="form-error-text">{errors.batchId}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="skillLevel" className="form-label">Initial Skill Level *</label>
+                    <select
+                      id="skillLevel"
+                      value={formData.skillLevel}
+                      onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as SkillLevel })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                      <option value="Professional">Professional</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="assignedCoachId" className="form-label">Assign Coach *</label>
+                    <select
+                      id="assignedCoachId"
+                      value={formData.assignedCoachId}
+                      onChange={(e) => setFormData({ ...formData, assignedCoachId: e.target.value })}
+                      className={`form-input ${errors.assignedCoachId ? 'form-input-error' : ''}`}
+                      disabled={isSubmitting}
+                    >
+                      <option value="">Select a coach</option>
+                      {coaches.map((coach) => (
+                        <option key={coach.id} value={coach.id}>{coach.name}</option>
+                      ))}
+                    </select>
+                    {errors.assignedCoachId && <span className="form-error-text">{errors.assignedCoachId}</span>}
+                  </div>
+                </>
+              )}
 
-          {/* Academy Information Section */}
-          <div className="form-section">
-            <div className="form-section-header">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 10v6m0 0v6m0-6H2m0 0v6m0-6V10m0 0l10-7 10 7" />
-              </svg>
-              <h3 className="form-section-title">Academy Information</h3>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="batchId" className="form-label">
-                  Batch *
-                </label>
-                <select
-                  id="batchId"
-                  value={formData.batchId}
-                  onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
-                  className={`form-input ${errors.batchId ? 'form-input-error' : ''}`}
-                  disabled={isSubmitting}
-                >
-                  <option value="">Select a batch</option>
-                  {batches.map((batch) => (
-                    <option key={batch.id} value={batch.id}>
-                      {batch.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.batchId && <span className="form-error-text">{errors.batchId}</span>}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="skillLevel" className="form-label">
-                  Initial Skill Level *
-                </label>
-                <select
-                  id="skillLevel"
-                  value={formData.skillLevel}
-                  onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as SkillLevel })}
-                  className="form-input"
-                  disabled={isSubmitting}
-                >
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                  <option value="Professional">Professional</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="assignedCoachId" className="form-label">
-                Assign Coach *
-              </label>
-              <select
-                id="assignedCoachId"
-                value={formData.assignedCoachId}
-                onChange={(e) => setFormData({ ...formData, assignedCoachId: e.target.value })}
-                className={`form-input ${errors.assignedCoachId ? 'form-input-error' : ''}`}
-                disabled={isSubmitting}
-              >
-                <option value="">Select a coach</option>
-                {coaches.map((coach) => (
-                  <option key={coach.id} value={coach.id}>
-                    {coach.name}
-                  </option>
-                ))}
-              </select>
-              {errors.assignedCoachId && <span className="form-error-text">{errors.assignedCoachId}</span>}
             </div>
           </div>
 

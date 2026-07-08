@@ -198,7 +198,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Expense Type Dropdown */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-type" className="text-sm font-medium text-gray-700">
+        <label htmlFor="expense-type" className="text-sm font-medium text-gray-700 mb-1">
           Expense Type <span className="text-red-600">*</span>
         </label>
         <select
@@ -230,7 +230,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Amount Input */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-amount" className="text-sm font-medium text-gray-700">
+        <label htmlFor="expense-amount" className="text-sm font-medium text-gray-700 mb-1">
           Amount <span className="text-red-600">*</span>
         </label>
         <input
@@ -260,7 +260,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Date Input */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-date" className="text-sm font-medium text-gray-700">
+        <label htmlFor="expense-date" className="text-sm font-medium text-gray-700 mb-1">
           Date <span className="text-red-600">*</span>
         </label>
         <input
@@ -288,7 +288,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Description Textarea */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-description" className="text-sm font-medium text-gray-700">
+        <label htmlFor="expense-description" className="text-sm font-medium text-gray-700 mb-1">
           Description <span className="text-red-600">*</span>
         </label>
         <textarea

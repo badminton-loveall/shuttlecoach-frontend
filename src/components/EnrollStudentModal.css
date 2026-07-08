@@ -1,35 +1,31 @@
-/* Extends CreateFeeModal.css base styles */
-@import './CreateFeeModal.css';
-
 /* ============================================================================
-   MODAL CONTENT - LARGE
+   ENROLL STUDENT MODAL
+   All rules scoped under .modal-content--large so they win over the global
+   .form-label / .form-input / .form-group defined in CreateFeeModal.css and
+   CoachProfile.css (which collide because they are unscoped global classes).
    ============================================================================ */
 
-.modal-content--large {
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: var(--surface-card);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-overlay);
-  border: 1px solid var(--border-default);
+/* Shell: flex column, no border, no padding, no scroll gap */
+.modal-content.modal-content--large {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
 }
 
-/* ============================================================================
-   MODAL HEADER - DASHBOARD STYLE
-   ============================================================================ */
-
-.modal-header {
+/* ── Header ── */
+.modal-content--large .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-lg);
-  padding: var(--space-lg);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
   border-bottom: 1px solid var(--border-default);
-  background: var(--surface-hover);
+  background: var(--surface-card);
+  flex-shrink: 0;
 }
 
-.modal-title {
+.modal-content--large .modal-title {
   font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--text-primary);
@@ -38,229 +34,256 @@
   line-height: var(--line-snug);
 }
 
-.modal-subtitle {
+.modal-content--large .modal-subtitle {
   font-size: var(--font-sm);
   color: var(--text-secondary);
   margin: var(--space-xs) 0 0;
   line-height: var(--line-normal);
 }
 
-.modal-close-btn {
+.modal-content--large .modal-close-btn {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   cursor: pointer;
-  font-size: 24px;
+  font-size: 18px;
   padding: 0;
   width: 28px;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-base);
-}
-
-.modal-close-btn:hover {
-  color: var(--text-primary);
-  background: var(--color-danger);
-  color: white;
-  border-radius: var(--radius-md);
-}
-
-/* ============================================================================
-   FORM STYLES
-   ============================================================================ */
-
-.modal-form {
-  padding: var(--space-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-/* ============================================================================
-   FORM SECTIONS
-   ============================================================================ */
-
-.form-section {
-  margin-bottom: var(--space-lg);
-  padding: var(--space-lg);
-  background: var(--surface-hover);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-base);
-}
-
-.form-section:last-of-type {
-  margin-bottom: 0;
-}
-
-.form-section:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-card);
-}
-
-.form-section-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-default);
-}
-
-.form-section-header svg {
-  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
   flex-shrink: 0;
 }
 
-.form-section-title {
-  font-size: var(--font-base);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  text-transform: none;
-  letter-spacing: 0;
+.modal-content--large .modal-close-btn:hover {
+  background: var(--feedback-danger-light);
+  color: var(--color-danger);
+}
+
+/* ── Form wrapper ── */
+.modal-content--large .modal-form {
+  padding: 0;
   margin: 0;
-  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
 }
 
-/* ============================================================================
-   FORM ROW LAYOUT
-   ============================================================================ */
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-md);
+.modal-content--large .form-error-banner {
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-md) var(--space-lg) 0;
+  background-color: var(--feedback-danger-light);
+  border-radius: var(--radius-md);
+  color: var(--color-danger-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
 }
 
-.form-row:last-child {
-  margin-bottom: 0;
+.modal-content--large .form-error-banner::before {
+  content: '✕';
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
 }
 
-/* ============================================================================
-   FORM GROUP
-   ============================================================================ */
+/* ── Tabbed body ── */
+.modal-content--large .enroll-tabbed-body {
+  display: flex;
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--surface-card);
+  height: 360px;
+  flex-shrink: 0;
+}
 
-.form-group {
+/* ── Left nav ── */
+.modal-content--large .enroll-section-nav {
+  display: flex;
+  flex-direction: column;
+  width: 130px;
+  flex-shrink: 0;
+  background: var(--surface-hover);
+  border-right: 1px solid var(--border-default);
+  align-self: stretch;
+}
+
+.modal-content--large .enroll-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px var(--space-md);
+  background: none;
+  border: none;
+  border-radius: 0;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--border-default);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.modal-content--large .enroll-nav-item:last-child {
+  border-bottom: none;
+}
+
+.modal-content--large .enroll-nav-item:hover {
+  background: var(--surface-card);
+}
+
+.modal-content--large .enroll-nav-item--active {
+  background: var(--surface-card);
+  border-left-color: var(--color-primary);
+}
+
+.modal-content--large .enroll-nav-label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.modal-content--large .enroll-nav-item--active .enroll-nav-label {
+  color: var(--text-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.modal-content--large .enroll-nav-error-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  flex-shrink: 0;
+}
+
+/* ── Right content ── */
+.modal-content--large .enroll-section-content {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  background: var(--surface-card);
+  min-width: 0;
+  overflow: hidden;
 }
 
-.form-label {
-  font-size: var(--font-sm);
+/* ── Fields (scoped — override CreateFeeModal.css / CoachProfile.css) ── */
+.modal-content--large .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  transform: none;
+}
+
+.modal-content--large .form-group:hover {
+  box-shadow: none;
+  transform: none;
+}
+
+.modal-content--large .form-label {
+  font-size: var(--font-xs);
   font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  font-family: var(--font-body);
+  color: var(--text-secondary);
+  letter-spacing: 0;
+  text-transform: none;
+  margin: 0;
 }
 
-.form-label .required {
-  color: var(--color-danger);
-  margin-left: var(--space-xs);
+.modal-content--large .form-optional {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-regular);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 2px;
 }
 
-.form-input,
-.form-textarea {
+.modal-content--large .form-input,
+.modal-content--large .form-textarea {
   width: 100%;
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
   font-family: var(--font-body);
   background-color: var(--surface-card);
   color: var(--text-primary);
-  transition: all var(--transition-base);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  height: 38px;
 }
 
-.form-input:focus,
-.form-textarea:focus {
+.modal-content--large .form-textarea {
+  height: auto;
+  resize: vertical;
+}
+
+.modal-content--large .form-input:focus,
+.modal-content--large .form-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: var(--shadow-focus);
-  background-color: var(--surface-card);
 }
 
-.form-input::placeholder,
-.form-textarea::placeholder {
+.modal-content--large .form-input::placeholder,
+.modal-content--large .form-textarea::placeholder {
   color: var(--text-tertiary);
 }
 
-.form-input:disabled,
-.form-textarea:disabled {
+.modal-content--large .form-input:disabled,
+.modal-content--large .form-textarea:disabled {
   background-color: var(--surface-hover);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.form-input-error {
+.modal-content--large .form-input-error {
   border-color: var(--color-danger) !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
 }
 
-.form-error-text {
+.modal-content--large .form-error-text {
   font-size: var(--font-xs);
   color: var(--color-danger);
   font-weight: var(--weight-medium);
-  margin-top: var(--space-xs);
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 4px;
 }
 
-.form-error-text::before {
+.modal-content--large .form-error-text::before {
   content: '⚠';
-  font-size: 12px;
 }
 
-.form-optional {
-  font-size: var(--font-xs);
-  color: var(--text-tertiary);
-  font-weight: var(--weight-regular);
-  margin-left: var(--space-xs);
-}
-
-/* ============================================================================
-   ERROR BANNER
-   ============================================================================ */
-
-.form-error-banner {
-  padding: var(--space-md) var(--space-lg);
-  background-color: var(--feedback-danger-light);
-  border-left: 4px solid var(--color-danger);
-  border-radius: var(--radius-md);
-  color: var(--color-danger-text);
-  font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
-  margin-bottom: var(--space-lg);
+/* ── Footer ── */
+.modal-content--large .form-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  animation: slideInDown var(--transition-base);
-}
-
-.form-error-banner::before {
-  content: '✕';
-  font-size: 18px;
-  flex-shrink: 0;
-  font-weight: var(--weight-bold);
-}
-
-/* ============================================================================
-   FORM ACTIONS
-   ============================================================================ */
-
-.form-actions {
-  display: flex;
-  gap: var(--space-md);
+  gap: var(--space-sm);
   justify-content: flex-end;
-  margin-top: var(--space-lg);
-  padding-top: var(--space-lg);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
   border-top: 1px solid var(--border-default);
+  flex-shrink: 0;
 }
 
-.btn {
+.modal-content--large .btn {
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
@@ -272,152 +295,116 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 36px;
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.modal-content--large .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-primary {
+.modal-content--large .btn-primary {
   background: var(--color-primary);
   color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(184, 225, 53, 0.2);
 }
 
-.btn-primary:hover:not(:disabled) {
+.modal-content--large .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
-  box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
 }
 
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
+.modal-content--large .btn-primary:active:not(:disabled) { transform: translateY(0); }
 
-.btn-secondary {
-  background: var(--surface-hover);
-  color: var(--text-primary);
+.modal-content--large .btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
   border: 1px solid var(--border-default);
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-slate-100);
+.modal-content--large .btn-secondary:hover:not(:disabled) {
+  background: var(--surface-hover);
   border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
-/* ============================================================================
-   RESPONSIVE DESIGN
-   ============================================================================ */
-
-@media (max-width: 768px) {
-  .modal-content--large {
-    max-width: 95vw;
-    border-radius: var(--radius-md);
-  }
-
-  .modal-header {
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .modal-content--large .enroll-tabbed-body {
     flex-direction: column;
-    gap: var(--space-md);
+    height: auto;
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .btn {
+  .modal-content--large .enroll-section-nav {
     width: 100%;
-    text-align: center;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border-default);
+    overflow-x: auto;
+    align-self: auto;
   }
 
-  .form-section {
-    padding: var(--space-md);
+  .modal-content--large .enroll-nav-item {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    border-right: 1px solid var(--border-default);
+    padding: var(--space-sm) var(--space-md);
+    flex: 1;
+    justify-content: center;
+    min-width: 70px;
   }
 
-  .form-section-header {
-    gap: var(--space-sm);
+  .modal-content--large .enroll-nav-item:last-child { border-right: none; }
+
+  .modal-content--large .enroll-nav-item--active {
+    border-bottom-color: var(--color-primary);
+    border-left-color: transparent;
   }
+
+  .modal-content--large .enroll-section-content { padding: var(--space-md); }
+  .modal-content--large .form-actions { padding: var(--space-md); }
 }
 
-/* ============================================================================
-   DARK MODE SUPPORT
-   ============================================================================ */
-
+/* ── Dark mode ── */
 @media (prefers-color-scheme: dark) {
-  .modal-content--large {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
+  .modal-content--large .modal-header { background: var(--surface-dark-card); border-bottom-color: var(--border-dark); }
+  .modal-content--large .modal-title { color: var(--text-dark-primary); }
+  .modal-content--large .modal-subtitle { color: var(--text-dark-secondary); }
+  .modal-content--large .modal-close-btn:hover { background: rgba(239, 68, 68, 0.15); color: var(--color-danger); }
 
-  .modal-header {
-    background: var(--surface-dark-hover);
-    border-bottom-color: var(--border-dark);
-  }
+  .modal-content--large .enroll-tabbed-body { background: var(--surface-dark-card); }
+  .modal-content--large .enroll-section-nav { background: var(--surface-dark-hover); border-right-color: var(--border-dark); }
+  .modal-content--large .enroll-nav-item { border-bottom-color: var(--border-dark); }
+  .modal-content--large .enroll-nav-item:hover,
+  .modal-content--large .enroll-nav-item--active { background: var(--surface-dark-card); }
+  .modal-content--large .enroll-nav-label { color: var(--text-dark-secondary); }
+  .modal-content--large .enroll-nav-item--active .enroll-nav-label { color: var(--text-dark-primary); }
 
-  .modal-title {
-    color: var(--text-dark-primary);
-  }
+  .modal-content--large .enroll-section-content { background: var(--surface-dark-card); }
+  .modal-content--large .form-label { color: var(--text-dark-secondary); }
 
-  .modal-subtitle {
-    color: var(--text-dark-secondary);
-  }
-
-  .modal-close-btn:hover {
-    background: var(--color-danger);
-  }
-
-  .form-section {
-    background: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
-
-  .form-section:hover {
-    border-color: var(--border-dark-strong);
-  }
-
-  .form-section-header {
-    border-bottom-color: var(--border-dark);
-  }
-
-  .form-section-title {
-    color: var(--text-dark-primary);
-  }
-
-  .form-input,
-  .form-textarea {
-    background-color: var(--surface-dark-card);
+  .modal-content--large .form-input,
+  .modal-content--large .form-textarea {
+    background-color: var(--surface-dark-hover);
     border-color: var(--border-dark);
     color: var(--text-dark-primary);
   }
 
-  .form-input:focus,
-  .form-textarea:focus {
-    background-color: rgba(184, 225, 53, 0.03);
+  .modal-content--large .form-input:focus,
+  .modal-content--large .form-textarea:focus {
     border-color: var(--color-primary);
+    background-color: var(--surface-dark-card);
   }
 
-  .form-input::placeholder,
-  .form-textarea::placeholder {
-    color: var(--text-dark-tertiary);
-  }
+  .modal-content--large .form-input::placeholder,
+  .modal-content--large .form-textarea::placeholder { color: var(--text-dark-tertiary); }
+  .modal-content--large .form-actions { border-top-color: var(--border-dark); }
 
-  .form-actions {
-    border-top-color: var(--border-dark);
-  }
-
-  .btn-secondary {
-    background: var(--surface-dark-hover);
-    color: var(--text-dark-primary);
-    border-color: var(--border-dark-strong);
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    background: var(--surface-dark-card);
+  .modal-content--large .btn-secondary {
+    color: var(--text-dark-secondary);
     border-color: var(--border-dark);
+  }
+
+  .modal-content--large .btn-secondary:hover:not(:disabled) {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark-strong);
+    color: var(--text-dark-primary);
   }
 }

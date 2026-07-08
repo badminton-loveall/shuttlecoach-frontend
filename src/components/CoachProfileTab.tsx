@@ -71,10 +71,11 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
     }));
     // Clear error for this field when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
   };
 
@@ -148,7 +149,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
   // EDIT MODE
   if (isEditing) {
     return (
-      <form onSubmit={handleSave} className="space-y-6 p-6" noValidate>
+      <form onSubmit={handleSave} className="space-y-6 p-[24px]" noValidate>
         {/* Error banner if submission failed */}
         {errors.submit && (
           <div 
@@ -167,7 +168,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           <div className="space-y-4">
             {/* Name Field - Always editable */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Name *
               </label>
               <input
@@ -192,7 +193,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -217,7 +218,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Phone Field */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                 Phone
               </label>
               <input
@@ -248,7 +249,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           <div className="space-y-4">
             {/* Specialization Field */}
             <div>
-              <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
                 Specialization
               </label>
               <input
@@ -273,7 +274,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Qualifications Field */}
             <div>
-              <label htmlFor="qualifications" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="qualifications" className="block text-sm font-medium text-gray-700 mb-2">
                 Qualifications
               </label>
               <textarea
@@ -298,7 +299,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Certifications Field */}
             <div>
-              <label htmlFor="certifications" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="certifications" className="block text-sm font-medium text-gray-700 mb-2">
                 Certifications
               </label>
               <textarea
@@ -323,7 +324,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Bio Field */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
                 Bio
               </label>
               <textarea
@@ -374,7 +375,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
   // READ-ONLY MODE
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8 p-[24px]">
       {/* Edit Button - visible only for HEAD_COACH */}
       {canEdit && (
         <div className="flex justify-end">
@@ -394,14 +395,14 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
         <div className="space-y-4">
           {/* Name - Always show */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Name</label>
             <p className="text-base text-gray-900">{coach.name}</p>
           </div>
 
           {/* Email - Show if available, hide entire field if empty */}
           {coach.email && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Email</label>
               <p className="text-base text-gray-900">{coach.email}</p>
             </div>
           )}
@@ -409,7 +410,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           {/* Phone - Show if available, hide entire field if empty */}
           {coach.phone && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Phone</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Phone</label>
               <p className="text-base text-gray-900">{coach.phone}</p>
             </div>
           )}
@@ -423,7 +424,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           {/* Specialization - Show only if available */}
           {coach.specialization && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Specialization</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Specialization</label>
               <p className="text-base text-gray-900">{coach.specialization}</p>
             </div>
           )}
@@ -431,7 +432,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           {/* Qualifications - Show only if available */}
           {coach.qualifications && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Qualifications</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Qualifications</label>
               <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.qualifications}</p>
             </div>
           )}
@@ -439,7 +440,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           {/* Certifications - Show only if available */}
           {coach.certifications && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Certifications</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Certifications</label>
               <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.certifications}</p>
             </div>
           )}
@@ -447,7 +448,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           {/* Bio - Show only if available */}
           {coach.bio && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Bio</label>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Bio</label>
               <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.bio}</p>
             </div>
           )}
@@ -460,7 +461,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
         <div className="space-y-4">
           {/* Role Badge */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">User Role</label>
+            <label className="block text-sm font-medium text-gray-600 mb-2">User Role</label>
             <div className="inline-block">
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
@@ -482,7 +483,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
           {/* Role Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-600 mb-2">
               Permission Description
             </label>
             <p className="text-base text-gray-700 leading-relaxed">{getRoleDescription(coach.role)}</p>

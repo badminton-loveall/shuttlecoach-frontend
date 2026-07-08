@@ -398,163 +398,177 @@ export default function CoachDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className="coach-detail-page">
-        {/* Page Header */}
-        <div className="mx-4 lg:mx-6 mt-6">
-          <CoachHeaderCard
-            coach={coach}
-            batchCount={batchCount}
-            studentCount={studentCount}
-            userRole={userRole}
-          />
+      <div className="coach-detail-page bg-white min-h-screen">
+        {/* Page Header Section */}
+        <div className="border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <CoachHeaderCard
+              coach={coach}
+              batchCount={batchCount}
+              studentCount={studentCount}
+              userRole={userRole}
+            />
+          </div>
         </div>
 
         {/* Access Denial Message (Requirement 13.4) */}
         {pageState.accessDenialMessage && (
-          <div className="mx-4 lg:mx-6 mt-4 border border-red-300 bg-red-50 rounded-lg p-4" role="alert">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <h4 className="font-semibold text-red-900">Access Denied</h4>
-                <p className="text-red-800 text-sm mt-1">{pageState.accessDenialMessage}</p>
-              </div>
-              <button
-                onClick={() => setPageState((prev) => ({ ...prev, accessDenialMessage: null }))}
-                className="ml-auto text-red-500 hover:text-red-700"
-                aria-label="Dismiss message"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <div className="bg-red-50 border-b border-red-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex items-start gap-3" role="alert">
+                <svg
+                  className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path
-                    fillRule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clipRule="evenodd"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-              </button>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-red-900 text-sm">Access Denied</h4>
+                  <p className="text-red-800 text-sm mt-1">{pageState.accessDenialMessage}</p>
+                </div>
+                <button
+                  onClick={() => setPageState((prev) => ({ ...prev, accessDenialMessage: null }))}
+                  className="flex-shrink-0 text-red-500 hover:text-red-700 transition-colors"
+                  aria-label="Dismiss message"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                    <path
+                      fillRule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Tab Navigation */}
-        <div className="mx-4 lg:mx-6 mt-6">
-          <TabNavigation
-            tabs={visibleTabs.map((tab) => ({
-              id: tab,
-              label: tab.charAt(0).toUpperCase() + tab.slice(1),
-              disabled: false,
-            }))}
-            activeTab={pageState.activeTab}
-            onTabChange={handleTabChange}
-            ariaLabel="Coach detail tabs"
-          />
+        {/* Tab Navigation Section */}
+        <div className="border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <TabNavigation
+              tabs={visibleTabs.map((tab) => ({
+                id: tab,
+                label: tab.charAt(0).toUpperCase() + tab.slice(1),
+                disabled: false,
+              }))}
+              activeTab={pageState.activeTab}
+              onTabChange={handleTabChange}
+              ariaLabel="Coach detail tabs"
+            />
+          </div>
         </div>
 
-        {/* Tab Content - Render appropriate component based on activeTab */}
-        <div className="coach-detail-content mx-4 lg:mx-6 mt-6 mb-12">
-          {/* Profile Tab */}
-          {pageState.activeTab === 'profile' && (
-            isLoadingCoach ? (
-              <ProfileTabSkeleton />
-            ) : coach ? (
-              <CoachProfileTab
-                coach={coach}
-                userRole={userRole}
-                onUpdateCoach={handleUpdateCoach}
-                isLoading={isLoadingCoach}
-              />
-            ) : null
-          )}
+        {/* Tab Content Section */}
+        <div className="coach-detail-content bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Profile Tab */}
+            {pageState.activeTab === 'profile' && (
+              isLoadingCoach ? (
+                <ProfileTabSkeleton />
+              ) : coach ? (
+                <CoachProfileTab
+                  coach={coach}
+                  userRole={userRole}
+                  onUpdateCoach={handleUpdateCoach}
+                  isLoading={isLoadingCoach}
+                />
+              ) : null
+            )}
 
-          {/* Batches Tab */}
-          {pageState.activeTab === 'batches' && (
-            isLoadingBatches ? (
-              <BatchesTabSkeleton />
-            ) : (
-              <CoachBatchesTab
-                batches={batches}
-                userRole={userRole}
-                coachId={coachId}
-                isLoading={isLoadingBatches}
-                onBatchAssigned={handleBatchAssigned}
-                onBatchUnassigned={handleBatchUnassigned}
-              />
-            )
-          )}
+            {/* Batches Tab */}
+            {pageState.activeTab === 'batches' && (
+              isLoadingBatches ? (
+                <BatchesTabSkeleton />
+              ) : (
+                <CoachBatchesTab
+                  batches={batches}
+                  userRole={userRole}
+                  coachId={coachId}
+                  isLoading={isLoadingBatches}
+                  onBatchAssigned={handleBatchAssigned}
+                  onBatchUnassigned={handleBatchUnassigned}
+                />
+              )
+            )}
 
-          {/* Students Tab */}
-          {pageState.activeTab === 'students' && (
-            isLoadingStudents ? (
-              <StudentsTabSkeleton />
-            ) : (
-              <CoachStudentsTab
-                students={students}
-                coachId={coachId}
-                userRole={userRole}
-                batches={batches}
-                onStudentAdded={handleStudentAdded}
-                onStudentRemoved={handleStudentRemoved}
-                isLoading={isLoadingStudents}
-              />
-            )
-          )}
+            {/* Students Tab */}
+            {pageState.activeTab === 'students' && (
+              isLoadingStudents ? (
+                <StudentsTabSkeleton />
+              ) : (
+                <CoachStudentsTab
+                  students={students}
+                  coachId={coachId}
+                  userRole={userRole}
+                  batches={batches}
+                  onStudentAdded={handleStudentAdded}
+                  onStudentRemoved={handleStudentRemoved}
+                  isLoading={isLoadingStudents}
+                />
+              )
+            )}
 
-          {/* Payments Tab */}
-          {pageState.activeTab === 'payments' && (
-            isLoadingPayments ? (
-              <PaymentsTabSkeleton />
-            ) : (
-              <CoachPaymentsTab
-                coachId={coachId}
-                fees={fees}
-                expenses={expenses}
-                students={students}
-                onExpenseDeleted={handleExpenseDeleted}
-              />
-            )
-          )}
+            {/* Payments Tab */}
+            {pageState.activeTab === 'payments' && (
+              isLoadingPayments ? (
+                <PaymentsTabSkeleton />
+              ) : (
+                <CoachPaymentsTab
+                  coachId={coachId}
+                  fees={fees}
+                  expenses={expenses}
+                  students={students}
+                  onExpenseDeleted={handleExpenseDeleted}
+                />
+              )
+            )}
+          </div>
         </div>
 
         {/* Toast Notifications Container */}
-        <div className="fixed bottom-0 right-0 z-50 p-4 space-y-2 pointer-events-none">
+        <div className="fixed bottom-0 right-0 z-50 p-6 space-y-3 pointer-events-none max-w-md">
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className={`p-4 rounded-lg shadow-lg pointer-events-auto flex items-center gap-3 min-w-80 ${
+              className={`rounded-lg shadow-lg pointer-events-auto flex items-start gap-3 p-4 border animate-in slide-in-from-right ${
                 toast.type === 'success'
-                  ? 'bg-green-50 border border-green-200 text-green-800'
-                  : 'bg-red-50 border border-red-200 text-red-800'
+                  ? 'bg-green-50 border-green-200 text-green-900'
+                  : 'bg-red-50 border-red-200 text-red-900'
               }`}
               role="alert"
               aria-live="polite"
+              aria-atomic="true"
             >
               {toast.type === 'success' ? (
-                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 flex-shrink-0 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 flex-shrink-0 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               )}
-              <p className="text-sm font-medium">{toast.message}</p>
+              <div className="flex-1">
+                <p className="text-sm font-medium">{toast.message}</p>
+              </div>
               <button
                 onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-                className="ml-auto text-sm opacity-70 hover:opacity-100"
+                className="flex-shrink-0 text-current opacity-70 hover:opacity-100 transition-opacity"
                 aria-label="Dismiss notification"
               >
-                ✕
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
               </button>
             </div>
           ))}

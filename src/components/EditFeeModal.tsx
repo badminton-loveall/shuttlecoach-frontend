@@ -180,6 +180,7 @@ export const EditFeeModal: React.FC<EditFeeModalProps> = ({
             <div className="form-error-banner">{errors.submit}</div>
           )}
 
+          <div className="modal-form-body">
           {/* Student Info (Read-Only) */}
           <div className="form-group">
             <label className="form-label">Student</label>
@@ -273,6 +274,7 @@ export const EditFeeModal: React.FC<EditFeeModalProps> = ({
               You have made changes to {changedFields.size} field{changedFields.size !== 1 ? 's' : ''}.
             </div>
           )}
+          </div>
 
           {/* Form Actions */}
           <div className="form-actions">

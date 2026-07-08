@@ -224,6 +224,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
             <div className="form-error-banner">{errors.submit}</div>
           )}
 
+          <div className="modal-form-body">
           {/* Student Selection */}
           <div className="form-group">
             <label htmlFor="student" className="form-label">
@@ -345,6 +346,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
               ⚠️ A fee already exists for {students.find((s) => s.id === formData.studentId)?.fullName} for {formData.monthYear}. Creating a new fee will result in duplicate fees.
             </div>
           )}
+          </div>
 
           {/* Form Actions */}
           <div className="form-actions">

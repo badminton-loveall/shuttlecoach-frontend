@@ -121,205 +121,81 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   }
 
   return (
-    <>
-      {/* Backdrop */}
+    <div className="modal-overlay" onClick={handleCancel}>
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-        onClick={handleCancel}
-      />
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="modal-header">
+          <div>
+            <h2 className="modal-title">Add Assistant Coach</h2>
+            <p className="modal-subtitle">Create a new assistant coach account</p>
+          </div>
+          <button type="button" className="modal-close-btn" onClick={handleCancel} disabled={isSubmitting}>✕</button>
+        </div>
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Add Assistant Coach
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Create a new assistant coach account
-            </p>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="modal-form-body">
+            {errors.submit && <div className="form-error-banner">{errors.submit}</div>}
+
+            <div className="form-group">
+              <label htmlFor="coach-name" className="form-label">Name <span className="form-required">*</span></label>
+              <input type="text" id="coach-name" value={name} onChange={(e) => setName(e.target.value)}
+                placeholder="Full name"
+                className={`form-input ${errors.name ? 'form-input-error' : ''}`} disabled={isSubmitting} />
+              {errors.name && <span className="form-error-text">{errors.name}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-username" className="form-label">Username <span className="form-required">*</span></label>
+              <input type="text" id="coach-username" value={username} onChange={(e) => setUsername(e.target.value)}
+                placeholder="Login username (min 3 characters)"
+                className={`form-input ${errors.username ? 'form-input-error' : ''}`} disabled={isSubmitting} />
+              {errors.username && <span className="form-error-text">{errors.username}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-password" className="form-label">Password <span className="form-required">*</span></label>
+              <input type="password" id="coach-password" value={password} onChange={(e) => setPassword(e.target.value)}
+                placeholder="Min 6 characters"
+                className={`form-input ${errors.password ? 'form-input-error' : ''}`} disabled={isSubmitting} />
+              {errors.password && <span className="form-error-text">{errors.password}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-email" className="form-label">Email <span className="form-optional">(optional)</span></label>
+              <input type="text" id="coach-email" value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className={`form-input ${errors.email ? 'form-input-error' : ''}`} disabled={isSubmitting} />
+              {errors.email && <span className="form-error-text">{errors.email}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-specialization" className="form-label">Specialization <span className="form-optional">(optional)</span></label>
+              <input type="text" id="coach-specialization" value={specialization} onChange={(e) => setSpecialization(e.target.value)}
+                placeholder="e.g., Doubles Training, Footwork & Movement"
+                className="form-input" disabled={isSubmitting} />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-photo" className="form-label">Profile Photo URL <span className="form-optional">(optional)</span></label>
+              <input type="text" id="coach-photo" value={profilePhoto} onChange={(e) => setProfilePhoto(e.target.value)}
+                placeholder="https://example.com/photo.jpg"
+                className="form-input" disabled={isSubmitting} />
+            </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <div className="px-6 py-4 space-y-4">
-              {/* Submit Error */}
-              {errors.submit && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-                  <p className="text-sm text-red-800 dark:text-red-200">{errors.submit}</p>
-                </div>
-              )}
-
-              {/* Name */}
-              <div>
-                <label htmlFor="coach-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="coach-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name"
-                  className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    errors.name
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name}</p>
-                )}
-              </div>
-
-              {/* Username */}
-              <div>
-                <label htmlFor="coach-username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Username <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="coach-username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Login username (min 3 characters)"
-                  className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    errors.username
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                {errors.username && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div>
-                <label htmlFor="coach-password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Password <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  id="coach-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    errors.password
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                {errors.password && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div>
-                <label htmlFor="coach-email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Email
-                  <span className="text-gray-500 dark:text-gray-400 font-normal ml-1">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  id="coach-email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  className={`w-full px-4 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    errors.email
-                      ? 'border-red-500 dark:border-red-500'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Specialization */}
-              <div>
-                <label htmlFor="coach-specialization" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Specialization
-                  <span className="text-gray-500 dark:text-gray-400 font-normal ml-1">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  id="coach-specialization"
-                  value={specialization}
-                  onChange={(e) => setSpecialization(e.target.value)}
-                  placeholder="e.g., Doubles Training, Footwork & Movement"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                />
-              </div>
-
-              {/* Profile Photo */}
-              <div>
-                <label htmlFor="coach-photo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Profile Photo URL
-                  <span className="text-gray-500 dark:text-gray-400 font-normal ml-1">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  id="coach-photo"
-                  value={profilePhoto}
-                  onChange={(e) => setProfilePhoto(e.target.value)}
-                  placeholder="https://example.com/photo.jpg"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                />
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={isSubmitting}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-4 py-2 bg-primary hover:bg-primary/90 text-gray-900 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Adding...
-                  </>
-                ) : (
-                  'Add Coach'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="form-actions">
+            <button type="button" className="btn btn-secondary" onClick={handleCancel} disabled={isSubmitting}>Cancel</button>
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding...' : 'Add Coach'}
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

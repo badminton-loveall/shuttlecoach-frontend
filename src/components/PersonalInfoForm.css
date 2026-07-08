@@ -1,91 +1,91 @@
-/* PersonalInfoForm Styles - Grid of Cards Design (like Student Listing) */
+/* ============================================================================
+   PERSONAL INFO FORM
+   All values use design tokens. Background is always var(--surface-card)
+   (which resolves to white) — never a gray surface.
+   ============================================================================ */
 
 .personal-info-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-lg);
 }
 
 .form-section-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
-  padding: 0;
-  letter-spacing: -0.02em;
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  line-height: var(--line-snug);
 }
 
-/* Cards Container - Grid Layout */
+/* ── Read-only: cards grid ── */
 .form-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: var(--space-md);
 }
 
-/* Form Groups - Individual Cards (like student cards) */
+/* Individual info card — white background, light border, no hover lift */
 .form-group {
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);   /* always white */
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-card);
+  /* override PersonalInfoForm card hover from global scope */
+  transition: box-shadow var(--transition-base);
+  transform: none;
 }
 
 .form-group:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-float);
+  transform: none;
 }
 
 .form-group-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #111827;
-  text-transform: none;
-  letter-spacing: -0.01em;
-  padding: 18px 20px 14px 20px;
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  padding: var(--space-md) var(--space-lg) var(--space-sm);
   margin: 0;
-  background-color: #ffffff;
-  border-bottom: none;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-default);
 }
 
-/* Fieldset styling for editing mode */
+/* ── Editing: fieldsets ── */
 .form-fieldset {
-  border: none;
-  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 0;
   margin: 0;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface-card);
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-card);
 }
 
 .form-legend {
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
-  padding: 16px 20px;
-  text-transform: none;
-  letter-spacing: -0.01em;
-  border-bottom: 1px solid #e5e7eb;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
   width: 100%;
   display: block;
-  background-color: #f9fafb;
+  background: var(--surface-card);  /* white, not gray */
   margin: 0;
+  box-sizing: border-box;
 }
 
 .required-note {
-  font-weight: 400;
-  font-size: 11px;
-  color: #9ca3af;
-  text-transform: none;
-  letter-spacing: 0;
+  font-weight: var(--weight-regular);
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
 }
 
-/* Grid Layout - Vertical Stacked Fields in Each Card */
+/* ── Fields ── */
 .form-grid {
   display: flex;
   flex-direction: column;
@@ -95,10 +95,11 @@
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 20px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: background-color 0.15s ease;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-card);
+  transition: background var(--transition-fast);
 }
 
 .form-field:last-child {
@@ -106,295 +107,242 @@
 }
 
 .form-field:hover {
-  background-color: #f9fafb;
+  background: var(--surface-card); /* keep white on hover */
 }
 
-.form-field-full {
-  /* Full width fields already work in vertical layout */
-}
-
-/* Labels */
+/* ── Labels ── */
 .field-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #9ca3af;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-label);
 }
 
 .required-marker {
-  color: #dc2626;
+  color: var(--color-danger);
+  margin-left: 2px;
 }
 
-/* Field Values (read-only mode) */
+/* ── Read-only values ── */
 .field-value {
-  font-size: 14px;
-  color: #111827;
-  line-height: 1.4;
-  font-weight: 500;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  line-height: var(--line-normal);
+  font-weight: var(--weight-medium);
   word-break: break-word;
 }
 
 .computed-value {
-  color: #059669;
-  font-weight: 600;
+  color: var(--color-success);
+  font-weight: var(--weight-semibold);
 }
 
-/* Inputs (editing mode) */
+/* ── Inputs ── */
 .field-input {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 14px;
-  font-family: inherit;
-  color: #374151;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  height: 38px;
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: var(--surface-card);  /* always white */
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
   box-sizing: border-box;
 }
 
 .field-input::placeholder {
-  color: #9ca3af;
+  color: var(--text-tertiary);
 }
 
 .field-input:focus {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+  background: var(--surface-card);
 }
 
 .field-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7885' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
+  background-position: right var(--space-sm) center;
+  background-size: 16px;
+  padding-right: var(--space-xl);
 }
 
 .field-textarea {
+  height: auto;
   resize: vertical;
   min-height: 72px;
-  line-height: 1.5;
+  line-height: var(--line-normal);
 }
 
-/* Computed field display in editing mode */
+/* ── Computed display in edit mode ── */
 .field-computed {
-  font-size: 12px;
-  color: #059669;
-  font-weight: 600;
+  font-size: var(--font-xs);
+  color: var(--color-success);
+  font-weight: var(--weight-semibold);
   margin-top: 2px;
 }
 
 .field-computed-display {
-  font-size: 14px;
-  color: #059669;
-  font-weight: 600;
-  padding: 8px 12px;
-  background: #d1fae5;
-  border: 1px solid #a7f3d0;
-  border-radius: 8px;
+  font-size: var(--font-sm);
+  color: var(--color-success);
+  font-weight: var(--weight-semibold);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--feedback-success-light);
+  border: 1px solid var(--color-success-light);
+  border-radius: var(--radius-md);
+  height: 38px;
+  display: flex;
+  align-items: center;
 }
 
-/* Error States */
+/* ── Error states ── */
 .form-field-error .field-input {
-  border-color: #dc2626;
+  border-color: var(--color-danger);
 }
 
 .form-field-error .field-input:focus {
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  box-shadow: var(--shadow-focus-danger);
 }
 
 .field-error {
-  font-size: 12px;
-  color: #dc2626;
-  line-height: 1.3;
-  grid-column: 2;
+  font-size: var(--font-xs);
+  color: var(--color-danger);
+  line-height: var(--line-normal);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-/* Form Actions */
+.field-error::before {
+  content: '⚠';
+}
+
+/* ── Form actions ── */
 .form-actions {
   display: flex;
-  gap: 12px;
-  padding: 0;
-  margin-top: 8px;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-default);
 }
 
 .form-btn {
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
+  padding: var(--space-sm) var(--space-lg);
+  height: 38px;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
 }
 
 .form-btn-save {
-  background: #059669;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--text-primary);
 }
 
 .form-btn-save:hover {
-  background: #047857;
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
 }
 
+.form-btn-save:active { transform: translateY(0); }
+
 .form-btn-cancel {
-  background: #ffffff;
-  color: #6b7280;
-  border: 1px solid #d1d5db;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
 }
 
 .form-btn-cancel:hover {
-  color: #374151;
-  border-color: #9ca3af;
-  background: #f9fafb;
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 1024px) {
-  .form-cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .form-cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 768px) {
-  .form-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .form-field {
-    padding: 14px 16px;
-  }
-
-  .field-label {
-    font-size: 10px;
-  }
-
-  .field-value {
-    font-size: 13px;
-  }
-
-  .field-error {
-    grid-column: 1;
-  }
-
-  .form-section-title {
-    font-size: 18px;
-  }
-
-  .form-group-title {
-    padding: 14px 16px 12px 16px;
-    font-size: 13px;
-  }
-
-  .form-legend {
-    padding: 14px 16px;
-    font-size: 13px;
-  }
-
-  .form-actions {
-    flex-direction: column;
-    margin-top: 16px;
-  }
-
-  .form-btn {
-    width: 100%;
-    text-align: center;
-  }
+  .form-cards-grid { grid-template-columns: 1fr; gap: var(--space-md); }
+  .form-field { padding: var(--space-md); }
+  .form-group-title { padding: var(--space-md); }
+  .form-legend { padding: var(--space-sm) var(--space-md); }
+  .form-actions { flex-direction: column; }
+  .form-btn { width: 100%; justify-content: center; }
 }
 
-/* Light mode */
-@media (prefers-color-scheme: light) {
-  .form-section-title {
-    color: #111827;
-  }
+/* ── Dark mode ── */
+@media (prefers-color-scheme: dark) {
+  .form-section-title { color: var(--text-dark-primary); }
 
   .form-group {
-    background-color: #ffffff;
-    border-color: #e5e7eb;
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
   }
 
   .form-group-title {
-    color: #111827;
-    background-color: #ffffff;
+    color: var(--text-dark-primary);
+    background: var(--surface-dark-card);
+    border-bottom-color: var(--border-dark);
   }
 
   .form-fieldset {
-    background-color: #ffffff;
-    border-color: #e5e7eb;
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
   }
 
   .form-legend {
-    color: #374151;
-    background-color: #f9fafb;
-    border-bottom-color: #e5e7eb;
-  }
-
-  .field-label {
-    color: #9ca3af;
-  }
-
-  .field-value {
-    color: #111827;
-  }
-
-  .computed-value {
-    color: #059669;
-  }
-
-  .field-input {
-    color: #374151;
-    background: #ffffff;
-    border-color: #d1d5db;
-  }
-
-  .field-input::placeholder {
-    color: #9ca3af;
-  }
-
-  .field-input:focus {
-    border-color: #059669;
-    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-  }
-
-  .field-computed {
-    color: #059669;
-  }
-
-  .field-computed-display {
-    color: #059669;
-    background: #d1fae5;
-    border-color: #a7f3d0;
-  }
-
-  .form-field:hover {
-    background-color: #f9fafb;
+    color: var(--text-dark-primary);
+    background: var(--surface-dark-card);
+    border-bottom-color: var(--border-dark);
   }
 
   .form-field {
-    border-bottom-color: #f3f4f6;
+    background: var(--surface-dark-card);
+    border-bottom-color: var(--border-dark);
   }
 
-  .form-btn-save {
-    background: #059669;
-    color: #ffffff;
+  .form-field:hover { background: var(--surface-dark-card); }
+
+  .field-label { color: var(--text-dark-secondary); }
+  .field-value { color: var(--text-dark-primary); }
+
+  .field-input {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    color: var(--text-dark-primary);
   }
 
-  .form-btn-save:hover {
-    background: #047857;
+  .field-input:focus {
+    border-color: var(--color-primary);
+    background: var(--surface-dark-card);
   }
+
+  .field-input::placeholder { color: var(--text-dark-tertiary); }
+
+  .form-actions { border-top-color: var(--border-dark); }
 
   .form-btn-cancel {
-    color: #6b7280;
-    border-color: #d1d5db;
-    background: #ffffff;
+    color: var(--text-dark-secondary);
+    border-color: var(--border-dark);
   }
 
   .form-btn-cancel:hover {
-    color: #374151;
-    border-color: #9ca3af;
-    background: #f9fafb;
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark-strong);
+    color: var(--text-dark-primary);
   }
 }
