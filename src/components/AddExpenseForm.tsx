@@ -184,9 +184,14 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-4">
-      {/* General error banner */}
+      {/* General error banner - with ARIA live region for screen readers */}
       {errors.submit && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+        <div 
+          className="rounded-md bg-red-50 p-3 text-sm text-red-700 border border-red-200"
+          role="alert"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {errors.submit}
         </div>
       )}
@@ -201,6 +206,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           value={formData.type}
           onChange={(e) => handleTypeChange(e.target.value)}
           disabled={isSubmitting || isLoading}
+          aria-required="true"
+          aria-invalid={!!errors.type}
+          aria-describedby={errors.type ? 'expense-type-error' : undefined}
           className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
             errors.type
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
@@ -214,7 +222,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           ))}
         </select>
         {errors.type && (
-          <span className="text-xs text-red-600">{errors.type}</span>
+          <span id="expense-type-error" className="text-xs text-red-600" role="alert">
+            {errors.type}
+          </span>
         )}
       </div>
 
@@ -232,6 +242,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           onChange={(e) => handleAmountChange(e.target.value)}
           placeholder="0.00"
           disabled={isSubmitting || isLoading}
+          aria-required="true"
+          aria-invalid={!!errors.amount}
+          aria-describedby={errors.amount ? 'expense-amount-error' : undefined}
           className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
             errors.amount
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
@@ -239,7 +252,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.amount && (
-          <span className="text-xs text-red-600">{errors.amount}</span>
+          <span id="expense-amount-error" className="text-xs text-red-600" role="alert">
+            {errors.amount}
+          </span>
         )}
       </div>
 
@@ -255,6 +270,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           onChange={(e) => handleDateChange(e.target.value)}
           max={getTodayString()}
           disabled={isSubmitting || isLoading}
+          aria-required="true"
+          aria-invalid={!!errors.date}
+          aria-describedby={errors.date ? 'expense-date-error' : undefined}
           className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
             errors.date
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
@@ -262,7 +280,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.date && (
-          <span className="text-xs text-red-600">{errors.date}</span>
+          <span id="expense-date-error" className="text-xs text-red-600" role="alert">
+            {errors.date}
+          </span>
         )}
       </div>
 
@@ -278,6 +298,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           placeholder="e.g., Shuttle service for training session"
           disabled={isSubmitting || isLoading}
           rows={3}
+          aria-required="true"
+          aria-invalid={!!errors.description}
+          aria-describedby={errors.description ? 'expense-description-error' : undefined}
           className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all resize-none ${
             errors.description
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
@@ -285,7 +308,9 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.description && (
-          <span className="text-xs text-red-600">{errors.description}</span>
+          <span id="expense-description-error" className="text-xs text-red-600" role="alert">
+            {errors.description}
+          </span>
         )}
       </div>
 

@@ -242,22 +242,34 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
 
       {/* Remove Batch Confirmation Dialog */}
       {showRemoveConfirm && batchToRemove && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          role="presentation"
+        >
+          <dialog 
+            open
+            className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4"
+            aria-labelledby="remove-batch-title"
+            aria-describedby="remove-batch-description"
+          >
             <div className="p-6">
               <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
                 <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4v2m0 0V9m0 0v8m0-8h-.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+              <h3 id="remove-batch-title" className="text-lg font-semibold text-gray-900 text-center mb-2">
                 Unassign Batch?
               </h3>
-              <p className="text-gray-600 text-center mb-6">
+              <p id="remove-batch-description" className="text-gray-600 text-center mb-6">
                 Are you sure you want to unassign <strong>{batchToRemove.name}</strong> from this coach? This action cannot be undone.
               </p>
               {removeError && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                <div 
+                  className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700"
+                  role="alert"
+                  aria-live="polite"
+                >
                   {removeError}
                 </div>
               )}
@@ -269,6 +281,7 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
                   }}
                   disabled={removingBatchId === batchToRemove.id}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Cancel batch unassignment"
                 >
                   Cancel
                 </button>
@@ -276,12 +289,13 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
                   onClick={handleRemoveConfirm}
                   disabled={removingBatchId === batchToRemove.id}
                   className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Confirm batch unassignment"
                 >
                   {removingBatchId === batchToRemove.id ? 'Removing...' : 'Unassign'}
                 </button>
               </div>
             </div>
-          </div>
+          </dialog>
         </div>
       )}
     </>

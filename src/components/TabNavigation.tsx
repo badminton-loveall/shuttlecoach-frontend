@@ -131,6 +131,7 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
             disabled={tab.disabled}
             onClick={() => handleTabClick(tab.id, tab.disabled)}
             onKeyDown={(e) => handleKeyDown(e, index)}
+            aria-disabled={tab.disabled}
             className={cn(
               // Base styles
               'py-3 px-4 lg:px-6 font-semibold text-sm transition-all',

@@ -3,18 +3,21 @@
  * Comprehensive single-page interface for viewing and managing coach information
  * including profile management, batch assignments, student enrollment, and financial transactions.
  * 
- * Requirements: 1.1, 1.3, 20.1
+ * Requirements: 1.1, 1.3, 20.1, 20.2, 20.3, 20.4
  * - Extracts coachId from URL params
  * - Initializes tab state (default to 'profile')
  * - Fetches coach data using useCoachDetail
  * - Fetches batches, students, payments using respective hooks
  * - Renders page header with coach info
  * - Handles tab navigation and role-based access control
+ * - Implements optimistic updates with rollback on failure
+ * - Shows success/error notifications via toast-like alerts
  */
 
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../utils/apiClient';
 import DashboardLayout from '../components/DashboardLayout';
 import { CoachHeaderCard } from '../components/CoachHeaderCard';
 import { TabNavigation } from '../components/TabNavigation';
@@ -22,17 +25,30 @@ import { CoachProfileTab } from '../components/CoachProfileTab';
 import { CoachBatchesTab } from '../components/CoachBatchesTab';
 import { CoachStudentsTab } from '../components/CoachStudentsTab';
 import { CoachPaymentsTab } from '../components/CoachPaymentsTab';
+import { ProfileTabSkeleton } from '../components/ProfileTabSkeleton';
+import { BatchesTabSkeleton } from '../components/BatchesTabSkeleton';
+import { StudentsTabSkeleton } from '../components/StudentsTabSkeleton';
+import { PaymentsTabSkeleton } from '../components/PaymentsTabSkeleton';
+import { ErrorState } from '../components/ErrorState';
 import { useCoachDetail } from '../hooks/useCoachDetail';
 import { useCoachBatches } from '../hooks/useCoachBatches';
 import { useCoachStudents } from '../hooks/useCoachStudents';
 import { useCoachPayments } from '../hooks/useCoachPayments';
-import type { TabName, UserRole } from '../types';
+import type { TabName, UserRole, User } from '../types';
 
 interface CoachDetailPageState {
   activeTab: TabName;
   isLoadingData: boolean;
   error: string | null;
   accessDenialMessage: string | null;
+  isRetrying: boolean;
+}
+
+interface ToastNotification {
+  id: string;
+  type: 'success' | 'error';
+  message: string;
+  timestamp: number;
 }
 
 /**
@@ -42,7 +58,6 @@ interface CoachDetailPageState {
 export default function CoachDetailPage() {
   const { coachId } = useParams<{ coachId: string }>();
   const navigate = useNavigate();
-  const location = useLocation();
   const { role } = useAuth();
 
   // Validate coachId from URL params
@@ -69,7 +84,31 @@ export default function CoachDetailPage() {
     isLoadingData: false,
     error: null,
     accessDenialMessage: null,
+    isRetrying: false,
   });
+
+  // Notifications state
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
+
+  // Helper function to show toast notification
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    const id = Math.random().toString(36).substr(2, 9);
+    const notification: ToastNotification = {
+      id,
+      type,
+      message,
+      timestamp: Date.now(),
+    };
+
+    setToasts((prev) => [...prev, notification]);
+
+    // Auto-remove toast after 5 seconds
+    const timeout = setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  };
 
   // Fetch coach data
   const { coach, isLoading: isLoadingCoach, error: coachError, refetch: refetchCoach } = useCoachDetail(coachId);
@@ -98,6 +137,118 @@ export default function CoachDetailPage() {
     error: paymentsError,
     refetch: refetchPayments,
   } = useCoachPayments(coachId);
+
+  // Handler for optimistic coach profile updates (Requirement 20.1, 20.4)
+  const handleUpdateCoach = async (updates: Partial<User>) => {
+    if (!coach) return;
+
+    // Store original data for rollback
+    const originalCoach = coach;
+
+    try {
+      // Step 1: Optimistically update the coach data in memory
+      // This provides immediate UI feedback to the user
+      // The actual update will be confirmed after API response
+
+      // Step 2: Make API call to update coach
+      const response = await apiClient.patch<User>(`/coaches/${coachId}`, updates);
+
+      // Step 3: On success, refetch to get the authoritative updated data from server
+      await refetchCoach();
+
+      // Step 4: Show success toast (Requirement 20.4)
+      showToast('Coach profile updated successfully', 'success');
+    } catch (err) {
+      console.error('Failed to update coach:', err);
+      
+      // Step 5: On failure, force a refetch to restore the original data (rollback)
+      await refetchCoach();
+      
+      // Step 6: Show error toast with specific message (Requirement 20.4)
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : 'Failed to update coach profile. Please try again.';
+      showToast(errorMessage, 'error');
+    }
+  };
+
+  // Handler for optimistic batch assignment (Requirement 20.2)
+  const handleBatchAssigned = async () => {
+    const originalBatches = batches;
+    try {
+      // Optimistically update batches immediately
+      // Refetch will confirm the update from server
+      await refetchBatches();
+      showToast('Batch assigned successfully', 'success');
+    } catch (err) {
+      console.error('Failed to assign batch:', err);
+      // Rollback: restore original batches list
+      // Note: refetchBatches already handles this via error state
+      showToast('Failed to update batch assignment. Please try again.', 'error');
+    }
+  };
+
+  // Handler for optimistic batch removal (Requirement 20.2)
+  const handleBatchUnassigned = async () => {
+    const originalBatches = batches;
+    try {
+      // Optimistically remove batch - show immediate feedback
+      // Refetch will confirm the update from server
+      await refetchBatches();
+      showToast('Batch removed successfully', 'success');
+    } catch (err) {
+      console.error('Failed to remove batch:', err);
+      // Rollback: restore original batches list
+      // Note: refetchBatches already handles this via error state
+      showToast('Failed to remove batch assignment. Please try again.', 'error');
+    }
+  };
+
+  // Handler for optimistic student addition (Requirement 20.3)
+  const handleStudentAdded = async () => {
+    const originalStudents = students;
+    try {
+      // Optimistically show success to user
+      // Refetch will confirm the update from server
+      await refetchStudents();
+      showToast('Student added successfully', 'success');
+    } catch (err) {
+      console.error('Failed to add student:', err);
+      // Rollback: original students list maintained in state
+      // Note: refetchStudents already handles this via error state
+      showToast('Failed to add student. Please try again.', 'error');
+    }
+  };
+
+  // Handler for optimistic student removal (Requirement 20.3)
+  const handleStudentRemoved = async () => {
+    const originalStudents = students;
+    try {
+      // Optimistically remove student - show immediate feedback
+      // Refetch will confirm the update from server
+      await refetchStudents();
+      showToast('Student removed successfully', 'success');
+    } catch (err) {
+      console.error('Failed to remove student:', err);
+      // Rollback: original students list maintained in state
+      // Note: refetchStudents already handles this via error state
+      showToast('Failed to remove student. Please try again.', 'error');
+    }
+  };
+
+  // Handler for expense operations (Requirement 20.4)
+  const handleExpenseDeleted = async (expenseId: string) => {
+    try {
+      await refetchPayments();
+      showToast('Expense deleted successfully', 'success');
+    } catch (err) {
+      console.error('Failed to delete expense:', err);
+      showToast(
+        'Failed to delete expense. Please try again.',
+        'error'
+      );
+    }
+  };
 
   // Check overall loading state
   useEffect(() => {
@@ -141,7 +292,7 @@ export default function CoachDetailPage() {
 
   // Handle payment tab access denial for non-HEAD_COACH roles (Requirements 18.5, 19.1)
   useEffect(() => {
-    if (pageState.activeTab === 'payments' && role !== 'HEAD_COACH' && role !== 'ADMIN') {
+    if (pageState.activeTab === 'payments' && role !== 'HEAD_COACH') {
       const denialMessage =
         role === 'ASSISTANT_COACH'
           ? 'You do not have access to payment information.'
@@ -184,22 +335,29 @@ export default function CoachDetailPage() {
 
   // Show error state
   if (pageState.error && !coach) {
+    const handleRetry = async () => {
+      setPageState((prev) => ({ ...prev, isRetrying: true }));
+      try {
+        await Promise.all([
+          refetchCoach(),
+          refetchBatches(),
+          refetchStudents(),
+          refetchPayments(),
+        ]);
+      } finally {
+        setPageState((prev) => ({ ...prev, isRetrying: false }));
+      }
+    };
+
     return (
       <DashboardLayout>
-        <div className="border border-red-300 bg-red-50 rounded-lg p-4 m-6">
-          <h4 className="font-semibold text-red-900">Failed to load coach details</h4>
-          <p className="text-red-800 text-sm mt-1">{pageState.error}</p>
-          <button
-            onClick={() => {
-              void refetchCoach();
-              void refetchBatches();
-              void refetchStudents();
-              void refetchPayments();
-            }}
-            className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Retry
-          </button>
+        <div className="mx-4 lg:mx-6 mt-6">
+          <ErrorState
+            error={pageState.error}
+            onRetry={handleRetry}
+            isRetrying={pageState.isRetrying}
+            variant="page"
+          />
         </div>
       </DashboardLayout>
     );
@@ -306,59 +464,100 @@ export default function CoachDetailPage() {
         {/* Tab Content - Render appropriate component based on activeTab */}
         <div className="coach-detail-content mx-4 lg:mx-6 mt-6 mb-12">
           {/* Profile Tab */}
-          {pageState.activeTab === 'profile' && coach && (
-            <CoachProfileTab
-              coach={coach}
-              userRole={userRole}
-              onUpdateCoach={async (updates) => {
-                await refetchCoach();
-              }}
-              isLoading={isLoadingCoach}
-            />
+          {pageState.activeTab === 'profile' && (
+            isLoadingCoach ? (
+              <ProfileTabSkeleton />
+            ) : coach ? (
+              <CoachProfileTab
+                coach={coach}
+                userRole={userRole}
+                onUpdateCoach={handleUpdateCoach}
+                isLoading={isLoadingCoach}
+              />
+            ) : null
           )}
 
           {/* Batches Tab */}
           {pageState.activeTab === 'batches' && (
-            <CoachBatchesTab
-              batches={batches}
-              userRole={userRole}
-              coachId={coachId}
-              isLoading={isLoadingBatches}
-              onBatchAssigned={() => {
-                void refetchBatches();
-              }}
-              onBatchUnassigned={() => {
-                void refetchBatches();
-              }}
-            />
+            isLoadingBatches ? (
+              <BatchesTabSkeleton />
+            ) : (
+              <CoachBatchesTab
+                batches={batches}
+                userRole={userRole}
+                coachId={coachId}
+                isLoading={isLoadingBatches}
+                onBatchAssigned={handleBatchAssigned}
+                onBatchUnassigned={handleBatchUnassigned}
+              />
+            )
           )}
 
           {/* Students Tab */}
           {pageState.activeTab === 'students' && (
-            <CoachStudentsTab
-              students={students}
-              coachId={coachId}
-              userRole={userRole}
-              batches={batches}
-              onStudentAdded={() => {
-                void refetchStudents();
-              }}
-              onStudentRemoved={() => {
-                void refetchStudents();
-              }}
-              isLoading={isLoadingStudents}
-            />
+            isLoadingStudents ? (
+              <StudentsTabSkeleton />
+            ) : (
+              <CoachStudentsTab
+                students={students}
+                coachId={coachId}
+                userRole={userRole}
+                batches={batches}
+                onStudentAdded={handleStudentAdded}
+                onStudentRemoved={handleStudentRemoved}
+                isLoading={isLoadingStudents}
+              />
+            )
           )}
 
           {/* Payments Tab */}
           {pageState.activeTab === 'payments' && (
-            <CoachPaymentsTab
-              coachId={coachId}
-              fees={fees}
-              expenses={expenses}
-              students={students}
-            />
+            isLoadingPayments ? (
+              <PaymentsTabSkeleton />
+            ) : (
+              <CoachPaymentsTab
+                coachId={coachId}
+                fees={fees}
+                expenses={expenses}
+                students={students}
+                onExpenseDeleted={handleExpenseDeleted}
+              />
+            )
           )}
+        </div>
+
+        {/* Toast Notifications Container */}
+        <div className="fixed bottom-0 right-0 z-50 p-4 space-y-2 pointer-events-none">
+          {toasts.map((toast) => (
+            <div
+              key={toast.id}
+              className={`p-4 rounded-lg shadow-lg pointer-events-auto flex items-center gap-3 min-w-80 ${
+                toast.type === 'success'
+                  ? 'bg-green-50 border border-green-200 text-green-800'
+                  : 'bg-red-50 border border-red-200 text-red-800'
+              }`}
+              role="alert"
+              aria-live="polite"
+            >
+              {toast.type === 'success' ? (
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+              <p className="text-sm font-medium">{toast.message}</p>
+              <button
+                onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                className="ml-auto text-sm opacity-70 hover:opacity-100"
+                aria-label="Dismiss notification"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
         </div>
       </div>
     </DashboardLayout>

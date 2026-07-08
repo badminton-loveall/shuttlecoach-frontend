@@ -1902,3 +1902,219 @@
     color: var(--text-dark-primary);
   }
 }
+
+/* ============================================================================
+   EMPTY CELL CONTENT (for table empty states)
+   ============================================================================ */
+
+.empty-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.empty-cell-icon {
+  width: 40px;
+  height: 40px;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-cell-icon {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.empty-cell-message {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-cell-message {
+    color: var(--text-dark-secondary);
+  }
+}
+
+/* ============================================================================
+   CELL EMPTY STATE (for payment table)
+   ============================================================================ */
+
+.cell-empty {
+  padding: 0 !important;
+}
+
+.cell-empty td {
+  padding: 0 !important;
+}
+
+/* ============================================================================
+   LOADING SKELETONS WITH PULSE ANIMATION
+   ============================================================================ */
+
+/* Skeleton Line Base Styles */
+.skeleton-line {
+  display: block;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-line {
+    background: var(--surface-dark-hover);
+  }
+}
+
+/* Size variants */
+.skeleton-line--xs {
+  height: 16px;
+}
+
+.skeleton-line--sm {
+  height: 20px;
+}
+
+.skeleton-line--base {
+  height: 24px;
+}
+
+.skeleton-line--lg {
+  height: 32px;
+}
+
+/* Pulse animation - fade opacity in and out */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Tailwind animate-pulse fallback */
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Loading skeleton container */
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Skeleton for list items */
+.skeleton-list-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-list-item {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+  }
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface-card);
+  flex-shrink: 0;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-avatar {
+    background: var(--surface-dark-card);
+  }
+}
+
+.skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Skeleton for table header and rows */
+.skeleton-table-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-table-header {
+    background: var(--surface-dark-hover);
+    border-color: var(--border-dark);
+  }
+}
+
+.skeleton-table-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-table-row {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+.skeleton-table-cell {
+  height: 20px;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton-table-cell {
+    background: var(--surface-dark-hover);
+  }
+}
+
+/* Responsive skeleton adjustments */
+@media (max-width: 768px) {
+  .skeleton-line--lg {
+    height: 28px;
+  }
+
+  .skeleton-line--base {
+    height: 20px;
+  }
+
+  .skeleton-list-item {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .skeleton-avatar {
+    width: 40px;
+    height: 40px;
+  }
+}

@@ -78,7 +78,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
     }
   };
 
-  // Handle Save button click
+  // Handle Save button click - with optimistic updates (Requirement 20.1)
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -101,7 +101,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
       if (formData.certifications !== (coach.certifications || '')) updates.certifications = formData.certifications || undefined;
       if (formData.bio !== (coach.bio || '')) updates.bio = formData.bio || undefined;
 
-      // Call update callback
+      // Call update callback (which will make API call and show notifications)
       await onUpdateCoach(updates);
 
       // Exit edit mode on success
@@ -148,10 +148,15 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
   // EDIT MODE
   if (isEditing) {
     return (
-      <form onSubmit={handleSave} className="space-y-6 p-6">
+      <form onSubmit={handleSave} className="space-y-6 p-6" noValidate>
         {/* Error banner if submission failed */}
         {errors.submit && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div 
+            className="bg-red-50 border border-red-200 rounded-lg p-4"
+            role="alert"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <p className="text-sm text-red-800">{errors.submit}</p>
           </div>
         )}
@@ -171,13 +176,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 value={formData.name}
                 onChange={e => handleFieldChange('name', e.target.value)}
                 placeholder="Enter coach name"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? 'name-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.name && (
-                <p className="text-sm text-red-600 mt-1">{errors.name}</p>
+                <p id="name-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.name}
+                </p>
               )}
             </div>
 
@@ -192,13 +201,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 value={formData.email}
                 onChange={e => handleFieldChange('email', e.target.value)}
                 placeholder="Enter email address"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? 'email-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.email && (
-                <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+                <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.email}
+                </p>
               )}
             </div>
 
@@ -213,13 +226,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 value={formData.phone}
                 onChange={e => handleFieldChange('phone', e.target.value)}
                 placeholder="Enter phone number"
+                aria-invalid={!!errors.phone}
+                aria-describedby={errors.phone ? 'phone-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.phone && (
-                <p className="text-sm text-red-600 mt-1">{errors.phone}</p>
+                <p id="phone-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.phone}
+                </p>
               )}
             </div>
           </div>
@@ -240,13 +257,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 value={formData.specialization}
                 onChange={e => handleFieldChange('specialization', e.target.value)}
                 placeholder="Enter specialization"
+                aria-invalid={!!errors.specialization}
+                aria-describedby={errors.specialization ? 'specialization-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   errors.specialization ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.specialization && (
-                <p className="text-sm text-red-600 mt-1">{errors.specialization}</p>
+                <p id="specialization-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.specialization}
+                </p>
               )}
             </div>
 
@@ -261,13 +282,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 onChange={e => handleFieldChange('qualifications', e.target.value)}
                 placeholder="Enter qualifications"
                 rows={3}
+                aria-invalid={!!errors.qualifications}
+                aria-describedby={errors.qualifications ? 'qualifications-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                   errors.qualifications ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.qualifications && (
-                <p className="text-sm text-red-600 mt-1">{errors.qualifications}</p>
+                <p id="qualifications-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.qualifications}
+                </p>
               )}
             </div>
 
@@ -282,13 +307,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 onChange={e => handleFieldChange('certifications', e.target.value)}
                 placeholder="Enter certifications"
                 rows={3}
+                aria-invalid={!!errors.certifications}
+                aria-describedby={errors.certifications ? 'certifications-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                   errors.certifications ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.certifications && (
-                <p className="text-sm text-red-600 mt-1">{errors.certifications}</p>
+                <p id="certifications-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.certifications}
+                </p>
               )}
             </div>
 
@@ -303,13 +332,17 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 onChange={e => handleFieldChange('bio', e.target.value)}
                 placeholder="Enter bio"
                 rows={4}
+                aria-invalid={!!errors.bio}
+                aria-describedby={errors.bio ? 'bio-error' : undefined}
                 className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                   errors.bio ? 'border-red-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.bio && (
-                <p className="text-sm text-red-600 mt-1">{errors.bio}</p>
+                <p id="bio-error" className="text-sm text-red-600 mt-1" role="alert">
+                  {errors.bio}
+                </p>
               )}
             </div>
           </div>
@@ -322,6 +355,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
             onClick={handleCancel}
             disabled={isSubmitting}
             className="px-6 py-2 border border-gray-300 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Cancel profile editing"
           >
             Cancel
           </button>
@@ -329,6 +363,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
             type="submit"
             disabled={isSubmitting}
             className="px-6 py-2 bg-blue-600 rounded-lg text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Save profile changes"
           >
             {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
