@@ -1,11 +1,12 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import StudentGrid from '../components/StudentGrid';
 import EnrollStudentModal, { type EnrollStudentFormData } from '../components/EnrollStudentModal';
 import CollapsibleFilterPanel from '../components/CollapsibleFilterPanel';
 import { useStudents } from '../hooks/useStudents';
-import type { User } from '../types';
+import type { User, Batch } from '../types';
+import apiClient from '../utils/apiClient';
 import USERS_DATA from '../data/users.json';
 
 /**
@@ -18,7 +19,6 @@ export const StudentsPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
-  const [enrollError, setEnrollError] = useState<string | null>(null);
   const [filters, setFilters] = useState({
     batch: '',
     skillLevel: '',
@@ -32,24 +32,56 @@ export const StudentsPage: React.FC = () => {
     search: searchTerm || undefined,
   });
 
-  // Parse mock users data (for coach options in filters/modal)
-  const users: User[] = useMemo(() => {
-    try {
-      return Array.isArray(USERS_DATA) ? USERS_DATA.map((u) => ({
-        ...u,
-        createdAt: new Date(u.createdAt as string),
-        lastActive: new Date(u.lastActive as string),
-      })) as unknown as User[] : [];
-    } catch {
-      return [];
-    }
+  // Fetch batches from API for dropdown and filters
+  const [batches, setBatches] = useState<Batch[]>([]);
+  useEffect(() => {
+    const loadBatches = async () => {
+      try {
+        const response = await apiClient.get('/batches');
+        const batchData = response.data.batches || response.data;
+        setBatches(Array.isArray(batchData) ? batchData : []);
+      } catch {
+        setBatches([]);
+      }
+    };
+    void loadBatches();
   }, []);
 
-  // Get batch options from loaded students
+  // Fetch coaches from API (real UUIDs required for validation)
+  const [users, setUsers] = useState<User[]>([]);
+  useEffect(() => {
+    const loadCoaches = async () => {
+      try {
+        const response = await apiClient.get('/coaches');
+        // API returns array directly: [{id, name, ...}, ...]
+        const coachData = Array.isArray(response.data) ? response.data : (response.data.coaches || []);
+        const parsed = coachData.map((u: Record<string, unknown>) => ({
+          ...u,
+          createdAt: new Date(u.createdAt as string),
+          lastActive: new Date(u.lastActive as string),
+        })) as User[];
+        setUsers(parsed);
+      } catch {
+        // Fallback to static data if API unavailable
+        try {
+          const fallback = Array.isArray(USERS_DATA) ? USERS_DATA.map((u) => ({
+            ...u,
+            createdAt: new Date(u.createdAt as string),
+            lastActive: new Date(u.lastActive as string),
+          })) as unknown as User[] : [];
+          setUsers(fallback);
+        } catch {
+          setUsers([]);
+        }
+      }
+    };
+    void loadCoaches();
+  }, []);
+
+  // Get batch options from API data
   const batchOptions = useMemo(() => {
-    const batchIds = new Set(students.map(s => s.batchId).filter(Boolean) as string[]);
-    return Array.from(batchIds).map(batchId => ({ value: batchId, label: batchId }));
-  }, [students]);
+    return batches.map(batch => ({ value: batch.id, label: batch.name }));
+  }, [batches]);
 
   // Get coach options
   const coachOptions = useMemo(() => {
@@ -83,7 +115,6 @@ export const StudentsPage: React.FC = () => {
 
   // Handle enroll — calls API to persist
   const handleEnrollSubmit = async (studentData: EnrollStudentFormData) => {
-    setEnrollError(null);
     try {
       await createStudent({
         fullName:        studentData.fullName,
@@ -104,7 +135,7 @@ export const StudentsPage: React.FC = () => {
       await refetch();
     } catch (err) {
       console.error('Failed to enroll student:', err);
-      setEnrollError('Failed to enroll student. Please try again.');
+      throw err; // Re-throw so modal handles field-level errors
     }
   };
 
@@ -187,11 +218,10 @@ export const StudentsPage: React.FC = () => {
         {/* Enroll Student Modal */}
         <EnrollStudentModal
           isOpen={isEnrollModalOpen}
-          onClose={() => { setIsEnrollModalOpen(false); setEnrollError(null); }}
+          onClose={() => { setIsEnrollModalOpen(false); }}
           onSubmit={handleEnrollSubmit}
           batches={enrollmentBatchOptions}
           coaches={enrollmentCoachOptions}
-          error={enrollError}
         />
       </div>
     </DashboardLayout>

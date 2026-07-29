@@ -95,26 +95,30 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
           </button>
         </div>
 
-        {error && (
-          <div className="mx-4 mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400" role="alert">
-            {error}
-          </div>
-        )}
+        <div className="modal-form">
+          <div className="modal-form-body">
+            {error && (
+              <div className="form-error-banner" role="alert">
+                {error}
+              </div>
+            )}
 
-        {isSubmitting && (
-          <div className="flex items-center justify-center py-2">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-            <span className="ml-2 text-sm text-gray-500">Saving changes...</span>
-          </div>
-        )}
+            {isSubmitting && (
+              <div className="flex items-center justify-center py-4">
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                <span className="ml-2 text-sm text-gray-500">Saving changes...</span>
+              </div>
+            )}
 
-        <div className={isSubmitting ? 'pointer-events-none opacity-50' : ''}>
-          <PersonalInfoForm
-            student={student}
-            isEditing={true}
-            onSave={handleSave}
-            onCancel={handleCancel}
-          />
+            <div className={isSubmitting ? 'pointer-events-none opacity-50' : ''}>
+              <PersonalInfoForm
+                student={student}
+                isEditing={true}
+                onSave={handleSave}
+                onCancel={handleCancel}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

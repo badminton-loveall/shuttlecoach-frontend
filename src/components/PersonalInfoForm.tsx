@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import type { Student, Gender } from '../types';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import type { Student, Gender, Batch } from '../types';
 import { calculateAge, calculateBMI } from '../utils/studentUtils';
+import apiClient from '../utils/apiClient';
 import './PersonalInfoForm.css';
 
 /**
@@ -96,6 +97,28 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // Fetch batches for dropdown and name resolution
+  const [batches, setBatches] = useState<Batch[]>([]);
+  useEffect(() => {
+    const loadBatches = async () => {
+      try {
+        const response = await apiClient.get('/batches');
+        const batchData = response.data.batches || response.data;
+        setBatches(Array.isArray(batchData) ? batchData : []);
+      } catch {
+        setBatches([]);
+      }
+    };
+    void loadBatches();
+  }, []);
+
+  // Helper to resolve batch ID to name
+  const getBatchName = useCallback((batchId: string | undefined) => {
+    if (!batchId) return '';
+    const batch = batches.find(b => b.id === batchId);
+    return batch ? batch.name : batchId;
+  }, [batches]);
 
   // Compute age from DOB
   const computedAge = useMemo(() => {
@@ -300,7 +323,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 {student.batchId && (
                   <div className="form-field">
                     <span className="field-label">Batch</span>
-                    <span className="field-value">{student.batchId}</span>
+                    <span className="field-value">{getBatchName(student.batchId)}</span>
                   </div>
                 )}
               </div>
@@ -574,14 +597,17 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <label className="field-label" htmlFor="batchId">
               Batch
             </label>
-            <input
+            <select
               id="batchId"
-              type="text"
-              className="field-input"
+              className="field-input field-select"
               value={formData.batchId}
               onChange={(e) => handleChange('batchId', e.target.value)}
-              placeholder="Enter batch ID"
-            />
+            >
+              <option value="">Select a batch</option>
+              {batches.map((batch) => (
+                <option key={batch.id} value={batch.id}>{batch.name}</option>
+              ))}
+            </select>
           </div>
 
           <div className="form-field">

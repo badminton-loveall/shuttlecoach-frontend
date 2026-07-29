@@ -92,14 +92,23 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       newErrors.email = 'Please enter a valid email address';
     }
 
-    if (!formData.guardianName || !formData.guardianName.trim()) {
-      newErrors.guardianName = 'Guardian name is required';
-    }
+    // Guardian fields required only if student is under 18
+    const age = calculateAge(formData.dateOfBirth);
+    if (age < 18) {
+      if (!formData.guardianName || !formData.guardianName.trim()) {
+        newErrors.guardianName = 'Guardian name is required for students under 18';
+      }
 
-    if (!formData.guardianPhone || !formData.guardianPhone.trim()) {
-      newErrors.guardianPhone = 'Guardian phone is required';
-    } else if (formData.guardianPhone && !/^\d{10}$/.test(formData.guardianPhone.replace(/\D/g, ''))) {
-      newErrors.guardianPhone = 'Guardian phone must be 10 digits';
+      if (!formData.guardianPhone || !formData.guardianPhone.trim()) {
+        newErrors.guardianPhone = 'Guardian phone is required for students under 18';
+      } else if (!/^\d{10}$/.test(formData.guardianPhone.replace(/\D/g, ''))) {
+        newErrors.guardianPhone = 'Guardian phone must be 10 digits';
+      }
+    } else {
+      // For adults, validate phone format only if provided
+      if (formData.guardianPhone && formData.guardianPhone.trim() && !/^\d{10}$/.test(formData.guardianPhone.replace(/\D/g, ''))) {
+        newErrors.guardianPhone = 'Guardian phone must be 10 digits';
+      }
     }
 
     if (!formData.batchId) {
@@ -125,12 +134,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await onSubmit(formData);
 
-      onSubmit(formData);
-
-      // Reset form
+      // Reset form only on success
       setFormData({
         fullName: '',
         dateOfBirth: new Date(),
@@ -145,8 +151,32 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
         assignedCoachId: '',
       });
       setErrors({});
-    } catch (error) {
-      setErrors({ submit: 'Failed to enroll student. Please try again.' });
+    } catch (error: unknown) {
+      // Parse field-level validation errors from API response
+      const apiError = error as { response?: { data?: { details?: Array<{ field: string; message: string }>, error?: string } } };
+      const details = apiError?.response?.data?.details;
+      if (details && Array.isArray(details)) {
+        const fieldErrors: Record<string, string> = {};
+        for (const detail of details) {
+          fieldErrors[detail.field] = detail.message;
+        }
+        setErrors(fieldErrors);
+
+        // Navigate to the tab containing the first error
+        const errorFields = details.map(d => d.field);
+        if (errorFields.some(f => f === 'fullName' || f === 'dateOfBirth' || f === 'gender')) {
+          setActiveSection('basic');
+        } else if (errorFields.some(f => f === 'contactPhone' || f === 'email')) {
+          setActiveSection('contact');
+        } else if (errorFields.some(f => f === 'guardianName' || f === 'guardianPhone')) {
+          setActiveSection('guardian');
+        } else if (errorFields.some(f => f === 'batchId' || f === 'assignedCoachId' || f === 'skillLevel')) {
+          setActiveSection('academy');
+        }
+      } else {
+        const message = apiError?.response?.data?.error || 'Failed to enroll student. Please try again.';
+        setErrors({ submit: message });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -337,7 +367,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
               {activeSection === 'guardian' && (
                 <>
                   <div className="form-group">
-                    <label htmlFor="guardianName" className="form-label">Guardian Name *</label>
+                    <label htmlFor="guardianName" className="form-label">
+                      Guardian Name {calculateAge(formData.dateOfBirth) < 18 ? '*' : <span className="form-optional">(optional)</span>}
+                    </label>
                     <input
                       id="guardianName"
                       type="text"
@@ -350,7 +382,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                     {errors.guardianName && <span className="form-error-text">{errors.guardianName}</span>}
                   </div>
                   <div className="form-group">
-                    <label htmlFor="guardianPhone" className="form-label">Guardian Phone *</label>
+                    <label htmlFor="guardianPhone" className="form-label">
+                      Guardian Phone {calculateAge(formData.dateOfBirth) < 18 ? '*' : <span className="form-optional">(optional)</span>}
+                    </label>
                     <input
                       id="guardianPhone"
                       type="tel"
