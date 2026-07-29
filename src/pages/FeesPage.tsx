@@ -9,9 +9,10 @@ import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 import StatCard from '../components/StatCard';
 import CollapsibleFilterPanel from '../components/CollapsibleFilterPanel';
 import { computeAllFeeStatuses } from '../utils/feeUtils';
-import type { FeeRecord, Student, FeeStatus } from '../types';
-import feesData from '../data/fees.json';
-import studentsData from '../data/students.json';
+import { useFees } from '../hooks/useFees';
+import { useStudents } from '../hooks/useStudents';
+import apiClient from '../utils/apiClient';
+import type { FeeStatus } from '../types';
 
 /**
  * FeesPage
@@ -21,6 +22,9 @@ import studentsData from '../data/students.json';
  */
 
 export const FeesPage: React.FC = () => {
+  const { fees: rawFees, loading: feesLoading, error: feesError, createFee, markFeeAsPaid, waiveFee, refetch: refetchFees } = useFees();
+  const { students, loading: studentsLoading } = useStudents();
+
   const [selectedStatuses, setSelectedStatuses] = useState<FeeStatus[]>(['PAID', 'PENDING', 'OVERDUE', 'WAIVED']);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -31,33 +35,11 @@ export const FeesPage: React.FC = () => {
   const [isMarkPaidModalOpen, setIsMarkPaidModalOpen] = useState(false);
   const [isWaiveFeeModalOpen, setIsWaiveFeeModalOpen] = useState(false);
   const [selectedFeeId, setSelectedFeeId] = useState<string | null>(null);
-  const [localFees, setLocalFees] = useState<FeeRecord[]>([]);
 
-  // Load and compute fee statuses (auto-detect overdue)
-  const fees = useMemo(() => {
-    // Convert date strings to Date objects
-    const parsedFees: FeeRecord[] = (feesData as unknown as FeeRecord[]).map((fee) => ({
-      ...fee,
-      dueDate: new Date(fee.dueDate),
-      paidDate: fee.paidDate ? new Date(fee.paidDate) : undefined,
-      createdAt: new Date(fee.createdAt),
-      updatedAt: new Date(fee.updatedAt),
-    }));
-    
-    // Use local fees if available, otherwise use parsed fees from JSON
-    const currentFees = localFees.length > 0 ? localFees : parsedFees;
-    return computeAllFeeStatuses(currentFees);
-  }, [localFees]);
+  const loading = feesLoading || studentsLoading;
 
-  const students = useMemo(() => {
-    // Convert date strings to Date objects
-    return (studentsData as unknown as Student[]).map((student) => ({
-      ...student,
-      dateOfBirth: new Date(student.dateOfBirth),
-      createdAt: new Date(student.createdAt),
-      updatedAt: new Date(student.updatedAt),
-    }));
-  }, []);
+  // Compute fee statuses (auto-detect overdue)
+  const fees = useMemo(() => computeAllFeeStatuses(rawFees), [rawFees]);
 
   // Get unique months from fees (sorted descending - newest first)
   const uniqueMonths = useMemo(() => {
@@ -84,7 +66,6 @@ export const FeesPage: React.FC = () => {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    // Total collected this month (sum of PAID fees with paidDate in current month)
     const totalCollectedThisMonth = fees
       .filter((fee) => {
         if (fee.status !== 'PAID' || !fee.paidDate) return false;
@@ -93,34 +74,23 @@ export const FeesPage: React.FC = () => {
       })
       .reduce((sum, fee) => sum + fee.amount, 0);
 
-    // Outstanding balance (sum of PENDING + OVERDUE)
     const outstandingBalance = fees
       .filter((fee) => fee.status === 'PENDING' || fee.status === 'OVERDUE')
       .reduce((sum, fee) => sum + fee.amount, 0);
 
-    // Overdue count
     const overdueCount = fees.filter((fee) => fee.status === 'OVERDUE').length;
 
-    return {
-      totalCollectedThisMonth,
-      outstandingBalance,
-      overdueCount,
-    };
+    return { totalCollectedThisMonth, outstandingBalance, overdueCount };
   }, [fees]);
 
   // Filter and sort fees
   const filteredAndSortedFees = useMemo(() => {
-    let filtered = fees;
+    let filtered = fees.filter((fee) => selectedStatuses.includes(fee.status));
 
-    // Apply status filter - only include fees with selected statuses
-    filtered = fees.filter((fee) => selectedStatuses.includes(fee.status));
-
-    // Apply month filter
     if (selectedMonth !== '') {
       filtered = filtered.filter((fee) => fee.monthYear === selectedMonth);
     }
 
-    // Apply batch filter
     if (selectedBatch !== '') {
       filtered = filtered.filter((fee) => {
         const student = students.find((s) => s.id === fee.studentId);
@@ -128,7 +98,6 @@ export const FeesPage: React.FC = () => {
       });
     }
 
-    // Apply search filter
     if (searchQuery.trim() !== '') {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((fee) => {
@@ -136,62 +105,34 @@ export const FeesPage: React.FC = () => {
         const studentName = student?.fullName.toLowerCase() || '';
         const studentId = student?.id.toLowerCase() || '';
         const monthYear = fee.monthYear.toLowerCase();
-        
-        return (
-          studentName.includes(query) ||
-          studentId.includes(query) ||
-          monthYear.includes(query)
-        );
+        return studentName.includes(query) || studentId.includes(query) || monthYear.includes(query);
       });
     }
 
-    // Sort by due date (earliest first)
-    const sorted = [...filtered].sort((a, b) => {
-      const dateA = new Date(a.dueDate).getTime();
-      const dateB = new Date(b.dueDate).getTime();
-      return dateA - dateB;
+    return [...filtered].sort((a, b) => {
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     });
-
-    return sorted;
   }, [fees, selectedStatuses, selectedMonth, selectedBatch, searchQuery, students]);
 
   // Format currency
-  const formatCurrency = (amount: number): string => {
-    return `₹${amount.toLocaleString('en-IN')}`;
-  };
+  const formatCurrency = (amount: number): string => `₹${amount.toLocaleString('en-IN')}`;
 
   // Handle status filter toggle
   const handleStatusToggle = (status: FeeStatus) => {
-    setSelectedStatuses((prev) => {
-      if (prev.includes(status)) {
-        // Remove status if already selected
-        return prev.filter((s) => s !== status);
-      } else {
-        // Add status if not selected
-        return [...prev, status];
-      }
-    });
+    setSelectedStatuses((prev) =>
+      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
+    );
   };
 
   // Handler for creating new fee
-  const handleCreateFeeSubmit = (feeData: CreateFeeFormData) => {
-    // Create new fee record with generated ID
-    const newFee: FeeRecord = {
-      id: `fee-${Date.now()}`,
+  const handleCreateFeeSubmit = async (feeData: CreateFeeFormData) => {
+    await createFee({
       studentId: feeData.studentId,
       amount: feeData.amount,
       monthYear: feeData.monthYear,
-      dueDate: feeData.dueDate,
-      status: 'PENDING',
-      notes: feeData.notes || undefined,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    // Add to local fees
-    setLocalFees([...localFees, newFee]);
-
-    // Close modal
+      dueDate: feeData.dueDate.toISOString(),
+      notes: feeData.notes,
+    });
     setIsCreateFeeModalOpen(false);
   };
 
@@ -201,37 +142,20 @@ export const FeesPage: React.FC = () => {
     setIsMarkPaidModalOpen(true);
   };
 
-  // Handler for closing mark paid modal
   const handleCloseMarkPaidModal = () => {
     setIsMarkPaidModalOpen(false);
     setSelectedFeeId(null);
   };
 
   // Handler for submitting payment
-  const handleMarkPaidSubmit = (paymentData: PaymentFormData) => {
+  const handleMarkPaidSubmit = async (paymentData: PaymentFormData) => {
     if (!selectedFeeId) return;
-
-    // Find the fee to update
-    const feeIndex = fees.findIndex((fee) => fee.id === selectedFeeId);
-    if (feeIndex === -1) return;
-
-    // Create updated fee record
-    const updatedFee: FeeRecord = {
-      ...fees[feeIndex],
-      status: 'PAID',
-      paidDate: new Date(paymentData.paidDate),
+    await markFeeAsPaid(selectedFeeId, {
+      paidDate: paymentData.paidDate,
       paymentMethod: paymentData.paymentMethod,
       transactionRef: paymentData.transactionRef,
       notes: paymentData.notes,
-      updatedAt: new Date(),
-    };
-
-    // Update local state with the new fee data
-    const updatedFees = [...fees];
-    updatedFees[feeIndex] = updatedFee;
-    setLocalFees(updatedFees);
-
-    // Close modal
+    });
     handleCloseMarkPaidModal();
   };
 
@@ -241,34 +165,15 @@ export const FeesPage: React.FC = () => {
     setIsWaiveFeeModalOpen(true);
   };
 
-  // Handler for closing waive fee modal
   const handleCloseWaiveFeeModal = () => {
     setIsWaiveFeeModalOpen(false);
     setSelectedFeeId(null);
   };
 
   // Handler for submitting fee waiver
-  const handleWaiveFeeSubmit = (reason: string) => {
+  const handleWaiveFeeSubmit = async (reason: string) => {
     if (!selectedFeeId) return;
-
-    // Find the fee to update
-    const feeIndex = fees.findIndex((fee) => fee.id === selectedFeeId);
-    if (feeIndex === -1) return;
-
-    // Create updated fee record with waived status
-    const updatedFee: FeeRecord = {
-      ...fees[feeIndex],
-      status: 'WAIVED',
-      notes: reason,
-      updatedAt: new Date(),
-    };
-
-    // Update local state with the new fee data
-    const updatedFees = [...fees];
-    updatedFees[feeIndex] = updatedFee;
-    setLocalFees(updatedFees);
-
-    // Close modal
+    await waiveFee(selectedFeeId, { reason });
     handleCloseWaiveFeeModal();
   };
 
@@ -278,33 +183,19 @@ export const FeesPage: React.FC = () => {
     setIsEditFeeModalOpen(true);
   };
 
-  // Handler for closing edit fee modal
   const handleCloseEditFeeModal = () => {
     setIsEditFeeModalOpen(false);
     setSelectedFeeId(null);
   };
 
   // Handler for submitting edit fee
-  const handleEditFeeSubmit = (feeData: EditFeeFormData) => {
-    // Find the fee to update
-    const feeIndex = fees.findIndex((fee) => fee.id === feeData.feeId);
-    if (feeIndex === -1) return;
-
-    // Create updated fee record
-    const updatedFee: FeeRecord = {
-      ...fees[feeIndex],
+  const handleEditFeeSubmit = async (feeData: EditFeeFormData) => {
+    await apiClient.patch(`/fees/${feeData.feeId}`, {
       amount: feeData.amount,
-      dueDate: feeData.dueDate,
+      dueDate: feeData.dueDate instanceof Date ? feeData.dueDate.toISOString() : feeData.dueDate,
       notes: feeData.notes,
-      updatedAt: new Date(),
-    };
-
-    // Update local state with the new fee data
-    const updatedFees = [...fees];
-    updatedFees[feeIndex] = updatedFee;
-    setLocalFees(updatedFees);
-
-    // Close modal
+    });
+    await refetchFees();
     handleCloseEditFeeModal();
   };
 
@@ -314,21 +205,16 @@ export const FeesPage: React.FC = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  // Handler for closing delete confirmation dialog
   const handleCloseDeleteDialog = () => {
     setIsDeleteDialogOpen(false);
     setSelectedFeeId(null);
   };
 
   // Handler for confirming fee deletion
-  const handleDeleteFeeConfirm = () => {
+  const handleDeleteFeeConfirm = async () => {
     if (!selectedFeeId) return;
-
-    // Remove the fee from local state
-    const updatedFees = fees.filter((fee) => fee.id !== selectedFeeId);
-    setLocalFees(updatedFees);
-
-    // Close dialog
+    await apiClient.delete(`/fees/${selectedFeeId}`);
+    await refetchFees();
     handleCloseDeleteDialog();
   };
 
@@ -342,171 +228,175 @@ export const FeesPage: React.FC = () => {
     <DashboardLayout>
       <div className="hc-dashboard">
         <div className="hc-dashboard-content">
-        {/* Page Header */}
-        <div className="page-header">
-          <div>
-            <h1 className="page-header-title">Fee Management</h1>
-            <p className="page-header-subtitle">Track and manage student fee payments</p>
+          {/* Page Header */}
+          <div className="page-header">
+            <div>
+              <h1 className="page-header-title">Fee Management</h1>
+              <p className="page-header-subtitle">Track and manage student fee payments</p>
+            </div>
+            <div className="page-header-actions">
+              <CollapsibleFilterPanel activeFilterCount={selectedStatuses.length - 4 + (selectedMonth ? 1 : 0) + (selectedBatch ? 1 : 0) + (searchQuery ? 1 : 0)}>
+                <div className="filter-panel-inner">
+                  <div className="filter-panel-search">
+                    <input type="text" placeholder="Search by name, student ID, or batch..." className="filter-search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                  </div>
+
+                  <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="filter-dropdown" title="Filter by month">
+                    <option value="">All Months</option>
+                    {uniqueMonths.map((month) => (<option key={month} value={month}>{month}</option>))}
+                  </select>
+
+                  <select value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)} className="filter-dropdown" title="Filter by batch">
+                    <option value="">All Batches</option>
+                    {uniqueBatches.map((batch) => (<option key={batch.id} value={batch.id}>{batch.name}</option>))}
+                  </select>
+
+                  <div className="filter-section-divider">
+                    <h4 className="filter-section-title">Status</h4>
+                  </div>
+
+                  <div className="filter-status-row">
+                    <button onClick={() => handleStatusToggle('PAID')} className={`filter-status-badge filter-badge--paid ${selectedStatuses.includes('PAID') ? 'active' : ''}`} title="Paid fees">Paid</button>
+                    <button onClick={() => handleStatusToggle('PENDING')} className={`filter-status-badge filter-badge--pending ${selectedStatuses.includes('PENDING') ? 'active' : ''}`} title="Pending fees">Pending</button>
+                    <button onClick={() => handleStatusToggle('OVERDUE')} className={`filter-status-badge filter-badge--overdue ${selectedStatuses.includes('OVERDUE') ? 'active' : ''}`} title="Overdue fees">Overdue</button>
+                    <button onClick={() => handleStatusToggle('WAIVED')} className={`filter-status-badge filter-badge--waived ${selectedStatuses.includes('WAIVED') ? 'active' : ''}`} title="Waived fees">Waived</button>
+                  </div>
+
+                  <div className="filter-results">
+                    <span className="filter-count">{filteredAndSortedFees.length} of {fees.length} records</span>
+                  </div>
+                </div>
+              </CollapsibleFilterPanel>
+              <button
+                onClick={() => setIsCreateFeeModalOpen(true)}
+                className="btn-create-fee"
+                title="Create new fee"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Create Fee
+              </button>
+            </div>
           </div>
-          <div className="page-header-actions">
-            <CollapsibleFilterPanel activeFilterCount={selectedStatuses.length - 4 + (selectedMonth ? 1 : 0) + (selectedBatch ? 1 : 0) + (searchQuery ? 1 : 0)}>
-              <div className="filter-panel-inner">
-                <div className="filter-panel-search">
-                  <input type="text" placeholder="Search by name, student ID, or batch..." className="filter-search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                </div>
 
-                <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="filter-dropdown" title="Filter by month">
-                  <option value="">All Months</option>
-                  {uniqueMonths.map((month) => (<option key={month} value={month}>{month}</option>))}
-                </select>
-
-                <select value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)} className="filter-dropdown" title="Filter by batch">
-                  <option value="">All Batches</option>
-                  {uniqueBatches.map((batch) => (<option key={batch.id} value={batch.id}>{batch.name}</option>))}
-                </select>
-
-                <div className="filter-section-divider">
-                  <h4 className="filter-section-title">Status</h4>
-                </div>
-
-                <div className="filter-status-row">
-                  <button onClick={() => handleStatusToggle('PAID')} className={`filter-status-badge filter-badge--paid ${selectedStatuses.includes('PAID') ? 'active' : ''}`} title="Paid fees">Paid</button>
-                  <button onClick={() => handleStatusToggle('PENDING')} className={`filter-status-badge filter-badge--pending ${selectedStatuses.includes('PENDING') ? 'active' : ''}`} title="Pending fees">Pending</button>
-                  <button onClick={() => handleStatusToggle('OVERDUE')} className={`filter-status-badge filter-badge--overdue ${selectedStatuses.includes('OVERDUE') ? 'active' : ''}`} title="Overdue fees">Overdue</button>
-                  <button onClick={() => handleStatusToggle('WAIVED')} className={`filter-status-badge filter-badge--waived ${selectedStatuses.includes('WAIVED') ? 'active' : ''}`} title="Waived fees">Waived</button>
-                </div>
-
-                <div className="filter-results">
-                  <span className="filter-count">{filteredAndSortedFees.length} of {fees.length} records</span>
-                </div>
+          {/* Loading State */}
+          {loading && (
+            <div className="card" style={{ padding: 'var(--space-xl)' }}>
+              <div className="animate-pulse flex flex-col" style={{ gap: 'var(--space-md)' }}>
+                <div className="h-4 rounded w-3/4" style={{ backgroundColor: 'var(--border-default)' }}></div>
+                <div className="h-4 rounded" style={{ backgroundColor: 'var(--border-default)' }}></div>
+                <div className="h-4 rounded w-5/6" style={{ backgroundColor: 'var(--border-default)' }}></div>
               </div>
-            </CollapsibleFilterPanel>
-            <button
-              onClick={() => setIsCreateFeeModalOpen(true)}
-              className="btn-create-fee"
-              title="Create new fee"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-              Create Fee
-            </button>
-          </div>
-        </div>
+            </div>
+          )}
 
-        {/* Statistics Cards - Using Reusable StatCard Component */}
-        <div className="hc-stats-grid">
-          <StatCard
-            title="Collected This Month"
-            value={formatCurrency(stats.totalCollectedThisMonth)}
-            label="This month"
-            icon={
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          {/* Error State */}
+          {feesError && (
+            <div className="p-md" style={{ backgroundColor: 'var(--feedback-danger-light)', border: '1px solid var(--color-danger-light)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-lg)' }}>
+              <p className="text-small" style={{ color: 'var(--color-danger-text)' }}>{feesError}</p>
+            </div>
+          )}
+
+          {/* Statistics Cards */}
+          {!loading && (
+            <div className="hc-stats-grid">
+              <StatCard
+                title="Collected This Month"
+                value={formatCurrency(stats.totalCollectedThisMonth)}
+                label="This month"
+                icon={
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+                variant="success"
+              />
+              <StatCard
+                title="Outstanding Balance"
+                value={formatCurrency(stats.outstandingBalance)}
+                label="Pending payments"
+                icon={
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+                variant="warning"
+              />
+              <StatCard
+                title="Overdue Fees"
+                value={stats.overdueCount}
+                label="Need attention"
+                icon={
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                }
+                variant="danger"
+              />
+            </div>
+          )}
+
+          {/* Table Section */}
+          {!loading && (
+            <div className="hc-overview">
+              <div className="table-filter-section">
+                <FeeListTable
+                  fees={filteredAndSortedFees}
+                  students={students}
+                  onMarkPaid={handleMarkPaidClick}
+                  onWaive={handleWaiveFeeClick}
+                  onEdit={handleEditFeeClick}
+                  onDelete={handleDeleteFeeClick}
                 />
-              </svg>
-            }
-            variant="success"
+              </div>
+            </div>
+          )}
+
+          {/* Mark Paid Modal */}
+          <MarkPaidModal
+            isOpen={isMarkPaidModalOpen}
+            onClose={handleCloseMarkPaidModal}
+            onSubmit={handleMarkPaidSubmit}
+            studentName={selectedStudent?.fullName}
+            feeAmount={selectedFee?.amount}
           />
-          
-          <StatCard
-            title="Outstanding Balance"
-            value={formatCurrency(stats.outstandingBalance)}
-            label="Pending payments"
-            icon={
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            }
-            variant="warning"
+
+          {/* Waive Fee Modal */}
+          <WaiveFeeModal
+            isOpen={isWaiveFeeModalOpen}
+            onClose={handleCloseWaiveFeeModal}
+            onSubmit={handleWaiveFeeSubmit}
+            studentName={selectedStudent?.fullName}
+            feeAmount={selectedFee?.amount}
           />
-          
-          <StatCard
-            title="Overdue Fees"
-            value={stats.overdueCount}
-            label="Need attention"
-            icon={
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
-            }
-            variant="danger"
+
+          {/* Create Fee Modal */}
+          <CreateFeeModal
+            isOpen={isCreateFeeModalOpen}
+            onClose={() => setIsCreateFeeModalOpen(false)}
+            onSubmit={handleCreateFeeSubmit}
+            students={students}
+            existingFees={fees}
           />
-        </div>
 
-        {/* Table Section */}
-        <div className="hc-overview">
-          <div className="table-filter-section">
-            {/* Fee List Table */}
-            <FeeListTable
-              fees={filteredAndSortedFees}
-              students={students}
-              onMarkPaid={handleMarkPaidClick}
-              onWaive={handleWaiveFeeClick}
-              onEdit={handleEditFeeClick}
-              onDelete={handleDeleteFeeClick}
-            />
-          </div>
-        </div>
+          {/* Edit Fee Modal */}
+          <EditFeeModal
+            isOpen={isEditFeeModalOpen}
+            onClose={handleCloseEditFeeModal}
+            onSubmit={handleEditFeeSubmit}
+            fee={selectedFee}
+            student={selectedStudent}
+          />
 
-        {/* Mark Paid Modal */}
-        <MarkPaidModal
-          isOpen={isMarkPaidModalOpen}
-          onClose={handleCloseMarkPaidModal}
-          onSubmit={handleMarkPaidSubmit}
-          studentName={selectedStudent?.fullName}
-          feeAmount={selectedFee?.amount}
-        />
-
-        {/* Waive Fee Modal */}
-        <WaiveFeeModal
-          isOpen={isWaiveFeeModalOpen}
-          onClose={handleCloseWaiveFeeModal}
-          onSubmit={handleWaiveFeeSubmit}
-          studentName={selectedStudent?.fullName}
-          feeAmount={selectedFee?.amount}
-        />
-
-        {/* Create Fee Modal */}
-        <CreateFeeModal
-          isOpen={isCreateFeeModalOpen}
-          onClose={() => setIsCreateFeeModalOpen(false)}
-          onSubmit={handleCreateFeeSubmit}
-          students={students}
-          existingFees={fees}
-        />
-
-        {/* Edit Fee Modal */}
-        <EditFeeModal
-          isOpen={isEditFeeModalOpen}
-          onClose={handleCloseEditFeeModal}
-          onSubmit={handleEditFeeSubmit}
-          fee={selectedFee}
-          student={selectedStudent}
-        />
-
-        {/* Delete Confirmation Dialog */}
-        <DeleteConfirmDialog
-          isOpen={isDeleteDialogOpen}
-          onClose={handleCloseDeleteDialog}
-          onConfirm={handleDeleteFeeConfirm}
-          fee={selectedFee}
-          student={selectedStudent}
-        />
+          {/* Delete Confirmation Dialog */}
+          <DeleteConfirmDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={handleCloseDeleteDialog}
+            onConfirm={handleDeleteFeeConfirm}
+            fee={selectedFee}
+            student={selectedStudent}
+          />
         </div>
       </div>
     </DashboardLayout>

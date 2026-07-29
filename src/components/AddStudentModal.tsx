@@ -178,19 +178,21 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
 
           {/* Loading State */}
           {isLoading ? (
-            <div className="space-y-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-12 bg-gray-200 rounded animate-pulse"
+                  className="h-12 animate-pulse"
+                  style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-md)' }}
                 />
               ))}
             </div>
           ) : availableStudents.length === 0 ? (
             /* No Available Students */
-            <div className="text-center py-8">
+            <div className="text-center" style={{ padding: 'var(--space-xl) 0' }}>
               <svg
-                className="w-12 h-12 text-gray-300 mx-auto mb-3"
+                className="w-12 h-12 mx-auto"
+                style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-sm)' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -202,24 +204,24 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
                   d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
                 />
               </svg>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+              <h3 style={{ fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)', marginBottom: 'var(--space-xs)' }}>
                 No Available Students
               </h3>
-              <p className="text-gray-600">
+              <p style={{ color: 'var(--text-secondary)' }}>
                 All students are already assigned or no students exist
               </p>
             </div>
           ) : (
             /* Student and Batch Selection */
-            <div className="space-y-6">
+            <div className="section-stack">
               {/* Batch Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="form-label" style={{ display: 'block', marginBottom: 'var(--space-sm)' }}>
                   Select Batch *
                 </label>
                 {availableBatches.length === 0 ? (
-                  <div className="text-center py-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">
+                  <div className="text-center" style={{ padding: 'var(--space-md) 0', backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-md)' }}>
+                    <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
                       No batches available for this coach
                     </p>
                   </div>
@@ -228,7 +230,7 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
                     value={selectedBatchId || ''}
                     onChange={(e) => setSelectedBatchId(e.target.value || null)}
                     disabled={isAssigning}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="form-input"
                     aria-label="Select batch for student assignment"
                   >
                     <option value="">Choose a batch...</option>
@@ -243,18 +245,25 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
 
               {/* Student Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="form-label" style={{ display: 'block', marginBottom: 'var(--space-sm)' }}>
                   Select Student *
                 </label>
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="max-h-64 overflow-y-auto" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
                   {availableStudents.map((student) => (
                     <label
                       key={student.id}
-                      className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                        selectedStudentId === student.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className={`flex items-center cursor-pointer transition-all`}
+                      style={{
+                        padding: 'var(--space-md)',
+                        border: '1px solid',
+                        borderColor: selectedStudentId === student.id
+                          ? 'var(--color-primary)'
+                          : 'var(--border-default)',
+                        borderRadius: 'var(--radius-md)',
+                        backgroundColor: selectedStudentId === student.id
+                          ? 'var(--feedback-primary-light, rgba(184, 225, 53, 0.1))'
+                          : 'transparent',
+                      }}
                     >
                       <input
                         type="radio"
@@ -263,14 +272,15 @@ export const AddStudentModal: React.FC<AddStudentModalProps> = ({
                         checked={selectedStudentId === student.id}
                         onChange={(e) => setSelectedStudentId(e.target.value)}
                         disabled={isAssigning}
-                        className="w-4 h-4 text-blue-600"
+                        className="w-4 h-4"
+                        style={{ accentColor: 'var(--color-primary)' }}
                         aria-label={`Select student: ${student.fullName}`}
                       />
                       <div className="ml-3 flex-1">
-                        <p className="text-sm font-medium text-gray-900">
+                        <p style={{ fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-medium)', color: 'var(--text-primary)' }}>
                           {student.fullName}
                         </p>
-                        <p className="text-xs text-gray-600">
+                        <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-secondary)' }}>
                           Skill Level: {student.skillLevel} • Age: {student.age} yrs
                         </p>
                       </div>

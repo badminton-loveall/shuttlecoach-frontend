@@ -13,11 +13,27 @@ vi.mock('../hooks/useRoleGuard', () => ({
   useRoleGuard: vi.fn(),
 }));
 
+vi.mock('../hooks/useCoaches', () => ({
+  useCoaches: vi.fn(),
+}));
+
+vi.mock('../hooks/useStudents', () => ({
+  useStudents: vi.fn(),
+}));
+
+vi.mock('../utils/apiClient', () => ({
+  default: {
+    get: vi.fn(() => Promise.resolve({ data: [] })),
+    post: vi.fn(() => Promise.resolve({ data: {} })),
+    patch: vi.fn(() => Promise.resolve({ data: {} })),
+    delete: vi.fn(() => Promise.resolve({ data: {} })),
+  },
+}));
+
 import { useAuth } from '../contexts/AuthContext';
 import { useRoleGuard } from '../hooks/useRoleGuard';
-
-// Mock fetch globally
-global.fetch = vi.fn();
+import { useCoaches } from '../hooks/useCoaches';
+import { useStudents } from '../hooks/useStudents';
 
 describe('CoachesPage', () => {
   const mockHeadCoach: User = {
@@ -100,26 +116,25 @@ describe('CoachesPage', () => {
       logout: vi.fn(),
     });
 
-    // Mock successful fetch responses
-    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url: string) => {
-      if (url.includes('users.json')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockUsers),
-        });
-      }
-      if (url.includes('students.json')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve(mockStudents),
-        });
-      }
-      if (url.includes('batches.json')) {
-        return Promise.resolve({
-          ok: false,
-        });
-      }
-      return Promise.reject(new Error('Unknown URL'));
+    // Mock useCoaches hook
+    (useCoaches as ReturnType<typeof vi.fn>).mockReturnValue({
+      coaches: mockUsers.filter(u => u.role === 'ASSISTANT_COACH'),
+      loading: false,
+      error: null,
+      createCoach: vi.fn(),
+      refetch: vi.fn(),
+    });
+
+    // Mock useStudents hook
+    (useStudents as ReturnType<typeof vi.fn>).mockReturnValue({
+      students: mockStudents,
+      loading: false,
+      error: null,
+      total: mockStudents.length,
+      refetch: vi.fn(),
+      getStudent: vi.fn(),
+      createStudent: vi.fn(),
+      updateStudent: vi.fn(),
     });
   });
 
@@ -138,6 +153,15 @@ describe('CoachesPage', () => {
   });
 
   it('should display loading state initially', () => {
+    // Override to show loading state
+    (useCoaches as ReturnType<typeof vi.fn>).mockReturnValue({
+      coaches: [],
+      loading: true,
+      error: null,
+      createCoach: vi.fn(),
+      refetch: vi.fn(),
+    });
+
     renderWithRouter(<CoachesPage />);
 
     // Check for loading skeleton
@@ -157,15 +181,14 @@ describe('CoachesPage', () => {
     expect(screen.getByText('Footwork')).toBeInTheDocument();
   });
 
-  it('should fetch data from correct endpoints', async () => {
+  it('should fetch data from hooks', async () => {
     renderWithRouter(<CoachesPage />);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/src/data/users.json');
+      // Verify hooks were called (they provide the data)
+      expect(useCoaches).toHaveBeenCalled();
+      expect(useStudents).toHaveBeenCalled();
     });
-
-    expect(global.fetch).toHaveBeenCalledWith('/src/data/students.json');
-    expect(global.fetch).toHaveBeenCalledWith('/src/data/batches.json');
   });
 
   it('should display coach list table after loading', async () => {
@@ -182,8 +205,14 @@ describe('CoachesPage', () => {
   });
 
   it('should handle fetch errors gracefully', async () => {
-    // Mock fetch to throw error
-    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Network error'));
+    // Mock hook to return error
+    (useCoaches as ReturnType<typeof vi.fn>).mockReturnValue({
+      coaches: [],
+      loading: false,
+      error: 'Failed to load coach data. Please try again.',
+      createCoach: vi.fn(),
+      refetch: vi.fn(),
+    });
 
     renderWithRouter(<CoachesPage />);
 

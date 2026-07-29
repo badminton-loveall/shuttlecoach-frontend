@@ -1,8 +1,39 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
 import LoginPage from './LoginPage';
+
+// Mock apiClient
+vi.mock('../utils/apiClient', () => ({
+  default: {
+    post: vi.fn((_url: string, data: { username: string; password: string }) => {
+      if (data.username === 'head_coach' && data.password === 'password123') {
+        return Promise.resolve({
+          data: {
+            token: 'mock-token-123',
+            user: {
+              id: 'user-001',
+              username: 'head_coach',
+              name: 'Sumit Dali',
+              role: 'HEAD_COACH',
+              email: 'sumit@shuttlecoach.com',
+              createdAt: '2026-01-01T00:00:00Z',
+              lastActive: '2026-01-15T00:00:00Z',
+            },
+            role: 'HEAD_COACH',
+          },
+        });
+      }
+      return Promise.reject(new Error('Invalid username or password'));
+    }),
+    get: vi.fn(() => Promise.resolve({ data: [] })),
+    interceptors: {
+      request: { use: vi.fn() },
+      response: { use: vi.fn() },
+    },
+  },
+}));
 
 /**
  * LoginPage Component Tests
@@ -151,7 +182,7 @@ describe('LoginPage Component', () => {
 
       await waitFor(() => {
         const errorBanner = screen.getByRole('alert');
-        expect(errorBanner).toHaveClass('error-banner');
+        expect(errorBanner).toHaveClass('alert--danger');
         expect(errorBanner).toBeInTheDocument();
       });
     });
@@ -189,7 +220,7 @@ describe('LoginPage Component', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        const spinnerElement = document.querySelector('.spinner');
+        const spinnerElement = document.querySelector('.login-page__spinner');
         expect(spinnerElement).toBeInTheDocument();
       });
     });

@@ -185,8 +185,8 @@ describe('CoachPaymentsTab', () => {
       const dateFromInput = screen.getByLabelText('From Date') as HTMLInputElement;
       fireEvent.change(dateFromInput, { target: { value: '2026-01-01' } });
 
-      // Clear Filters button should appear
-      const clearButton = screen.getByRole('button', { name: /Clear Filters/i });
+      // Clear Filters button should appear (aria-label is "Clear all active filters")
+      const clearButton = screen.getByRole('button', { name: /Clear all active filters/i });
       expect(clearButton).toBeInTheDocument();
     });
 
@@ -208,7 +208,7 @@ describe('CoachPaymentsTab', () => {
       expect(screen.getByText(/From:/)).toBeInTheDocument();
 
       // Click Clear Filters button
-      const clearButton = screen.getByRole('button', { name: /Clear Filters/i });
+      const clearButton = screen.getByRole('button', { name: /Clear all active filters/i });
       fireEvent.click(clearButton);
 
       // Verify all filters are cleared (filter badges should be gone)
@@ -240,12 +240,13 @@ describe('CoachPaymentsTab', () => {
       );
 
       // Table should have headers for Type, Student Name, Amount, Date, Details, Status
-      expect(screen.getByText('Type')).toBeInTheDocument();
-      expect(screen.getByText('Student Name')).toBeInTheDocument();
-      expect(screen.getByText('Amount')).toBeInTheDocument();
-      expect(screen.getByText('Date')).toBeInTheDocument();
-      expect(screen.getByText('Details')).toBeInTheDocument();
-      expect(screen.getByText('Status')).toBeInTheDocument();
+      // Use getAllByText since some headers appear in both income and expense tables
+      expect(screen.getAllByText('Type').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Student Name').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Amount').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Date').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Details').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Status').length).toBeGreaterThan(0);
     });
 
     it('should show financial summary cards with updated values', () => {
@@ -262,7 +263,8 @@ describe('CoachPaymentsTab', () => {
       expect(screen.getByText('Total Income')).toBeInTheDocument();
       expect(screen.getByText('Total Expenses')).toBeInTheDocument();
       expect(screen.getByText('Net Balance')).toBeInTheDocument();
-      expect(screen.getByText('Paid')).toBeInTheDocument();
+      // Use getAllByText for "Paid" since it appears in both stat card and table rows
+      expect(screen.getAllByText('Paid').length).toBeGreaterThan(0);
       expect(screen.getByText('Pending')).toBeInTheDocument();
       expect(screen.getByText('Overdue')).toBeInTheDocument();
     });

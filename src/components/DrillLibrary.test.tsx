@@ -32,10 +32,14 @@ describe('DrillLibrary', () => {
     expect(screen.getByText('Court Movement Patterns')).toBeInTheDocument();
   });
 
-  it('displays drill descriptions', () => {
+  it('displays drill descriptions via search', () => {
     render(<DrillLibrary />);
     
-    expect(screen.getByText(/Practice correct grip technique/i)).toBeInTheDocument();
+    // Descriptions are used for search filtering but are not displayed directly
+    // Verify search works with description text
+    const searchInput = screen.getByPlaceholderText('Search drills...');
+    fireEvent.change(searchInput, { target: { value: 'correct grip technique' } });
+    expect(screen.getByText('Grip Practice')).toBeInTheDocument();
   });
 
   it('displays drill categories as tags', () => {
@@ -84,7 +88,7 @@ describe('DrillLibrary', () => {
   it('displays drag instruction', () => {
     render(<DrillLibrary />);
     
-    expect(screen.getByText('💡 Drag drills to weekly planners')).toBeInTheDocument();
+    expect(screen.getByText('Drag drills to weekly planners')).toBeInTheDocument();
   });
 
   it('shows no drills message when search returns no results', () => {

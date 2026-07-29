@@ -197,8 +197,8 @@ describe('StudentDashboard', () => {
     id: 'user-004',
     username: 'student1',
     role: 'STUDENT',
-    name: 'Test Student',
-    email: 'student@test.com',
+    name: 'Arjun Verma',
+    email: 'arjun.v@email.com',
     createdAt: new Date('2025-01-01'),
     lastActive: new Date('2026-01-15'),
   };

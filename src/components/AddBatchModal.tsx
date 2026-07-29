@@ -163,19 +163,21 @@ export const AddBatchModal: React.FC<AddBatchModalProps> = ({
 
           {/* Loading State */}
           {isLoading ? (
-            <div className="space-y-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-12 bg-gray-200 rounded animate-pulse"
+                  className="animate-pulse"
+                  style={{ height: '48px', backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)' }}
                 />
               ))}
             </div>
           ) : availableBatches.length === 0 ? (
             /* No Available Batches */
-            <div className="text-center py-8">
+            <div className="text-center" style={{ padding: 'var(--space-2xl) 0' }}>
               <svg
-                className="w-12 h-12 text-gray-300 mx-auto mb-3"
+                className="w-12 h-12 mx-auto"
+                style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-sm)' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -187,27 +189,30 @@ export const AddBatchModal: React.FC<AddBatchModalProps> = ({
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V7a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                 />
               </svg>
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-xs)' }}>
                 No Available Batches
               </h3>
-              <p className="text-gray-600">
+              <p style={{ color: 'var(--text-secondary)' }}>
                 All batches are already assigned or no batches exist
               </p>
             </div>
           ) : (
             /* Batch Selection */
-            <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+              <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-sm)' }}>
                 Available Batches
               </label>
               {availableBatches.map((batch) => (
                 <label
                   key={batch.id}
-                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                    selectedBatchId === batch.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  className="flex items-center cursor-pointer transition-all"
+                  style={{
+                    padding: 'var(--space-md)',
+                    border: '1px solid',
+                    borderColor: selectedBatchId === batch.id ? 'var(--color-info)' : 'var(--border-default)',
+                    borderRadius: 'var(--radius-md)',
+                    backgroundColor: selectedBatchId === batch.id ? 'var(--feedback-info-light)' : 'transparent',
+                  }}
                 >
                   <input
                     type="radio"
@@ -216,13 +221,14 @@ export const AddBatchModal: React.FC<AddBatchModalProps> = ({
                     checked={selectedBatchId === batch.id}
                     onChange={(e) => setSelectedBatchId(e.target.value)}
                     disabled={isAssigning}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4"
+                    style={{ accentColor: 'var(--color-info)' }}
                   />
-                  <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                  <div style={{ marginLeft: 'var(--space-sm)', flex: 1 }}>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                       {batch.name}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                       Schedule: {batch.schedule} • {batch.studentCount} students
                     </p>
                   </div>

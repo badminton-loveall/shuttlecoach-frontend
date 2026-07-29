@@ -7,16 +7,16 @@ import FeeAlerts from '../components/FeeAlerts';
 import CoachWorkload from '../components/CoachWorkload';
 import RecentActivity from '../components/RecentActivity';
 import { useAuth } from '../contexts/AuthContext';
+import { useStudents } from '../hooks/useStudents';
+import { useFees } from '../hooks/useFees';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { isDueForAssessment, daysOverdue, getLastAssessment } from '../utils/reviewUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
 import { generateActivityFeed, getCoachWorkloads } from '../utils/activityUtils';
-import STUDENTS_DATA from '../data/students.json';
 import USERS_DATA from '../data/users.json';
 import SKILL_ASSESSMENTS_DATA from '../data/skillAssessments.json';
-import FEES_DATA from '../data/fees.json';
 import TRAINING_LOGS_DATA from '../data/trainingLogs.json';
-import type { Student, SkillAssessment, FeeRecord, TrainingLog, User } from '../types';
+import type { SkillAssessment, TrainingLog, User } from '../types';
 import '../styles/pages.css';
 
 /**
@@ -27,35 +27,12 @@ import '../styles/pages.css';
  * Pure CSS implementation using design tokens
  */
 
-// Map raw JSON data to proper Student type with parsed dates
-const parseStudents = (data: unknown): Student[] => {
-  const studentArray = data as Array<Record<string, unknown>>;
-  return studentArray.map((s) => ({
-    ...(s as unknown as Student),
-    dateOfBirth: new Date(s.dateOfBirth as string),
-    createdAt: new Date(s.createdAt as string),
-    updatedAt: new Date(s.updatedAt as string),
-  }));
-};
-
 // Parse skill assessments with proper date types
 const parseAssessments = (data: unknown): SkillAssessment[] => {
   const assessmentArray = data as Array<Record<string, unknown>>;
   return assessmentArray.map((a) => ({
     ...(a as unknown as SkillAssessment),
     recordedAt: new Date(a.recordedAt as string),
-  }));
-};
-
-// Parse fees with proper date types
-const parseFees = (data: unknown): FeeRecord[] => {
-  const feeArray = data as Array<Record<string, unknown>>;
-  return feeArray.map((f) => ({
-    ...(f as unknown as FeeRecord),
-    dueDate: new Date(f.dueDate as string),
-    paidDate: f.paidDate ? new Date(f.paidDate as string) : undefined,
-    createdAt: new Date(f.createdAt as string),
-    updatedAt: new Date(f.updatedAt as string),
   }));
 };
 
@@ -82,21 +59,55 @@ export const HeadCoachDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Parse and memoize students data
-  const students = useMemo(() => parseStudents(STUDENTS_DATA), []);
-  
-  // Parse and memoize skill assessments data
+  // Live data from API
+  const { students, loading: studentsLoading } = useStudents();
+  const { fees, loading: feesLoading } = useFees();
+
+  // Static JSON data (no API hooks yet for these)
   const assessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
-
-  // Parse and memoize fees data
-  const fees = useMemo(() => parseFees(FEES_DATA), []);
-
-  // Parse and memoize training logs data
   const trainingLogs = useMemo(() => parseTrainingLogs(TRAINING_LOGS_DATA), []);
-
-  // Parse and memoize users data
   const users = useMemo(() => parseUsers(USERS_DATA), []);
 
+  // Show loading spinner while API data loads
+  if (studentsLoading || feesLoading) {
+    return (
+      <DashboardLayout>
+        <div className="hc-dashboard">
+          <div className="hc-dashboard-content">
+            <div className="card" style={{ padding: 'var(--space-3xl)' }}>
+              <div className="animate-pulse flex flex-col" style={{ gap: 'var(--space-md)' }}>
+                <div className="h-4 rounded w-3/4" style={{ backgroundColor: 'var(--border-default)' }}></div>
+                <div className="h-4 rounded" style={{ backgroundColor: 'var(--border-default)' }}></div>
+                <div className="h-4 rounded w-5/6" style={{ backgroundColor: 'var(--border-default)' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return <HeadCoachDashboardContent
+    user={user}
+    navigate={navigate}
+    students={students}
+    fees={fees}
+    assessments={assessments}
+    trainingLogs={trainingLogs}
+    users={users}
+  />;
+};
+
+// Separate content component to keep hooks at top level and avoid conditional hook issues
+const HeadCoachDashboardContent: React.FC<{
+  user: ReturnType<typeof useAuth>['user'];
+  navigate: ReturnType<typeof useNavigate>;
+  students: ReturnType<typeof useStudents>['students'];
+  fees: ReturnType<typeof useFees>['fees'];
+  assessments: SkillAssessment[];
+  trainingLogs: TrainingLog[];
+  users: User[];
+}> = ({ user, navigate, students, fees, assessments, trainingLogs, users }) => {
   // Calculate overdue fees grouped by student
   const overdueFees = useMemo(() => getOverdueFeesByStudent(fees, students), [fees, students]);
 
@@ -112,31 +123,26 @@ export const HeadCoachDashboard: React.FC = () => {
   // Calculate review status for each student
   const studentReviewStatus = useMemo(() => {
     const statusMap = new Map<string, { isDue: boolean; daysOverdue: number }>();
-    
+
     students.forEach((student) => {
       const lastAssessment = getLastAssessment(assessments, student.id);
       const lastAssessmentDate = lastAssessment?.recordedAt ?? null;
       const isDue = isDueForAssessment(lastAssessmentDate);
       const overdueDays = daysOverdue(lastAssessmentDate);
-      
-      statusMap.set(student.id, {
-        isDue,
-        daysOverdue: overdueDays,
-      });
+
+      statusMap.set(student.id, { isDue, daysOverdue: overdueDays });
     });
-    
+
     return statusMap;
   }, [students, assessments]);
 
   // Get students due for review
-  const studentsDueForReview = useMemo(() => {
-    return students.filter((student) => {
-      const status = studentReviewStatus.get(student.id);
-      return status?.isDue ?? false;
-    });
-  }, [students, studentReviewStatus]);
+  const studentsDueForReview = useMemo(
+    () => students.filter((student) => studentReviewStatus.get(student.id)?.isDue ?? false),
+    [students, studentReviewStatus]
+  );
 
-  // Calculate dashboard statistics (always based on full dataset)
+  // Calculate dashboard statistics
   const stats = useMemo(() => calculateDashboardStats(students), [students]);
 
   // Handle student card click
@@ -148,90 +154,76 @@ export const HeadCoachDashboard: React.FC = () => {
     <DashboardLayout>
       <div className="hc-dashboard">
         <div className="hc-dashboard-content">
-        {/* Welcome Section */}
-        <div className="hc-welcome">
-          <h1 className="hc-welcome-title">Welcome, {user?.name}!</h1>
-          <p className="hc-welcome-subtitle">Here's an overview of your coaching operations</p>
-        </div>
+          {/* Welcome Section */}
+          <div className="hc-welcome">
+            <h1 className="hc-welcome-title">Welcome, {user?.name}!</h1>
+            <p className="hc-welcome-subtitle">Here's an overview of your coaching operations</p>
+          </div>
 
-        {/* Stat Cards Grid */}
-        <div className="hc-stats-grid">
-          {/* Total Students */}
-          <StatCard
-            title="Total Students"
-            value={stats.totalStudents}
-            label="Active students"
-            icon={<StudentIconSvg />}
-            variant="info"
-          />
+          {/* Stat Cards Grid */}
+          <div className="hc-stats-grid">
+            <StatCard
+              title="Total Students"
+              value={stats.totalStudents}
+              label="Active students"
+              icon={<StudentIconSvg />}
+              variant="info"
+            />
+            <StatCard
+              title="BAID Registered"
+              value={`${stats.baidRegistered}/${stats.totalStudents}`}
+              label={`${stats.baidPercentage}% registered`}
+              icon={<BaidIconSvg />}
+              variant="success"
+            />
+            <StatCard
+              title="Batches"
+              value={stats.batchCount}
+              label="Active batches"
+              icon={<BatchIconSvg />}
+              variant="warning"
+            />
+            <StatCard
+              title="Due for Review"
+              value={studentsDueForReview.length}
+              label={`${studentsDueForReview.length} student${studentsDueForReview.length !== 1 ? 's' : ''} need assessment`}
+              icon={<ReviewIconSvg />}
+              variant={studentsDueForReview.length > 0 ? 'danger' : 'success'}
+            />
+          </div>
 
-          {/* BAID Registered */}
-          <StatCard
-            title="BAID Registered"
-            value={`${stats.baidRegistered}/${stats.totalStudents}`}
-            label={`${stats.baidPercentage}% registered`}
-            icon={<BaidIconSvg />}
-            variant="success"
-          />
+          {/* Students Due for Review Section */}
+          {studentsDueForReview.length > 0 && (
+            <>
+              <div className="hc-review-section-header">
+                <h2 className="hc-review-title">
+                  Students Due for Review ({studentsDueForReview.length})
+                </h2>
+                <p className="hc-review-subtitle">
+                  Students who need bi-monthly skill assessment (60+ days since last assessment)
+                </p>
+              </div>
 
-          {/* Batch Count */}
-          <StatCard
-            title="Batches"
-            value={stats.batchCount}
-            label="Active batches"
-            icon={<BatchIconSvg />}
-            variant="warning"
-          />
+              <StudentGrid
+                students={studentsDueForReview}
+                onStudentClick={handleStudentClick}
+                studentReviewStatus={studentReviewStatus}
+              />
+            </>
+          )}
 
-          {/* Due for Review Count */}
-          <StatCard
-            title="Due for Review"
-            value={studentsDueForReview.length}
-            label={`${studentsDueForReview.length} student${studentsDueForReview.length !== 1 ? 's' : ''} need assessment`}
-            icon={<ReviewIconSvg />}
-            variant={studentsDueForReview.length > 0 ? 'danger' : 'success'}
-          />
-        </div>
-
-        {/* Students Due for Review Section */}
-        {studentsDueForReview.length > 0 && (
-          <>
-           <div className="hc-review-section-header">
-              <h2 className="hc-review-title">
-                Students Due for Review ({studentsDueForReview.length})
-              </h2>
-              <p className="hc-review-subtitle">
-                Students who need bi-monthly skill assessment (60+ days since last assessment)
-              </p>
+          {/* Progressive Dashboard Features - Phase 6 */}
+          <div className="hc-overview">
+            <h2 className="hc-overview-title">Dashboard Overview</h2>
+            <div className="hc-overview-grid">
+              <FeeAlerts overdueFees={overdueFees} onViewDetails={() => navigate('/fees')} />
+              <CoachWorkload workloads={coachWorkloads} />
             </div>
-            
-            <StudentGrid 
-              students={studentsDueForReview} 
-              onStudentClick={handleStudentClick}
-              studentReviewStatus={studentReviewStatus}
-            />
-          </>
-        )}
 
-        {/* Progressive Dashboard Features - Phase 6 */}
-        <div className="hc-overview">
-          <h2 className="hc-overview-title">Dashboard Overview</h2>
-          <div className="hc-overview-grid">
-            {/* Fee Alerts */}
-            <FeeAlerts 
-              overdueFees={overdueFees} 
-              onViewDetails={() => navigate('/fees')}
-            />
-
-            {/* Coach Workload */}
-            <CoachWorkload workloads={coachWorkloads} />
+            <div className="hc-overview-activity">
+              <RecentActivity activities={recentActivities} />
+            </div>
           </div>
-
-          {/* Recent Activity Feed - Full Width */}
-          <div className="hc-overview-activity">
-            <RecentActivity activities={recentActivities} />
-          </div>
-        </div>
         </div>
       </div>
     </DashboardLayout>

@@ -12,6 +12,33 @@ vi.mock('../contexts/AuthContext', () => ({
   }),
 }));
 
+// Mock hooks
+vi.mock('../hooks/useStudents', () => ({
+  useStudents: () => ({
+    students: [
+      { id: 's1', fullName: 'Student 1', skillLevel: 'Beginner', batchId: 'b1', baidNumber: 'BAID-001', assignedCoachId: 'user-001', createdAt: new Date(), updatedAt: new Date(), dateOfBirth: new Date('2010-01-01'), age: 15, gender: 'Male', contactPhone: '123', strengths: [], weaknesses: [] },
+      { id: 's2', fullName: 'Student 2', skillLevel: 'Intermediate', batchId: 'b1', baidNumber: 'BAID-002', assignedCoachId: 'user-001', createdAt: new Date(), updatedAt: new Date(), dateOfBirth: new Date('2010-02-01'), age: 15, gender: 'Female', contactPhone: '456', strengths: [], weaknesses: [] },
+      { id: 's3', fullName: 'Student 3', skillLevel: 'Advanced', batchId: 'b2', baidNumber: undefined, assignedCoachId: 'user-002', createdAt: new Date(), updatedAt: new Date(), dateOfBirth: new Date('2010-03-01'), age: 15, gender: 'Male', contactPhone: '789', strengths: [], weaknesses: [] },
+    ],
+    loading: false,
+    error: null,
+    total: 3,
+    refetch: vi.fn(),
+    getStudent: vi.fn(),
+    createStudent: vi.fn(),
+    updateStudent: vi.fn(),
+  }),
+}));
+
+vi.mock('../hooks/useFees', () => ({
+  useFees: () => ({
+    fees: [],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
+}));
+
 // Mock components
 vi.mock('../components/DashboardLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -105,7 +132,7 @@ describe('HeadCoachDashboard - Review Reminder', () => {
   it('renders the dashboard without errors', () => {
     const { container } = renderDashboard();
     
-    expect(container.querySelector('.head-coach-dashboard')).toBeInTheDocument();
+    expect(container.querySelector('.hc-dashboard')).toBeInTheDocument();
   });
 
   it('displays all four stat cards including Due for Review', () => {
@@ -129,13 +156,13 @@ describe('HeadCoachDashboard - Review Reminder', () => {
     
     const studentGrids = screen.getAllByTestId('student-grid');
     
-    // Should have at least one grid (the main "All Students" grid)
+    // Should have at least one grid
     expect(studentGrids.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('displays section title "All Students"', () => {
+  it('displays section title "Dashboard Overview"', () => {
     renderDashboard();
     
-    expect(screen.getByText('All Students')).toBeInTheDocument();
+    expect(screen.getByText('Dashboard Overview')).toBeInTheDocument();
   });
 });

@@ -64,12 +64,13 @@ export default function CoachDetailPage() {
   if (!coachId) {
     return (
       <DashboardLayout>
-        <div className="text-center py-12">
-          <h2 className="text-lg font-semibold text-gray-900">Invalid Coach ID</h2>
-          <p className="text-gray-600 mt-2">No coach ID provided in URL</p>
+        <div className="text-center" style={{ padding: 'var(--space-3xl) var(--space-md)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Invalid Coach ID</h2>
+          <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--space-sm)' }}>No coach ID provided in URL</p>
           <button
             onClick={() => navigate('/coaches')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="btn-info text-white"
+            style={{ marginTop: 'var(--space-md)', padding: 'var(--space-sm) var(--space-md)', borderRadius: 'var(--radius-md)' }}
           >
             Return to Coaches
           </button>
@@ -315,11 +316,11 @@ export default function CoachDetailPage() {
   if (pageState.isLoadingData && !coach) {
     return (
       <DashboardLayout>
-        <div className="p-6">
-          <div className="h-24 bg-gray-200 rounded animate-pulse mb-6" />
-          <div className="space-y-3">
+        <div className="page-container">
+          <div className="h-24 animate-pulse" style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-lg)' }} />
+          <div className="section-stack">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded animate-pulse" />
+              <div key={i} className="h-12 animate-pulse" style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-md)' }} />
             ))}
           </div>
         </div>
@@ -345,7 +346,7 @@ export default function CoachDetailPage() {
 
     return (
       <DashboardLayout>
-        <div className="mx-4 lg:mx-6 mt-6">
+        <div className="mx-4 lg:mx-6" style={{ marginTop: 'var(--space-xl)' }}>
           <ErrorState
             error={pageState.error}
             onRetry={handleRetry}
@@ -361,12 +362,13 @@ export default function CoachDetailPage() {
   if (!coach) {
     return (
       <DashboardLayout>
-        <div className="text-center py-12">
-          <h2 className="text-lg font-semibold text-gray-900">Coach not found</h2>
-          <p className="text-gray-600 mt-2">The coach you're looking for does not exist or access is denied</p>
+        <div className="text-center" style={{ padding: 'var(--space-3xl) var(--space-md)' }}>
+          <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Coach not found</h2>
+          <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--space-sm)' }}>The coach you're looking for does not exist or access is denied</p>
           <button
             onClick={() => navigate('/coaches')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="btn-info text-white"
+            style={{ marginTop: 'var(--space-md)', padding: 'var(--space-sm) var(--space-md)', borderRadius: 'var(--radius-md)' }}
           >
             Return to Coaches
           </button>
@@ -394,8 +396,8 @@ export default function CoachDetailPage() {
     <DashboardLayout>
       <div className="coach-detail-page bg-white min-h-screen">
         {/* Page Header Section */}
-        <div className="border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div style={{ borderBottom: '1px solid var(--border-default)' }}>
+          <div className="max-w-7xl mx-auto" style={{ padding: 'var(--space-xl) var(--space-md)' }}>
             <CoachHeaderCard
               coach={coach}
               batchCount={batchCount}
@@ -408,8 +410,8 @@ export default function CoachDetailPage() {
         {/* Access Denial Message (Requirement 13.4) */}
         {pageState.accessDenialMessage && (
           <div className="bg-red-50 border-b border-red-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-              <div className="flex items-start gap-3" role="alert">
+            <div className="max-w-7xl mx-auto" style={{ padding: 'var(--space-md)' }}>
+              <div className="flex items-start" style={{ gap: 'var(--space-sm)' }} role="alert">
                 <svg
                   className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
                   fill="none"
@@ -426,7 +428,7 @@ export default function CoachDetailPage() {
                 </svg>
                 <div className="flex-1">
                   <h4 className="font-semibold text-red-900 text-sm">Access Denied</h4>
-                  <p className="text-red-800 text-sm mt-1">{pageState.accessDenialMessage}</p>
+                  <p className="text-red-800 text-sm" style={{ marginTop: 'var(--space-xs)' }}>{pageState.accessDenialMessage}</p>
                 </div>
                 <button
                   onClick={() => setPageState((prev) => ({ ...prev, accessDenialMessage: null }))}
@@ -447,8 +449,8 @@ export default function CoachDetailPage() {
         )}
 
         {/* Tab Navigation Section */}
-        <div className="border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div style={{ borderBottom: '1px solid var(--border-default)' }}>
+          <div className="max-w-7xl mx-auto" style={{ padding: '0 var(--space-md)' }}>
             <TabNavigation
               tabs={visibleTabs.map((tab) => ({
                 id: tab,
@@ -464,7 +466,7 @@ export default function CoachDetailPage() {
 
         {/* Tab Content Section */}
         <div className="coach-detail-content bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="max-w-7xl mx-auto page-container">
             {/* Profile Tab */}
             {pageState.activeTab === 'profile' && (
               isLoadingCoach ? (
@@ -530,15 +532,16 @@ export default function CoachDetailPage() {
         </div>
 
         {/* Toast Notifications Container */}
-        <div className="fixed bottom-0 right-0 z-50 p-6 space-y-3 pointer-events-none max-w-md">
+        <div className="fixed bottom-0 right-0 z-50 pointer-events-none max-w-md" style={{ padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className={`rounded-lg shadow-lg pointer-events-auto flex items-start gap-3 p-4 border animate-in slide-in-from-right ${
+              className={`card pointer-events-auto flex items-start border animate-in slide-in-from-right ${
                 toast.type === 'success'
                   ? 'bg-green-50 border-green-200 text-green-900'
                   : 'bg-red-50 border-red-200 text-red-900'
               }`}
+              style={{ padding: 'var(--space-md)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-float)', gap: 'var(--space-sm)' }}
               role="alert"
               aria-live="polite"
               aria-atomic="true"

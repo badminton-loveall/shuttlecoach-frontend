@@ -16,6 +16,53 @@ vi.mock('../components/DashboardLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+// Mock useStudent hook
+vi.mock('../hooks/useStudent', () => ({
+  useStudent: (id: string) => {
+    const students = [
+      {
+        id: 'student-001',
+        fullName: 'Arjun Verma',
+        dateOfBirth: new Date('2012-05-15'),
+        age: 13,
+        gender: 'Male',
+        contactPhone: '9876543210',
+        baidNumber: 'BAID-2026-001',
+        batchId: 'batch-001',
+        assignedCoachId: 'user-002',
+        skillLevel: 'Beginner',
+        createdAt: new Date('2026-01-05T09:00:00Z'),
+        updatedAt: new Date('2026-01-15T10:30:00Z'),
+        strengths: [],
+        weaknesses: [],
+      },
+      {
+        id: 'student-003',
+        fullName: 'Rohan Kapoor',
+        dateOfBirth: new Date('2008-03-10'),
+        age: 17,
+        gender: 'Male',
+        contactPhone: '9876543212',
+        baidNumber: 'BAID-2026-003',
+        batchId: 'batch-002',
+        assignedCoachId: 'user-003',
+        skillLevel: 'Advanced',
+        createdAt: new Date('2026-01-07T09:00:00Z'),
+        updatedAt: new Date('2026-01-13T11:45:00Z'),
+        strengths: [],
+        weaknesses: [],
+      },
+    ];
+    const student = students.find((s) => s.id === id) || null;
+    return {
+      student,
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+    };
+  },
+}));
+
 // Mock all the form and tab components
 vi.mock('../components/PersonalInfoForm', () => ({
   PersonalInfoForm: () => <div data-testid="personal-info-form">Personal Info Form</div>,
@@ -39,44 +86,6 @@ vi.mock('../components/WeaknessTracker', () => ({
 
 vi.mock('../components/SkillHistory', () => ({
   SkillHistory: () => <div data-testid="skill-history">Skill History</div>,
-}));
-
-// Mock students data
-vi.mock('../data/students.json', () => ({
-  default: [
-    {
-      id: 'student-001',
-      fullName: 'Arjun Verma',
-      dateOfBirth: '2012-05-15',
-      age: 13,
-      gender: 'Male',
-      contactPhone: '9876543210',
-      baidNumber: 'BAID-2026-001',
-      batchId: 'batch-001',
-      assignedCoachId: 'user-002',
-      skillLevel: 'Beginner',
-      createdAt: '2026-01-05T09:00:00Z',
-      updatedAt: '2026-01-15T10:30:00Z',
-      strengths: [],
-      weaknesses: [],
-    },
-    {
-      id: 'student-003',
-      fullName: 'Rohan Kapoor',
-      dateOfBirth: '2008-03-10',
-      age: 17,
-      gender: 'Male',
-      contactPhone: '9876543212',
-      baidNumber: 'BAID-2026-003',
-      batchId: 'batch-002',
-      assignedCoachId: 'user-003',
-      skillLevel: 'Advanced',
-      createdAt: '2026-01-07T09:00:00Z',
-      updatedAt: '2026-01-13T11:45:00Z',
-      strengths: [],
-      weaknesses: [],
-    },
-  ],
 }));
 
 describe('StudentProfilePage - Access Control', () => {

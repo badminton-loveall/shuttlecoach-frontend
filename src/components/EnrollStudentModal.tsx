@@ -5,9 +5,10 @@ import './EnrollStudentModal.css';
 interface EnrollStudentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (studentData: EnrollStudentFormData) => void;
+  onSubmit: (studentData: EnrollStudentFormData) => void | Promise<void>;
   batches: Array<{ id: string; name: string }>;
   coaches: Array<{ id: string; name: string }>;
+  error?: string | null;
 }
 
 export interface EnrollStudentFormData {
@@ -30,6 +31,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   onSubmit,
   batches,
   coaches,
+  error,
 }) => {
   const [formData, setFormData] = useState<EnrollStudentFormData>({
     fullName: '',
@@ -216,7 +218,11 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
-          {/* General error */}
+          {/* External API error (from parent) */}
+          {error && (
+            <div className="form-error-banner">{error}</div>
+          )}
+          {/* General form submission error */}
           {errors.submit && (
             <div className="form-error-banner">{errors.submit}</div>
           )}

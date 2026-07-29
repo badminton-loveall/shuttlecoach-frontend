@@ -59,7 +59,7 @@ describe('WaiveFeeModal', () => {
       <WaiveFeeModal isOpen={true} onClose={mockOnClose} onSubmit={mockOnSubmit} />
     );
 
-    const backdrop = container.querySelector('.fixed.inset-0.bg-black');
+    const backdrop = container.querySelector('.modal-overlay');
     if (backdrop) {
       fireEvent.click(backdrop);
     }

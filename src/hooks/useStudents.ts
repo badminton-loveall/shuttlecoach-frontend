@@ -104,7 +104,7 @@ export function useStudents(filters?: StudentFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters?.batch, filters?.coach, filters?.search, filters?.page, filters?.limit]);
 
   // Fetch students on mount and when filters change
   useEffect(() => {

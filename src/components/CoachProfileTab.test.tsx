@@ -522,7 +522,7 @@ describe('CoachProfileTab', () => {
       fireEvent.click(screen.getByRole('button', { name: /edit profile/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /save profile changes/i })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
       });
     });

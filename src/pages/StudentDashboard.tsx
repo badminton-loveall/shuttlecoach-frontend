@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { SkillRadarChart } from '../components/SkillRadarChart';
@@ -16,7 +16,7 @@ import { computeAllFeeStatuses } from '../utils/feeUtils';
 import { generateCycleKey } from '../utils/skillUtils';
 import { getCurrentWeekInCycle } from '../utils/dateUtils';
 import { calculateAge } from '../utils/studentUtils';
-import feesData from '../data/fees.json';
+import apiClient from '../utils/apiClient';
 import curriculumData from '../data/curriculum.json';
 import studentsData from '../data/students.json';
 import skillAssessmentsData from '../data/skillAssessments.json';
@@ -29,42 +29,169 @@ import usersData from '../data/users.json';
  * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 14.1, 14.2, 14.3, 14.4, 21.1, 21.2, 21.3, 21.4, 21.5
  */
 
-// Mapping of user IDs to student IDs
-// In Phase 7, this will be handled by the backend API
-const USER_TO_STUDENT_MAP: Record<string, string> = {
-  'user-004': 'student-001',
-  'user-005': 'student-002',
-};
+/**
+ * Resolve the student record for the authenticated user.
+ * Matches the user to a student by name or email.
+ * TODO: Migrate to API when backend adds STUDENT role support on GET /students
+ */
+function resolveStudentForUser(user: { id: string; name: string; email?: string }): Student | null {
+  // Try matching by name (case-insensitive)
+  let studentRecord = studentsData.find(
+    (s) => s.fullName.toLowerCase() === user.name.toLowerCase()
+  );
+
+  // Try matching by email if name didn't match
+  if (!studentRecord && user.email) {
+    studentRecord = studentsData.find(
+      (s) => s.email && s.email.toLowerCase() === user.email!.toLowerCase()
+    );
+  }
+
+  if (!studentRecord) return null;
+
+  return {
+    ...studentRecord,
+    dateOfBirth: new Date(studentRecord.dateOfBirth),
+    createdAt: new Date(studentRecord.createdAt),
+    updatedAt: new Date(studentRecord.updatedAt),
+    batchId: studentRecord.batchId || undefined,
+    assignedCoachId: studentRecord.assignedCoachId || undefined,
+    profilePhoto: studentRecord.profilePhoto || undefined,
+  } as Student;
+}
 
 export const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
 
-  // Get the student ID for the current user
-  const studentId = user?.id ? USER_TO_STUDENT_MAP[user.id] : null;
+  // State for API-fetched student (used when local resolution fails)
+  const [apiStudent, setApiStudent] = useState<Student | null>(null);
+  const [studentLoading, setStudentLoading] = useState(false);
+  const [studentError, setStudentError] = useState<string | null>(null);
+
+  // Resolve student from local data using name/email matching
+  // TODO: Replace with API call when backend adds STUDENT role support on GET /students
+  const localStudent = useMemo<Student | null>(() => {
+    if (!user) return null;
+    return resolveStudentForUser(user);
+  }, [user]);
+
+  // If local resolution fails, try fetching from API
+  useEffect(() => {
+    if (localStudent || !user) return;
+
+    let cancelled = false;
+
+    const fetchStudentFromApi = async () => {
+      try {
+        setStudentLoading(true);
+        setStudentError(null);
+        // Try GET /students?search=<user.name> to find the student record
+        const response = await apiClient.get('/students', {
+          params: { search: user.name },
+        });
+
+        if (cancelled) return;
+
+        const students = response.data?.students ?? response.data;
+        if (Array.isArray(students) && students.length > 0) {
+          const raw = students[0] as Record<string, unknown>;
+          setApiStudent({
+            ...raw,
+            dateOfBirth: new Date(raw.dateOfBirth as string),
+            createdAt: new Date(raw.createdAt as string),
+            updatedAt: new Date(raw.updatedAt as string),
+          } as Student);
+        } else {
+          setStudentError('Unable to load student data');
+        }
+      } catch {
+        if (cancelled) return;
+        // API might not support STUDENT role - show graceful error
+        setStudentError('Unable to load student data');
+      } finally {
+        if (!cancelled) {
+          setStudentLoading(false);
+        }
+      }
+    };
+
+    void fetchStudentFromApi();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [localStudent, user]);
+
+  // Use local student if found, otherwise API student
+  const student = localStudent ?? apiStudent;
+  const studentId = student?.id ?? null;
 
   // Get current cycle key and week number
   const currentCycleKey = useMemo(() => generateCycleKey(), []);
   const currentWeekNumber = useMemo(() => getCurrentWeekInCycle(), []);
 
-  // Load student data
-  const student = useMemo<Student | null>(() => {
-    if (!studentId) return null;
+  // Fetch fees from API (GET /fees filters for STUDENT role automatically)
+  const [studentFees, setStudentFees] = useState<(FeeRecord & { status: FeeStatus })[]>([]);
+  const [feesLoading, setFeesLoading] = useState(true);
+  const [feesError, setFeesError] = useState<string | null>(null);
 
-    const studentRecord = studentsData.find((s) => s.id === studentId);
-    if (!studentRecord) return null;
+  useEffect(() => {
+    if (!studentId) {
+      setFeesLoading(false);
+      return;
+    }
 
-    return {
-      ...studentRecord,
-      dateOfBirth: new Date(studentRecord.dateOfBirth),
-      createdAt: new Date(studentRecord.createdAt),
-      updatedAt: new Date(studentRecord.updatedAt),
-      batchId: studentRecord.batchId || undefined,
-      assignedCoachId: studentRecord.assignedCoachId || undefined,
-      profilePhoto: studentRecord.profilePhoto || undefined,
-    } as Student;
+    let cancelled = false;
+
+    const fetchFees = async () => {
+      try {
+        setFeesLoading(true);
+        setFeesError(null);
+        const response = await apiClient.get<FeeRecord[]>('/fees', {
+          params: { studentId },
+        });
+
+        if (cancelled) return;
+
+        // Parse dates and compute statuses
+        const rawFees = response.data.map((fee) => ({
+          ...fee,
+          dueDate: new Date(fee.dueDate),
+          paidDate: fee.paidDate ? new Date(fee.paidDate) : undefined,
+          createdAt: new Date(fee.createdAt),
+          updatedAt: new Date(fee.updatedAt),
+        })) as FeeRecord[];
+
+        const withStatuses = computeAllFeeStatuses(rawFees);
+
+        // Sort in reverse chronological order (most recent first)
+        const sorted = withStatuses.sort((a, b) => {
+          const dateA = new Date(a.monthYear).getTime();
+          const dateB = new Date(b.monthYear).getTime();
+          return dateB - dateA;
+        });
+
+        setStudentFees(sorted);
+      } catch (err) {
+        if (cancelled) return;
+        console.error('Failed to fetch fees from API:', err);
+        setFeesError('Failed to load fee data. Please try again.');
+      } finally {
+        if (!cancelled) {
+          setFeesLoading(false);
+        }
+      }
+    };
+
+    void fetchFees();
+
+    return () => {
+      cancelled = true;
+    };
   }, [studentId]);
 
-  // Load batch information
+  // Load batch information (from local JSON - no separate batch API for students)
+  // TODO: Migrate to API when batch endpoint supports STUDENT role
   const batch = useMemo<Batch | null>(() => {
     if (!student?.batchId) return null;
 
@@ -159,32 +286,8 @@ export const StudentDashboard: React.FC = () => {
     );
   }, [currentCurriculumPlan, currentWeekNumber]);
 
-  // Load and filter fees for the current student
-  const studentFees = useMemo(() => {
-    if (!studentId) return [];
-
-    // Load fees from JSON and convert date strings to Date objects
-    const rawFees = feesData.map((fee) => ({
-      ...fee,
-      dueDate: new Date(fee.dueDate),
-      paidDate: fee.paidDate ? new Date(fee.paidDate) : undefined,
-      createdAt: new Date(fee.createdAt),
-      updatedAt: new Date(fee.updatedAt),
-    })) as FeeRecord[];
-
-    // Filter fees by student ID
-    const filtered = rawFees.filter((fee) => fee.studentId === studentId);
-
-    // Compute current statuses (auto-detect OVERDUE)
-    const withStatuses = computeAllFeeStatuses(filtered);
-
-    // Sort in reverse chronological order (most recent first)
-    return withStatuses.sort((a, b) => {
-      const dateA = new Date(a.monthYear).getTime();
-      const dateB = new Date(b.monthYear).getTime();
-      return dateB - dateA;
-    });
-  }, [studentId]);
+  // Load and filter fees for the current student (from API - see useEffect above)
+  // Fee data is now fetched via apiClient.get('/fees') with studentId param
 
   // Calculate total outstanding balance (PENDING + OVERDUE)
   const outstandingBalance = useMemo(() => {
@@ -203,9 +306,9 @@ export const StudentDashboard: React.FC = () => {
       case 'OVERDUE':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       case 'WAIVED':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
     }
   };
 
@@ -240,11 +343,34 @@ export const StudentDashboard: React.FC = () => {
     return `${monthNames[parseInt(month) - 1]} ${year}`;
   };
 
-  if (!user || !studentId || !student) {
+  if (!user) {
     return (
       <DashboardLayout>
-        <div className="p-6">
-          <p className="text-gray-500 dark:text-gray-400">Unable to load student data</p>
+        <div style={{ padding: 'var(--space-lg)' }}>
+          <p style={{ color: 'var(--text-tertiary)' }}>Please log in to view your dashboard</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (studentLoading) {
+    return (
+      <DashboardLayout>
+        <div style={{ padding: 'var(--space-lg)' }}>
+          <p style={{ color: 'var(--text-tertiary)' }}>Loading student data...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!student) {
+    return (
+      <DashboardLayout>
+        <div style={{ padding: 'var(--space-lg)' }}>
+          <p style={{ color: 'var(--text-tertiary)' }}>{studentError || 'Unable to load student data'}</p>
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)', marginTop: 'var(--space-sm)' }}>
+            Please contact your coach if this issue persists.
+          </p>
         </div>
       </DashboardLayout>
     );
@@ -252,21 +378,22 @@ export const StudentDashboard: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
-        <div className="space-y-6">
+      <div className="page-container">
+        <div className="section-stack">
           {/* Welcome Banner with Name and Photo */}
-          <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
-            <div className="flex items-center gap-6">
+          <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 shadow-md border-l-4 border-primary" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
+            <div className="flex items-center" style={{ gap: 'var(--space-lg)' }}>
               {/* Profile Photo */}
               <div className="flex-shrink-0">
                 {student.profilePhoto ? (
                   <img
                     src={student.profilePhoto}
                     alt={student.fullName}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
+                    className="w-24 h-24 rounded-full object-cover shadow-lg"
+                    style={{ border: '4px solid var(--surface-elevated)', borderColor: 'var(--surface-elevated)' }}
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center border-4 border-white dark:border-gray-700 shadow-lg">
+                  <div className="w-24 h-24 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center shadow-lg" style={{ border: '4px solid var(--surface-elevated)' }}>
                     <span className="text-3xl font-bold text-primary">
                       {student.fullName.charAt(0)}
                     </span>
@@ -276,10 +403,10 @@ export const StudentDashboard: React.FC = () => {
 
               {/* Welcome Text */}
               <div>
-                <h1 className="text-[36px] font-bold text-gray-900 dark:text-gray-100 mb-2 leading-tight">
+                <h1 className="text-[36px] font-bold leading-tight" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
                   Welcome back, {student.fullName}!
                 </h1>
-                <p className="text-gray-700 dark:text-gray-300 text-lg">
+                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
                   Keep up the great work! Here's your training overview.
                 </p>
               </div>
@@ -287,154 +414,154 @@ export const StudentDashboard: React.FC = () => {
           </div>
 
           {/* Personal Stat Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="card-grid">
             {/* Current Skill Level Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="shadow-md border-l-4 border-blue-500" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+              <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
                 Skill Level
               </p>
               <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               {student.skillLevel}
             </p>
           </div>
 
             {/* Next Assessment Due Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-purple-500">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="shadow-md border-l-4 border-purple-500" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+              <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
                 Next Assessment
               </p>
               <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               {nextAssessmentDue ? formatDate(nextAssessmentDue) : 'Not scheduled'}
             </p>
           </div>
 
             {/* Outstanding Fee Balance Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-yellow-500">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="shadow-md border-l-4 border-yellow-500" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+              <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
                 Fee Balance
               </p>
               <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
               {formatCurrency(outstandingBalance)}
             </p>
             {outstandingBalance > 0 && (
-              <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Payment due</p>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400" style={{ marginTop: 'var(--space-xs)' }}>Payment due</p>
             )}
           </div>
 
             {/* Current Batch and Coach Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-green-500">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="shadow-md border-l-4 border-green-500" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+            <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+              <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
                 Batch & Coach
               </p>
               <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <p className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+            <p className="text-lg font-bold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-xs)' }}>
               {batch?.name || 'No batch assigned'}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
               Coach: {assignedCoach?.name || 'Not assigned'}
               </p>
             </div>
           </div>
 
           {/* Read-only Profile Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+            <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
               My Profile
             </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-lg)' }}>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Full Name</p>
-              <p className="text-base text-gray-900 dark:text-gray-100">{student.fullName}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Full Name</p>
+              <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.fullName}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Age</p>
-              <p className="text-base text-gray-900 dark:text-gray-100">{calculateAge(student.dateOfBirth)} years</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Age</p>
+              <p className="text-base" style={{ color: 'var(--text-primary)' }}>{calculateAge(student.dateOfBirth)} years</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Gender</p>
-              <p className="text-base text-gray-900 dark:text-gray-100">{student.gender}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Gender</p>
+              <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.gender}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Contact Phone</p>
-              <p className="text-base text-gray-900 dark:text-gray-100">{student.contactPhone}</p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Contact Phone</p>
+              <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.contactPhone}</p>
             </div>
             {student.email && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Email</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.email}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Email</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.email}</p>
               </div>
             )}
             {student.baidNumber && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">BAID Number</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.baidNumber}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>BAID Number</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.baidNumber}</p>
               </div>
             )}
             {student.guardianName && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Guardian Name</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.guardianName}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Guardian Name</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.guardianName}</p>
               </div>
             )}
             {student.guardianPhone && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Guardian Phone</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.guardianPhone}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Guardian Phone</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.guardianPhone}</p>
               </div>
             )}
             {student.bloodGroup && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Blood Group</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.bloodGroup}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Blood Group</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.bloodGroup}</p>
               </div>
             )}
             {student.height && student.weight && (
               <>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Height</p>
-                  <p className="text-base text-gray-900 dark:text-gray-100">{student.height} cm</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Height</p>
+                  <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.height} cm</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Weight</p>
-                  <p className="text-base text-gray-900 dark:text-gray-100">{student.weight} kg</p>
+                  <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Weight</p>
+                  <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.weight} kg</p>
                 </div>
                 {student.bmi && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">BMI</p>
-                    <p className="text-base text-gray-900 dark:text-gray-100">{student.bmi}</p>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>BMI</p>
+                    <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.bmi}</p>
                   </div>
                 )}
               </>
             )}
             {student.emergencyContact && (
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Emergency Contact</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.emergencyContact}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Emergency Contact</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.emergencyContact}</p>
               </div>
             )}
             {student.medicalConditions && (
               <div className="md:col-span-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Medical Conditions</p>
-                <p className="text-base text-gray-900 dark:text-gray-100">{student.medicalConditions}</p>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Medical Conditions</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.medicalConditions}</p>
               </div>
             )}
           </div>
@@ -442,11 +569,11 @@ export const StudentDashboard: React.FC = () => {
 
           {/* Most Recent Skill Assessment Radar Chart */}
           {mostRecentAssessment && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+              <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
                 Latest Skill Assessment
               </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
               Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {mostRecentAssessment.recordedBy}
             </p>
               <SkillRadarChart scores={mostRecentAssessment.scores} />
@@ -455,29 +582,30 @@ export const StudentDashboard: React.FC = () => {
 
           {/* Coach Feedback Section */}
           {student.coachFeedback && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+              <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
                 Coach Feedback
               </h2>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <p className="text-gray-800 dark:text-gray-200">{student.coachFeedback}</p>
+            <div style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)' }}>
+              <p style={{ color: 'var(--text-primary)' }}>{student.coachFeedback}</p>
             </div>
           </div>
         )}
 
           {/* Strengths and Weaknesses */}
           {(student.strengths.length > 0 || student.weaknesses.length > 0) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-lg)' }}>
               {student.strengths.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+                  <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
                     Strengths
                   </h2>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap" style={{ gap: 'var(--space-xs)' }}>
                   {student.strengths.map((strength, index) => (
                     <span
                       key={index}
-                      className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm font-medium"
+                      className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-sm font-medium"
+                      style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}
                     >
                       {strength}
                     </span>
@@ -487,15 +615,16 @@ export const StudentDashboard: React.FC = () => {
             )}
 
               {student.weaknesses.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+                  <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
                     Areas to Improve
                   </h2>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap" style={{ gap: 'var(--space-xs)' }}>
                   {student.weaknesses.map((weakness, index) => (
                     <span
                       key={index}
-                      className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium"
+                      className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm font-medium"
+                      style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}
                     >
                       {weakness}
                     </span>
@@ -508,61 +637,62 @@ export const StudentDashboard: React.FC = () => {
 
           {/* Current Week Curriculum Section */}
           {currentWeekPlan && (
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 rounded-lg shadow-md p-6 border-l-4 border-primary">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100">
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-md border-l-4 border-primary" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
+              <div style={{ marginBottom: 'var(--space-md)' }}>
+                <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+                  <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)' }}>
                     Week {currentWeekNumber} Training Focus
                   </h2>
-                <span className="bg-primary text-slate-900 px-3 py-1 rounded-full text-sm font-semibold">
+                <span className="bg-primary text-slate-900 text-sm font-semibold" style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}>
                   Current Week
                 </span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 {currentCycleKey}
               </p>
             </div>
 
             {/* Focus Area */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <div style={{ marginBottom: 'var(--space-lg)' }}>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
                 Focus Area
               </h3>
-              <p className="text-gray-700 dark:text-gray-300 text-base">
+              <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
                 {currentWeekPlan.focusArea}
               </p>
             </div>
 
             {/* Training Objective */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <div style={{ marginBottom: 'var(--space-lg)' }}>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
                 This Week's Objective
               </h3>
-              <p className="text-gray-700 dark:text-gray-300 text-base">
+              <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
                 {currentWeekPlan.objective}
               </p>
             </div>
 
             {/* Drills */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
                 Assigned Drills
               </h3>
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1" style={{ gap: 'var(--space-md)' }}>
                 {currentWeekPlan.drills.map((drill) => (
                   <div
                     key={drill.id}
-                    className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700"
+                    className="shadow-sm"
+                    style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-base">
+                    <div className="flex items-start justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+                      <h4 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>
                         {drill.name}
                       </h4>
-                      <span className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs font-medium">
+                      <span className="text-xs font-medium" style={{ backgroundColor: 'var(--surface-hover)', color: 'var(--text-secondary)', padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-sm)' }}>
                         {drill.category}
                       </span>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                       {drill.description}
                     </p>
                   </div>
@@ -574,9 +704,9 @@ export const StudentDashboard: React.FC = () => {
 
           {/* No Curriculum Message */}
           {!currentWeekPlan && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center border-l-4 border-gray-300 dark:border-gray-600">
+            <div className="shadow-md text-center border-l-4" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', borderLeftColor: 'var(--border-default)', backgroundColor: 'var(--surface-card)' }}>
             <svg
-              className="mx-auto h-12 w-12 text-gray-400 mb-4"
+              className="mx-auto h-12 w-12" style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -588,33 +718,33 @@ export const StudentDashboard: React.FC = () => {
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
               No Curriculum Plan Available
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p style={{ color: 'var(--text-secondary)' }}>
               Your coach hasn't assigned a training plan for this cycle yet.
               </p>
             </div>
           )}
 
           {/* Outstanding Balance Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-l-4 border-primary">
+          <div className="shadow-md border-l-4 border-primary" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+              <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
                 Outstanding Balance
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+              <p className="text-3xl font-bold" style={{ color: 'var(--text-primary)', marginTop: 'var(--space-sm)' }}>
                 {formatCurrency(outstandingBalance)}
               </p>
             </div>
             {outstandingBalance > 0 && (
-              <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium">
+              <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm font-medium" style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}>
                 Payment Due
               </div>
             )}
             {outstandingBalance === 0 && (
-              <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+              <div className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-sm font-medium" style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}>
                 All Paid
               </div>
             )}
@@ -623,51 +753,60 @@ export const StudentDashboard: React.FC = () => {
 
           {/* Fee History Section */}
           <div>
-            <h2 className="text-[24px] font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
               Fee History
             </h2>
 
-          {studentFees.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-              <p className="text-gray-500 dark:text-gray-400">No fee records found</p>
+          {feesLoading ? (
+            <div className="shadow text-center" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', backgroundColor: 'var(--surface-card)' }}>
+              <p style={{ color: 'var(--text-tertiary)' }}>Loading fee records...</p>
+            </div>
+          ) : feesError ? (
+            <div className="shadow text-center" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', backgroundColor: 'var(--surface-card)' }}>
+              <p style={{ color: 'var(--text-tertiary)' }}>{feesError}</p>
+            </div>
+          ) : studentFees.length === 0 ? (
+            <div className="shadow text-center" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-xl)', backgroundColor: 'var(--surface-card)' }}>
+              <p style={{ color: 'var(--text-tertiary)' }}>No fee records found</p>
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="shadow overflow-hidden" style={{ borderRadius: 'var(--radius-md)', backgroundColor: 'var(--surface-card)' }}>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
+                  <thead style={{ backgroundColor: 'var(--surface-hover)' }}>
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="text-left text-xs font-medium uppercase tracking-wider" style={{ padding: 'var(--space-sm) var(--space-lg)', color: 'var(--text-tertiary)' }}>
                         Month/Year
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="text-left text-xs font-medium uppercase tracking-wider" style={{ padding: 'var(--space-sm) var(--space-lg)', color: 'var(--text-tertiary)' }}>
                         Amount
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="text-left text-xs font-medium uppercase tracking-wider" style={{ padding: 'var(--space-sm) var(--space-lg)', color: 'var(--text-tertiary)' }}>
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="text-left text-xs font-medium uppercase tracking-wider" style={{ padding: 'var(--space-sm) var(--space-lg)', color: 'var(--text-tertiary)' }}>
                         Paid Date
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody style={{ borderTop: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}>
                     {studentFees.map((fee) => (
-                      <tr key={fee.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <tr key={fee.id} style={{ borderBottom: '1px solid var(--border-default)' }}>
+                        <td className="whitespace-nowrap text-sm font-medium" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-primary)' }}>
                           {formatMonthYear(fee.monthYear)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
+                        <td className="whitespace-nowrap text-sm font-medium" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-primary)' }}>
                           {formatCurrency(fee.amount)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="whitespace-nowrap" style={{ padding: 'var(--space-md) var(--space-lg)' }}>
                           <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClasses(fee.status)}`}
+                            className={`inline-flex text-xs font-semibold ${getStatusBadgeClasses(fee.status)}`}
+                            style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}
                           >
                             {fee.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        <td className="whitespace-nowrap text-sm" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-tertiary)' }}>
                           {fee.paidDate ? formatDate(fee.paidDate) : '-'}
                         </td>
                       </tr>

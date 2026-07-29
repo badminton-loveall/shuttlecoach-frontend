@@ -107,7 +107,7 @@ describe('AssignmentPanel', () => {
 
     expect(screen.getByText(`Assignments for ${mockCoach.name}`)).toBeInTheDocument();
     expect(screen.getByText('Assign to Batch')).toBeInTheDocument();
-    expect(screen.getByText('Assign Individual Student')).toBeInTheDocument();
+    expect(screen.getByText('Assign Individual')).toBeInTheDocument();
   });
 
   it('displays current batch assignments', () => {
@@ -205,7 +205,7 @@ describe('AssignmentPanel', () => {
     );
 
     // Find unassign buttons in the assigned batches section
-    const unassignButtons = screen.getAllByText('Unassign');
+    const unassignButtons = screen.getAllByText('Delete');
     
     // Click first unassign button (for batch)
     fireEvent.click(unassignButtons[0]);
@@ -237,7 +237,7 @@ describe('AssignmentPanel', () => {
     );
 
     // Find all unassign buttons
-    const unassignButtons = screen.getAllByText('Unassign');
+    const unassignButtons = screen.getAllByText('Delete');
     
     // Click unassign button for a student (skip the first one which is for batch)
     fireEvent.click(unassignButtons[1]);
@@ -337,8 +337,8 @@ describe('AssignmentPanel', () => {
       />
     );
 
-    expect(screen.getByText('No assignments yet')).toBeInTheDocument();
-    expect(screen.getByText('Use the forms above to assign batches or students')).toBeInTheDocument();
+    expect(screen.getByText('No batches assigned')).toBeInTheDocument();
+    expect(screen.getByText('No students assigned')).toBeInTheDocument();
   });
 
   it('disables assign button when no batch is selected', () => {
@@ -388,7 +388,8 @@ describe('AssignmentPanel', () => {
       />
     );
 
-    expect(screen.getByText('All batches are currently assigned')).toBeInTheDocument();
+    // When all batches are assigned, the badge shows "0 available"
+    expect(screen.getByText('0 available')).toBeInTheDocument();
   });
 
   it('shows message when all students are assigned', () => {
@@ -406,6 +407,8 @@ describe('AssignmentPanel', () => {
       />
     );
 
-    expect(screen.getByText('All students are currently assigned')).toBeInTheDocument();
+    // When all students are assigned, the badge shows "0 available" for the student section
+    const badges = screen.getAllByText('0 available');
+    expect(badges.length).toBeGreaterThan(0);
   });
 });

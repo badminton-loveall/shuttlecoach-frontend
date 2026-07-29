@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #E8E6DF;
+  background: var(--surface-background);
   padding: var(--space-md);
 }
 
@@ -91,7 +91,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(10, 13, 17, 0.2);
+  border: 2px solid var(--border-default);
   border-top-color: var(--text-primary);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
@@ -1895,4 +1895,71 @@
   .sp-tab { color: var(--text-dark-secondary); }
   .sp-tab:hover { color: var(--text-dark-primary); }
   .sp-tab-nav { border-bottom-color: var(--border-dark); }
+}
+
+/* ============================================================================
+   ACCESS DENIED PAGE
+   ============================================================================ */
+
+.access-denied-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-slate-950);
+  color: var(--color-slate-100);
+  padding: var(--space-lg);
+}
+
+.access-denied-container {
+  text-align: center;
+  max-width: 500px;
+}
+
+.access-denied-icon {
+  font-size: var(--font-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.access-denied-page h1 {
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  margin-bottom: var(--space-sm);
+  color: var(--color-danger);
+}
+
+.access-denied-page p {
+  font-size: var(--font-base);
+  color: var(--color-slate-400);
+  margin-bottom: var(--space-xl);
+}
+
+.access-denied-page .btn-back {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-primary);
+  color: var(--color-slate-950);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-semibold);
+  transition: all var(--transition-base);
+  border: none;
+  cursor: pointer;
+}
+
+.access-denied-page .btn-back:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+.access-denied-page .btn-back:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: light) {
+  .access-denied-page {
+    background-color: var(--color-slate-50);
+    color: var(--color-slate-900);
+  }
 }

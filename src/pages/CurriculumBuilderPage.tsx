@@ -137,8 +137,8 @@ const CurriculumBuilderPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="hc-dashboard">
-        <div className="hc-dashboard-content">
+      <div className="page-container">
+        <div className="section-stack">
 
           {/* Page Header */}
           <div className="page-header">

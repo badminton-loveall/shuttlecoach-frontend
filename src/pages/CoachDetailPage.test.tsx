@@ -219,7 +219,7 @@ describe('CoachDetailPage - Permission-Based Access Denial (Task 13.4)', () => {
     const code = fs.readFileSync('./src/pages/CoachDetailPage.tsx', 'utf-8');
     expect(code).toContain('Access Denied');
     expect(code).toContain('role="alert"');
-    expect(code).toContain('border border-red-300');
+    expect(code).toContain('border-red-200');
     expect(code).toContain('bg-red-50');
   });
 
@@ -768,7 +768,7 @@ describe('CoachDetailPage - End-to-End Integration (Task 16.1)', () => {
     const code = fs.readFileSync('./src/pages/CoachDetailPage.tsx', 'utf-8');
     // Tab content area with responsive styling
     expect(code).toContain('coach-detail-content');
-    expect(code).toContain('mt-6 mb-12');
+    expect(code).toContain('bg-white');
   });
 
   it('should validate coachId before rendering', () => {
@@ -1098,8 +1098,7 @@ describe('CoachDetailPage - Final Verification (Task 16.1 Complete)', () => {
     
     // Responsive container classes
     expect(code).toContain('mx-4 lg:mx-6');
-    expect(code).toContain('mt-6');
-    expect(code).toContain('mb-12');
+    expect(code).toContain("marginTop: 'var(--space-xl)'");
   });
 
   it('should handle all loading states correctly', () => {

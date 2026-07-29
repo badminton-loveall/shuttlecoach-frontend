@@ -379,7 +379,7 @@ describe('CoachBatchesTab', () => {
       fireEvent.click(removeButton);
 
       // Click Unassign in confirmation dialog
-      const unassignButton = screen.getByRole('button', { name: /Unassign/ });
+      const unassignButton = screen.getByRole('button', { name: /Confirm batch unassignment/i });
       fireEvent.click(unassignButton);
 
       expect(onBatchUnassigned).toHaveBeenCalledWith(mockBatches[0].id);
@@ -447,7 +447,7 @@ describe('CoachBatchesTab', () => {
       fireEvent.click(removeButton);
 
       // Click Unassign
-      const unassignButton = screen.getByRole('button', { name: /Unassign/ });
+      const unassignButton = screen.getByRole('button', { name: /Confirm batch unassignment/i });
       fireEvent.click(unassignButton);
 
       // Callback should be called
@@ -488,7 +488,7 @@ describe('CoachBatchesTab', () => {
       fireEvent.click(removeButtons[0]);
 
       // Confirm removal
-      let unassignButton = screen.getByRole('button', { name: /Unassign/ });
+      let unassignButton = screen.getByRole('button', { name: /Confirm batch unassignment/i });
       fireEvent.click(unassignButton);
 
       // Set one batch as "removing" by checking the UI state

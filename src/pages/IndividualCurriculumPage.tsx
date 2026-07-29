@@ -7,6 +7,7 @@ import { generateCycleKey, isCycleArchived, getAllCyclesFromPlans } from '../uti
 import type { CurriculumPlan, WeekPlan, Drill, Student } from '../types';
 import curriculumData from '../data/curriculum.json';
 import studentsData from '../data/students.json';
+import '../styles/pages.css';
 
 /**
  * IndividualCurriculumPage
@@ -307,8 +308,8 @@ const IndividualCurriculumPage: React.FC = () => {
   if (!student) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-96">
-          <div className="text-slate-600 dark:text-slate-400">Loading...</div>
+        <div className="flex items-center justify-center" style={{ height: '24rem' }}>
+          <div className="text-secondary">Loading...</div>
         </div>
       </DashboardLayout>
     );
@@ -316,29 +317,31 @@ const IndividualCurriculumPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
-        {/* Page Header */}
-        <div className="mb-12">
-          <button
-            onClick={() => navigate('/students')}
-            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 mb-4 flex items-center gap-2 text-sm"
-          >
-            <span>←</span> Back to Students
-          </button>
-          <h1 className="text-[36px] font-bold text-slate-900 dark:text-slate-50 mb-2 leading-tight">
-            Individual Curriculum - {student.fullName}
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Edit curriculum plan for this student
-          </p>
-        </div>
+      <div className="page-container">
+        <div className="section-stack">
 
-        {/* Warning Banner - Shows if plan was copied from batch */}
-        {batchPlan && !isArchived && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
+          {/* Page Header */}
+          <div>
+            <button
+              onClick={() => navigate('/students')}
+              className="btn btn-secondary btn-sm"
+              style={{ marginBottom: 'var(--space-md)' }}
+            >
+              <span>←</span> Back to Students
+            </button>
+            <h1 className="page-header-title">
+              Individual Curriculum - {student.fullName}
+            </h1>
+            <p className="page-header-subtitle">
+              Edit curriculum plan for this student
+            </p>
+          </div>
+
+          {/* Warning Banner - Shows if plan was copied from batch */}
+          {batchPlan && !isArchived && (
+            <div className="alert-base alert-warning">
               <svg
-                className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0"
+                className="alert-base__icon"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -348,26 +351,24 @@ const IndividualCurriculumPage: React.FC = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <div className="flex-1">
-                <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
+              <div className="alert-base__content">
+                <h3 className="alert-base__title">
                   Individual Plan (Copied from Batch)
                 </h3>
-                <p className="text-sm text-yellow-800 dark:text-yellow-300 mt-1">
+                <p className="alert-base__message">
                   This plan was originally copied from a batch curriculum. Changes you make here
                   will only affect <strong>{student.fullName}</strong> and will not impact the
                   batch plan or other students. Modified weeks are highlighted with a yellow badge.
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Archived Plan Warning */}
-        {isArchived && (
-          <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
+          {/* Archived Plan Warning */}
+          {isArchived && (
+            <div className="alert-base alert-info">
               <svg
-                className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5 flex-shrink-0"
+                className="alert-base__icon"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -377,240 +378,246 @@ const IndividualCurriculumPage: React.FC = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <div className="flex-1">
-                <h3 className="font-semibold text-slate-900 dark:text-slate-200">
+              <div className="alert-base__content">
+                <h3 className="alert-base__title">
                   Archived Plan (Read-Only)
                 </h3>
-                <p className="text-sm text-slate-700 dark:text-slate-300 mt-1">
+                <p className="alert-base__message">
                   This curriculum plan is from a past cycle and cannot be edited. It is preserved
                   for historical reference only.
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Controls Section */}
-        <div className="bg-white dark:bg-slate-900 rounded-lg p-6 mb-6 shadow-sm border border-slate-200 dark:border-slate-800">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Cycle Selector */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Bi-monthly Cycle
-              </label>
-              <select
-                value={selectedCycle}
-                onChange={(e) => setSelectedCycle(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {availableCycles.map((cycle) => (
-                  <option key={cycle} value={cycle}>
-                    {cycle} {isCycleArchived(cycle) ? '(Archived)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Controls Section */}
+          <div className="card">
+            <div className="curriculum-controls">
+              {/* Cycle Selector */}
+              <div className="form-group-inline">
+                <label className="text-label">
+                  Bi-monthly Cycle
+                </label>
+                <select
+                  value={selectedCycle}
+                  onChange={(e) => setSelectedCycle(e.target.value)}
+                  className="input"
+                >
+                  {availableCycles.map((cycle) => (
+                    <option key={cycle} value={cycle}>
+                      {cycle} {isCycleArchived(cycle) ? '(Archived)' : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Student Info */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Student
-              </label>
-              <div className="px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100">
-                {student.fullName}
+              {/* Student Info */}
+              <div className="form-group-inline">
+                <label className="text-label">
+                  Student
+                </label>
+                <div className="input" style={{ opacity: 0.7, cursor: 'default' }}>
+                  {student.fullName}
+                </div>
+              </div>
+
+              {/* Save Button */}
+              <div className="form-group-inline form-group-inline--action">
+                <button
+                  onClick={handleSavePlan}
+                  disabled={isSaving || isArchived}
+                  className="btn btn-primary"
+                  style={{ width: '100%' }}
+                >
+                  {isSaving ? 'Saving...' : 'Save Individual Plan'}
+                </button>
               </div>
             </div>
 
-            {/* Save Button */}
-            <div className="flex items-end">
-              <button
-                onClick={handleSavePlan}
-                disabled={isSaving || isArchived}
-                className="w-full px-6 py-2 bg-primary hover:bg-primary/90 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-slate-900 dark:text-slate-900 font-semibold rounded-lg transition-colors disabled:cursor-not-allowed"
+            {/* Save Message */}
+            {saveMessage && (
+              <div
+                className={
+                  saveMessage.includes('Error') || saveMessage.includes('Cannot')
+                    ? 'alert-base alert-warning'
+                    : 'alert-base alert-success'
+                }
+                style={{ marginTop: 'var(--space-md)' }}
               >
-                {isSaving ? 'Saving...' : 'Save Individual Plan'}
-              </button>
-            </div>
+                {saveMessage}
+              </div>
+            )}
           </div>
 
-          {/* Save Message */}
-          {saveMessage && (
-            <div
-              className={`mt-4 p-3 rounded-lg ${
-                saveMessage.includes('Error') || saveMessage.includes('Cannot')
-                  ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                  : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-              }`}
-            >
-              {saveMessage}
+          {/* Main Content: Drill Library + Week Editor */}
+          <div className="curriculum-layout">
+            {/* Drill Library (Left Side) */}
+            <div className="curriculum-library">
+              <DrillLibrary />
             </div>
-          )}
-        </div>
 
-        {/* Main Content: Drill Library + Week Editor */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Drill Library (Left Side) */}
-          <div className="lg:col-span-1">
-            <DrillLibrary />
-          </div>
-
-          {/* 8-Week Editor (Right Side) */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
-              {/* Week Tabs */}
-              <div className="border-b border-slate-200 dark:border-slate-800">
-                <div className="flex overflow-x-auto">
+            {/* 8-Week Editor (Right Side) */}
+            <div className="curriculum-editor">
+              <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                {/* Week Tabs */}
+                <div className="curriculum-week-tabs">
                   {weeks.map((week) => {
                     const hasChanges = hasWeekChanged(week.weekNumber);
                     return (
                       <button
                         key={week.weekNumber}
                         onClick={() => setActiveWeek(week.weekNumber)}
-                        className={`relative px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                          activeWeek === week.weekNumber
-                            ? 'border-primary text-primary'
-                            : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                        className={`curriculum-week-tab${
+                          activeWeek === week.weekNumber ? ' curriculum-week-tab--active' : ''
                         }`}
                       >
                         <span>Week {week.weekNumber}</span>
                         {hasChanges && (
-                          <span className="ml-2 inline-block w-2 h-2 bg-yellow-500 rounded-full" title="Modified from batch plan" />
+                          <span
+                            className="inline-block"
+                            style={{
+                              marginLeft: 'var(--space-sm)',
+                              width: '8px',
+                              height: '8px',
+                              backgroundColor: 'var(--color-warning)',
+                              borderRadius: 'var(--radius-pill)'
+                            }}
+                            title="Modified from batch plan"
+                          />
                         )}
                       </button>
                     );
                   })}
                 </div>
-              </div>
 
-              {/* Active Week Content */}
-              {weeks.map(
-                (week) =>
-                  activeWeek === week.weekNumber && (
-                    <div key={week.weekNumber} className="p-6 space-y-6">
-                      {/* Diff Badge */}
-                      {hasWeekChanged(week.weekNumber) && (
-                        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                          <div className="flex items-start gap-2">
+                {/* Active Week Content */}
+                {weeks.map(
+                  (week) =>
+                    activeWeek === week.weekNumber && (
+                      <div key={week.weekNumber} className="curriculum-week-content">
+                        {/* Diff Badge */}
+                        {hasWeekChanged(week.weekNumber) && (
+                          <div className="alert-base alert-warning">
                             <svg
-                              className="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0"
+                              className="alert-base__icon"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
                               <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
                             </svg>
-                            <div className="flex-1">
-                              <p className="text-sm font-semibold text-yellow-900 dark:text-yellow-200">
+                            <div className="alert-base__content">
+                              <p className="alert-base__title">
                                 Modified from Batch Plan
                               </p>
-                              <p className="text-xs text-yellow-800 dark:text-yellow-300 mt-1">
+                              <p className="alert-base__message">
                                 {getWeekChanges(week.weekNumber).join(', ')}
                               </p>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
 
-                      {/* Focus Area */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Focus Area
-                        </label>
-                        <input
-                          type="text"
-                          value={week.focusArea}
-                          onChange={(e) =>
-                            handleWeekUpdate(week.weekNumber, 'focusArea', e.target.value)
-                          }
-                          placeholder="e.g., Foundation - Grip and Basic Footwork"
-                          disabled={isArchived}
-                          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                      </div>
-
-                      {/* Drills Drop Zone */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Assigned Drills
-                        </label>
-                        <div
-                          className={`min-h-[150px] border-2 border-dashed rounded-lg p-4 ${
-                            isArchived
-                              ? 'border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/30'
-                              : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50'
-                          }`}
-                          onDragOver={(e) => {
-                            if (!isArchived) e.preventDefault();
-                          }}
-                          onDrop={(e) => {
-                            if (isArchived) return;
-                            e.preventDefault();
-                            const drillData = e.dataTransfer.getData('drill');
-                            if (drillData) {
-                              const drill: Drill = JSON.parse(drillData);
-                              handleDrillDrop(week.weekNumber, drill);
+                        {/* Focus Area */}
+                        <div className="form-group-stack">
+                          <label className="text-label">
+                            Focus Area
+                          </label>
+                          <input
+                            type="text"
+                            value={week.focusArea}
+                            onChange={(e) =>
+                              handleWeekUpdate(week.weekNumber, 'focusArea', e.target.value)
                             }
-                          }}
-                        >
-                          {week.drills.length === 0 ? (
-                            <div className="text-center text-slate-500 dark:text-slate-400 py-8">
-                              {isArchived
-                                ? 'No drills assigned for this week'
-                                : 'Drag and drop drills here from the library'}
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              {week.drills.map((drill) => (
-                                <div
-                                  key={drill.id}
-                                  className="flex items-start justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800"
-                                >
-                                  <div className="flex-1">
-                                    <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                                      {drill.name}
-                                    </h4>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                                      {drill.description}
-                                    </p>
-                                    <span className="inline-block mt-2 px-2 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded">
-                                      {drill.category}
-                                    </span>
+                            placeholder="e.g., Foundation - Grip and Basic Footwork"
+                            disabled={isArchived}
+                            className="input"
+                          />
+                        </div>
+
+                        {/* Drills Drop Zone */}
+                        <div className="form-group-stack">
+                          <label className="text-label">
+                            Assigned Drills
+                          </label>
+                          <div
+                            className={`curriculum-drop-zone${
+                              isArchived ? ' curriculum-drop-zone--archived' : ''
+                            }`}
+                            onDragOver={(e) => {
+                              if (!isArchived) e.preventDefault();
+                            }}
+                            onDrop={(e) => {
+                              if (isArchived) return;
+                              e.preventDefault();
+                              const drillData = e.dataTransfer.getData('drill');
+                              if (drillData) {
+                                const drill: Drill = JSON.parse(drillData);
+                                handleDrillDrop(week.weekNumber, drill);
+                              }
+                            }}
+                          >
+                            {week.drills.length === 0 ? (
+                              <p className="curriculum-drop-zone__empty text-small">
+                                {isArchived
+                                  ? 'No drills assigned for this week'
+                                  : 'Drag and drop drills here from the library'}
+                              </p>
+                            ) : (
+                              <div className="curriculum-drill-list">
+                                {week.drills.map((drill) => (
+                                  <div
+                                    key={drill.id}
+                                    className="curriculum-drill-item"
+                                  >
+                                    <div className="curriculum-drill-item__info">
+                                      <span className="text-body" style={{ fontWeight: 'var(--weight-semibold)' }}>
+                                        {drill.name}
+                                      </span>
+                                      <span className="text-small" style={{ marginTop: '2px' }}>
+                                        {drill.description}
+                                      </span>
+                                      <span className="badge badge-secondary" style={{ marginTop: '4px' }}>
+                                        {drill.category}
+                                      </span>
+                                    </div>
+                                    {!isArchived && (
+                                      <button
+                                        onClick={() => handleRemoveDrill(week.weekNumber, drill.id)}
+                                        className="curriculum-drill-item__remove"
+                                      >
+                                        Remove
+                                      </button>
+                                    )}
                                   </div>
-                                  {!isArchived && (
-                                    <button
-                                      onClick={() => handleRemoveDrill(week.weekNumber, drill.id)}
-                                      className="ml-4 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
-                                    >
-                                      Remove
-                                    </button>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Objective */}
+                        <div className="form-group-stack">
+                          <label className="text-label">
+                            Weekly Objective
+                          </label>
+                          <textarea
+                            value={week.objective}
+                            onChange={(e) =>
+                              handleWeekUpdate(week.weekNumber, 'objective', e.target.value)
+                            }
+                            placeholder="e.g., Establish proper grip habits and develop basic court coverage skills"
+                            rows={3}
+                            disabled={isArchived}
+                            className="input"
+                            style={{ height: 'auto', resize: 'vertical' }}
+                          />
                         </div>
                       </div>
-
-                      {/* Objective */}
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                          Weekly Objective
-                        </label>
-                        <textarea
-                          value={week.objective}
-                          onChange={(e) =>
-                            handleWeekUpdate(week.weekNumber, 'objective', e.target.value)
-                          }
-                          placeholder="e.g., Establish proper grip habits and develop basic court coverage skills"
-                          rows={3}
-                          disabled={isArchived}
-                          className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                      </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </DashboardLayout>

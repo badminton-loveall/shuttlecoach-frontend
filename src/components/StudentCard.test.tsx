@@ -52,15 +52,15 @@ describe('StudentCard - Review Reminder', () => {
   it('displays review badge with warning icon', () => {
     render(<StudentCard student={mockStudent} isDueForReview={true} daysOverdue={10} />);
     
-    const badge = screen.getByText('10 days overdue').closest('.due-for-review-badge');
+    const badge = screen.getByText('10 days overdue').closest('.student-card__due-badge');
     expect(badge).toBeInTheDocument();
-    expect(badge?.querySelector('.due-icon')).toHaveTextContent('⚠️');
+    expect(badge?.querySelector('.student-card__due-icon')).toHaveTextContent('⚠️');
   });
 
   it('includes tooltip with overdue information', () => {
     render(<StudentCard student={mockStudent} isDueForReview={true} daysOverdue={15} />);
     
-    const badge = screen.getByText('15 days overdue').closest('.due-for-review-badge');
+    const badge = screen.getByText('15 days overdue').closest('.student-card__due-badge');
     expect(badge).toHaveAttribute('title', 'Assessment overdue: 15 days overdue');
   });
 

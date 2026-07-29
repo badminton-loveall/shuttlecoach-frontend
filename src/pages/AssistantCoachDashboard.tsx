@@ -9,14 +9,14 @@ import FeeAlerts from '../components/FeeAlerts';
 import RecentActivity from '../components/RecentActivity';
 import type { FilterValues } from '../components/FilterBar';
 import { useAuth } from '../contexts/AuthContext';
+import { useStudents } from '../hooks/useStudents';
+import { useFees } from '../hooks/useFees';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
 import { generateActivityFeed } from '../utils/activityUtils';
-import STUDENTS_DATA from '../data/students.json';
-import FEES_DATA from '../data/fees.json';
 import SKILL_ASSESSMENTS_DATA from '../data/skillAssessments.json';
 import TRAINING_LOGS_DATA from '../data/trainingLogs.json';
-import type { Student, FeeRecord, SkillAssessment, TrainingLog } from '../types';
+import type { Student, SkillAssessment, TrainingLog } from '../types';
 import '../styles/pages.css';
 
 /**
@@ -28,30 +28,7 @@ import '../styles/pages.css';
  * Pure CSS implementation using design tokens
  */
 
-// Map raw JSON data to proper Student type with parsed dates
-const parseStudents = (data: unknown): Student[] => {
-  const studentArray = data as Array<Record<string, unknown>>;
-  return studentArray.map((s) => ({
-    ...(s as unknown as Student),
-    dateOfBirth: new Date(s.dateOfBirth as string),
-    createdAt: new Date(s.createdAt as string),
-    updatedAt: new Date(s.updatedAt as string),
-  }));
-};
-
-// Parse fees with proper date types
-const parseFees = (data: unknown): FeeRecord[] => {
-  const feeArray = data as Array<Record<string, unknown>>;
-  return feeArray.map((f) => ({
-    ...(f as unknown as FeeRecord),
-    dueDate: new Date(f.dueDate as string),
-    paidDate: f.paidDate ? new Date(f.paidDate as string) : undefined,
-    createdAt: new Date(f.createdAt as string),
-    updatedAt: new Date(f.updatedAt as string),
-  }));
-};
-
-// Parse skill assessments with proper date types
+// Parse skill assessments with proper date types (no API hook yet)
 const parseAssessments = (data: unknown): SkillAssessment[] => {
   const assessmentArray = data as Array<Record<string, unknown>>;
   return assessmentArray.map((a) => ({
@@ -60,7 +37,7 @@ const parseAssessments = (data: unknown): SkillAssessment[] => {
   }));
 };
 
-// Parse training logs with proper date types
+// Parse training logs with proper date types (no API hook yet)
 const parseTrainingLogs = (data: unknown): TrainingLog[] => {
   const logArray = data as Array<Record<string, unknown>>;
   return logArray.map((l) => ({
@@ -77,10 +54,7 @@ const getBatchOptions = (students: Student[]) => {
   });
   return Array.from(batchIds)
     .sort()
-    .map((id) => ({
-      value: id,
-      label: `Batch ${id.split('-')[1]}`,
-    }));
+    .map((id) => ({ value: id, label: `Batch ${id.split('-')[1]}` }));
 };
 
 // Filter and search students
@@ -90,26 +64,16 @@ const filterStudents = (
   filters: FilterValues
 ): Student[] => {
   return students.filter((student) => {
-    // Search: match against name, BAID, and batch (case insensitive)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const nameMatch = student.fullName.toLowerCase().includes(query);
       const baidMatch = student.baidNumber?.toLowerCase().includes(query) ?? false;
       const batchMatch = student.batchId?.toLowerCase().includes(query) ?? false;
-      if (!nameMatch && !baidMatch && !batchMatch) {
-        return false;
-      }
+      if (!nameMatch && !baidMatch && !batchMatch) return false;
     }
 
-    // Filter by batch (AND operation)
-    if (filters.batch && student.batchId !== filters.batch) {
-      return false;
-    }
-
-    // Filter by skill level (AND operation)
-    if (filters.skillLevel && student.skillLevel !== filters.skillLevel) {
-      return false;
-    }
+    if (filters.batch && student.batchId !== filters.batch) return false;
+    if (filters.skillLevel && student.skillLevel !== filters.skillLevel) return false;
 
     return true;
   });
@@ -128,34 +92,37 @@ export const AssistantCoachDashboard: React.FC = () => {
     coach: '', // Not used for assistant coach
   };
 
-  // Parse all students and filter to assigned students only
-  const allStudents = useMemo(() => parseStudents(STUDENTS_DATA), []);
-  
+  // Live data from API
+  const { students: allStudents, loading: studentsLoading } = useStudents();
+  const { fees: allFees, loading: feesLoading } = useFees();
+
+  // Static JSON data (no API hooks yet)
+  const allAssessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
+  const allTrainingLogs = useMemo(() => parseTrainingLogs(TRAINING_LOGS_DATA), []);
+
   // Filter students to show only those assigned to the current assistant coach
   const assignedStudents = useMemo(
     () => allStudents.filter((student) => student.assignedCoachId === user?.id),
     [allStudents, user?.id]
   );
 
-  // Parse fees and filter to assigned students only
-  const allFees = useMemo(() => parseFees(FEES_DATA), []);
   const assignedStudentIds = useMemo(
     () => new Set(assignedStudents.map((s) => s.id)),
     [assignedStudents]
   );
+
+  // Filter fees to assigned students only
   const assignedFees = useMemo(
     () => allFees.filter((fee) => assignedStudentIds.has(fee.studentId)),
     [allFees, assignedStudentIds]
   );
 
-  // Parse assessments and training logs, filter to assigned students
-  const allAssessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
+  // Filter assessments and training logs to assigned students
   const assignedAssessments = useMemo(
     () => allAssessments.filter((a) => assignedStudentIds.has(a.studentId)),
     [allAssessments, assignedStudentIds]
   );
 
-  const allTrainingLogs = useMemo(() => parseTrainingLogs(TRAINING_LOGS_DATA), []);
   const assignedTrainingLogs = useMemo(
     () => allTrainingLogs.filter((l) => assignedStudentIds.has(l.studentId)),
     [allTrainingLogs, assignedStudentIds]
@@ -201,29 +168,22 @@ export const AssistantCoachDashboard: React.FC = () => {
     [searchParams, setSearchParams]
   );
 
-  // Handle search change
   const handleSearchChange = useCallback(
-    (value: string) => {
-      updateSearchParams({ search: value });
-    },
+    (value: string) => updateSearchParams({ search: value }),
     [updateSearchParams]
   );
 
-  // Handle filter change
   const handleFilterChange = useCallback(
-    (newFilters: FilterValues) => {
-      updateSearchParams({
-        batch: newFilters.batch,
-        skillLevel: newFilters.skillLevel,
-      });
-    },
+    (newFilters: FilterValues) =>
+      updateSearchParams({ batch: newFilters.batch, skillLevel: newFilters.skillLevel }),
     [updateSearchParams]
   );
 
-  // Handle student card click
   const handleStudentClick = (studentId: string) => {
     navigate(`/student/${studentId}`);
   };
+
+  const loading = studentsLoading || feesLoading;
 
   return (
     <DashboardLayout>
@@ -234,82 +194,83 @@ export const AssistantCoachDashboard: React.FC = () => {
           <p className="ac-welcome-subtitle">Here's an overview of your assigned students</p>
         </div>
 
-        {/* Stat Cards Grid - 3 cards for Assistant Coach (no batch count) */}
-        <div className="ac-stats-grid">
-          {/* Total Assigned Students */}
-          <StatCard
-            title="Assigned Students"
-            value={stats.totalStudents}
-            label="Students under your coaching"
-            icon={<StudentIconSvg />}
-            variant="info"
-          />
-
-          {/* BAID Registered (scoped to assigned students) */}
-          <StatCard
-            title="BAID Registered"
-            value={`${stats.baidRegistered}/${stats.totalStudents}`}
-            label={`${stats.baidPercentage}% registered`}
-            icon={<BaidIconSvg />}
-            variant="success"
-          />
-
-          {/* Average Progress (scoped to assigned students) */}
-          <StatCard
-            title="Avg Progress"
-            value={stats.averageProgress}
-            label={stats.averageProgressLabel.split('(')[1]?.slice(0, -1) || 'Level'}
-            icon={<ProgressIconSvg />}
-            variant="info"
-          />
-        </div>
-
-        {/* Student Grid Section */}
-        <div className="ac-section">
-          <h2 className="ac-section-title">My Students</h2>
-
-          {/* Search and Filter Controls (no coach filter) */}
-          <div className="ac-search-filter-row">
-            <SearchInput value={searchQuery} onChange={handleSearchChange} />
-            {/* Assistant coaches don't filter by coach */}
-            <FilterBar
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              batchOptions={batchOptions}
-              coachOptions={[]}
-            />
+        {/* Loading State */}
+        {loading && (
+          <div className="card">
+            <div className="skeleton-container animate-pulse">
+              <div className="skeleton-line skeleton-line--xs" style={{ width: '75%' }}></div>
+              <div className="skeleton-line skeleton-line--xs"></div>
+              <div className="skeleton-line skeleton-line--xs" style={{ width: '83%' }}></div>
+            </div>
           </div>
+        )}
 
-          {/* Results count when filtered */}
-          {(searchQuery || filters.batch || filters.skillLevel) && (
-            <p className="ac-filter-results">
-              Showing {filteredStudents.length} of {assignedStudents.length} students
-            </p>
-          )}
+        {!loading && (
+          <>
+            {/* Stat Cards Grid - 3 cards for Assistant Coach (no batch count) */}
+            <div className="ac-stats-grid">
+              <StatCard
+                title="Assigned Students"
+                value={stats.totalStudents}
+                label="Students under your coaching"
+                icon={<StudentIconSvg />}
+                variant="info"
+              />
+              <StatCard
+                title="BAID Registered"
+                value={`${stats.baidRegistered}/${stats.totalStudents}`}
+                label={`${stats.baidPercentage}% registered`}
+                icon={<BaidIconSvg />}
+                variant="success"
+              />
+              <StatCard
+                title="Avg Progress"
+                value={stats.averageProgress}
+                label={stats.averageProgressLabel.split('(')[1]?.slice(0, -1) || 'Level'}
+                icon={<ProgressIconSvg />}
+                variant="info"
+              />
+            </div>
 
-          <StudentGrid students={filteredStudents} onStudentClick={handleStudentClick} />
-        </div>
+            {/* Student Grid Section */}
+            <div className="ac-section">
+              <h2 className="ac-section-title">My Students</h2>
 
-        {/* Progressive Dashboard Features - Phase 6 (Scoped to Assigned Students) */}
-        <div className="ac-overview">
-          <h2 className="ac-overview-title">Dashboard Overview</h2>
-          <div className="ac-overview-grid">
-            {/* Fee Alerts (Assigned Students Only) */}
-            <FeeAlerts 
-              overdueFees={overdueFees} 
-              onViewDetails={() => navigate('/fees')}
-            />
+              <div className="ac-search-filter-row">
+                <SearchInput value={searchQuery} onChange={handleSearchChange} />
+                <FilterBar
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  batchOptions={batchOptions}
+                  coachOptions={[]}
+                />
+              </div>
 
-            {/* Recent Activity Feed (Assigned Students Only) */}
-            <RecentActivity activities={recentActivities} />
-          </div>
-        </div>
+              {(searchQuery || filters.batch || filters.skillLevel) && (
+                <p className="ac-filter-results">
+                  Showing {filteredStudents.length} of {assignedStudents.length} students
+                </p>
+              )}
+
+              <StudentGrid students={filteredStudents} onStudentClick={handleStudentClick} />
+            </div>
+
+            {/* Progressive Dashboard Features - Phase 6 (Scoped to Assigned Students) */}
+            <div className="ac-overview">
+              <h2 className="ac-overview-title">Dashboard Overview</h2>
+              <div className="ac-overview-grid">
+                <FeeAlerts overdueFees={overdueFees} onViewDetails={() => navigate('/fees')} />
+                <RecentActivity activities={recentActivities} />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </DashboardLayout>
   );
 };
 
-// Icon SVG Components (reused from HeadCoachDashboard)
+// Icon SVG Components
 const StudentIconSvg: React.FC = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>

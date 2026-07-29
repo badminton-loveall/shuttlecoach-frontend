@@ -3,6 +3,43 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 
+// Mock apiClient so no real network calls are made.
+// The login endpoint returns user data from users.json for known credentials,
+// and throws "Invalid username or password" for invalid ones.
+vi.mock('../utils/apiClient', () => {
+  const USERS: Record<string, { id: string; username: string; password: string; role: string; name: string; email: string; profilePhoto: null; specialization: null | string; createdAt: string; lastActive: string }> = {
+    head_coach:        { id: 'user-001', username: 'head_coach',       password: 'password123', role: 'HEAD_COACH',       name: 'Sumit Dali',   email: 'rajesh@shuttlecoach.com', profilePhoto: null, specialization: null,               createdAt: '2026-01-01T08:00:00Z', lastActive: '2026-01-15T10:30:00Z' },
+    assistant_coach1:  { id: 'user-002', username: 'assistant_coach1', password: 'password123', role: 'ASSISTANT_COACH', name: 'Priya Sharma',  email: 'priya@shuttlecoach.com',  profilePhoto: null, specialization: 'Doubles Training', createdAt: '2026-01-02T08:00:00Z', lastActive: '2026-01-14T14:20:00Z' },
+    assistant_coach2:  { id: 'user-003', username: 'assistant_coach2', password: 'password123', role: 'ASSISTANT_COACH', name: 'Vikram Singh',  email: 'vikram@shuttlecoach.com', profilePhoto: null, specialization: 'Footwork & Movement', createdAt: '2026-01-03T08:00:00Z', lastActive: '2026-01-13T09:15:00Z' },
+    student1:          { id: 'user-004', username: 'student1',         password: 'password123', role: 'STUDENT',         name: 'Aarav Patel',   email: 'aarav.patel@student.com', profilePhoto: null, specialization: null,               createdAt: '2026-01-05T08:00:00Z', lastActive: '2026-01-15T16:45:00Z' },
+    student2:          { id: 'user-005', username: 'student2',         password: 'password123', role: 'STUDENT',         name: 'Divya Gupta',   email: 'divya.gupta@student.com', profilePhoto: null, specialization: null,               createdAt: '2026-01-06T08:00:00Z', lastActive: '2026-01-12T11:20:00Z' },
+  };
+
+  const post = vi.fn(async (_url: string, body: { username: string; password: string }) => {
+    const { username, password } = body;
+    const user = USERS[username];
+    if (!user || user.password !== password) {
+      const err = new Error('Invalid username or password');
+      (err as any).response = { status: 401, data: { message: 'Invalid username or password' } };
+      return Promise.reject(err);
+    }
+    const { password: _pw, ...safeUser } = user;
+    void _pw;
+    const token = `${safeUser.id}:${Date.now()}`;
+    return {
+      data: {
+        token,
+        user: safeUser,
+        role: safeUser.role,
+      },
+    };
+  });
+
+  return {
+    default: { post },
+  };
+});
+
 /**
  * Test suite for AuthContext
  * Tests authentication state management, login/logout flows, and localStorage persistence

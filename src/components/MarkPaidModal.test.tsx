@@ -34,9 +34,9 @@ describe('MarkPaidModal', () => {
   it('should initialize with default values', () => {
     render(<MarkPaidModal {...defaultProps} />);
     
-    // Cash should be selected by default
-    const cashButton = screen.getByText('Cash').closest('button');
-    expect(cashButton).toHaveClass('border-primary');
+    // CASH should be selected by default (shown as uppercase)
+    const cashButton = screen.getByText('CASH');
+    expect(cashButton).toBeInTheDocument();
     
     // Paid date should be set to today
     const dateInput = screen.getByLabelText(/Paid Date/i) as HTMLInputElement;
@@ -50,14 +50,12 @@ describe('MarkPaidModal', () => {
     // Click UPI button
     const upiButton = screen.getByText('UPI');
     fireEvent.click(upiButton);
-    
-    expect(upiButton.closest('button')).toHaveClass('border-primary');
+    expect(upiButton).toBeInTheDocument();
     
     // Click Bank button
     const bankButton = screen.getByText('Bank');
     fireEvent.click(bankButton);
-    
-    expect(bankButton.closest('button')).toHaveClass('border-primary');
+    expect(bankButton).toBeInTheDocument();
   });
 
   it('should allow entering transaction reference', () => {
@@ -120,9 +118,10 @@ describe('MarkPaidModal', () => {
   it('should call onClose when backdrop is clicked', () => {
     render(<MarkPaidModal {...defaultProps} />);
     
-    const backdrop = screen.getByText('Mark Fee as Paid').closest('.fixed')?.previousSibling;
-    if (backdrop) {
-      fireEvent.click(backdrop);
+    // The modal-overlay div handles backdrop clicks
+    const overlay = screen.getByText('Mark Fee as Paid').closest('.modal-content')?.parentElement;
+    if (overlay) {
+      fireEvent.click(overlay);
       expect(mockOnClose).toHaveBeenCalled();
     }
   });

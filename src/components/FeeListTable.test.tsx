@@ -102,9 +102,9 @@ describe('FeeListTable', () => {
     expect(overdueBadge).toBeInTheDocument();
 
     // Check badge colors (class names)
-    expect(paidBadge.className).toContain('bg-green-100');
-    expect(pendingBadge.className).toContain('bg-yellow-100');
-    expect(overdueBadge.className).toContain('bg-red-100');
+    expect(paidBadge.className).toContain('table-badge--success');
+    expect(pendingBadge.className).toContain('table-badge--pending');
+    expect(overdueBadge.className).toContain('table-badge--overdue');
   });
 
   it('shows action buttons for pending and overdue fees', () => {

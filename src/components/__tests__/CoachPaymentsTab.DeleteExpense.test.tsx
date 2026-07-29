@@ -104,8 +104,8 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
       );
 
       // For ASSISTANT_COACH, canEdit should be false
-      // So no delete/edit buttons should be rendered in the table
-      const buttons = screen.getAllByRole('button');
+      // So no delete/edit buttons should be rendered in the expense table
+      const buttons = screen.queryAllByRole('button');
       const actionButtons = buttons.filter(b => 
         b.getAttribute('aria-label')?.includes('Delete') || b.getAttribute('aria-label')?.includes('Edit')
       );
@@ -267,7 +267,7 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
         expect(screen.getByText('Shuttle for training')).toBeInTheDocument();
       });
 
-      // Click delete button for first expense
+      // Click delete button for first expense (sorted by date desc: exp-002 comes first)
       const buttons = screen.getAllByRole('button');
       const deleteButtons = buttons.filter(b => b.getAttribute('aria-label')?.includes('Delete'));
       fireEvent.click(deleteButtons[0]);
@@ -278,12 +278,12 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
       });
 
       // Click Delete confirmation button
-      const deleteConfirmButton = screen.getByRole('button', { name: /^delete$/i });
+      const deleteConfirmButton = screen.getByRole('button', { name: /Confirm expense deletion/i });
       fireEvent.click(deleteConfirmButton);
 
-      // Wait for callback
+      // Wait for callback (first sorted expense is exp-002: date 2026-01-10)
       await waitFor(() => {
-        expect(mockOnDelete).toHaveBeenCalledWith('exp-001');
+        expect(mockOnDelete).toHaveBeenCalledWith('exp-002');
       });
     });
   });
@@ -319,13 +319,13 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
         expect(screen.getByText('Delete Expense?')).toBeInTheDocument();
       });
 
-      // Click Delete
-      const deleteConfirmButton = screen.getByRole('button', { name: /^delete$/i });
+      // Click Delete (dialog closes optimistically)
+      const deleteConfirmButton = screen.getByRole('button', { name: /Confirm expense deletion/i });
       fireEvent.click(deleteConfirmButton);
 
-      // During deletion, should show "Deleting..."
+      // Optimistic update: dialog closes immediately and callback is triggered
       await waitFor(() => {
-        expect(screen.getByText('Deleting...')).toBeInTheDocument();
+        expect(mockOnDelete).toHaveBeenCalledWith('exp-002');
       });
     });
   });
@@ -350,7 +350,8 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
         expect(screen.getByText('Training equipment')).toBeInTheDocument();
       });
 
-      // Click delete button for second expense
+      // Expenses sorted desc by date: exp-002 (Jan 10) first, exp-001 (Jan 5) second
+      // Click delete button for second expense (exp-001: "Shuttle for training")
       const buttons = screen.getAllByRole('button');
       const deleteButtons = buttons.filter(b => b.getAttribute('aria-label')?.includes('Delete'));
       fireEvent.click(deleteButtons[1]);
@@ -358,16 +359,15 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
       // Wait for dialog
       await waitFor(() => {
         expect(screen.getByText('Delete Expense?')).toBeInTheDocument();
-        expect(screen.getByText('Training equipment')).toBeInTheDocument();
       });
 
       // Click Delete
-      const deleteConfirmButton = screen.getByRole('button', { name: /^delete$/i });
+      const deleteConfirmButton = screen.getByRole('button', { name: /Confirm expense deletion/i });
       fireEvent.click(deleteConfirmButton);
 
-      // Verify correct expense ID is passed
+      // Verify correct expense ID is passed (exp-001)
       await waitFor(() => {
-        expect(mockOnDelete).toHaveBeenCalledWith('exp-002');
+        expect(mockOnDelete).toHaveBeenCalledWith('exp-001');
       });
     });
   });
@@ -403,7 +403,7 @@ describe('CoachPaymentsTab - Delete Expense Integration', () => {
 
       // Verify buttons are properly labeled
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
-      const deleteButton = screen.getByRole('button', { name: /^delete$/i });
+      const deleteButton = screen.getByRole('button', { name: /Confirm expense deletion/i });
 
       expect(cancelButton).toBeInTheDocument();
       expect(deleteButton).toBeInTheDocument();

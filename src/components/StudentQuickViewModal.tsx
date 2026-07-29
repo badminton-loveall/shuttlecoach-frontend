@@ -103,114 +103,114 @@ export const StudentQuickViewModal: React.FC<StudentQuickViewModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="modal-body space-y-6">
+        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xl)' }}>
           {/* Student Header with Photo */}
-          <div className="flex items-center gap-4">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
             {student.profilePhoto ? (
               <img
                 src={student.profilePhoto}
                 alt={student.fullName}
-                className="h-16 w-16 rounded-full object-cover"
+                style={{ height: '64px', width: '64px', borderRadius: 'var(--radius-pill)', objectFit: 'cover' }}
               />
             ) : (
-              <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-xl font-medium text-blue-600">
+              <div style={{ height: '64px', width: '64px', borderRadius: 'var(--radius-pill)', backgroundColor: 'var(--feedback-info-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 'var(--font-h3)', fontWeight: 'var(--weight-medium)', color: 'var(--color-info-text)' }}>
                   {student.fullName.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 style={{ fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
                 {student.fullName}
               </h3>
-              <p className="text-sm text-gray-600">{student.email || '—'}</p>
+              <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>{student.email || '—'}</p>
             </div>
           </div>
 
           {/* Student Information Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-md)' }}>
             {/* Age */}
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+            <div style={{ backgroundColor: 'var(--surface-hover)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)' }}>
+              <label style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>
                 Age
               </label>
-              <p className="text-base font-semibold text-gray-900">
+              <p style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
                 {student.age} years
               </p>
             </div>
 
             {/* Skill Level */}
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+            <div style={{ backgroundColor: 'var(--surface-hover)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)' }}>
+              <label style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>
                 Skill Level
               </label>
-              <p className="text-base font-semibold text-gray-900">
+              <p style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
                 {student.skillLevel || '—'}
               </p>
             </div>
 
             {/* Batch Assignment */}
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+            <div style={{ backgroundColor: 'var(--surface-hover)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)' }}>
+              <label style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>
                 Batch
               </label>
-              <p className="text-base font-semibold text-gray-900">
+              <p style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
                 {student.batchId || '—'}
               </p>
             </div>
 
             {/* Contact Phone */}
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+            <div style={{ backgroundColor: 'var(--surface-hover)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)' }}>
+              <label style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>
                 Phone
               </label>
-              <p className="text-base font-semibold text-gray-900">
+              <p style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
                 {student.contactPhone || '—'}
               </p>
             </div>
           </div>
 
           {/* Additional Details */}
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
             {/* Gender */}
             <div>
-              <label className="text-xs font-medium text-gray-600 block mb-1">
+              <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                 Gender
               </label>
-              <p className="text-sm text-gray-900">{student.gender || '—'}</p>
+              <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>{student.gender || '—'}</p>
             </div>
 
             {/* Guardian Name (if available and under 18) */}
             {student.age < 18 && student.guardianName && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">
+                <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                   Guardian Name
                 </label>
-                <p className="text-sm text-gray-900">{student.guardianName}</p>
+                <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>{student.guardianName}</p>
               </div>
             )}
 
             {/* Medical Conditions */}
             {student.medicalConditions && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">
+                <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                   Medical Conditions
                 </label>
-                <p className="text-sm text-gray-900">{student.medicalConditions}</p>
+                <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>{student.medicalConditions}</p>
               </div>
             )}
 
             {/* Strengths */}
             {student.strengths && student.strengths.length > 0 && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">
+                <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                   Strengths
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
                   {student.strengths.map((strength, index) => (
                     <span
                       key={index}
-                      className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded"
+                      style={{ display: 'inline-block', backgroundColor: 'var(--feedback-success-light)', color: 'var(--color-success-text)', fontSize: 'var(--font-xs)', padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-sm)' }}
                     >
                       {strength}
                     </span>
@@ -222,14 +222,14 @@ export const StudentQuickViewModal: React.FC<StudentQuickViewModalProps> = ({
             {/* Weaknesses */}
             {student.weaknesses && student.weaknesses.length > 0 && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">
+                <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                   Areas to Improve
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)' }}>
                   {student.weaknesses.map((weakness, index) => (
                     <span
                       key={index}
-                      className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded"
+                      style={{ display: 'inline-block', backgroundColor: 'var(--feedback-warning-light)', color: 'var(--color-warning-text)', fontSize: 'var(--font-xs)', padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-sm)' }}
                     >
                       {weakness}
                     </span>
@@ -241,10 +241,10 @@ export const StudentQuickViewModal: React.FC<StudentQuickViewModalProps> = ({
             {/* Coach Feedback */}
             {student.coachFeedback && (
               <div>
-                <label className="text-xs font-medium text-gray-600 block mb-1">
+                <label style={{ fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>
                   Coach Feedback
                 </label>
-                <p className="text-sm text-gray-900 bg-blue-50 p-2 rounded">
+                <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)', backgroundColor: 'var(--feedback-info-light)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-sm)' }}>
                   {student.coachFeedback}
                 </p>
               </div>

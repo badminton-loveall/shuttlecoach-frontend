@@ -36,7 +36,7 @@ describe('FeeAlerts', () => {
   it('should render success state when no overdue fees', () => {
     render(<FeeAlerts overdueFees={[]} />);
     expect(screen.getByText('Fee Alerts')).toBeInTheDocument();
-    expect(screen.getByText(/all fees are up to date/i)).toBeInTheDocument();
+    expect(screen.getByText(/all fees up to date/i)).toBeInTheDocument();
   });
 
   it('should render alert state when there are overdue fees', () => {
@@ -47,11 +47,10 @@ describe('FeeAlerts', () => {
         totalOverdue: 3000,
       },
     ];
-    const { container } = render(<FeeAlerts overdueFees={overdueFees} />);
+    render(<FeeAlerts overdueFees={overdueFees} />);
     expect(screen.getByText('Fee Alerts')).toBeInTheDocument();
-    // Check for the header span with total count
-    const headerCount = container.querySelector('.text-sm.font-medium.text-red-700');
-    expect(headerCount?.textContent).toContain('1 overdue payment');
+    // Check for the count display
+    expect(screen.getByText('1 overdue')).toBeInTheDocument();
   });
 
   it('should display student names with overdue fees', () => {
@@ -86,23 +85,19 @@ describe('FeeAlerts', () => {
         totalOverdue: 6000,
       },
     ];
-    const { container } = render(<FeeAlerts overdueFees={overdueFees} />);
-    // Check within the student card
-    const studentCards = container.querySelectorAll('.text-xs.text-slate-600');
-    const hasCorrectCount = Array.from(studentCards).some(
-      (card) => card.textContent?.includes('2 overdue payments')
-    );
-    expect(hasCorrectCount).toBe(true);
+    render(<FeeAlerts overdueFees={overdueFees} />);
+    // The component shows total overdue count
+    expect(screen.getByText('2 overdue')).toBeInTheDocument();
   });
 
-  it('should limit display to 5 students', () => {
+  it('should limit display to 3 students and show more text', () => {
     const overdueFees = Array.from({ length: 7 }, (_, i) => ({
       student: { ...mockStudent, id: `student-${i}`, fullName: `Student ${i}` },
       overdueFees: [mockOverdueFee],
       totalOverdue: 3000,
     }));
     render(<FeeAlerts overdueFees={overdueFees} />);
-    expect(screen.getByText(/\+2 more student/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+4 more/i)).toBeInTheDocument();
   });
 
   it('should call onViewDetails when button is clicked', () => {
@@ -116,7 +111,7 @@ describe('FeeAlerts', () => {
     ];
     render(<FeeAlerts overdueFees={overdueFees} onViewDetails={onViewDetails} />);
     
-    const button = screen.getByText(/view all fee details/i);
+    const button = screen.getByText(/view all/i);
     button.click();
     expect(onViewDetails).toHaveBeenCalledTimes(1);
   });

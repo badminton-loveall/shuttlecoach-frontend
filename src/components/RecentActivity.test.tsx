@@ -41,7 +41,7 @@ describe('RecentActivity', () => {
   it('should render empty state when no activities', () => {
     render(<RecentActivity activities={[]} />);
     expect(screen.getByText('Recent Activity')).toBeInTheDocument();
-    expect(screen.getByText(/no recent activity to display/i)).toBeInTheDocument();
+    expect(screen.getByText(/no recent activity/i)).toBeInTheDocument();
   });
 
   it('should render activity titles', () => {
@@ -82,7 +82,7 @@ describe('RecentActivity', () => {
       coachName: 'Test Coach',
     };
     render(<RecentActivity activities={[recentActivity]} />);
-    expect(screen.getByText(/1 hour ago|Just now/i)).toBeInTheDocument();
+    expect(screen.getByText(/1h ago|Just now/i)).toBeInTheDocument();
   });
 
   it('should format old timestamps as dates', () => {
@@ -101,7 +101,7 @@ describe('RecentActivity', () => {
 
   it('should render correct number of activities', () => {
     const { container } = render(<RecentActivity activities={mockActivities} />);
-    const activityItems = container.querySelectorAll('[class*="rounded-lg bg-slate"]');
+    const activityItems = container.querySelectorAll('.recent-activity__item');
     expect(activityItems.length).toBe(mockActivities.length);
   });
 });

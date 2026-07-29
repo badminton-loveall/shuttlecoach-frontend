@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { PersonalInfoForm } from '../components/PersonalInfoForm';
@@ -9,7 +9,7 @@ import { WeaknessTracker } from '../components/WeaknessTracker';
 import { SkillHistory } from '../components/SkillHistory';
 import { StudentFeeTab } from '../components/StudentFeeTab';
 import { useAuth } from '../contexts/AuthContext';
-import STUDENTS_DATA from '../data/students.json';
+import { useStudent } from '../hooks/useStudent';
 import type { Student, SkillScores, SkillAssessment } from '../types';
 import '../styles/pages.css';
 
@@ -36,17 +36,6 @@ const TABS: TabConfig[] = [
 ];
 
 const DEFAULT_TAB: TabId = 'profile';
-
-// Parse student data from JSON
-const parseStudents = (data: unknown): Student[] => {
-  const studentArray = data as Array<Record<string, unknown>>;
-  return studentArray.map((s) => ({
-    ...(s as unknown as Student),
-    dateOfBirth: new Date(s.dateOfBirth as string),
-    createdAt: new Date(s.createdAt as string),
-    updatedAt: new Date(s.updatedAt as string),
-  }));
-};
 
 const getInitials = (name: string): string => {
   return name
@@ -80,13 +69,10 @@ export const StudentProfilePage: React.FC = () => {
 
   // Get active tab from URL, default to 'profile'
   const activeTab = (searchParams.get('tab') as TabId) || DEFAULT_TAB;
-
-  // Validate tab value
   const validTab = TABS.some((t) => t.id === activeTab) ? activeTab : DEFAULT_TAB;
 
-  // Load and find student by ID
-  const students = useMemo(() => parseStudents(STUDENTS_DATA), []);
-  const student = useMemo(() => students.find((s) => s.id === id), [students, id]);
+  // Fetch single student directly by ID
+  const { student, loading, error } = useStudent(id);
 
   // Handle tab change - update URL query parameter for deep linking
   const handleTabChange = (tabId: TabId) => {
@@ -95,17 +81,35 @@ export const StudentProfilePage: React.FC = () => {
     setSearchParams(newParams, { replace: true });
   };
 
-  // Handle back navigation
   const handleBack = () => {
     navigate('/dashboard');
   };
 
-  // Student not found
-  if (!student) {
+  // Loading state
+  if (loading) {
     return (
       <DashboardLayout>
-        <div className="hc-dashboard">
-          <div className="hc-dashboard-content">
+        <div className="page-container">
+          <div className="section-stack">
+            <div className="card">
+              <div className="animate-pulse" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+                <div className="h-4 w-3/4" style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)' }}></div>
+                <div className="h-4" style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)' }}></div>
+                <div className="h-4 w-5/6" style={{ backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)' }}></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Student not found
+  if (!loading && !student && !error) {
+    return (
+      <DashboardLayout>
+        <div className="page-container">
+          <div className="section-stack">
             <div className="sp-empty-state">
               <h2 className="text-h3">Student Not Found</h2>
               <p className="text-small">The student with ID "{id}" could not be found.</p>
@@ -117,14 +121,36 @@ export const StudentProfilePage: React.FC = () => {
     );
   }
 
+  // Error state
+  if (error && !student) {
+    return (
+      <DashboardLayout>
+        <div className="page-container">
+          <div className="section-stack">
+            <div className="sp-empty-state">
+              <h2 className="text-h3">Error Loading Student</h2>
+              <p className="text-small">{error}</p>
+              <button className="btn btn-secondary" onClick={handleBack}>← Back to Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // If student is still null at this point (shouldn't happen after above guards), bail out
+  if (!student) {
+    return null;
+  }
+
   // Access Control: Assistant coaches can only view students assigned to them
   const hasAccess = role === 'HEAD_COACH' || student.assignedCoachId === user?.id;
 
   if (!hasAccess) {
     return (
       <DashboardLayout>
-        <div className="hc-dashboard">
-          <div className="hc-dashboard-content">
+        <div className="page-container">
+          <div className="section-stack">
             <div className="sp-empty-state">
               <h2 className="text-h3">Access Denied</h2>
               <p className="text-small">You do not have permission to view this student's profile.</p>
@@ -141,8 +167,8 @@ export const StudentProfilePage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="hc-dashboard">
-        <div className="hc-dashboard-content">
+      <div className="page-container">
+        <div className="section-stack">
 
           {/* Back Navigation */}
           <button className="btn btn-secondary sp-back-btn" onClick={handleBack}>
@@ -221,8 +247,6 @@ export const StudentProfilePage: React.FC = () => {
 
 /**
  * Profile Tab - displays comprehensive personal information form
- * Uses PersonalInfoForm component for read/edit display of student data
- * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5
  */
 const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
   <PersonalInfoForm student={student} />
@@ -230,8 +254,6 @@ const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
 
 /**
  * Training Tab - displays strengths, weaknesses, and coach feedback
- * Coaches can add/remove tags and edit feedback; students see read-only view
- * Requirements: 5.8, 5.9
  */
 const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => (
   <TrainingTab student={student} />
@@ -239,16 +261,11 @@ const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => (
 
 /**
  * Progress Tab - skill assessment radar chart and progress tracking
- * Displays a 6-axis radar chart with category averages for the current cycle.
- * Requirements: 8.1, 8.3, 8.4, 8.5, 8.6
  */
 const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
-  // Assessment data will be loaded from persistence in a future task.
-  // For now, use null/empty to render charts with empty state.
   const scores: SkillScores | null = null;
   const historicalAssessments: SkillAssessment[] = [];
 
-  // Current and previous assessments for weakness tracking
   const currentAssessment: SkillAssessment | null =
     historicalAssessments.length > 0
       ? historicalAssessments[historicalAssessments.length - 1]
@@ -260,7 +277,7 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
   return (
     <div className="progress-tab-content">
-      <h2 className="text-lg font-semibold text-slate-900 mb-5 m-0">Progress & Assessments</h2>
+      <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Progress & Assessments</h2>
       <p className="progress-subtitle">
         Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
       </p>
@@ -277,8 +294,6 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
 /**
  * Fees Tab - manage student fees, payments, and payment status
- * Displays fee records, statistics, and allows creating/editing/deleting fees
- * Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6
  */
 const FeesTabContent: React.FC<{ student: Student }> = ({ student }) => (
   <StudentFeeTab student={student} />

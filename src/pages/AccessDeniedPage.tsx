@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './AccessDeniedPage.css';
+import '../styles/pages.css';
 
 /**
  * AccessDeniedPage
@@ -9,7 +9,7 @@ import './AccessDeniedPage.css';
 
 export const AccessDeniedPage: React.FC = () => {
   return (
-    <div className="access-denied-page">
+    <div className="page-container access-denied-page">
       <div className="access-denied-container">
         <div className="access-denied-icon">⛔</div>
         <h1>Access Denied</h1>
