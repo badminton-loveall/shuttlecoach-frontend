@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { PersonalInfoForm } from '../components/PersonalInfoForm';
@@ -8,8 +8,13 @@ import { TrendLineChart } from '../components/TrendLineChart';
 import { WeaknessTracker } from '../components/WeaknessTracker';
 import { SkillHistory } from '../components/SkillHistory';
 import { StudentFeeTab } from '../components/StudentFeeTab';
+import { EditStudentModal } from '../components/EditStudentModal';
+import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useStudent } from '../hooks/useStudent';
+import { canEditStudent, canArchiveStudent, classifyError } from '../utils/studentProfileUtils';
+import apiClient from '../utils/apiClient';
 import type { Student, SkillScores, SkillAssessment } from '../types';
 import '../styles/pages.css';
 
@@ -72,7 +77,36 @@ export const StudentProfilePage: React.FC = () => {
   const validTab = TABS.some((t) => t.id === activeTab) ? activeTab : DEFAULT_TAB;
 
   // Fetch single student directly by ID
-  const { student, loading, error } = useStudent(id);
+  const { student, loading, error, refetch } = useStudent(id);
+  const { showToast } = useToast();
+
+  // Modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
+
+  // Handler for successful edit - refetch student data, show toast, close modal
+  const handleEditSuccess = () => {
+    refetch();
+    showToast({ message: 'Student updated successfully', type: 'success' });
+    setIsEditModalOpen(false);
+  };
+
+  // Handler for archive confirmation
+  const handleArchiveConfirm = async () => {
+    setIsArchiving(true);
+    try {
+      await apiClient.patch(`/students/${id}`, { status: 'archived' });
+      showToast({ message: 'Student archived successfully', type: 'success' });
+      navigate('/dashboard');
+    } catch (err) {
+      const classified = classifyError(err);
+      showToast({ message: classified.message, type: 'error' });
+      setIsArchiveDialogOpen(false);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
 
   // Handle tab change - update URL query parameter for deep linking
   const handleTabChange = (tabId: TabId) => {
@@ -165,6 +199,10 @@ export const StudentProfilePage: React.FC = () => {
 
   const skillColor = getSkillLevelColor(student.skillLevel);
 
+  // Permission derivation for edit and archive actions
+  const canEdit = canEditStudent(role || '', user?.id || '', student);
+  const canArchive = canArchiveStudent(role || '');
+
   return (
     <DashboardLayout>
       <div className="page-container">
@@ -201,12 +239,22 @@ export const StudentProfilePage: React.FC = () => {
               </div>
             </div>
             <div className="sp-header-actions">
+              {canEdit && (
+                <button className="btn btn-secondary" onClick={() => setIsEditModalOpen(true)}>
+                  Edit
+                </button>
+              )}
               <button className="btn btn-secondary" onClick={() => navigate(`/training-log/${student.id}`)}>
                 Training Log
               </button>
               <button className="btn btn-primary" onClick={() => navigate(`/curriculum/student/${student.id}`)}>
                 Manage Curriculum
               </button>
+              {canArchive && (
+                <button className="btn btn-secondary text-red-600 hover:text-red-700 border-red-300 hover:border-red-400" onClick={() => setIsArchiveDialogOpen(true)}>
+                  Archive
+                </button>
+              )}
             </div>
           </div>
 
@@ -241,6 +289,27 @@ export const StudentProfilePage: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Edit Student Modal */}
+      {student && (
+        <EditStudentModal
+          isOpen={isEditModalOpen}
+          student={student}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Archive Confirmation Dialog */}
+      {student && (
+        <ArchiveConfirmDialog
+          isOpen={isArchiveDialogOpen}
+          studentName={student.fullName}
+          onConfirm={handleArchiveConfirm}
+          onCancel={() => setIsArchiveDialogOpen(false)}
+          isLoading={isArchiving}
+        />
+      )}
     </DashboardLayout>
   );
 };

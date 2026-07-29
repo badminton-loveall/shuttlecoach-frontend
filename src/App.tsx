@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HeadCoachDashboard from './pages/HeadCoachDashboard';
@@ -15,6 +16,7 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentProfilePage from './pages/StudentProfilePage';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
+import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
 import DesignSystemTestPage from './pages/DesignSystemTestPage';
 import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
@@ -48,7 +50,8 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
+        <ToastProvider>
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           
@@ -132,6 +135,16 @@ function App() {
             }
           />
 
+          {/* Master Data (Head Coach & Assistant Coach) */}
+          <Route
+            path="/master-data"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <MasterDataPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Coach Detail Page */}
           <Route
             path="/coach/:coachId"
@@ -176,7 +189,8 @@ function App() {
           {/* Default Redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
+          </Routes>
+        </ToastProvider>
       </AuthProvider>
     </Router>
   );

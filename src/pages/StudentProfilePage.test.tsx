@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import * as fc from 'fast-check';
 import { AuthContext } from '../contexts/AuthContext';
 import { StudentProfilePage } from './StudentProfilePage';
+import { canEditStudent, canArchiveStudent } from '../utils/studentProfileUtils';
 import type { User, AuthContext as AuthContextType } from '../types';
 
 /**
@@ -236,5 +238,120 @@ describe('StudentProfilePage - Access Control', () => {
       expect(screen.getByText('Student Not Found')).toBeInTheDocument();
       expect(screen.getByText(/could not be found/i)).toBeInTheDocument();
     });
+  });
+});
+
+
+// --- Property-Based Tests (fast-check) ---
+
+// Generators matching project conventions
+const roleArbitrary = fc.oneof(
+  fc.constant('HEAD_COACH'),
+  fc.constant('ASSISTANT_COACH'),
+  fc.constant('STUDENT'),
+  fc.string({ minLength: 1, maxLength: 20 })
+);
+
+const userIdArbitrary = fc.uuid();
+
+const studentWithCoachArbitrary = fc.record({
+  assignedCoachId: fc.option(fc.uuid(), { nil: undefined }),
+});
+
+describe('Feature: student-profile-crud, Property 11: API access control enforcement', () => {
+  /**
+   * Validates: Requirements 6.1, 6.2, 6.3
+   *
+   * For any user/student combination, canEditStudent returns true
+   * iff HEAD_COACH or (ASSISTANT_COACH with matching assignedCoachId).
+   * All other combinations must return false (403 equivalent on frontend).
+   */
+  it('canEditStudent returns true iff HEAD_COACH or assigned ASSISTANT_COACH', () => {
+    fc.assert(
+      fc.property(roleArbitrary, userIdArbitrary, studentWithCoachArbitrary, (role, userId, student) => {
+        const result = canEditStudent(role, userId, student);
+
+        const expected =
+          role === 'HEAD_COACH' ||
+          (role === 'ASSISTANT_COACH' && student.assignedCoachId === userId);
+
+        expect(result).toBe(expected);
+      }),
+      { numRuns: 100 }
+    );
+  });
+
+  it('non-HEAD_COACH and non-assigned ASSISTANT_COACH always denied (403 equivalent)', () => {
+    fc.assert(
+      fc.property(
+        roleArbitrary.filter((r) => r !== 'HEAD_COACH' && r !== 'ASSISTANT_COACH'),
+        userIdArbitrary,
+        studentWithCoachArbitrary,
+        (role, userId, student) => {
+          const result = canEditStudent(role, userId, student);
+          expect(result).toBe(false);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  it('ASSISTANT_COACH with non-matching assignedCoachId is denied', () => {
+    fc.assert(
+      fc.property(
+        userIdArbitrary,
+        userIdArbitrary.filter((id) => id !== ''), // different userId for student
+        (coachId, differentId) => {
+          // Ensure the IDs are different
+          fc.pre(coachId !== differentId);
+          const student = { assignedCoachId: differentId };
+          const result = canEditStudent('ASSISTANT_COACH', coachId, student);
+          expect(result).toBe(false);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+});
+
+describe('Feature: student-profile-crud, Property 13: Archive restricted to HEAD_COACH', () => {
+  /**
+   * Validates: Requirements 5.4, 5.5
+   *
+   * For any non-HEAD_COACH role, canArchiveStudent returns false.
+   * HEAD_COACH always returns true.
+   */
+  it('canArchiveStudent returns false for any non-HEAD_COACH role', () => {
+    fc.assert(
+      fc.property(
+        roleArbitrary.filter((r) => r !== 'HEAD_COACH'),
+        (role) => {
+          const result = canArchiveStudent(role);
+          expect(result).toBe(false);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  it('canArchiveStudent returns true for HEAD_COACH', () => {
+    const result = canArchiveStudent('HEAD_COACH');
+    expect(result).toBe(true);
+  });
+
+  it('archive permission is independent of userId and student assignment', () => {
+    fc.assert(
+      fc.property(
+        roleArbitrary,
+        userIdArbitrary,
+        studentWithCoachArbitrary,
+        (role, _userId, _student) => {
+          const result = canArchiveStudent(role);
+          // Archive depends solely on role, never on userId or student data
+          expect(result).toBe(role === 'HEAD_COACH');
+        }
+      ),
+      { numRuns: 100 }
+    );
   });
 });

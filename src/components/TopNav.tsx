@@ -22,6 +22,7 @@ const NAV_LINKS: NavLink[] = [
   { label: 'Fees', path: '/fees', roles: ['HEAD_COACH', 'ASSISTANT_COACH'] },
   { label: 'Coaches', path: '/coaches', roles: ['HEAD_COACH'] },
   { label: 'Curriculum', path: '/curriculum', roles: ['HEAD_COACH', 'ASSISTANT_COACH'] },
+  { label: 'Master Data', path: '/master-data', roles: ['HEAD_COACH', 'ASSISTANT_COACH'] },
   // Student role
   { label: 'Dashboard', path: '/student-dashboard', roles: ['STUDENT'] },
   { label: 'My Progress', path: '/my-progress', roles: ['STUDENT'] },

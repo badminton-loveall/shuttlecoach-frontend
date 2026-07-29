@@ -41,6 +41,7 @@ export interface AuthContext {
 
 export type SkillLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Professional';
 export type Gender = 'Male' | 'Female' | 'Other';
+export type StudentStatus = 'active' | 'archived';
 
 export interface Student {
   id: string;
@@ -66,6 +67,8 @@ export interface Student {
   weaknesses: string[];
   coachFeedback?: string;
   skillLevel: SkillLevel;
+  status?: StudentStatus;
+  archivedAt?: string;
   createdAt: Date;
   updatedAt: Date;
 }

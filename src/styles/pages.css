@@ -849,6 +849,24 @@
   background-color: rgba(34, 197, 94, 0.1);
 }
 
+.table-action-link--info {
+  color: #3B82F6;
+}
+
+.table-action-link--info:hover {
+  color: #2563EB;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.table-action-link--danger {
+  color: #EF4444;
+}
+
+.table-action-link--danger:hover {
+  color: #DC2626;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
 .table-action-link--muted {
   color: var(--text-tertiary);
 }
