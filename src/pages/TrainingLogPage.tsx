@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../contexts/AuthContext';
+import { useTrainingLogs } from '../hooks/useTrainingLogs';
+import { useStudent } from '../hooks/useStudent';
+import { sortTrainingLogs } from '../utils/sortTrainingLogs';
 import { generateCycleKey } from '../utils/skillUtils';
 import { formatAuditTimestamp } from '../utils/dateUtils';
-import type { TrainingLog, Student } from '../types';
-import trainingLogsData from '../data/trainingLogs.json';
-import studentsData from '../data/students.json';
 
 /**
  * TrainingLogPage
  * Allows Head Coach and assigned Assistant Coach to record weekly training session notes
  * Displays past training logs in reverse chronological order
- * 
- * Requirements: 22.1, 22.2, 22.3, 22.4, 22.5, 22.6, 22.7, 16.3, 16.4
+ *
+ * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7
  */
 
 const TrainingLogPage: React.FC = () => {
@@ -21,91 +21,32 @@ const TrainingLogPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, role } = useAuth();
 
-  const [student, setStudent] = useState<Student | null>(null);
+  const { student, loading: studentLoading, error: studentError } = useStudent(studentId);
+  const { logs, loading: logsLoading, error: logsError, createLog } = useTrainingLogs({ studentId });
+
   const [selectedWeek, setSelectedWeek] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8>(1);
   const [sessionNotes, setSessionNotes] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
-  const [pastLogs, setPastLogs] = useState<TrainingLog[]>([]);
   const [currentCycleKey] = useState(generateCycleKey());
 
-  // Load student data and check permissions
-  useEffect(() => {
+  // Check permission: redirect if assistant coach is not assigned
+  React.useEffect(() => {
     if (!studentId) {
       navigate('/students');
       return;
     }
-
-    const foundStudent = studentsData.find((s) => s.id === studentId);
-    if (!foundStudent) {
+    if (!studentLoading && !student && !studentError) {
       navigate('/students');
-      return;
     }
-
-    // Check permission: Head Coach or assigned Assistant Coach only
-    if (role === 'ASSISTANT_COACH' && foundStudent.assignedCoachId !== user?.id) {
+    if (student && role === 'ASSISTANT_COACH' && student.assignedCoachId !== user?.id) {
       navigate('/access-denied');
-      return;
     }
+  }, [studentId, student, studentLoading, studentError, role, user, navigate]);
 
-    // Convert dates from JSON strings to Date objects and null to undefined
-    const studentWithDates: Student = {
-      ...foundStudent,
-      dateOfBirth: new Date(foundStudent.dateOfBirth),
-      createdAt: new Date(foundStudent.createdAt),
-      updatedAt: new Date(foundStudent.updatedAt),
-      email: foundStudent.email || undefined,
-      baidNumber: foundStudent.baidNumber || undefined,
-      guardianName: foundStudent.guardianName || undefined,
-      guardianPhone: foundStudent.guardianPhone || undefined,
-      batchId: foundStudent.batchId || undefined,
-      assignedCoachId: foundStudent.assignedCoachId || undefined,
-      profilePhoto: foundStudent.profilePhoto || undefined,
-      height: foundStudent.height || undefined,
-      weight: foundStudent.weight || undefined,
-      bmi: foundStudent.bmi || undefined,
-      bloodGroup: foundStudent.bloodGroup || undefined,
-      medicalConditions: foundStudent.medicalConditions || undefined,
-      emergencyContact: foundStudent.emergencyContact || undefined,
-      coachFeedback: foundStudent.coachFeedback || undefined,
-    } as Student;
-
-    setStudent(studentWithDates);
-  }, [studentId, role, user, navigate]);
-
-  // Load training logs
-  useEffect(() => {
-    if (!studentId) return;
-
-    const storedLogs = localStorage.getItem('trainingLogs');
-    const logsData = storedLogs ? JSON.parse(storedLogs) : trainingLogsData;
-
-    // Filter logs for this student and sort by date (newest first)
-    const studentLogs = logsData
-      .filter((log: TrainingLog) => log.studentId === studentId)
-      .sort((a: TrainingLog, b: TrainingLog) => {
-        return new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime();
-      });
-
-    setPastLogs(studentLogs);
-
-    // Check if there's already a log for the selected week in current cycle
-    const existingLog = logsData.find(
-      (log: TrainingLog) =>
-        log.studentId === studentId &&
-        log.cycleKey === currentCycleKey &&
-        log.weekNumber === selectedWeek
-    );
-
-    if (existingLog) {
-      setSessionNotes(existingLog.sessionNotes);
-      setIsCompleted(existingLog.isCompleted);
-    } else {
-      setSessionNotes('');
-      setIsCompleted(false);
-    }
-  }, [studentId, selectedWeek, currentCycleKey]);
+  const loading = studentLoading || logsLoading;
+  const error = studentError || logsError;
 
   const handleWeekChange = (week: number) => {
     setSelectedWeek(week as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8);
@@ -127,71 +68,96 @@ const TrainingLogPage: React.FC = () => {
     setSaveMessage('');
 
     try {
-      const timestamp = new Date();
-      
-      // Load existing logs
-      const storedLogs = localStorage.getItem('trainingLogs');
-      const existingLogs = storedLogs ? JSON.parse(storedLogs) : [...trainingLogsData];
-
-      // Check if log already exists for this student/week/cycle
-      const existingLogIndex = existingLogs.findIndex(
-        (log: TrainingLog) =>
-          log.studentId === studentId &&
-          log.cycleKey === currentCycleKey &&
-          log.weekNumber === selectedWeek
-      );
-
-      const newLog: TrainingLog = {
-        id: existingLogIndex >= 0 ? existingLogs[existingLogIndex].id : `log-${Date.now()}`,
+      await createLog({
         studentId: student.id,
         weekNumber: selectedWeek,
         cycleKey: currentCycleKey,
         sessionNotes: sessionNotes.trim(),
-        isCompleted: isCompleted,
+        isCompleted,
         recordedBy: user.name,
-        recordedAt: timestamp
-      };
+      });
 
-      let updatedLogs;
-      if (existingLogIndex >= 0) {
-        // Update existing log
-        updatedLogs = [...existingLogs];
-        updatedLogs[existingLogIndex] = newLog;
-      } else {
-        // Add new log
-        updatedLogs = [...existingLogs, newLog];
-      }
-
-      // Save to localStorage
-      localStorage.setItem('trainingLogs', JSON.stringify(updatedLogs));
-
-      // Reload past logs
-      const studentLogs = updatedLogs
-        .filter((log: TrainingLog) => log.studentId === studentId)
-        .sort((a: TrainingLog, b: TrainingLog) => {
-          return new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime();
-        });
-
-      setPastLogs(studentLogs);
       setSaveMessage('Training log saved successfully!');
+      setSessionNotes('');
+      setIsCompleted(false);
       setTimeout(() => setSaveMessage(''), 4000);
-    } catch (error) {
-      setSaveMessage('Error saving training log. Please try again.');
-      console.error('Save error:', error);
+    } catch (err: unknown) {
+      // Show the actual API error message if available
+      const apiError = err as { response?: { data?: { details?: Array<{ message: string }>, error?: string } } };
+      const details = apiError?.response?.data?.details;
+      if (details && Array.isArray(details) && details.length > 0) {
+        setSaveMessage(details.map(d => d.message).join('. '));
+      } else {
+        const message = apiError?.response?.data?.error || 'Error saving training log. Please try again.';
+        setSaveMessage(message);
+      }
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (!student) {
+  // Loading state
+  if (loading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-96">
-          <div style={{ color: 'var(--text-secondary)' }}>Loading...</div>
+          <div className="flex flex-col items-center" style={{ gap: 'var(--space-md)' }}>
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            <span style={{ color: 'var(--text-secondary)' }}>Loading training logs...</span>
+          </div>
         </div>
       </DashboardLayout>
     );
   }
+
+  // Error state
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center" style={{ padding: 'var(--space-2xl)' }}>
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              style={{ color: 'var(--color-danger-text)', marginBottom: 'var(--space-md)' }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
+            </svg>
+            <p className="font-semibold" style={{ color: 'var(--color-danger-text)', marginBottom: 'var(--space-sm)' }}>
+              {error}
+            </p>
+            <button
+              onClick={() => navigate(-1)}
+              className="text-sm hover:opacity-80"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              ← Go back
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!student) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-96">
+          <div style={{ color: 'var(--text-secondary)' }}>Student not found.</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Sort logs newest first using the utility
+  const sortedLogs = sortTrainingLogs(logs);
 
   return (
     <DashboardLayout>
@@ -237,7 +203,7 @@ const TrainingLogPage: React.FC = () => {
           </div>
 
           {/* Training Log Entry Form */}
-          <div className="shadow-sm" style={{ backgroundColor: 'var(--surface-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', padding: 'var(--space-lg)' }}>
+          <div className="shadow-sm" style={{ backgroundColor: 'var(--surface-card)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
               Record Training Session
             </h2>
@@ -304,7 +270,7 @@ const TrainingLogPage: React.FC = () => {
                   checked={isCompleted}
                   onChange={(e) => setIsCompleted(e.target.checked)}
                   className="w-5 h-5 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-0"
-                  style={{ borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-default)' }}
+                  style={{ borderRadius: 'var(--radius-sm)' }}
                 />
                 <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
                   Mark week as completed
@@ -349,12 +315,12 @@ const TrainingLogPage: React.FC = () => {
           </div>
 
           {/* Past Training Logs */}
-          <div className="shadow-sm" style={{ backgroundColor: 'var(--surface-card)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', padding: 'var(--space-lg)' }}>
+          <div className="shadow-sm" style={{ backgroundColor: 'var(--surface-card)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
               Training History
             </h2>
 
-            {pastLogs.length === 0 ? (
+            {sortedLogs.length === 0 ? (
               <div className="text-center" style={{ padding: 'var(--space-2xl) 0' }}>
                 <svg
                   className="w-16 h-16 mx-auto"
@@ -376,11 +342,11 @@ const TrainingLogPage: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col" style={{ gap: 'var(--space-md)' }}>
-                {pastLogs.map((log) => (
+                {sortedLogs.map((log) => (
                   <div
                     key={log.id}
                     className="hover:opacity-95 transition-colors"
-                    style={{ border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-md)' }}
+                    style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-md)', backgroundColor: 'var(--surface-hover)' }}
                   >
                     {/* Log Header */}
                     <div className="flex items-start justify-between" style={{ marginBottom: 'var(--space-sm)' }}>

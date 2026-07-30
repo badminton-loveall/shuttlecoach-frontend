@@ -2,6 +2,10 @@ import React, { useMemo, useState, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../contexts/AuthContext';
 import { SkillRadarChart } from '../components/SkillRadarChart';
+import { LeaveRequestForm } from '../components/LeaveRequestForm';
+import { SessionCard } from '../components/SessionCard';
+import { useAttendanceStats } from '../hooks/useAttendance';
+import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import type { 
   FeeRecord, 
   FeeStatus, 
@@ -62,6 +66,9 @@ function resolveStudentForUser(user: { id: string; name: string; email?: string 
 
 export const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
+
+  // State for leave request form visibility
+  const [showLeaveForm, setShowLeaveForm] = useState(false);
 
   // State for API-fetched student (used when local resolution fails)
   const [apiStudent, setApiStudent] = useState<Student | null>(null);
@@ -129,6 +136,30 @@ export const StudentDashboard: React.FC = () => {
   // Get current cycle key and week number
   const currentCycleKey = useMemo(() => generateCycleKey(), []);
   const currentWeekNumber = useMemo(() => getCurrentWeekInCycle(), []);
+
+  // Personal attendance percentage for the current cycle (Requirements: 5.4)
+  const { stats: personalAttendanceStats, loading: attendanceLoading } =
+    useAttendanceStats(studentId ? { studentId } : undefined);
+
+  const personalAttendancePercentage = useMemo(() => {
+    if (!personalAttendanceStats || personalAttendanceStats.length === 0) return null;
+    // Average across all stats entries for this student
+    const totalSessions = personalAttendanceStats.reduce((sum, s) => sum + s.totalSessions, 0);
+    const totalAttended = personalAttendanceStats.reduce((sum, s) => sum + s.attended + s.late, 0);
+    if (totalSessions === 0) return null;
+    return Math.round((totalAttended / totalSessions) * 100);
+  }, [personalAttendanceStats]);
+
+  // Session calendar for SessionCard (Requirements: 17.1)
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const fourteenDaysAhead = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const { entries: calendarEntries, loading: calendarLoading, error: calendarError } =
+    useSessionCalendar(student?.batchId ? { startDate: todayStr, endDate: fourteenDaysAhead, batchId: student.batchId } : undefined);
 
   // Fetch fees from API (GET /fees filters for STUDENT role automatically)
   const [studentFees, setStudentFees] = useState<(FeeRecord & { status: FeeStatus })[]>([]);
@@ -480,7 +511,64 @@ export const StudentDashboard: React.FC = () => {
               Coach: {assignedCoach?.name || 'Not assigned'}
               </p>
             </div>
+
+            {/* Personal Attendance Percentage Card - Requirements: 5.4 */}
+            <div className={`shadow-md border-l-4 ${personalAttendancePercentage !== null && personalAttendancePercentage < 75 ? 'border-red-500' : 'border-indigo-500'}`} style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+                <p className="text-sm font-medium uppercase tracking-wide" style={{ color: 'var(--text-secondary)' }}>
+                  Attendance
+                </p>
+                <svg className={`w-5 h-5 ${personalAttendancePercentage !== null && personalAttendancePercentage < 75 ? 'text-red-500' : 'text-indigo-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+              </div>
+              <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                {attendanceLoading ? '...' : personalAttendancePercentage !== null ? `${personalAttendancePercentage}%` : 'N/A'}
+              </p>
+              {personalAttendancePercentage !== null && personalAttendancePercentage < 75 && (
+                <p className="text-xs text-red-600 dark:text-red-400" style={{ marginTop: 'var(--space-xs)' }}>Below 75% target</p>
+              )}
+            </div>
           </div>
+
+          {/* Session Card - Requirements: 17.1 */}
+          <SessionCard
+            entries={calendarEntries}
+            loading={calendarLoading}
+            error={calendarError}
+            variant="student"
+          />
+
+          {/* Leave Request Section - Requirements: 3.1, 3.2, 13.4 */}
+          {student.batchId && (
+            <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>
+              <div className="flex items-center justify-between" style={{ marginBottom: showLeaveForm ? 'var(--space-md)' : '0' }}>
+                <h2 className="text-[24px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  Leave Request
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setShowLeaveForm((prev) => !prev)}
+                  className={`rounded-md px-4 py-2 text-sm font-medium transition-all ${
+                    showLeaveForm
+                      ? ''
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                  style={showLeaveForm ? { border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)', color: 'var(--text-primary)' } : undefined}
+                >
+                  {showLeaveForm ? 'Cancel' : 'Request Leave'}
+                </button>
+              </div>
+              {showLeaveForm && (
+                <LeaveRequestForm
+                  studentId={student.id}
+                  batchId={student.batchId}
+                  onSuccess={() => setShowLeaveForm(false)}
+                  onCancel={() => setShowLeaveForm(false)}
+                />
+              )}
+            </div>
+          )}
 
           {/* Read-only Profile Section */}
           <div className="shadow-md" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', backgroundColor: 'var(--surface-card)' }}>

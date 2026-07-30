@@ -52,56 +52,68 @@ function buildAssessment(scores: SkillScores, id = 'a1', cycleKey = 'Jan-Feb 202
   };
 }
 
-describe('WeaknessTracker', () => {
+describe('WeaknessTracker (Skill Assessment by Category)', () => {
   it('renders empty state when currentAssessment is null', () => {
     render(<WeaknessTracker currentAssessment={null} />);
     expect(screen.getByTestId('weakness-tracker')).toBeInTheDocument();
     expect(screen.getByText('No assessment data available.')).toBeInTheDocument();
   });
 
-  it('renders no-weaknesses message when all scores are above 1', () => {
+  it('renders the section title as "Skill Assessment by Category"', () => {
     const assessment = buildAssessment(buildUniformScores(3));
     render(<WeaknessTracker currentAssessment={assessment} />);
-    expect(screen.getByText('No weaknesses detected — great progress!')).toBeInTheDocument();
-    expect(screen.queryAllByTestId('weakness-card')).toHaveLength(0);
+    expect(screen.getByText('Skill Assessment by Category')).toBeInTheDocument();
   });
 
-  it('lists skills with score 0 or 1 as weak skills', () => {
-    const scores = buildScoresWithOverrides(3, [
-      { category: 'forehand', skillName: 'Clear', score: 1 },
-      { category: 'forehand', skillName: 'Drop', score: 0 },
-      { category: 'service', skillName: 'High Serve', score: 1 },
-    ]);
-    const assessment = buildAssessment(scores);
-
+  it('renders all 6 category cards', () => {
+    const assessment = buildAssessment(buildUniformScores(2));
     render(<WeaknessTracker currentAssessment={assessment} />);
 
-    const cards = screen.getAllByTestId('weakness-card');
-    expect(cards).toHaveLength(3);
+    expect(screen.getByTestId('category-card-forehand')).toBeInTheDocument();
+    expect(screen.getByTestId('category-card-backhand')).toBeInTheDocument();
+    expect(screen.getByTestId('category-card-return')).toBeInTheDocument();
+    expect(screen.getByTestId('category-card-service')).toBeInTheDocument();
+    expect(screen.getByTestId('category-card-overhead')).toBeInTheDocument();
+    expect(screen.getByTestId('category-card-rally')).toBeInTheDocument();
   });
 
-  it('displays skill name and category for each weak skill', () => {
+  it('shows ALL 60 skills (10 per category), not just weak ones', () => {
+    const assessment = buildAssessment(buildUniformScores(3));
+    render(<WeaknessTracker currentAssessment={assessment} />);
+
+    const skillRows = screen.getAllByTestId('skill-row');
+    expect(skillRows).toHaveLength(60);
+  });
+
+  it('displays category average in the header', () => {
+    const scores = buildScoresWithOverrides(2, [
+      { category: 'forehand', skillName: 'Clear', score: 4 },
+      { category: 'forehand', skillName: 'Drop', score: 4 },
+    ]);
+    const assessment = buildAssessment(scores);
+    render(<WeaknessTracker currentAssessment={assessment} />);
+
+    // Forehand: 8 skills at 2 + 2 skills at 4 = 24/10 = 2.4
+    expect(screen.getByText('Avg: 2.4/4')).toBeInTheDocument();
+  });
+
+  it('displays skill name and score label for each skill', () => {
     const scores = buildScoresWithOverrides(3, [
       { category: 'forehand', skillName: 'Smash', score: 1 },
-      { category: 'rally', skillName: 'Endurance', score: 0 },
     ]);
     const assessment = buildAssessment(scores);
-
     render(<WeaknessTracker currentAssessment={assessment} />);
 
-    expect(screen.getByText('Smash')).toBeInTheDocument();
-    expect(screen.getByText('Forehand')).toBeInTheDocument();
-    expect(screen.getByText('Endurance')).toBeInTheDocument();
-    expect(screen.getByText('Rally')).toBeInTheDocument();
+    // Smash should appear with "1 - Beginner"
+    expect(screen.getByText('1 - Beginner')).toBeInTheDocument();
   });
 
   it('shows improving trend arrow when score increased from previous cycle', () => {
-    // Previous had score 0, current has score 1 → improving
     const prevScores = buildScoresWithOverrides(3, [
-      { category: 'forehand', skillName: 'Clear', score: 0 },
+      { category: 'forehand', skillName: 'Clear', score: 1 },
     ]);
     const currScores = buildScoresWithOverrides(3, [
-      { category: 'forehand', skillName: 'Clear', score: 1 },
+      { category: 'forehand', skillName: 'Clear', score: 2 },
     ]);
 
     const prevAssessment = buildAssessment(prevScores, 'a1', 'Nov-Dec 2024');
@@ -114,18 +126,18 @@ describe('WeaknessTracker', () => {
       />
     );
 
-    const trend = screen.getByTestId('weakness-trend');
-    expect(trend).toHaveTextContent('↑');
-    expect(trend).toHaveAttribute('aria-label', 'Improving');
+    // Find the improving trend indicator for Clear (score went 1 → 2)
+    const trendElements = screen.getAllByLabelText('improving');
+    expect(trendElements.length).toBeGreaterThanOrEqual(1);
+    expect(trendElements[0]).toHaveTextContent('↑');
   });
 
   it('shows declining trend arrow when score decreased from previous cycle', () => {
-    // Previous had score 1, current has score 0 → declining
     const prevScores = buildScoresWithOverrides(3, [
-      { category: 'backhand', skillName: 'Drop', score: 1 },
+      { category: 'backhand', skillName: 'Drop', score: 3 },
     ]);
     const currScores = buildScoresWithOverrides(3, [
-      { category: 'backhand', skillName: 'Drop', score: 0 },
+      { category: 'backhand', skillName: 'Drop', score: 2 },
     ]);
 
     const prevAssessment = buildAssessment(prevScores, 'a1', 'Nov-Dec 2024');
@@ -138,19 +150,14 @@ describe('WeaknessTracker', () => {
       />
     );
 
-    const trend = screen.getByTestId('weakness-trend');
-    expect(trend).toHaveTextContent('↓');
-    expect(trend).toHaveAttribute('aria-label', 'Declining');
+    const trendElements = screen.getAllByLabelText('declining');
+    expect(trendElements.length).toBeGreaterThanOrEqual(1);
+    expect(trendElements[0]).toHaveTextContent('↓');
   });
 
   it('shows stable indicator when score is unchanged from previous cycle', () => {
-    // Both previous and current have score 1 → stable
-    const prevScores = buildScoresWithOverrides(3, [
-      { category: 'service', skillName: 'Low Serve', score: 1 },
-    ]);
-    const currScores = buildScoresWithOverrides(3, [
-      { category: 'service', skillName: 'Low Serve', score: 1 },
-    ]);
+    const prevScores = buildUniformScores(3);
+    const currScores = buildUniformScores(3);
 
     const prevAssessment = buildAssessment(prevScores, 'a1', 'Nov-Dec 2024');
     const currAssessment = buildAssessment(currScores, 'a2', 'Jan-Feb 2025');
@@ -162,20 +169,31 @@ describe('WeaknessTracker', () => {
       />
     );
 
-    const trend = screen.getByTestId('weakness-trend');
-    expect(trend).toHaveTextContent('–');
-    expect(trend).toHaveAttribute('aria-label', 'Stable');
+    // All skills stable → all trend indicators should show "–"
+    const trendElements = screen.getAllByLabelText('stable');
+    expect(trendElements).toHaveLength(60);
+    expect(trendElements[0]).toHaveTextContent('–');
   });
 
-  it('does not show trend arrow when no previous assessment (new trend)', () => {
-    const scores = buildScoresWithOverrides(3, [
-      { category: 'overhead', skillName: 'Lob', score: 0 },
-    ]);
+  it('does not show trend indicators when no previous assessment', () => {
+    const scores = buildUniformScores(2);
     const assessment = buildAssessment(scores);
 
     render(<WeaknessTracker currentAssessment={assessment} />);
 
-    // No trend indicator should be rendered for "new" trend
-    expect(screen.queryByTestId('weakness-trend')).not.toBeInTheDocument();
+    // No trend indicators should be rendered
+    expect(screen.queryByLabelText('improving')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('declining')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('stable')).not.toBeInTheDocument();
+  });
+
+  it('renders score dots for each skill', () => {
+    const assessment = buildAssessment(buildUniformScores(2));
+    render(<WeaknessTracker currentAssessment={assessment} />);
+
+    // Each skill row should have 5 score dots (0-4 range)
+    const dots = document.querySelectorAll('.score-dot');
+    // 60 skills × 5 dots = 300
+    expect(dots).toHaveLength(300);
   });
 });

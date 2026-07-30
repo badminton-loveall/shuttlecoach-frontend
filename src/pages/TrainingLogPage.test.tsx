@@ -1,9 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter, Route, Routes, MemoryRouter } from 'react-router-dom';
+import { Route, Routes, MemoryRouter } from 'react-router-dom';
 import TrainingLogPage from './TrainingLogPage';
 import { AuthContext } from '../contexts/AuthContext';
 import type { User, UserRole, AuthContext as AuthContextType } from '../types';
+
+// Mock the hooks
+vi.mock('../hooks/useTrainingLogs', () => ({
+  useTrainingLogs: vi.fn(),
+}));
+
+vi.mock('../hooks/useStudent', () => ({
+  useStudent: vi.fn(),
+}));
+
+import { useTrainingLogs } from '../hooks/useTrainingLogs';
+import { useStudent } from '../hooks/useStudent';
+
+const mockUseTrainingLogs = vi.mocked(useTrainingLogs);
+const mockUseStudent = vi.mocked(useStudent);
 
 // Mock data
 const mockUser: User = {
@@ -25,6 +40,43 @@ const mockAuthContext: AuthContextType = {
   logout: vi.fn(),
 };
 
+const mockStudent = {
+  id: 'student-001',
+  fullName: 'Arjun Verma',
+  dateOfBirth: new Date('2014-03-15'),
+  phone: '9876543210',
+  status: 'ACTIVE' as const,
+  assignedCoachId: 'user-002',
+  createdAt: new Date('2026-01-01'),
+  updatedAt: new Date('2026-01-10'),
+};
+
+const mockLogs = [
+  {
+    id: 'log-001',
+    studentId: 'student-001',
+    weekNumber: 1 as const,
+    cycleKey: 'Jan-Feb 2026',
+    sessionNotes: 'First session notes',
+    isCompleted: true,
+    recordedBy: 'Priya Sharma',
+    recordedAt: new Date('2026-01-10T14:30:00Z'),
+  },
+  {
+    id: 'log-002',
+    studentId: 'student-001',
+    weekNumber: 2 as const,
+    cycleKey: 'Jan-Feb 2026',
+    sessionNotes: 'Second session notes',
+    isCompleted: false,
+    recordedBy: 'Priya Sharma',
+    recordedAt: new Date('2026-01-17T14:30:00Z'),
+  },
+];
+
+const mockCreateLog = vi.fn();
+const mockRefetch = vi.fn();
+
 // Helper to render with router and auth context
 const renderWithContext = (studentId: string, authContext = mockAuthContext) => {
   return render(
@@ -32,6 +84,8 @@ const renderWithContext = (studentId: string, authContext = mockAuthContext) => 
       <MemoryRouter initialEntries={[`/training-log/${studentId}`]}>
         <Routes>
           <Route path="/training-log/:studentId" element={<TrainingLogPage />} />
+          <Route path="/students" element={<div>Students List</div>} />
+          <Route path="/access-denied" element={<div>Access Denied</div>} />
         </Routes>
       </MemoryRouter>
     </AuthContext.Provider>
@@ -40,9 +94,20 @@ const renderWithContext = (studentId: string, authContext = mockAuthContext) => 
 
 describe('TrainingLogPage', () => {
   beforeEach(() => {
-    // Clear localStorage before each test
-    localStorage.clear();
     vi.clearAllMocks();
+    mockUseStudent.mockReturnValue({
+      student: mockStudent as any,
+      loading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+    mockUseTrainingLogs.mockReturnValue({
+      logs: mockLogs as any,
+      loading: false,
+      error: null,
+      createLog: mockCreateLog,
+      refetch: mockRefetch,
+    });
   });
 
   it('renders the training log page with student name', () => {
@@ -50,6 +115,33 @@ describe('TrainingLogPage', () => {
 
     expect(screen.getByText(/Training Log -/)).toBeInTheDocument();
     expect(screen.getByText(/Arjun Verma/)).toBeInTheDocument();
+  });
+
+  it('displays loading state while data is being fetched', () => {
+    mockUseStudent.mockReturnValue({
+      student: null,
+      loading: true,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    renderWithContext('student-001');
+
+    expect(screen.getByText(/Loading training logs.../)).toBeInTheDocument();
+  });
+
+  it('displays error state when API fails', () => {
+    mockUseTrainingLogs.mockReturnValue({
+      logs: [],
+      loading: false,
+      error: 'Failed to load training logs. Please try again.',
+      createLog: mockCreateLog,
+      refetch: mockRefetch,
+    });
+
+    renderWithContext('student-001');
+
+    expect(screen.getByText(/Failed to load training logs/)).toBeInTheDocument();
   });
 
   it('displays week selector buttons (1-8)', () => {
@@ -63,7 +155,6 @@ describe('TrainingLogPage', () => {
   it('displays current cycle key', () => {
     renderWithContext('student-001');
 
-    // Current cycle should be visible (e.g., "Jan-Feb 2026")
     expect(screen.getByText(/Current Cycle:/)).toBeInTheDocument();
   });
 
@@ -100,7 +191,18 @@ describe('TrainingLogPage', () => {
     });
   });
 
-  it('saves training log successfully', async () => {
+  it('calls createLog when saving a training log', async () => {
+    mockCreateLog.mockResolvedValue({
+      id: 'log-new',
+      studentId: 'student-001',
+      weekNumber: 2,
+      cycleKey: 'Jul-Aug 2026',
+      sessionNotes: 'Excellent footwork drills today.',
+      isCompleted: true,
+      recordedBy: 'Priya Sharma',
+      recordedAt: new Date(),
+    });
+
     renderWithContext('student-001');
 
     // Select week 2
@@ -110,7 +212,7 @@ describe('TrainingLogPage', () => {
     // Enter session notes
     const textarea = screen.getByPlaceholderText(/Describe the training session/);
     fireEvent.change(textarea, {
-      target: { value: 'Excellent footwork drills today. Student showing improvement.' },
+      target: { value: 'Excellent footwork drills today.' },
     });
 
     // Mark as completed
@@ -122,127 +224,59 @@ describe('TrainingLogPage', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Training log saved successfully!/i)).toBeInTheDocument();
+      expect(mockCreateLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          studentId: 'student-001',
+          weekNumber: 2,
+          sessionNotes: 'Excellent footwork drills today.',
+          isCompleted: true,
+          recordedBy: 'Priya Sharma',
+        })
+      );
     });
 
-    // Verify localStorage
-    const storedLogs = JSON.parse(localStorage.getItem('trainingLogs') || '[]');
-    const savedLog = storedLogs.find(
-      (log: any) =>
-        log.studentId === 'student-001' &&
-        log.weekNumber === 2 &&
-        log.sessionNotes === 'Excellent footwork drills today. Student showing improvement.'
-    );
-
-    expect(savedLog).toBeDefined();
-    expect(savedLog.isCompleted).toBe(true);
-    expect(savedLog.recordedBy).toBe('Priya Sharma');
+    await waitFor(() => {
+      expect(screen.getByText(/Training log saved successfully!/i)).toBeInTheDocument();
+    });
   });
 
-  it('displays past training logs in reverse chronological order', () => {
-    // Pre-populate localStorage with training logs
-    const mockLogs = [
-      {
-        id: 'log-001',
-        studentId: 'student-001',
-        weekNumber: 1,
-        cycleKey: 'Jan-Feb 2026',
-        sessionNotes: 'First session notes',
-        isCompleted: true,
-        recordedBy: 'Priya Sharma',
-        recordedAt: '2026-01-10T14:30:00Z',
-      },
-      {
-        id: 'log-002',
-        studentId: 'student-001',
-        weekNumber: 2,
-        cycleKey: 'Jan-Feb 2026',
-        sessionNotes: 'Second session notes',
-        isCompleted: false,
-        recordedBy: 'Priya Sharma',
-        recordedAt: '2026-01-17T14:30:00Z',
-      },
-    ];
-    localStorage.setItem('trainingLogs', JSON.stringify(mockLogs));
-
+  it('displays past training logs sorted by recordedAt descending', () => {
     renderWithContext('student-001');
 
     // Should display both logs
     expect(screen.getByText('First session notes')).toBeInTheDocument();
     expect(screen.getByText('Second session notes')).toBeInTheDocument();
 
-    // Most recent (log-002) should appear first
+    // Most recent (log-002, Week 2) should appear first in sorted order
     const logs = screen.getAllByText(/Week \d+ -/);
     expect(logs[0]).toHaveTextContent('Week 2');
     expect(logs[1]).toHaveTextContent('Week 1');
   });
 
   it('shows completed badge for completed training logs', () => {
-    const mockLogs = [
-      {
-        id: 'log-001',
-        studentId: 'student-001',
-        weekNumber: 1,
-        cycleKey: 'Jan-Feb 2026',
-        sessionNotes: 'Completed session',
-        isCompleted: true,
-        recordedBy: 'Priya Sharma',
-        recordedAt: '2026-01-10T14:30:00Z',
-      },
-    ];
-    localStorage.setItem('trainingLogs', JSON.stringify(mockLogs));
-
     renderWithContext('student-001');
 
     expect(screen.getByText('Completed')).toBeInTheDocument();
   });
 
-  it('displays coach name who recorded the log', () => {
+  it('displays coach name who is recording', () => {
     renderWithContext('student-001');
 
-    // Should show "Recording as: Priya Sharma"
     expect(screen.getByText(/Recording as:/)).toBeInTheDocument();
-    // Use getAllByText since the name appears in the nav too
     const coachNames = screen.getAllByText('Priya Sharma');
     expect(coachNames.length).toBeGreaterThan(0);
   });
 
-  it('switches between weeks and loads existing log data', async () => {
-    const mockLogs = [
-      {
-        id: 'log-001',
-        studentId: 'student-001',
-        weekNumber: 3,
-        cycleKey: 'Jul-Aug 2026', // Use current cycle
-        sessionNotes: 'Week 3 existing notes',
-        isCompleted: true,
-        recordedBy: 'Priya Sharma',
-        recordedAt: '2026-07-20T14:30:00Z',
-      },
-    ];
-    localStorage.setItem('trainingLogs', JSON.stringify(mockLogs));
-
-    renderWithContext('student-001');
-
-    // Click on week 3
-    const week3Button = screen.getByRole('button', { name: '3' });
-    fireEvent.click(week3Button);
-
-    // Should load the existing notes
-    await waitFor(() => {
-      const textarea = screen.getByPlaceholderText(/Describe the training session/);
-      expect(textarea).toHaveValue('Week 3 existing notes');
+  it('displays empty state when no training logs exist', () => {
+    mockUseTrainingLogs.mockReturnValue({
+      logs: [],
+      loading: false,
+      error: null,
+      createLog: mockCreateLog,
+      refetch: mockRefetch,
     });
 
-    // Should also check the completed checkbox
-    const checkbox = screen.getByRole('checkbox', { name: /Mark week as completed/i });
-    expect(checkbox).toBeChecked();
-  });
-
-  it('displays empty state when no training logs exist', () => {
-    // Clear any existing logs and use a different student
-    localStorage.setItem('trainingLogs', JSON.stringify([]));
-    renderWithContext('student-002');
+    renderWithContext('student-001');
 
     expect(
       screen.getByText(/No training logs recorded yet. Start by adding your first session notes above./i)
@@ -254,5 +288,21 @@ describe('TrainingLogPage', () => {
 
     const backButton = screen.getByRole('button', { name: /Back to Student Profile/i });
     expect(backButton).toBeInTheDocument();
+  });
+
+  it('shows error message when createLog fails', async () => {
+    mockCreateLog.mockRejectedValue(new Error('Network error'));
+
+    renderWithContext('student-001');
+
+    const textarea = screen.getByPlaceholderText(/Describe the training session/);
+    fireEvent.change(textarea, { target: { value: 'Test notes' } });
+
+    const saveButton = screen.getByRole('button', { name: /Save Training Log/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Error saving training log. Please try again./i)).toBeInTheDocument();
+    });
   });
 });

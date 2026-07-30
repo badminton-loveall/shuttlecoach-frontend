@@ -1,12 +1,29 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TrainingTab } from './TrainingTab';
-import type { Student } from '../types';
+import type { Student, TrainingLog, CurriculumPlan } from '../types';
 
 // Mock useAuth
 const mockUseAuth = vi.fn();
 vi.mock('../contexts/AuthContext', () => ({
   useAuth: () => mockUseAuth(),
+}));
+
+// Mock useTrainingLogs
+const mockUseTrainingLogs = vi.fn();
+vi.mock('../hooks/useTrainingLogs', () => ({
+  useTrainingLogs: (filters: unknown) => mockUseTrainingLogs(filters),
+}));
+
+// Mock useCurriculum
+const mockUseCurriculum = vi.fn();
+vi.mock('../hooks/useCurriculum', () => ({
+  useCurriculum: (filters: unknown) => mockUseCurriculum(filters),
+}));
+
+// Mock generateCycleKey to return a stable value for tests
+vi.mock('../utils/skillUtils', () => ({
+  generateCycleKey: () => 'Jan-Feb 2026',
 }));
 
 const createMockStudent = (overrides: Partial<Student> = {}): Student => ({
@@ -37,12 +54,255 @@ const createMockStudent = (overrides: Partial<Student> = {}): Student => ({
   ...overrides,
 });
 
+const createMockTrainingLogs = (): TrainingLog[] => [
+  {
+    id: 'log-1',
+    studentId: 'student-1',
+    weekNumber: 2,
+    cycleKey: 'Jan-Feb 2026',
+    sessionNotes: 'Good footwork drills today',
+    isCompleted: true,
+    recordedBy: 'Coach Sumit',
+    recordedAt: new Date('2026-01-15T10:00:00Z'),
+  },
+  {
+    id: 'log-2',
+    studentId: 'student-1',
+    weekNumber: 1,
+    cycleKey: 'Jan-Feb 2026',
+    sessionNotes: 'First session of the cycle',
+    isCompleted: false,
+    recordedBy: 'Coach Sumit',
+    recordedAt: new Date('2026-01-08T10:00:00Z'),
+  },
+  {
+    id: 'log-3',
+    studentId: 'student-1',
+    weekNumber: 8,
+    cycleKey: 'Nov-Dec 2025',
+    sessionNotes: 'Last session of previous cycle',
+    isCompleted: true,
+    recordedBy: 'Coach Priya',
+    recordedAt: new Date('2025-12-20T10:00:00Z'),
+  },
+];
+
+const createMockCurriculumPlan = (): CurriculumPlan => ({
+  id: 'plan-1',
+  cycleKey: 'Jan-Feb 2026',
+  studentId: 'student-1',
+  weeks: [
+    { weekNumber: 1, focusArea: 'Footwork Basics', drills: [], objective: 'Build foundation' },
+    { weekNumber: 2, focusArea: 'Service Training', drills: [], objective: 'Improve serve accuracy' },
+    { weekNumber: 3, focusArea: 'Net Shot Practice', drills: [], objective: 'Master net shots' },
+    { weekNumber: 4, focusArea: 'Rally Endurance', drills: [], objective: 'Build stamina' },
+    { weekNumber: 5, focusArea: 'Smash & Drop', drills: [], objective: 'Power shots' },
+    { weekNumber: 6, focusArea: 'Doubles Strategy', drills: [], objective: 'Partner coordination' },
+    { weekNumber: 7, focusArea: 'Match Simulation', drills: [], objective: 'Game scenarios' },
+    { weekNumber: 8, focusArea: 'Assessment Prep', drills: [], objective: 'Review all skills' },
+  ],
+  createdAt: new Date('2026-01-01'),
+  updatedAt: new Date('2026-01-01'),
+  isArchived: false,
+});
+
 describe('TrainingTab', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default hook mocks (no data, not loading)
+    mockUseTrainingLogs.mockReturnValue({
+      logs: [],
+      loading: false,
+      error: null,
+      createLog: vi.fn(),
+      refetch: vi.fn(),
+    });
+    mockUseCurriculum.mockReturnValue({
+      plans: [],
+      loading: false,
+      error: null,
+      createPlan: vi.fn(),
+      updatePlan: vi.fn(),
+      cloneBatchPlan: vi.fn(),
+      refetch: vi.fn(),
+    });
   });
 
-  describe('Display - All roles', () => {
+  describe('Training Logs - Loading, Error, Empty states', () => {
+    it('shows loading spinner while training logs are loading', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseTrainingLogs.mockReturnValue({
+        logs: [],
+        loading: true,
+        error: null,
+        createLog: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('training-logs-loading')).toBeInTheDocument();
+      expect(screen.getByText('Loading training logs...')).toBeInTheDocument();
+    });
+
+    it('shows error message when training logs fail to load', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseTrainingLogs.mockReturnValue({
+        logs: [],
+        loading: false,
+        error: 'Failed to load training logs. Please try again.',
+        createLog: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('training-logs-error')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load training logs. Please try again.')).toBeInTheDocument();
+    });
+
+    it('shows empty state when no training logs exist', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('training-logs-empty')).toBeInTheDocument();
+      expect(screen.getByText('No training logs recorded yet for this student.')).toBeInTheDocument();
+    });
+  });
+
+  describe('Training Logs - Data display', () => {
+    it('displays logs grouped by cycle with current cycle highlighted', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseTrainingLogs.mockReturnValue({
+        logs: createMockTrainingLogs(),
+        loading: false,
+        error: null,
+        createLog: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      // Current cycle group should have highlight badge
+      expect(screen.getByTestId('current-cycle-badge')).toBeInTheDocument();
+      expect(screen.getByText('Current')).toBeInTheDocument();
+
+      // Both cycles should be visible
+      expect(screen.getByTestId('cycle-group-Jan-Feb 2026')).toBeInTheDocument();
+      expect(screen.getByTestId('cycle-group-Nov-Dec 2025')).toBeInTheDocument();
+    });
+
+    it('displays training log notes', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseTrainingLogs.mockReturnValue({
+        logs: createMockTrainingLogs(),
+        loading: false,
+        error: null,
+        createLog: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByText('Good footwork drills today')).toBeInTheDocument();
+      expect(screen.getByText('First session of the cycle')).toBeInTheDocument();
+      expect(screen.getByText('Last session of previous cycle')).toBeInTheDocument();
+    });
+
+    it('calls useTrainingLogs with the student ID', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(mockUseTrainingLogs).toHaveBeenCalledWith({ studentId: 'student-1' });
+    });
+  });
+
+  describe('Curriculum - Loading, Error, Empty states', () => {
+    it('shows loading spinner while curriculum is loading', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseCurriculum.mockReturnValue({
+        plans: [],
+        loading: true,
+        error: null,
+        createPlan: vi.fn(),
+        updatePlan: vi.fn(),
+        cloneBatchPlan: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('curriculum-loading')).toBeInTheDocument();
+      expect(screen.getByText('Loading curriculum...')).toBeInTheDocument();
+    });
+
+    it('shows error message when curriculum fails to load', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseCurriculum.mockReturnValue({
+        plans: [],
+        loading: false,
+        error: 'Failed to load curriculum plans. Please try again.',
+        createPlan: vi.fn(),
+        updatePlan: vi.fn(),
+        cloneBatchPlan: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('curriculum-error')).toBeInTheDocument();
+      expect(screen.getByText('Failed to load curriculum plans. Please try again.')).toBeInTheDocument();
+    });
+
+    it('shows empty state when no curriculum plan exists for current cycle', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('curriculum-empty')).toBeInTheDocument();
+      expect(screen.getByText(/No curriculum plan found for the current cycle/)).toBeInTheDocument();
+    });
+
+    it('calls useCurriculum with the student ID', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(mockUseCurriculum).toHaveBeenCalledWith({ studentId: 'student-1' });
+    });
+  });
+
+  describe('Curriculum - Data display', () => {
+    it('displays active curriculum plan summary', () => {
+      mockUseAuth.mockReturnValue({ role: 'HEAD_COACH' });
+      mockUseCurriculum.mockReturnValue({
+        plans: [createMockCurriculumPlan()],
+        loading: false,
+        error: null,
+        createPlan: vi.fn(),
+        updatePlan: vi.fn(),
+        cloneBatchPlan: vi.fn(),
+        refetch: vi.fn(),
+      });
+      const student = createMockStudent();
+      render(<TrainingTab student={student} />);
+
+      expect(screen.getByTestId('curriculum-plan')).toBeInTheDocument();
+      expect(screen.getByText('Jan-Feb 2026 Plan')).toBeInTheDocument();
+      expect(screen.getByText('8 weeks planned')).toBeInTheDocument();
+      // First 4 weeks shown
+      expect(screen.getByText('Footwork Basics')).toBeInTheDocument();
+      expect(screen.getByText('Service Training')).toBeInTheDocument();
+      expect(screen.getByText('Net Shot Practice')).toBeInTheDocument();
+      expect(screen.getByText('Rally Endurance')).toBeInTheDocument();
+      // Should show "+4 more weeks"
+      expect(screen.getByText('+4 more weeks')).toBeInTheDocument();
+    });
+  });
+
+  describe('Display - All roles (strengths/weaknesses/feedback)', () => {
     it('renders strengths as green tags', () => {
       mockUseAuth.mockReturnValue({ role: 'STUDENT' });
       const student = createMockStudent();

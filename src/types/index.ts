@@ -472,3 +472,171 @@ export interface MarkFeeAsPaidRequest {
 export interface WaiveFeeRequest {
   reason: string;
 }
+
+
+/* ============================================================================
+   ATTENDANCE & LEAVE TYPES
+   ============================================================================ */
+
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
+export type LeaveType = 'PLANNED_LEAVE' | 'SICK_LEAVE' | 'NO_SHOW';
+export type LeaveRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  batchId: string;
+  sessionDate: string;
+  status: AttendanceStatus;
+  leaveType?: LeaveType;
+  markedBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LeaveRequest {
+  id: string;
+  studentId: string;
+  batchId: string;
+  requestedDate: string;
+  leaveType: LeaveType;
+  reason?: string;
+  status: LeaveRequestStatus;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  createdAt: string;
+}
+
+/* ============================================================================
+   SESSION SCHEDULE TYPES
+   ============================================================================ */
+
+export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type EndType = 'never' | 'on_date' | 'after_count';
+
+export interface SessionSlot {
+  dayOfWeek: DayOfWeek;
+  startTime: string;
+  endTime: string;
+}
+
+export interface RecurrencePattern {
+  repeatEvery: number;
+  repeatUnit: 'week';
+  repeatDays: DayOfWeek[];
+  endType: EndType;
+  endDate?: string;
+  occurrenceCount?: number;
+}
+
+export interface SessionSchedule {
+  id: string;
+  batchId: string;
+  slots: SessionSlot[];
+  recurrence: RecurrencePattern;
+  cycleStartDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SessionNote {
+  id: string;
+  batchId: string;
+  sessionDate: string;
+  noteText: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CurriculumWeekMapping {
+  id: string;
+  batchId: string;
+  cycleKey: string;
+  weekNumber: number;
+  startDate: string;
+  endDate: string;
+}
+
+/* ============================================================================
+   ANALYTICS TYPES
+   ============================================================================ */
+
+export interface AttendanceStats {
+  studentId: string;
+  studentName: string;
+  totalSessions: number;
+  attended: number;
+  late: number;
+  absent: number;
+  attendancePercentage: number;
+}
+
+export interface DrillCompletionStats {
+  weekNumber: number;
+  focusArea: string;
+  totalDrills: number;
+  completedDrills: number;
+  completionRate: number;
+  drills: Array<{
+    name: string;
+    category: string;
+    completed: boolean;
+    notes?: string;
+  }>;
+}
+
+export interface SkillImprovementDelta {
+  category: string;
+  startScore: number;
+  endScore: number;
+  delta: number;
+  relatedDrills: string[];
+  drillCompletionRate: number;
+}
+
+export interface TrainingEffectivenessReport {
+  studentId: string;
+  cycleKey: string;
+  overallScore: number;
+  categories: SkillImprovementDelta[];
+  insufficientData: boolean;
+}
+
+export interface BatchComparisonMetric {
+  batchId: string;
+  batchName: string;
+  avgSkillImprovement: number;
+  avgAttendancePercentage: number;
+  avgDrillCompletionRate: number;
+}
+
+export interface TrendDataPoint {
+  cycleKey: string;
+  attendancePercentage: number;
+  avgSkillScore: number;
+}
+
+export interface StudentTrendReport {
+  studentId: string;
+  dataPoints: TrendDataPoint[];
+  correlationCoefficient?: number;
+}
+
+/* ============================================================================
+   CALENDAR TYPES
+   ============================================================================ */
+
+export interface CalendarEntry {
+  date: string;
+  dayOfWeek: DayOfWeek;
+  startTime: string;
+  endTime: string;
+  batchId: string;
+  batchName: string;
+  weekNumber: number;
+  focusArea: string;
+  drills: string[];
+  attendanceRecorded: boolean;
+  coachNote?: string;
+}

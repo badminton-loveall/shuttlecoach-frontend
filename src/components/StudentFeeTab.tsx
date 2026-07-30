@@ -3,7 +3,9 @@ import type { Student, FeeRecord } from '../types';
 import CreateFeeModal, { type CreateFeeFormData } from './CreateFeeModal';
 import EditFeeModal, { type EditFeeFormData } from './EditFeeModal';
 import DeleteConfirmDialog from './DeleteConfirmDialog';
-import feesData from '../data/fees.json';
+import { useFees } from '../hooks/useFees';
+import { computeFeeStats } from '../utils/feeStats';
+import { useToast } from '../contexts/ToastContext';
 import './StudentFeeTab.css';
 
 interface StudentFeeTabProps {
@@ -15,49 +17,21 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
   const [isEditFeeModalOpen, setIsEditFeeModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedFeeId, setSelectedFeeId] = useState<string | null>(null);
-  const [localFees, setLocalFees] = useState<FeeRecord[]>([]);
 
-  // Load and filter fees for this student
-  const allFees = useMemo(() => {
-    const parsedFees: FeeRecord[] = (feesData as unknown as FeeRecord[]).map((fee) => ({
-      ...fee,
-      dueDate: new Date(fee.dueDate),
-      paidDate: fee.paidDate ? new Date(fee.paidDate) : undefined,
-      createdAt: new Date(fee.createdAt),
-      updatedAt: new Date(fee.updatedAt),
-    }));
-    
-    const currentFees = localFees.length > 0 ? localFees : parsedFees;
-    return currentFees.filter((fee) => fee.studentId === student.id);
-  }, [student.id, localFees]);
+  const { fees, loading, error, createFee, markFeeAsPaid, waiveFee } = useFees({
+    studentId: student.id,
+  });
+  const { showToast } = useToast();
 
-  // Get student fees sorted by due date
+  // Sort fees by dueDate ascending
   const studentFees = useMemo(() => {
-    return [...allFees].sort((a, b) => {
-      const dateA = new Date(a.dueDate).getTime();
-      const dateB = new Date(b.dueDate).getTime();
-      return dateA - dateB;
-    });
-  }, [allFees]);
+    return [...fees].sort(
+      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+    );
+  }, [fees]);
 
-  // Calculate fee statistics
-  const stats = useMemo(() => {
-    const totalAmount = studentFees.reduce((sum, fee) => sum + fee.amount, 0);
-    const paidAmount = studentFees
-      .filter((fee) => fee.status === 'PAID')
-      .reduce((sum, fee) => sum + fee.amount, 0);
-    const pendingAmount = studentFees
-      .filter((fee) => fee.status === 'PENDING' || fee.status === 'OVERDUE')
-      .reduce((sum, fee) => sum + fee.amount, 0);
-    const overdueCount = studentFees.filter((fee) => fee.status === 'OVERDUE').length;
-
-    return {
-      totalAmount,
-      paidAmount,
-      pendingAmount,
-      overdueCount,
-    };
-  }, [studentFees]);
+  // Compute fee statistics using shared utility
+  const stats = useMemo(() => computeFeeStats(fees), [fees]);
 
   // Format currency
   const formatCurrency = (amount: number): string => {
@@ -86,22 +60,21 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
     }
   };
 
-  // Handler for creating new fee
-  const handleCreateFeeSubmit = (feeData: CreateFeeFormData) => {
-    const newFee: FeeRecord = {
-      id: `fee-${Date.now()}`,
-      studentId: student.id,
-      amount: feeData.amount,
-      monthYear: feeData.monthYear,
-      dueDate: feeData.dueDate,
-      status: 'PENDING',
-      notes: feeData.notes || undefined,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setLocalFees([...localFees, newFee]);
-    setIsCreateFeeModalOpen(false);
+  // Handler for creating new fee via API
+  const handleCreateFeeSubmit = async (feeData: CreateFeeFormData) => {
+    try {
+      await createFee({
+        studentId: student.id,
+        amount: feeData.amount,
+        monthYear: feeData.monthYear,
+        dueDate: feeData.dueDate,
+        notes: feeData.notes,
+      });
+      setIsCreateFeeModalOpen(false);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create fee. Please try again.';
+      showToast({ message, type: 'error' });
+    }
   };
 
   // Handler for opening edit fee modal
@@ -116,27 +89,22 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
     setSelectedFeeId(null);
   };
 
-  // Handler for submitting edit fee
-  const handleEditFeeSubmit = (feeData: EditFeeFormData) => {
-    const feeIndex = allFees.findIndex((fee) => fee.id === feeData.feeId);
-    if (feeIndex === -1) return;
-
-    const updatedFee: FeeRecord = {
-      ...allFees[feeIndex],
-      amount: feeData.amount,
-      dueDate: feeData.dueDate,
-      notes: feeData.notes,
-      updatedAt: new Date(),
-    };
-
-    const updatedFees = [...allFees];
-    updatedFees[feeIndex] = updatedFee;
-    setLocalFees(updatedFees);
-
-    handleCloseEditFeeModal();
+  // Handler for submitting edit fee - marks as paid via API
+  const handleEditFeeSubmit = async (feeData: EditFeeFormData) => {
+    try {
+      await markFeeAsPaid(feeData.feeId, {
+        paidDate: new Date().toISOString(),
+        paymentMethod: 'CASH',
+        notes: feeData.notes,
+      });
+      handleCloseEditFeeModal();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update fee. Please try again.';
+      showToast({ message, type: 'error' });
+    }
   };
 
-  // Handler for opening delete confirmation dialog
+  // Handler for opening delete confirmation dialog (waive fee)
   const handleDeleteFeeClick = (feeId: string) => {
     setSelectedFeeId(feeId);
     setIsDeleteDialogOpen(true);
@@ -148,18 +116,47 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
     setSelectedFeeId(null);
   };
 
-  // Handler for confirming fee deletion
-  const handleDeleteFeeConfirm = () => {
+  // Handler for confirming fee deletion (waive via API)
+  const handleDeleteFeeConfirm = async () => {
     if (!selectedFeeId) return;
 
-    const updatedFees = allFees.filter((fee) => fee.id !== selectedFeeId);
-    setLocalFees(updatedFees);
-
-    handleCloseDeleteDialog();
+    try {
+      await waiveFee(selectedFeeId, { reason: 'Waived by coach' });
+      handleCloseDeleteDialog();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to waive fee. Please try again.';
+      showToast({ message, type: 'error' });
+    }
   };
 
   // Get selected fee details
-  const selectedFee = selectedFeeId ? allFees.find((fee) => fee.id === selectedFeeId) ?? null : null;
+  const selectedFee = selectedFeeId ? fees.find((fee) => fee.id === selectedFeeId) ?? null : null;
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="student-fee-tab">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading fees...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="student-fee-tab">
+        <div className="flex flex-col items-center justify-center py-12">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-500 dark:text-red-400 mb-3">
+            <path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+          </svg>
+          <p className="text-red-600 dark:text-red-400 font-medium">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="student-fee-tab">
@@ -245,9 +242,9 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
                             <button
                               onClick={() => handleDeleteFeeClick(fee.id)}
                               className="fee-action-btn fee-action-btn--delete"
-                              title="Delete fee"
+                              title="Waive fee"
                             >
-                              Delete
+                              Waive
                             </button>
                           )}
                         </>
@@ -287,7 +284,7 @@ export const StudentFeeTab: React.FC<StudentFeeTabProps> = ({ student }) => {
         onClose={() => setIsCreateFeeModalOpen(false)}
         onSubmit={handleCreateFeeSubmit}
         students={[student]}
-        existingFees={allFees}
+        existingFees={fees}
       />
 
       <EditFeeModal

@@ -69,7 +69,7 @@ export function useAssessments(filters?: AssessmentFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters?.studentId, filters?.cycleKey]);
 
   // Fetch assessments on mount and when filters change
   useEffect(() => {

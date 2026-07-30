@@ -88,7 +88,7 @@ export function useFees(filters?: FeeFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters?.studentId, filters?.status, filters?.monthYear]);
 
   // Fetch fees on mount and when filters change
   useEffect(() => {

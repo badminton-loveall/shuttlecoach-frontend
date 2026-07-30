@@ -70,7 +70,7 @@ export function useTrainingLogs(filters?: TrainingLogFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters?.studentId, filters?.cycleKey]);
 
   // Fetch logs on mount and when filters change
   useEffect(() => {

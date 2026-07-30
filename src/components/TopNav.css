@@ -1,7 +1,7 @@
 /* ============================================================================
    TopNav Component Styles
    Pure CSS implementation using design tokens and BEM methodology
-   Role-aware navigation with mobile drawer menu
+   Role-aware navigation with dropdown menus, profile avatar, and mobile drawer
    ============================================================================ */
 
 .topnav {
@@ -12,13 +12,6 @@
   top: 0;
   z-index: var(--z-sticky);
   box-shadow: var(--shadow-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-  .topnav {
-    background-color: var(--surface-dark-card);
-    border-bottom-color: var(--border-dark);
-  }
 }
 
 .topnav__container {
@@ -32,7 +25,7 @@
 }
 
 /* ============================================================================
-   Logo / Brand (Element)
+   Logo / Brand
    ============================================================================ */
 
 .topnav__logo {
@@ -52,12 +45,12 @@
 }
 
 /* ============================================================================
-   Desktop Navigation Links (Element)
+   Desktop Navigation Links
    ============================================================================ */
 
 .topnav__links-desktop {
   display: flex;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   flex: 1;
   align-items: center;
 }
@@ -71,12 +64,13 @@
   border-radius: var(--radius-pill);
   transition: all var(--transition-base);
   white-space: nowrap;
-}
-
-@media (prefers-color-scheme: dark) {
-  .topnav__link {
-    color: var(--text-dark-secondary);
-  }
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
 }
 
 .topnav__link:hover {
@@ -97,8 +91,83 @@
   box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
 }
 
+/* Dropdown trigger button styling */
+.topnav__link--dropdown {
+  /* inherits .topnav__link styles */
+}
+
 /* ============================================================================
-   Right Side Container (Element)
+   Chevron Icon (for dropdown triggers)
+   ============================================================================ */
+
+.topnav__chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.topnav__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ============================================================================
+   Dropdown Container & Panel
+   ============================================================================ */
+
+.topnav__dropdown {
+  position: relative;
+}
+
+.topnav__dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xs) 0;
+  z-index: var(--z-dropdown, 100);
+  animation: topnav-dropdown-in 0.15s ease-out;
+}
+
+@keyframes topnav-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topnav__dropdown-item {
+  display: block;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.topnav__dropdown-item:hover {
+  color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+}
+
+.topnav__dropdown-item--active {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  background-color: rgba(184, 225, 53, 0.1);
+}
+
+/* ============================================================================
+   Right Side Container
    ============================================================================ */
 
 .topnav__right {
@@ -109,29 +178,29 @@
 }
 
 /* ============================================================================
-   User Info Section (Element)
+   Profile Avatar & Dropdown
    ============================================================================ */
 
-.topnav__user-info {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-md);
-  background-color: var(--surface-hover);
-  border: 1px solid var(--border-default);
+.topnav__profile {
+  position: relative;
 }
 
-@media (prefers-color-scheme: dark) {
-  .topnav__user-info {
-    background-color: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
+.topnav__avatar-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--radius-full);
+  transition: box-shadow var(--transition-base);
+}
+
+.topnav__avatar-btn:hover {
+  box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.25);
 }
 
 .topnav__user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-full);
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: var(--text-primary);
@@ -141,55 +210,85 @@
   font-size: var(--font-sm);
   font-weight: var(--weight-bold);
   flex-shrink: 0;
+  user-select: none;
 }
 
-.topnav__user-details {
+.topnav__profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 220px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xs) 0;
+  z-index: var(--z-dropdown, 100);
+  animation: topnav-dropdown-in 0.15s ease-out;
+}
+
+.topnav__profile-header {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: var(--space-sm) var(--space-md);
 }
 
-.topnav__user-name {
+.topnav__profile-name {
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-@media (prefers-color-scheme: dark) {
-  .topnav__user-name {
-    color: var(--text-dark-primary);
-  }
-}
-
-.topnav__user-role {
+.topnav__profile-role {
   font-size: var(--font-xs);
   font-weight: var(--weight-medium);
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: var(--letter-label);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
-@media (prefers-color-scheme: dark) {
-  .topnav__user-role {
-    color: var(--text-dark-tertiary);
-  }
+.topnav__profile-divider {
+  height: 1px;
+  background-color: var(--border-default);
+  margin: var(--space-xs) 0;
+}
+
+.topnav__profile-item {
+  display: block;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.topnav__profile-item:hover {
+  color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+}
+
+.topnav__profile-item--danger {
+  color: var(--color-danger);
+}
+
+.topnav__profile-item--danger:hover {
+  background-color: var(--feedback-danger-light);
+  color: var(--color-danger);
 }
 
 /* ============================================================================
-   Action Buttons (Element)
+   Mobile Menu Button
    ============================================================================ */
-
-.topnav__btn-signout,
-.topnav__btn-mobile {
-  color: var(--text-dark-tertiary);
-}
-
-.topnav__btn-signout:hover {
-  color: var(--color-danger);
-  background-color: var(--feedback-danger-light);
-}
 
 .topnav__btn-mobile {
   display: none;
@@ -201,7 +300,7 @@
 }
 
 /* ============================================================================
-   Mobile Menu Overlay & Drawer (Elements)
+   Mobile Menu Overlay & Drawer
    ============================================================================ */
 
 .topnav__overlay {
@@ -210,10 +309,10 @@
   background-color: rgba(10, 13, 17, 0.7);
   backdrop-filter: blur(2px);
   z-index: var(--z-overlay);
-  animation: fadeIn var(--transition-base);
+  animation: topnav-fade-in var(--transition-base);
 }
 
-@keyframes fadeIn {
+@keyframes topnav-fade-in {
   from {
     opacity: 0;
   }
@@ -229,26 +328,19 @@
   height: 100vh;
   width: 280px;
   max-width: 85vw;
-  background-color: var(--surface-dark-card);
-  border-left: 1px solid var(--border-dark);
+  background-color: var(--surface-card);
+  border-left: 1px solid var(--border-default);
   z-index: var(--z-modal);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
   padding: var(--space-md) 0;
-  animation: slideIn var(--transition-smooth);
+  animation: topnav-slide-in var(--transition-smooth);
   box-shadow: var(--shadow-overlay);
 }
 
-@media (prefers-color-scheme: dark) {
-  .topnav__drawer {
-    background-color: var(--surface-card);
-    border-left-color: var(--border-dark);
-  }
-}
-
-@keyframes slideIn {
+@keyframes topnav-slide-in {
   from {
     transform: translateX(100%);
   }
@@ -257,6 +349,44 @@
   }
 }
 
+/* Drawer user section */
+.topnav__drawer-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.topnav__drawer-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.topnav__drawer-user-name {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.topnav__drawer-user-role {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+  line-height: 1.2;
+}
+
+.topnav__drawer-divider {
+  height: 1px;
+  background-color: var(--border-default);
+  margin: var(--space-xs) var(--space-sm);
+}
+
+/* Drawer links */
 .topnav__drawer-link {
   color: var(--text-secondary);
   text-decoration: none;
@@ -272,12 +402,7 @@
   border: none;
   text-align: left;
   width: calc(100% - var(--space-md));
-}
-
-@media (prefers-color-scheme: dark) {
-  .topnav__drawer-link {
-    color: var(--text-dark-secondary);
-  }
+  font-family: inherit;
 }
 
 .topnav__drawer-link:hover,
@@ -287,19 +412,18 @@
   font-weight: var(--weight-semibold);
 }
 
+/* Sub-items are indented slightly */
+.topnav__drawer-link--sub {
+  padding-left: calc(var(--space-lg) + var(--space-sm));
+  font-size: var(--font-sm);
+}
+
 .topnav__drawer-signout {
   color: var(--color-danger);
   margin-top: auto;
-  padding-bottom: var(--space-lg);
   padding-top: var(--space-sm);
   margin-top: var(--space-lg);
-  border-top: 1px solid var(--border-dark);
-}
-
-@media (prefers-color-scheme: dark) {
-  .topnav__drawer-signout {
-    border-top-color: var(--border-dark);
-  }
+  border-top: 1px solid var(--border-default);
 }
 
 .topnav__drawer-signout:hover {
@@ -318,7 +442,7 @@
   }
 
   .topnav__links-desktop {
-    gap: var(--space-sm);
+    gap: var(--space-xs);
   }
 
   .topnav__link {
@@ -336,23 +460,15 @@
     display: flex;
   }
 
-  .topnav__user-details {
-    display: none;
-  }
-
-  .topnav__user-info {
-    padding: var(--space-xs);
-  }
-
   .topnav__user-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 11px;
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 
   .topnav__drawer {
-    width: 260px;
-    max-width: 80vw;
+    width: 280px;
+    max-width: 85vw;
   }
 }
 
@@ -367,14 +483,10 @@
     font-size: var(--font-h5);
   }
 
-  .topnav__user-info {
-    padding: 4px 6px;
-  }
-
   .topnav__user-avatar {
-    width: 24px;
-    height: 24px;
-    font-size: 10px;
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
 
   .topnav__icon {
@@ -394,6 +506,10 @@
     font-size: var(--font-label);
     margin: 0 var(--space-xs);
   }
+
+  .topnav__drawer-link--sub {
+    padding-left: calc(var(--space-md) + var(--space-sm));
+  }
 }
 
 /* ============================================================================
@@ -401,9 +517,11 @@
    ============================================================================ */
 
 .topnav__link:focus-visible,
-.topnav__btn-signout:focus-visible,
+.topnav__avatar-btn:focus-visible,
 .topnav__btn-mobile:focus-visible,
-.topnav__drawer-link:focus-visible {
+.topnav__drawer-link:focus-visible,
+.topnav__dropdown-item:focus-visible,
+.topnav__profile-item:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

@@ -86,7 +86,7 @@ export function useCurriculum(filters?: CurriculumFilters) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters?.studentId, filters?.cycleKey, filters?.batchId]);
 
   // Fetch plans on mount and when filters change
   useEffect(() => {

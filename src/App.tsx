@@ -18,8 +18,13 @@ import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
+import HelpPage from './pages/HelpPage';
 import DesignSystemTestPage from './pages/DesignSystemTestPage';
 import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
+import AttendancePage from './pages/AttendancePage';
+import LeaveRequestsPage from './pages/LeaveRequestsPage';
+import TrainingAnalyticsPage from './pages/TrainingAnalyticsPage';
+import SessionCalendarPage from './pages/SessionCalendarPage';
 import './App.css';
 
 /**
@@ -145,6 +150,46 @@ function App() {
             }
           />
 
+          {/* Attendance (Head Coach & Assistant Coach) */}
+          <Route
+            path="/attendance"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <AttendancePage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Leave Requests (Head Coach & Assistant Coach) */}
+          <Route
+            path="/leave-requests"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <LeaveRequestsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Training Analytics (Head Coach & Assistant Coach) */}
+          <Route
+            path="/training-analytics"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <TrainingAnalyticsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Session Calendar (All roles) */}
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT']}>
+                <SessionCalendarPage />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Coach Detail Page */}
           <Route
             path="/coach/:coachId"
@@ -185,6 +230,16 @@ function App() {
 
           {/* Access Denied Page */}
           <Route path="/access-denied" element={<AccessDeniedPage />} />
+
+          {/* Help Page (accessible to all authenticated users) */}
+          <Route
+            path="/help"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT']}>
+                <HelpPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Default Redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />

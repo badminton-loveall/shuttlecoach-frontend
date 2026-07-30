@@ -7,10 +7,15 @@ import SearchInput from '../components/SearchInput';
 import FilterBar from '../components/FilterBar';
 import FeeAlerts from '../components/FeeAlerts';
 import RecentActivity from '../components/RecentActivity';
+import { AttendanceStatsWidget } from '../components/AttendanceStatsWidget';
+import { SessionCard } from '../components/SessionCard';
+import { QuickAttendanceWidget } from '../components/QuickAttendanceWidget';
 import type { FilterValues } from '../components/FilterBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
 import { useFees } from '../hooks/useFees';
+import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
+import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
 import { generateActivityFeed } from '../utils/activityUtils';
@@ -95,6 +100,29 @@ export const AssistantCoachDashboard: React.FC = () => {
   // Live data from API
   const { students: allStudents, loading: studentsLoading } = useStudents();
   const { fees: allFees, loading: feesLoading } = useFees();
+
+  // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const sevenDaysAgo = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 7);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const { stats: attendanceStats, loading: attendanceStatsLoading, error: attendanceStatsError } =
+    useAttendanceStats({ startDate: todayStr, endDate: todayStr });
+  const { records: recentAttendanceRecords, loading: recentRecordsLoading, error: recentRecordsError } =
+    useAttendanceRecords({ startDate: sevenDaysAgo, endDate: todayStr });
+
+  // Session calendar for SessionCard (Requirements: 17.1, 17.2)
+  const fourteenDaysAhead = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const { entries: calendarEntries, loading: calendarLoading, error: calendarError } =
+    useSessionCalendar({ startDate: todayStr, endDate: fourteenDaysAhead });
 
   // Static JSON data (no API hooks yet)
   const allAssessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
@@ -229,6 +257,30 @@ export const AssistantCoachDashboard: React.FC = () => {
                 label={stats.averageProgressLabel.split('(')[1]?.slice(0, -1) || 'Level'}
                 icon={<ProgressIconSvg />}
                 variant="info"
+              />
+            </div>
+
+            {/* Attendance and Session Widgets - Requirements: 5.1, 5.4, 17.1, 17.2 */}
+            <div className="ac-overview-grid" style={{ marginTop: 'var(--space-lg)' }}>
+              <AttendanceStatsWidget
+                stats={attendanceStats}
+                recentRecords={recentAttendanceRecords}
+                loading={attendanceStatsLoading || recentRecordsLoading}
+                error={attendanceStatsError || recentRecordsError}
+              />
+              <SessionCard
+                entries={calendarEntries}
+                loading={calendarLoading}
+                error={calendarError}
+                variant="coach"
+              />
+            </div>
+
+            {/* Quick Attendance Widget */}
+            <div style={{ marginTop: 'var(--space-lg)' }}>
+              <QuickAttendanceWidget
+                calendarEntries={calendarEntries}
+                calendarLoading={calendarLoading}
               />
             </div>
 
