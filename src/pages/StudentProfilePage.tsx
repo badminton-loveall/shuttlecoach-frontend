@@ -15,6 +15,7 @@ import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useStudent } from '../hooks/useStudent';
+import { useBatches } from '../hooks/useBatches';
 import { useAssessments } from '../hooks/useAssessments';
 import { useAttendanceRecords } from '../hooks/useAttendance';
 import { useStudentTrends } from '../hooks/useAnalytics';
@@ -86,6 +87,7 @@ export const StudentProfilePage: React.FC = () => {
 
   // Fetch single student directly by ID
   const { student, loading, error, refetch } = useStudent(id);
+  const { getBatchName } = useBatches();
   const { showToast } = useToast();
 
   // Modal state
@@ -234,7 +236,7 @@ export const StudentProfilePage: React.FC = () => {
               <h1 className="sp-student-name">{student.fullName}</h1>
               <div className="sp-header-meta">
                 {student.batchId && (
-                  <span className="text-small">Batch {student.batchId.split('-')[1]}</span>
+                  <span className="text-small">{getBatchName(student.batchId)}</span>
                 )}
                 <span className={`badge badge-${skillColor === 'blue' ? 'info' : skillColor === 'orange' ? 'warning' : skillColor === 'green' ? 'success' : 'primary'}`}>
                   {student.skillLevel}

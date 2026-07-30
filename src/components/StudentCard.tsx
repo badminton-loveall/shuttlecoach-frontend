@@ -11,6 +11,7 @@ import './StudentCard.css';
 
 interface StudentCardProps {
   student: Student;
+  batchName?: string;
   onClick?: () => void;
   isDueForReview?: boolean;
   daysOverdue?: number;
@@ -57,6 +58,7 @@ const getInitials = (name: string): string => {
 
 export const StudentCard: React.FC<StudentCardProps> = ({ 
   student, 
+  batchName,
   onClick, 
   isDueForReview = false,
   daysOverdue = 0
@@ -89,7 +91,11 @@ export const StudentCard: React.FC<StudentCardProps> = ({
         <h3 className="student-card__name">{student.fullName}</h3>
 
         {/* Batch Info */}
-        {student.batchId && <p className="student-card__batch">Batch {student.batchId.split('-')[1]}</p>}
+        {student.batchId && (
+          <p className="student-card__batch">
+            {batchName ? batchName : 'Unknown batch'}
+          </p>
+        )}
 
         {/* Skill Level Badge */}
         <div className={`student-card__skill-badge student-card__skill-badge--${skillVariant}`}>

@@ -13,12 +13,14 @@ interface StudentGridProps {
   students: Student[];
   onStudentClick?: (studentId: string) => void;
   studentReviewStatus?: Map<string, { isDue: boolean; daysOverdue: number }>;
+  getBatchName?: (batchId: string | undefined) => string;
 }
 
 export const StudentGrid: React.FC<StudentGridProps> = ({ 
   students, 
   onStudentClick,
-  studentReviewStatus = new Map()
+  studentReviewStatus = new Map(),
+  getBatchName
 }) => {
   if (!students || students.length === 0) {
     return (
@@ -40,6 +42,7 @@ export const StudentGrid: React.FC<StudentGridProps> = ({
           <div key={student.id} className="student-grid__item">
             <StudentCard
               student={student}
+              batchName={getBatchName ? getBatchName(student.batchId) : undefined}
               onClick={() => onStudentClick?.(student.id)}
               isDueForReview={reviewStatus?.isDue ?? false}
               daysOverdue={reviewStatus?.daysOverdue ?? 0}

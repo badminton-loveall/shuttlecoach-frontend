@@ -1,36 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Drill } from '../types';
-import apiClient from '../utils/apiClient';
+import drillsData from '../data/drills.json';
+import { DRILL_CATEGORIES } from '../constants/drillCategories';
 
 /**
  * DrillLibrary Component
- * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5
- * Fetches drills from the API and provides search, filter, and drag-and-drop functionality.
+ * Requirements: 1.2, 3.1, 3.2, 3.3, 5.2
+ * Loads drills from local drills.json and provides search, filter, and drag-and-drop functionality.
  */
 
 const DrillLibrary: React.FC = () => {
-  const [drills, setDrills] = useState<Drill[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const drills: Drill[] = drillsData.drills as Drill[];
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-
-  const fetchDrills = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.get('/drills');
-      setDrills(response.data.drills);
-    } catch (err) {
-      setError('Failed to load drills. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { fetchDrills(); }, []);
-
-  const categories = Array.from(new Set(drills.map(d => d.category)));
 
   const handleDragStart = (e: React.DragEvent, drill: Drill) => {
     e.dataTransfer.setData('drill', JSON.stringify(drill));
@@ -44,33 +26,6 @@ const DrillLibrary: React.FC = () => {
     const matchesCategory = selectedCategory === 'All' || drill.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-  if (loading) {
-    return (
-      <div className="card drill-library">
-        <div className="drill-library__header">
-          <h2 className="text-h3" style={{ margin: '0 0 var(--space-sm)' }}>Drill Library</h2>
-        </div>
-        <div className="drill-library__list" style={{ textAlign: 'center', padding: 'var(--space-lg) 0' }}>
-          <p className="text-small">Loading drills...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="card drill-library">
-        <div className="drill-library__header">
-          <h2 className="text-h3" style={{ margin: '0 0 var(--space-sm)' }}>Drill Library</h2>
-        </div>
-        <div className="drill-library__list" style={{ textAlign: 'center', padding: 'var(--space-lg) 0' }}>
-          <p className="text-small" style={{ color: 'var(--color-error, #dc2626)', marginBottom: 'var(--space-sm)' }}>{error}</p>
-          <button onClick={fetchDrills} className="btn btn-secondary">Retry</button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="card drill-library">
@@ -91,7 +46,7 @@ const DrillLibrary: React.FC = () => {
           style={{ marginTop: 'var(--space-sm)' }}
         >
           <option value="All">All Categories</option>
-          {categories.map((cat) => (
+          {DRILL_CATEGORIES.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>

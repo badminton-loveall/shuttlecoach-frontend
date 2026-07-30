@@ -19,12 +19,16 @@ export interface Activity {
 
 /**
  * Generate activity feed from assessments, training logs, and students
+ * @param getBatchName Optional resolver to convert batch IDs to human-readable names.
+ *   When provided, activity descriptions will use resolved batch names.
+ *   When omitted, existing behavior (truncated ID fragments) is preserved.
  */
 export function generateActivityFeed(
   assessments: SkillAssessment[],
   trainingLogs: TrainingLog[],
   students: Student[],
-  limit: number = 10
+  limit: number = 10,
+  getBatchName?: (batchId: string | undefined) => string
 ): Activity[] {
   const activities: Activity[] = [];
   
@@ -72,11 +76,21 @@ export function generateActivityFeed(
         ? `Coach ${student.assignedCoachId.split('-')[1]}`
         : 'System';
       
+      // Resolve batch display name: use getBatchName when provided, else fall back to ID fragment
+      let batchDisplay: string;
+      if (student.batchId) {
+        batchDisplay = getBatchName
+          ? getBatchName(student.batchId)
+          : `Batch ${student.batchId.split('-')[1]}`;
+      } else {
+        batchDisplay = 'the academy';
+      }
+
       activities.push({
         id: `student-${student.id}`,
         type: 'student_added',
         title: 'New Student Added',
-        description: `${student.fullName} joined ${student.batchId ? `Batch ${student.batchId.split('-')[1]}` : 'the academy'}`,
+        description: `${student.fullName} joined ${batchDisplay}`,
         timestamp: createdAt,
         coachName: coach,
         studentName: student.fullName,

@@ -147,6 +147,17 @@ describe('StudentProfilePage - Bug Condition: Profile Page Miss for student not 
           data: targetStudent,
         });
       }
+      if (url === '/batches') {
+        // Return batches for useBatches hook
+        return Promise.resolve({
+          data: {
+            batches: [
+              { id: 'batch-001', name: 'Morning Beginners', schedule: 'Mon/Wed/Fri 6-7AM', assignedCoachId: null, coachName: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' },
+              { id: 'batch-002', name: 'Advanced Evening', schedule: 'Tue/Thu 5-7PM', assignedCoachId: null, coachName: null, createdAt: '2026-01-01T00:00:00Z', updatedAt: '2026-01-01T00:00:00Z' },
+            ],
+          },
+        });
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
   });

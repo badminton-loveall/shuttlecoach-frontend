@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DrillLibrary from '../components/DrillLibrary';
 import { generateCycleKey, isCycleArchived, getAllCyclesFromPlans } from '../utils/skillUtils';
+import { useBatches } from '../hooks/useBatches';
 import type { CurriculumPlan, WeekPlan, Drill } from '../types';
 import curriculumData from '../data/curriculum.json';
 import studentsData from '../data/students.json';
@@ -12,30 +13,21 @@ import '../styles/pages.css';
  * Requirements: 18.1–18.6
  */
 
-interface BatchOption {
-  id: string;
-  name: string;
-}
-
 const CurriculumBuilderPage: React.FC = () => {
   const [selectedCycle, setSelectedCycle] = useState<string>('');
   const [selectedBatch, setSelectedBatch] = useState<string>('');
   const [weeks, setWeeks] = useState<WeekPlan[]>([]);
   const [activeWeek, setActiveWeek] = useState<number>(1);
-  const [batches, setBatches] = useState<BatchOption[]>([]);
   const [availableCycles, setAvailableCycles] = useState<string[]>([]);
   const [isArchived, setIsArchived] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string>('');
 
+  const { batches, loading: batchesLoading } = useBatches();
+
   useEffect(() => {
     const currentCycle = generateCycleKey();
     setSelectedCycle(currentCycle);
-
-    const uniqueBatches = Array.from(
-      new Set(studentsData.filter((s) => s.batchId).map((s) => s.batchId))
-    ).map((batchId) => ({ id: batchId!, name: `Batch ${batchId!.split('-')[1]}` }));
-    setBatches(uniqueBatches);
 
     const storedPlans = localStorage.getItem('curriculumPlans');
     const plansData = storedPlans ? JSON.parse(storedPlans) : curriculumData;
@@ -179,8 +171,9 @@ const CurriculumBuilderPage: React.FC = () => {
                   value={selectedBatch}
                   onChange={(e) => setSelectedBatch(e.target.value)}
                   className="input"
+                  disabled={batchesLoading}
                 >
-                  <option value="">Choose batch...</option>
+                  <option value="">{batchesLoading ? 'Loading batches...' : 'Choose batch...'}</option>
                   {batches.map((batch) => (
                     <option key={batch.id} value={batch.id}>{batch.name}</option>
                   ))}

@@ -14,6 +14,7 @@ import type { FilterValues } from '../components/FilterBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
 import { useFees } from '../hooks/useFees';
+import { useBatches } from '../hooks/useBatches';
 import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
@@ -100,6 +101,7 @@ export const AssistantCoachDashboard: React.FC = () => {
   // Live data from API
   const { students: allStudents, loading: studentsLoading } = useStudents();
   const { fees: allFees, loading: feesLoading } = useFees();
+  const { getBatchName } = useBatches();
 
   // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -164,8 +166,8 @@ export const AssistantCoachDashboard: React.FC = () => {
 
   // Generate recent activity feed for assigned students only
   const recentActivities = useMemo(
-    () => generateActivityFeed(assignedAssessments, assignedTrainingLogs, assignedStudents, 10),
-    [assignedAssessments, assignedTrainingLogs, assignedStudents]
+    () => generateActivityFeed(assignedAssessments, assignedTrainingLogs, assignedStudents, 10, getBatchName),
+    [assignedAssessments, assignedTrainingLogs, assignedStudents, getBatchName]
   );
 
   // Calculate dashboard statistics based on assigned students only
@@ -304,7 +306,7 @@ export const AssistantCoachDashboard: React.FC = () => {
                 </p>
               )}
 
-              <StudentGrid students={filteredStudents} onStudentClick={handleStudentClick} />
+              <StudentGrid students={filteredStudents} onStudentClick={handleStudentClick} getBatchName={getBatchName} />
             </div>
 
             {/* Progressive Dashboard Features - Phase 6 (Scoped to Assigned Students) */}

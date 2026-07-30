@@ -4,6 +4,19 @@ import { BrowserRouter } from 'react-router-dom';
 import CurriculumBuilderPage from './CurriculumBuilderPage';
 import { AuthProvider } from '../contexts/AuthContext';
 
+// Mock useBatches hook
+vi.mock('../hooks/useBatches', () => ({
+  useBatches: () => ({
+    batches: [
+      { id: 'batch-001', name: 'Morning Beginners', schedule: 'Mon/Wed 6AM', studentCount: 5, createdAt: new Date() }
+    ],
+    loading: false,
+    error: null,
+    getBatchName: (batchId: string | undefined) => batchId === 'batch-001' ? 'Morning Beginners' : 'Unknown batch',
+    refetch: vi.fn(),
+  }),
+}));
+
 // Mock data
 vi.mock('../data/curriculum.json', () => ({
   default: [

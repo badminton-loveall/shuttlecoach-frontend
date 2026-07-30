@@ -12,6 +12,7 @@ import { QuickAttendanceWidget } from '../components/QuickAttendanceWidget';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
 import { useFees } from '../hooks/useFees';
+import { useBatches } from '../hooks/useBatches';
 import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
@@ -67,6 +68,7 @@ export const HeadCoachDashboard: React.FC = () => {
   // Live data from API
   const { students, loading: studentsLoading } = useStudents();
   const { fees, loading: feesLoading } = useFees();
+  const { getBatchName } = useBatches();
 
   // Static JSON data (no API hooks yet for these)
   const assessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
@@ -100,6 +102,7 @@ export const HeadCoachDashboard: React.FC = () => {
     assessments={assessments}
     trainingLogs={trainingLogs}
     users={users}
+    getBatchName={getBatchName}
   />;
 };
 
@@ -112,7 +115,8 @@ const HeadCoachDashboardContent: React.FC<{
   assessments: SkillAssessment[];
   trainingLogs: TrainingLog[];
   users: User[];
-}> = ({ user, navigate, students, fees, assessments, trainingLogs, users }) => {
+  getBatchName: (batchId: string | undefined) => string;
+}> = ({ user, navigate, students, fees, assessments, trainingLogs, users, getBatchName }) => {
   // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const sevenDaysAgo = useMemo(() => {
@@ -143,8 +147,8 @@ const HeadCoachDashboardContent: React.FC<{
 
   // Generate recent activity feed
   const recentActivities = useMemo(
-    () => generateActivityFeed(assessments, trainingLogs, students, 10),
-    [assessments, trainingLogs, students]
+    () => generateActivityFeed(assessments, trainingLogs, students, 10, getBatchName),
+    [assessments, trainingLogs, students, getBatchName]
   );
 
   // Calculate review status for each student
@@ -259,6 +263,7 @@ const HeadCoachDashboardContent: React.FC<{
                 students={studentsDueForReview}
                 onStudentClick={handleStudentClick}
                 studentReviewStatus={studentReviewStatus}
+                getBatchName={getBatchName}
               />
             </>
           )}

@@ -70,6 +70,34 @@ vi.mock('../components/PersonalInfoForm', () => ({
   PersonalInfoForm: () => <div data-testid="personal-info-form">Personal Info Form</div>,
 }));
 
+// Mock useBatches hook
+vi.mock('../hooks/useBatches', () => ({
+  useBatches: () => ({
+    batches: [
+      { id: 'batch-001', name: 'Morning Beginners', schedule: 'Mon/Wed/Fri 6-7AM', studentCount: 5, createdAt: new Date() },
+      { id: 'batch-002', name: 'Advanced Evening', schedule: 'Tue/Thu 5-7PM', studentCount: 3, createdAt: new Date() },
+    ],
+    loading: false,
+    error: null,
+    getBatchName: (batchId: string | undefined) => {
+      const map: Record<string, string> = {
+        'batch-001': 'Morning Beginners',
+        'batch-002': 'Advanced Evening',
+      };
+      if (!batchId) return 'Unknown batch';
+      return map[batchId] ?? 'Unknown batch';
+    },
+    refetch: vi.fn(),
+  }),
+}));
+
+// Mock useToast hook
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: () => ({
+    showToast: vi.fn(),
+  }),
+}));
+
 vi.mock('../components/TrainingTab', () => ({
   TrainingTab: () => <div data-testid="training-tab">Training Tab</div>,
 }));

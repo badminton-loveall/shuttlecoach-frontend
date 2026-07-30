@@ -1,0 +1,322 @@
+{
+  "drills": [
+    {
+      "id": "drill-svc-01",
+      "name": "BH Short Service",
+      "description": "Short backhand service aimed at the front service line with minimal shuttle height",
+      "category": "Service"
+    },
+    {
+      "id": "drill-svc-02",
+      "name": "BH Flick Service",
+      "description": "Deceptive backhand flick service that lifts the shuttle quickly to the back court",
+      "category": "Service"
+    },
+    {
+      "id": "drill-svc-03",
+      "name": "FH Short Service",
+      "description": "Forehand short service played low over the net to the front service box",
+      "category": "Service"
+    },
+    {
+      "id": "drill-svc-04",
+      "name": "FH Long Service",
+      "description": "High forehand service driven deep to the back boundary line",
+      "category": "Service"
+    },
+    {
+      "id": "drill-svc-05",
+      "name": "FH Flick Service",
+      "description": "Quick forehand flick service aimed at catching the receiver off-guard with sudden height",
+      "category": "Service"
+    },
+    {
+      "id": "drill-sr-01",
+      "name": "Service return STR Keep",
+      "description": "Straight net return off the serve, keeping the shuttle tight and low over the net",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-sr-02",
+      "name": "Service return Cross Keep",
+      "description": "Cross-court net return off the serve, redirecting the shuttle low to the opposite side",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-sr-03",
+      "name": "Service return STR Push",
+      "description": "Straight push return placing the shuttle flat and fast to the mid-court",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-sr-04",
+      "name": "Service return Cross Push",
+      "description": "Cross-court push return directing the shuttle flat to the opponent's mid-court",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-sr-05",
+      "name": "Service return STR Lift",
+      "description": "Straight lift return sending the shuttle high and deep to the back court",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-sr-06",
+      "name": "Service return Cross Lift",
+      "description": "Cross-court lift return sending the shuttle high to the opponent's rear corner",
+      "category": "Service Return"
+    },
+    {
+      "id": "drill-fh-01",
+      "name": "Cross Drop FH",
+      "description": "Forehand cross-court drop shot angled sharply to land near the opposite net corner",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-02",
+      "name": "Straight Drop FH",
+      "description": "Forehand straight drop shot played gently to fall just over the net on the same side",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-03",
+      "name": "Straight Smash FH",
+      "description": "Powerful downward forehand smash directed straight at the opponent",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-04",
+      "name": "Cross Smash FH",
+      "description": "Aggressive forehand smash angled cross-court for maximum court coverage",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-05",
+      "name": "Straight Drive FH",
+      "description": "Flat forehand drive hit straight and fast at mid-body height",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-06",
+      "name": "Cross Drive FH",
+      "description": "Flat forehand drive directed cross-court with pace and minimal arc",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-07",
+      "name": "Reverse Slice Straight FH",
+      "description": "Forehand reverse slice drop hit straight with an inverted racket face for deception",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-08",
+      "name": "Forward Slice Straight FH",
+      "description": "Forehand forward slice drop played straight using a cutting motion for a tumbling shuttle",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-09",
+      "name": "Forward Slice Cross FH",
+      "description": "Forehand forward slice directed cross-court with spin to create a deceptive trajectory",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-10",
+      "name": "Straight Defence FH",
+      "description": "Forehand defensive block or lift played straight to neutralize a smash",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-11",
+      "name": "Cross Defence FH",
+      "description": "Forehand defensive return directed cross-court to counter an attacking shot",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-12",
+      "name": "Straight Keep FH",
+      "description": "Forehand net shot keeping the shuttle tight and straight on the same side",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-13",
+      "name": "Cross Keep FH",
+      "description": "Forehand net shot played cross-court to redirect the rally at the net",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-14",
+      "name": "Lift Straight FH",
+      "description": "Forehand underarm lift hit straight to the back court for defensive recovery",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-15",
+      "name": "Lift Cross FH",
+      "description": "Forehand underarm lift directed cross-court deep into the opponent's rear corner",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-16",
+      "name": "Toss Straight FH",
+      "description": "Forehand toss played straight from the net to push the opponent back",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-17",
+      "name": "Toss Cross FH",
+      "description": "Forehand toss directed cross-court from the net area to move the opponent laterally",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-18",
+      "name": "Dribble Keep I/O FH (Inward)",
+      "description": "Forehand inward dribble net shot with a tumbling action to keep the shuttle close to the net",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-fh-19",
+      "name": "Dribble Keep I/O FH (Outward)",
+      "description": "Forehand outward dribble net shot spinning the shuttle away from the opponent at the net",
+      "category": "Forehand (FH)"
+    },
+    {
+      "id": "drill-rh-01",
+      "name": "Cross Drop Round Head",
+      "description": "Round head cross-court drop shot played from the backhand corner using a forehand grip",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-02",
+      "name": "Straight Drop Round Head",
+      "description": "Round head straight drop shot played on the backhand side with a forehand overhead action",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-03",
+      "name": "Straight Smash Round Head",
+      "description": "Powerful round head smash hit straight from the backhand rear court",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-04",
+      "name": "Cross Smash Round Head",
+      "description": "Round head cross-court smash creating a steep angle from the backhand side",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-05",
+      "name": "Straight Drive Round Head",
+      "description": "Flat round head drive hit straight with pace from the backhand area",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-06",
+      "name": "Cross Drive Round Head",
+      "description": "Round head flat drive directed cross-court from behind the backhand side",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-07",
+      "name": "Reverse Slice Straight Round Head",
+      "description": "Round head reverse slice played straight with deceptive wrist rotation",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-08",
+      "name": "Forward Slice Straight Round Head",
+      "description": "Round head forward slice drop played straight with a cutting motion",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-rh-09",
+      "name": "Reverse Slice Cross Round Head",
+      "description": "Round head reverse slice directed cross-court with spin for maximum deception",
+      "category": "Round Head"
+    },
+    {
+      "id": "drill-bh-01",
+      "name": "Straight Defence BH",
+      "description": "Backhand defensive block or lift played straight to counter a smash attack",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-02",
+      "name": "Cross Defence BH",
+      "description": "Backhand defensive return directed cross-court to neutralize an opponent's smash",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-03",
+      "name": "Straight Keep BH",
+      "description": "Backhand net shot keeping the shuttle tight and low on the same side",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-04",
+      "name": "Cross Keep BH",
+      "description": "Backhand net shot played cross-court to redirect the shuttle at the net",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-05",
+      "name": "Lift Straight BH",
+      "description": "Backhand underarm lift hit straight to the rear court for recovery",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-06",
+      "name": "Lift Cross BH",
+      "description": "Backhand underarm lift directed cross-court deep to the opponent's back corner",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-07",
+      "name": "Toss Straight BH",
+      "description": "Backhand toss played straight from the net to push the opponent to the rear court",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-08",
+      "name": "Toss Cross BH",
+      "description": "Backhand toss directed cross-court from the net to move the opponent laterally",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-09",
+      "name": "Dribble Keep I/O BH (Inward)",
+      "description": "Backhand inward dribble net shot with a tumbling action close to the net tape",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-10",
+      "name": "Dribble Keep I/O BH (Outward)",
+      "description": "Backhand outward dribble net shot spinning the shuttle away from the opponent",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-11",
+      "name": "Backhand Straight Toss",
+      "description": "Overhead backhand toss hit straight to send the shuttle deep behind the opponent",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-12",
+      "name": "Backhand Straight Drop",
+      "description": "Overhead backhand drop shot played straight to fall just over the net",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-13",
+      "name": "Backhand Cross Drop",
+      "description": "Overhead backhand drop shot directed cross-court with a gentle touch",
+      "category": "Backhand (BH)"
+    },
+    {
+      "id": "drill-bh-14",
+      "name": "Backhand Cross Toss",
+      "description": "Overhead backhand toss directed cross-court to the opponent's rear corner",
+      "category": "Backhand (BH)"
+    }
+  ]
+}

@@ -198,6 +198,84 @@ describe('activityUtils', () => {
         expect(activity).toHaveProperty('coachName');
       });
     });
+
+    it('should use getBatchName to resolve batch names when provided', () => {
+      const studentsWithBatch: Student[] = [
+        {
+          id: 'student-batch-1',
+          fullName: 'Dave Brown',
+          dateOfBirth: new Date('2010-05-01'),
+          age: 15,
+          gender: 'Male',
+          contactPhone: '1111111111',
+          assignedCoachId: 'coach-1',
+          batchId: 'batch-abc-123-def',
+          strengths: [],
+          weaknesses: [],
+          skillLevel: 'Beginner',
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+          updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        },
+      ];
+
+      const mockGetBatchName = (batchId: string | undefined) =>
+        batchId === 'batch-abc-123-def' ? 'Morning Beginners' : 'Unknown batch';
+
+      const activities = generateActivityFeed([], [], studentsWithBatch, 10, mockGetBatchName);
+      const studentActivity = activities.find((a) => a.type === 'student_added');
+      expect(studentActivity?.description).toContain('Morning Beginners');
+      expect(studentActivity?.description).not.toContain('abc');
+    });
+
+    it('should fall back to ID fragment when getBatchName is not provided', () => {
+      const studentsWithBatch: Student[] = [
+        {
+          id: 'student-batch-2',
+          fullName: 'Eve Green',
+          dateOfBirth: new Date('2011-03-01'),
+          age: 14,
+          gender: 'Female',
+          contactPhone: '2222222222',
+          assignedCoachId: 'coach-2',
+          batchId: 'batch-xyz-456-ghi',
+          strengths: [],
+          weaknesses: [],
+          skillLevel: 'Intermediate',
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+          updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        },
+      ];
+
+      const activities = generateActivityFeed([], [], studentsWithBatch, 10);
+      const studentActivity = activities.find((a) => a.type === 'student_added');
+      expect(studentActivity?.description).toContain('Batch xyz');
+    });
+
+    it('should show "the academy" when student has no batchId regardless of getBatchName', () => {
+      const studentsNoBatch: Student[] = [
+        {
+          id: 'student-no-batch',
+          fullName: 'Frank Blue',
+          dateOfBirth: new Date('2012-07-01'),
+          age: 13,
+          gender: 'Male',
+          contactPhone: '3333333333',
+          assignedCoachId: 'coach-1',
+          strengths: [],
+          weaknesses: [],
+          skillLevel: 'Beginner',
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+          updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        },
+      ];
+
+      const mockGetBatchName = () => 'Should not appear';
+
+      const activities = generateActivityFeed([], [], studentsNoBatch, 10, mockGetBatchName);
+      const studentActivity = activities.find((a) => a.type === 'student_added');
+      expect(studentActivity?.description).toContain('the academy');
+      expect(studentActivity?.description).not.toContain('Should not appear');
+    });
   });
 
   describe('getCoachWorkloads', () => {

@@ -68,7 +68,7 @@ describe('StudentCard - Review Reminder', () => {
     render(<StudentCard student={mockStudent} isDueForReview={true} daysOverdue={7} />);
     
     expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Batch 001')).toBeInTheDocument();
+    expect(screen.getByText('Unknown batch')).toBeInTheDocument();
     expect(screen.getByText('Intermediate')).toBeInTheDocument();
     expect(screen.getByText('7 days overdue')).toBeInTheDocument();
   });
@@ -78,5 +78,55 @@ describe('StudentCard - Review Reminder', () => {
     
     expect(screen.queryByText(/overdue/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Never assessed/i)).not.toBeInTheDocument();
+  });
+});
+
+describe('StudentCard - Batch Name Display', () => {
+  const mockStudent: Student = {
+    id: 'student-001',
+    fullName: 'John Doe',
+    dateOfBirth: new Date('2010-05-15'),
+    age: 14,
+    gender: 'Male',
+    contactPhone: '1234567890',
+    guardianName: 'Jane Doe',
+    guardianPhone: '0987654321',
+    baidNumber: 'BAID-001',
+    batchId: 'batch-001',
+    assignedCoachId: 'coach-001',
+    profilePhoto: undefined,
+    height: 160,
+    weight: 50,
+    bmi: 19.5,
+    bloodGroup: 'O+',
+    medicalConditions: undefined,
+    emergencyContact: '0987654321',
+    strengths: ['Speed'],
+    weaknesses: ['Power'],
+    coachFeedback: 'Good player',
+    skillLevel: 'Intermediate',
+    createdAt: new Date('2025-01-01'),
+    updatedAt: new Date('2025-01-15'),
+  };
+
+  it('displays batchName when provided', () => {
+    render(<StudentCard student={mockStudent} batchName="Morning Beginners" />);
+    
+    expect(screen.getByText('Morning Beginners')).toBeInTheDocument();
+    expect(screen.queryByText('Unknown batch')).not.toBeInTheDocument();
+  });
+
+  it('displays "Unknown batch" when batchId exists but no batchName provided', () => {
+    render(<StudentCard student={mockStudent} />);
+    
+    expect(screen.getByText('Unknown batch')).toBeInTheDocument();
+  });
+
+  it('omits batch label entirely when no batchId is assigned', () => {
+    const studentNoBatch = { ...mockStudent, batchId: undefined };
+    render(<StudentCard student={studentNoBatch} />);
+    
+    expect(screen.queryByText('Unknown batch')).not.toBeInTheDocument();
+    expect(screen.queryByRole('paragraph', { name: /batch/i })).not.toBeInTheDocument();
   });
 });
