@@ -9,6 +9,8 @@
 
 import {
   SKILL_CATALOG,
+} from '../constants/skillCatalog';
+import type {
   SkillCategory,
   SkillScore,
   WeeklySkillScore,

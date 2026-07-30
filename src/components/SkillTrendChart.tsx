@@ -167,9 +167,10 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
                 borderRadius: '8px',
               }}
               labelStyle={{ color: '#0A0D11' }}
-              formatter={(value: number, name: string) => {
-                if (name === 'Attendance %') return [`${value.toFixed(1)}%`, name];
-                return [value.toFixed(2), name];
+              formatter={(value: any, name: any) => {
+                const v = Number(value);
+                if (name === 'Attendance %') return [`${v.toFixed(1)}%`, name];
+                return [v.toFixed(2), name];
               }}
             />
             <Legend wrapperStyle={{ paddingTop: '8px' }} />

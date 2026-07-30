@@ -169,7 +169,6 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
       );
       setEntries(response.data.entries || []);
     } catch (err) {
-      console.error('Failed to fetch session calendar:', err);
       // Silently return empty data for 500 errors (table may not exist yet)
       setEntries([]);
     } finally {

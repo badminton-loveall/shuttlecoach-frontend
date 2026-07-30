@@ -114,7 +114,6 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
 
   const totalPoints = points.length;
   const chartWidth = Math.max(totalPoints * 60, 300); // Minimum 60px per point
-  const yStep = CHART_HEIGHT / 4; // 5 levels (0-4), 4 intervals
 
   // Calculate positions for each data point
   const pointPositions = points.map((pt, idx) => {

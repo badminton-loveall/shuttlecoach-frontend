@@ -45,11 +45,6 @@ export function SkillProgressionTracker({ studentId }: SkillProgressionTrackerPr
 
   // ─── Navigation Callbacks ────────────────────────────────────────────────
 
-  /** Navigate from heatmap to timeline drill-down for a specific skill */
-  const handleSkillClick = useCallback((skillId: string, skillName: string) => {
-    setView({ mode: 'timeline', skillId, skillName });
-  }, []);
-
   /** Navigate from timeline back to heatmap */
   const handleBackToHeatmap = useCallback(() => {
     setView({ mode: 'heatmap' });

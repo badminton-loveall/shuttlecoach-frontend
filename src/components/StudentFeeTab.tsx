@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { Student, FeeRecord } from '../types';
+import type { Student } from '../types';
 import CreateFeeModal, { type CreateFeeFormData } from './CreateFeeModal';
 import EditFeeModal, { type EditFeeFormData } from './EditFeeModal';
 import DeleteConfirmDialog from './DeleteConfirmDialog';

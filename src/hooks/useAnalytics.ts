@@ -317,7 +317,6 @@ export function useStudentTrends(filters: StudentTrendsFilters): UseStudentTrend
       const response = await apiClient.get<StudentTrendReport>(url);
       setData(response.data);
     } catch (err: unknown) {
-      console.error('Failed to fetch student trends data:', err);
       // Silently return null for 500 errors (table may not exist yet)
       setData(null);
     } finally {

@@ -170,7 +170,7 @@ function SkillRowComponent({
   skillId,
   skillName,
   scores,
-  weeks,
+  weeks: _weeks,
   cycleKey,
   onSkillClick,
 }: SkillRowComponentProps) {

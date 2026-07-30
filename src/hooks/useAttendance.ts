@@ -122,7 +122,6 @@ export function useAttendanceRecords(filters?: AttendanceFilters): UseAttendance
 
       setRecords(response.data);
     } catch (err: unknown) {
-      console.error('Failed to fetch attendance records:', err);
       // Silently return empty data for 500 errors (table may not exist yet)
       setRecords([]);
     } finally {
@@ -180,7 +179,6 @@ export function useAttendanceStats(filters?: AttendanceStatsFilters): UseAttenda
 
       setStats(response.data.stats || []);
     } catch (err: unknown) {
-      console.error('Failed to fetch attendance stats:', err);
       // Silently return empty data for 500 errors (table may not exist yet)
       setStats([]);
     } finally {
