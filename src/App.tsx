@@ -25,6 +25,7 @@ import AttendancePage from './pages/AttendancePage';
 import LeaveRequestsPage from './pages/LeaveRequestsPage';
 import TrainingAnalyticsPage from './pages/TrainingAnalyticsPage';
 import SessionCalendarPage from './pages/SessionCalendarPage';
+import BatchSchedulePage from './pages/BatchSchedulePage';
 import './App.css';
 
 /**
@@ -97,6 +98,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <CurriculumBuilderPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/batch-schedule"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
+                <BatchSchedulePage />
               </ProtectedRoute>
             }
           />

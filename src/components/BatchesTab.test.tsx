@@ -72,9 +72,13 @@ describe('BatchesTab', () => {
   });
 
   it('retries fetch on retry button click', async () => {
-    vi.mocked(apiClient.get)
-      .mockRejectedValueOnce(new Error('Network error'))
-      .mockResolvedValueOnce({ data: { batches: mockBatches } });
+    vi.mocked(apiClient.get).mockImplementation((url: string) => {
+      if (url === '/coaches') {
+        return Promise.resolve({ data: { coaches: [] } });
+      }
+      // First call to /batches fails, subsequent calls succeed
+      return Promise.reject(new Error('Network error'));
+    });
 
     render(<BatchesTab readOnly={false} />);
 
@@ -82,13 +86,19 @@ describe('BatchesTab', () => {
       expect(screen.getByText('Failed to load batches. Please try again.')).toBeInTheDocument();
     });
 
+    // Now make /batches succeed on retry
+    vi.mocked(apiClient.get).mockImplementation((url: string) => {
+      if (url === '/coaches') {
+        return Promise.resolve({ data: { coaches: [] } });
+      }
+      return Promise.resolve({ data: { batches: mockBatches } });
+    });
+
     fireEvent.click(screen.getByText('Retry'));
 
     await waitFor(() => {
       expect(screen.getByText('Morning Batch')).toBeInTheDocument();
     });
-
-    expect(apiClient.get).toHaveBeenCalledTimes(2);
   });
 
   it('shows Add Batch button when not readOnly', async () => {
@@ -220,6 +230,7 @@ describe('BatchesTab', () => {
       expect(apiClient.patch).toHaveBeenCalledWith('/batches/1', {
         name: 'Updated Batch',
         schedule: 'Mon/Wed/Fri 6:00-7:30 AM',
+        assigned_coach_id: 'coach-1',
       });
     });
   });

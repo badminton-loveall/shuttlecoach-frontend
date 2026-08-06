@@ -13,7 +13,6 @@
   box-shadow: var(--shadow-card);
   background-color: var(--surface-card);
   border: 1px solid var(--border-default);
-  transition: all var(--transition-base);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,8 +23,6 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-float);
   border-color: var(--border-strong);
 }
 

@@ -7,11 +7,84 @@
  * - useMarkAttendance: Mutation hook for POST /api/attendance
  * - useAttendanceRecords: Query hook for GET /api/attendance (with filters)
  * - useAttendanceStats: Query hook for GET /api/attendance/stats
+ *
+ * Caching: Stats and records are cached per-session with a daily TTL.
+ * Cache is invalidated when attendance is marked or leave is updated.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { AttendanceRecord, AttendanceStats, AttendanceStatus, LeaveType } from '../types';
 import apiClient from '../utils/apiClient';
+
+// ─── Session Cache Utilities ─────────────────────────────────────────────────
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  dateKey: string; // YYYY-MM-DD of when cached
+}
+
+const CACHE_PREFIX = 'sc_attendance_';
+
+function getCacheKey(endpoint: string, params: Record<string, string | undefined>): string {
+  const sorted = Object.entries(params)
+    .filter(([, v]) => v !== undefined)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${k}=${v}`)
+    .join('&');
+  return `${CACHE_PREFIX}${endpoint}_${sorted}`;
+}
+
+function getTodayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function getFromCache<T>(key: string): T | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const entry: CacheEntry<T> = JSON.parse(raw);
+    // Invalidate if cached on a different day
+    if (entry.dateKey !== getTodayKey()) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+    return entry.data;
+  } catch {
+    return null;
+  }
+}
+
+function setCache<T>(key: string, data: T): void {
+  try {
+    const entry: CacheEntry<T> = {
+      data,
+      timestamp: Date.now(),
+      dateKey: getTodayKey(),
+    };
+    sessionStorage.setItem(key, JSON.stringify(entry));
+  } catch {
+    // sessionStorage full or unavailable — ignore
+  }
+}
+
+/**
+ * Invalidate all attendance caches. Call after marking attendance or updating leave.
+ */
+export function invalidateAttendanceCache(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (key?.startsWith(CACHE_PREFIX)) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((k) => sessionStorage.removeItem(k));
+  } catch {
+    // ignore
+  }
+}
 
 // ─── Request/Response Interfaces ─────────────────────────────────────────────
 
@@ -58,6 +131,7 @@ export interface UseMarkAttendanceReturn {
 /**
  * Mutation hook for marking attendance (POST /api/attendance).
  * Provides loading/error state and a reset function to clear errors.
+ * Invalidates attendance cache on success so subsequent reads are fresh.
  */
 export function useMarkAttendance(): UseMarkAttendanceReturn {
   const [loading, setLoading] = useState(false);
@@ -69,6 +143,8 @@ export function useMarkAttendance(): UseMarkAttendanceReturn {
       setError(null);
 
       const response = await apiClient.post<MarkAttendanceResponse>('/attendance', data);
+      // Invalidate cache so stats/records refetch with fresh data
+      invalidateAttendanceCache();
       return response.data;
     } catch (err: unknown) {
       const message = getErrorMessage(err) || 'Failed to mark attendance. Please try again.';
@@ -98,14 +174,33 @@ export interface UseAttendanceRecordsReturn {
 /**
  * Query hook for fetching attendance records (GET /api/attendance).
  * Supports filtering by batchId, studentId, startDate, and endDate.
- * Automatically fetches on mount and when filters change.
+ * Results are cached per-session with daily TTL to avoid redundant API calls.
+ * Call refetch() to force a fresh fetch (bypasses cache).
  */
 export function useAttendanceRecords(filters?: AttendanceFilters): UseAttendanceRecordsReturn {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchRecords = useCallback(async () => {
+  const fetchRecords = useCallback(async (bypassCache = false) => {
+    const cacheKey = getCacheKey('records', {
+      batchId: filters?.batchId,
+      studentId: filters?.studentId,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    });
+
+    // Try cache first (unless bypassing)
+    if (!bypassCache) {
+      const cached = getFromCache<AttendanceRecord[]>(cacheKey);
+      if (cached !== null) {
+        setRecords(cached);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       setLoading(true);
       setError(null);
@@ -121,6 +216,7 @@ export function useAttendanceRecords(filters?: AttendanceFilters): UseAttendance
       );
 
       setRecords(response.data);
+      setCache(cacheKey, response.data);
     } catch (err: unknown) {
       // Silently return empty data for 500 errors (table may not exist yet)
       setRecords([]);
@@ -130,10 +226,16 @@ export function useAttendanceRecords(filters?: AttendanceFilters): UseAttendance
   }, [filters?.batchId, filters?.studentId, filters?.startDate, filters?.endDate]);
 
   useEffect(() => {
-    void fetchRecords();
+    // Only fetch once per mount with same filters (prevents StrictMode double-fetch)
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      void fetchRecords();
+    }
   }, [fetchRecords]);
 
-  return { records, loading, error, refetch: fetchRecords };
+  const refetch = useCallback(() => fetchRecords(true), [fetchRecords]);
+
+  return { records, loading, error, refetch };
 }
 
 // ─── useAttendanceStats (Query Hook) ─────────────────────────────────────────
@@ -149,18 +251,38 @@ export interface UseAttendanceStatsReturn {
  * Query hook for fetching computed attendance statistics (GET /api/attendance/stats).
  * Returns per-student attendance percentages and summary data.
  * Supports filtering by batchId, studentId, startDate, and endDate.
+ * Results are cached per-session with daily TTL to avoid redundant API calls.
+ * Call refetch() to force a fresh fetch (bypasses cache).
  */
 export function useAttendanceStats(filters?: AttendanceStatsFilters): UseAttendanceStatsReturn {
   const [stats, setStats] = useState<AttendanceStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (bypassCache = false) => {
     // Don't fire the request if no meaningful filters are provided
     if (!filters?.batchId && !filters?.studentId && !filters?.startDate && !filters?.endDate) {
       setStats([]);
       setLoading(false);
       return;
+    }
+
+    const cacheKey = getCacheKey('stats', {
+      batchId: filters?.batchId,
+      studentId: filters?.studentId,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
+    });
+
+    // Try cache first (unless bypassing)
+    if (!bypassCache) {
+      const cached = getFromCache<AttendanceStats[]>(cacheKey);
+      if (cached !== null) {
+        setStats(cached);
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -177,7 +299,9 @@ export function useAttendanceStats(filters?: AttendanceStatsFilters): UseAttenda
         `/attendance/stats?${params.toString()}`
       );
 
-      setStats(response.data.stats || []);
+      const result = response.data.stats || [];
+      setStats(result);
+      setCache(cacheKey, result);
     } catch (err: unknown) {
       // Silently return empty data for 500 errors (table may not exist yet)
       setStats([]);
@@ -187,10 +311,15 @@ export function useAttendanceStats(filters?: AttendanceStatsFilters): UseAttenda
   }, [filters?.batchId, filters?.studentId, filters?.startDate, filters?.endDate]);
 
   useEffect(() => {
-    void fetchStats();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      void fetchStats();
+    }
   }, [fetchStats]);
 
-  return { stats, loading, error, refetch: fetchStats };
+  const refetch = useCallback(() => fetchStats(true), [fetchStats]);
+
+  return { stats, loading, error, refetch };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────

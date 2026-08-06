@@ -9,7 +9,7 @@
  * - Creates/updates and fetches session notes
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type {
   SessionSchedule,
   CalendarEntry,
@@ -142,17 +142,38 @@ export function useCreateSessionSchedule() {
 
 /**
  * Hook to fetch calendar entries with mapped curriculum drills for a date range.
+ * Results are cached per-session with daily TTL to avoid redundant API calls.
+ * Call refetch() to force a fresh fetch (bypasses cache).
  */
 export function useSessionCalendar(filters?: SessionCalendarFilters) {
   const [entries, setEntries] = useState<CalendarEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchCalendar = useCallback(async () => {
+  const fetchCalendar = useCallback(async (bypassCache = false) => {
     if (!filters?.startDate || !filters?.endDate) {
       setEntries([]);
       setLoading(false);
       return;
+    }
+
+    const cacheKey = `sc_session_calendar_${filters.startDate}_${filters.endDate}_${filters.batchId || ''}`;
+
+    // Try cache first (unless bypassing)
+    if (!bypassCache) {
+      try {
+        const raw = sessionStorage.getItem(cacheKey);
+        if (raw) {
+          const cached = JSON.parse(raw);
+          if (cached.dateKey === new Date().toISOString().slice(0, 10)) {
+            setEntries(cached.data);
+            setLoading(false);
+            return;
+          }
+          sessionStorage.removeItem(cacheKey);
+        }
+      } catch { /* ignore */ }
     }
 
     try {
@@ -167,7 +188,17 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
       const response = await apiClient.get<{ entries: CalendarEntry[] }>(
         `/session-calendar?${params.toString()}`
       );
-      setEntries(response.data.entries || []);
+      const result = response.data.entries || [];
+      setEntries(result);
+
+      // Cache the result
+      try {
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: result,
+          dateKey: new Date().toISOString().slice(0, 10),
+          timestamp: Date.now(),
+        }));
+      } catch { /* ignore */ }
     } catch (err) {
       // Silently return empty data for 500 errors (table may not exist yet)
       setEntries([]);
@@ -177,14 +208,19 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
   }, [filters?.startDate, filters?.endDate, filters?.batchId]);
 
   useEffect(() => {
-    void fetchCalendar();
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      void fetchCalendar();
+    }
   }, [fetchCalendar]);
+
+  const refetch = useCallback(() => fetchCalendar(true), [fetchCalendar]);
 
   return {
     entries,
     loading,
     error,
-    refetch: fetchCalendar,
+    refetch,
   };
 }
 
