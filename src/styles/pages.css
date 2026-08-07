@@ -1981,3 +1981,127 @@
     color: var(--color-slate-900);
   }
 }
+
+
+/* ============================================================================
+   PASSWORD MANAGEMENT PAGES
+   Shared styles for change-password, forgot-password, and reset-password pages
+   ============================================================================ */
+
+.change-password-page,
+.forgot-password-page,
+.reset-password-page {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+.change-password-page__card,
+.forgot-password-page__card,
+.reset-password-page__card {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  padding: var(--space-2xl);
+  border: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .change-password-page__card,
+  .forgot-password-page__card,
+  .reset-password-page__card {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+.change-password-page__header,
+.forgot-password-page__header,
+.reset-password-page__header {
+  margin-bottom: var(--space-xl);
+}
+
+.change-password-page__title,
+.forgot-password-page__title,
+.reset-password-page__title {
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .change-password-page__title,
+  .forgot-password-page__title,
+  .reset-password-page__title {
+    color: var(--text-dark-primary);
+  }
+}
+
+.change-password-page__subtitle,
+.forgot-password-page__subtitle,
+.reset-password-page__subtitle {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--line-normal);
+}
+
+@media (prefers-color-scheme: dark) {
+  .change-password-page__subtitle,
+  .forgot-password-page__subtitle,
+  .reset-password-page__subtitle {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.change-password-page__form,
+.forgot-password-page__form,
+.reset-password-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.change-password-page__form-group,
+.forgot-password-page__form-group,
+.reset-password-page__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.forgot-password-page__login-link,
+.reset-password-page__login-link {
+  text-align: center;
+  margin-top: var(--space-lg);
+}
+
+.forgot-password-page__login-link a,
+.reset-password-page__login-link a {
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  font-size: var(--font-small);
+  font-weight: var(--weight-medium);
+}
+
+.forgot-password-page__login-link a:hover,
+.reset-password-page__login-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .change-password-page,
+  .forgot-password-page,
+  .reset-password-page {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .change-password-page__card,
+  .forgot-password-page__card,
+  .reset-password-page__card {
+    padding: var(--space-xl);
+  }
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../types';
 import '../styles/pages.css';
@@ -208,6 +208,13 @@ export const LoginPage: React.FC = () => {
                 'Sign In'
               )}
             </button>
+
+            {/* Forgot Password Link */}
+            <div style={{ textAlign: 'center', marginTop: 'var(--space-sm)' }}>
+              <Link to="/forgot-password" style={{ color: 'var(--color-primary-dark)', fontSize: 'var(--font-small)', textDecoration: 'none', fontWeight: 'var(--weight-medium)' }}>
+                Forgot Password?
+              </Link>
+            </div>
           </form>
 
           {/* Demo Credentials */}

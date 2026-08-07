@@ -281,6 +281,9 @@ export const TopNav: React.FC = () => {
                     My Profile
                   </Link>
                 )}
+                <Link to="/change-password" className="topnav__profile-item">
+                  Change Password
+                </Link>
                 {(role === 'HEAD_COACH' || role === 'ASSISTANT_COACH') && (
                   <Link to="/master-data" className="topnav__profile-item">
                     Settings

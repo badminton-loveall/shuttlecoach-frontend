@@ -19,6 +19,9 @@ import MyFeesPage from './pages/MyFeesPage';
 import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
 import HelpPage from './pages/HelpPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import DesignSystemTestPage from './pages/DesignSystemTestPage';
 import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
 import AttendancePage from './pages/AttendancePage';
@@ -254,6 +257,20 @@ function App() {
             <Route path="centers/new" element={<CreateCenterPage />} />
             <Route path="centers/:id" element={<CenterDetailPage />} />
           </Route>
+
+          {/* Password Management - Public Routes */}
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+          {/* Password Management - Protected Route (all roles) */}
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT', 'ADMIN']}>
+                <ChangePasswordPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Access Denied Page */}
           <Route path="/access-denied" element={<AccessDeniedPage />} />

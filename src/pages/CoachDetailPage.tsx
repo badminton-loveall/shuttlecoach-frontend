@@ -91,6 +91,13 @@ export default function CoachDetailPage() {
   // Notifications state
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
+  // Reset Password Modal state (HEAD_COACH only)
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+  const [resetPasswordValue, setResetPasswordValue] = useState('');
+  const [resetPasswordError, setResetPasswordError] = useState('');
+  const [resetPasswordLoading, setResetPasswordLoading] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState('');
+
   // Helper function to show toast notification
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -113,6 +120,51 @@ export default function CoachDetailPage() {
 
   // Fetch coach data
   const { coach, isLoading: isLoadingCoach, error: coachError, refetch: refetchCoach } = useCoachDetail(coachId);
+
+  /**
+   * Handle admin reset password submit
+   * Calls POST /api/coaches/:id/reset-password with the new password
+   * Requirements: 2.1, 2.3, 2.7
+   */
+  const handleResetPasswordSubmit = async () => {
+    setResetPasswordError('');
+    setResetPasswordSuccess('');
+
+    if (!resetPasswordValue.trim()) {
+      setResetPasswordError('New password is required');
+      return;
+    }
+    if (resetPasswordValue.length < 8) {
+      setResetPasswordError('Password must be at least 8 characters');
+      return;
+    }
+    if (resetPasswordValue.length > 128) {
+      setResetPasswordError('Password must be at most 128 characters');
+      return;
+    }
+
+    setResetPasswordLoading(true);
+    try {
+      const response = await apiClient.post(`/coaches/${coachId}/reset-password`, {
+        newPassword: resetPasswordValue,
+      });
+      const newPassword = response.data?.newPassword || resetPasswordValue;
+      setResetPasswordSuccess(newPassword);
+      setResetPasswordValue('');
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { error?: string } } };
+      setResetPasswordError(axiosError.response?.data?.error || 'Failed to reset password. Please try again.');
+    } finally {
+      setResetPasswordLoading(false);
+    }
+  };
+
+  const closeResetPasswordModal = () => {
+    setIsResetPasswordModalOpen(false);
+    setResetPasswordValue('');
+    setResetPasswordError('');
+    setResetPasswordSuccess('');
+  };
 
   // Fetch coach batches
   const {
@@ -404,6 +456,26 @@ export default function CoachDetailPage() {
               studentCount={studentCount}
               userRole={userRole}
             />
+            {/* Reset Password Button - HEAD_COACH only */}
+            {role === 'HEAD_COACH' && (
+              <div style={{ marginTop: 'var(--space-md)' }}>
+                <button
+                  onClick={() => setIsResetPasswordModalOpen(true)}
+                  className="btn-base btn--md"
+                  style={{
+                    backgroundColor: 'var(--surface-hover)',
+                    border: '1px solid var(--border-default)',
+                    color: 'var(--text-primary)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: 'var(--space-sm) var(--space-md)',
+                    fontWeight: 'var(--weight-medium)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Reset Password
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -530,6 +602,125 @@ export default function CoachDetailPage() {
             )}
           </div>
         </div>
+
+        {/* Reset Password Modal (HEAD_COACH only) */}
+        {isResetPasswordModalOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+            onClick={closeResetPasswordModal}
+          >
+            <div
+              className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md mx-4"
+              style={{ padding: 'var(--space-2xl)', border: '1px solid var(--border-default)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-sm)' }}>
+                Reset Password for {coach.name}
+              </h2>
+
+              {resetPasswordSuccess ? (
+                <div>
+                  <div className="alert-base alert--success" role="alert" style={{ marginBottom: 'var(--space-md)' }}>
+                    <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill="currentColor"/>
+                    </svg>
+                    <div className="alert-base__content">
+                      <div className="alert-base__title">Password reset successfully.</div>
+                    </div>
+                  </div>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-small)', marginBottom: 'var(--space-sm)' }}>
+                    Share this new password with the coach:
+                  </p>
+                  <div
+                    style={{
+                      padding: 'var(--space-md)',
+                      backgroundColor: 'var(--surface-hover)',
+                      borderRadius: 'var(--radius-md)',
+                      fontFamily: 'monospace',
+                      fontSize: 'var(--font-sm)',
+                      color: 'var(--text-primary)',
+                      wordBreak: 'break-all',
+                      marginBottom: 'var(--space-lg)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  >
+                    {resetPasswordSuccess}
+                  </div>
+                  <button
+                    onClick={closeResetPasswordModal}
+                    className="btn-base btn--primary btn--md btn--full"
+                  >
+                    Done
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-small)', marginBottom: 'var(--space-lg)' }}>
+                    Enter a new password for this coach. You will be shown the password after reset so you can share it with them.
+                  </p>
+
+                  {resetPasswordError && (
+                    <div className="alert-base alert--danger" role="alert" style={{ marginBottom: 'var(--space-md)' }}>
+                      <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 6v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <div className="alert-base__content">
+                        <div className="alert-base__title">{resetPasswordError}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)', marginBottom: 'var(--space-lg)' }}>
+                    <label htmlFor="reset-new-password" className="label-base label-base--required">
+                      New Password
+                    </label>
+                    <input
+                      id="reset-new-password"
+                      type="password"
+                      className={`input-base ${resetPasswordError ? 'input-base--error' : ''}`}
+                      placeholder="Enter new password (min 8 characters)"
+                      value={resetPasswordValue}
+                      onChange={(e) => {
+                        setResetPasswordValue(e.target.value);
+                        if (resetPasswordError) setResetPasswordError('');
+                      }}
+                      disabled={resetPasswordLoading}
+                      autoComplete="new-password"
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                    <button
+                      onClick={closeResetPasswordModal}
+                      className="btn-base btn--md"
+                      style={{
+                        flex: 1,
+                        backgroundColor: 'var(--surface-hover)',
+                        border: '1px solid var(--border-default)',
+                        color: 'var(--text-primary)',
+                        borderRadius: 'var(--radius-md)',
+                        cursor: 'pointer',
+                      }}
+                      disabled={resetPasswordLoading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleResetPasswordSubmit}
+                      className="btn-base btn--primary btn--md"
+                      style={{ flex: 1 }}
+                      disabled={resetPasswordLoading}
+                      aria-busy={resetPasswordLoading}
+                    >
+                      {resetPasswordLoading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Toast Notifications Container */}
         <div className="fixed bottom-0 right-0 z-50 pointer-events-none max-w-md" style={{ padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
