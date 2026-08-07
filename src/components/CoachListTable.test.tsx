@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import CoachListTable from './CoachListTable';
+import { ToastProvider } from '../contexts/ToastContext';
 import type { User, Student, Batch } from '../types';
+
+// Wrapper providing required context providers
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
 
 describe('CoachListTable', () => {
   const mockCoaches: User[] = [
@@ -12,6 +18,7 @@ describe('CoachListTable', () => {
       name: 'Priya Sharma',
       email: 'priya@test.com',
       specialization: 'Doubles Training',
+      canAccessFees: true,
       createdAt: new Date('2026-01-01'),
       lastActive: new Date('2026-01-15'),
     },
@@ -22,6 +29,7 @@ describe('CoachListTable', () => {
       name: 'Vikram Singh',
       email: 'vikram@test.com',
       specialization: 'Footwork',
+      canAccessFees: false,
       createdAt: new Date('2026-01-01'),
       lastActive: new Date('2026-01-10'),
     },
@@ -31,6 +39,7 @@ describe('CoachListTable', () => {
       role: 'HEAD_COACH',
       name: 'Head Coach',
       email: 'head@test.com',
+      canAccessFees: true,
       createdAt: new Date('2026-01-01'),
       lastActive: new Date('2026-01-15'),
     },
@@ -104,78 +113,87 @@ describe('CoachListTable', () => {
   ];
 
   it('should render coach list table with headers', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
     expect(screen.getByText('Coach Name')).toBeInTheDocument();
+    expect(screen.getByText('Role')).toBeInTheDocument();
     expect(screen.getByText('Specialization')).toBeInTheDocument();
     expect(screen.getByText('Assigned Batches')).toBeInTheDocument();
     expect(screen.getByText('Assigned Students')).toBeInTheDocument();
+    expect(screen.getByText('Fee Access')).toBeInTheDocument();
     expect(screen.getByText('Last Active')).toBeInTheDocument();
   });
 
-  it('should display only assistant coaches, not head coaches', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+  it('should display all coaches including HEAD_COACH', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
-    // Should show assistant coaches
     expect(screen.getByText('Priya Sharma')).toBeInTheDocument();
     expect(screen.getByText('Vikram Singh')).toBeInTheDocument();
+    // HEAD_COACH user with name "Head Coach" should appear (name + role badge both say "Head Coach")
+    expect(screen.getAllByText('Head Coach').length).toBeGreaterThanOrEqual(1);
+  });
 
-    // Should not show head coach
-    expect(screen.queryByText('Head Coach')).not.toBeInTheDocument();
+  it('should display role labels for each coach', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
+
+    expect(screen.getAllByText('Assistant Coach')).toHaveLength(2);
+    // "Head Coach" appears as both name and role badge
+    expect(screen.getAllByText('Head Coach').length).toBeGreaterThanOrEqual(2);
   });
 
   it('should display correct assigned student count for each coach', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
-    // Find all cells with font-medium (student count cells)
     const rows = screen.getAllByRole('row');
     
     // Coach 1 should have 2 students
     const coach1Row = rows.find((row) => row.textContent?.includes('Priya Sharma'));
-    expect(coach1Row?.textContent).toContain('2'); // 2 students
+    expect(coach1Row?.textContent).toContain('2');
 
     // Coach 2 should have 1 student
     const coach2Row = rows.find((row) => row.textContent?.includes('Vikram Singh'));
-    expect(coach2Row?.textContent).toContain('1'); // 1 student
+    expect(coach2Row?.textContent).toContain('1');
   });
 
   it('should display correct assigned batch count for each coach', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
     const rows = screen.getAllByRole('row');
     
     // Coach 1 should have 1 batch
     const coach1Row = rows.find((row) => row.textContent?.includes('Priya Sharma'));
-    expect(coach1Row?.textContent).toContain('1'); // 1 batch
+    expect(coach1Row?.textContent).toContain('1');
 
     // Coach 2 should have 1 batch
     const coach2Row = rows.find((row) => row.textContent?.includes('Vikram Singh'));
-    expect(coach2Row?.textContent).toContain('1'); // 1 batch
+    expect(coach2Row?.textContent).toContain('1');
   });
 
   it('should display coach specialization', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
     expect(screen.getByText('Doubles Training')).toBeInTheDocument();
     expect(screen.getByText('Footwork')).toBeInTheDocument();
   });
 
-  it('should display empty state when no assistant coaches', () => {
-    const onlyHeadCoach: User[] = [
-      {
-        id: 'head-1',
-        username: 'head',
-        role: 'HEAD_COACH',
-        name: 'Head Coach',
-        email: 'head@test.com',
-        createdAt: new Date('2026-01-01'),
-        lastActive: new Date('2026-01-15'),
-      },
-    ];
+  it('should display empty state when no coaches', () => {
+    renderWithProviders(
+      <CoachListTable coaches={[]} students={[]} batches={[]} />
+    );
 
-    render(<CoachListTable coaches={onlyHeadCoach} students={[]} batches={[]} />);
-
-    expect(screen.getByText('No assistant coaches found')).toBeInTheDocument();
+    expect(screen.getByText('No coaches found')).toBeInTheDocument();
   });
 
   it('should handle coaches with no assignments', () => {
@@ -187,43 +205,79 @@ describe('CoachListTable', () => {
         name: 'New Coach',
         email: 'new@test.com',
         specialization: 'Service',
+        canAccessFees: false,
         createdAt: new Date('2026-01-01'),
         lastActive: new Date('2026-01-15'),
       },
     ];
 
-    render(<CoachListTable coaches={unassignedCoach} students={[]} batches={[]} />);
+    renderWithProviders(
+      <CoachListTable coaches={unassignedCoach} students={[]} batches={[]} />
+    );
 
     expect(screen.getByText('New Coach')).toBeInTheDocument();
     
     const rows = screen.getAllByRole('row');
     const coachRow = rows.find((row) => row.textContent?.includes('New Coach'));
-    
-    // Should show 0 for both batches and students
     expect(coachRow?.textContent).toContain('0');
   });
 
   it('should display coach email', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />);
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
     expect(screen.getByText('priya@test.com')).toBeInTheDocument();
     expect(screen.getByText('vikram@test.com')).toBeInTheDocument();
   });
 
-  it('should work without batches data', () => {
-    render(<CoachListTable coaches={mockCoaches} students={mockStudents} />);
+  it('should show "Always on" label for HEAD_COACH fee toggle', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
 
-    // Should still render the table
+    expect(screen.getByText('Always on')).toBeInTheDocument();
+  });
+
+  it('should render fee access toggles for each coach', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
+
+    // Should have 3 toggle switches (one per coach)
+    const toggles = screen.getAllByRole('switch');
+    expect(toggles).toHaveLength(3);
+  });
+
+  it('should disable fee toggle for HEAD_COACH', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
+
+    const toggles = screen.getAllByRole('switch');
+    // HEAD_COACH toggle (last in list) should be disabled
+    const headCoachToggle = toggles.find(
+      (t) => t.getAttribute('aria-label') === 'Fee access always enabled for Head Coach'
+    );
+    expect(headCoachToggle).toBeDisabled();
+  });
+
+  it('should not show Delete button for HEAD_COACH', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
+    );
+
+    // Should have 2 delete buttons (for assistant coaches only)
+    const deleteButtons = screen.getAllByTitle('Delete coach');
+    expect(deleteButtons).toHaveLength(2);
+  });
+
+  it('should work without batches data', () => {
+    renderWithProviders(
+      <CoachListTable coaches={mockCoaches} students={mockStudents} />
+    );
+
     expect(screen.getByText('Priya Sharma')).toBeInTheDocument();
     expect(screen.getByText('Vikram Singh')).toBeInTheDocument();
-    
-    // Batch counts should be 0
-    const rows = screen.getAllByRole('row');
-    rows.forEach((row) => {
-      if (row.textContent?.includes('Priya Sharma') || row.textContent?.includes('Vikram Singh')) {
-        // Should have 0 batches assigned
-        expect(row.textContent).toContain('0');
-      }
-    });
   });
 });

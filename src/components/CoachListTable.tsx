@@ -1,17 +1,20 @@
 import React from 'react';
+import FeeAccessToggle from './FeeAccessToggle';
 import type { User, Student, Batch } from '../types';
 
 /**
  * CoachListTable Component
- * Displays assistant coaches with assignment statistics and activity info
+ * Displays coaches with assignment statistics, activity info, and fee access toggle
  * 
- * Requirements: 15.2
+ * Requirements: 15.2, 9.1, 9.4, 10.1, 10.2, 10.3
  * 
  * Shows:
  * - Coach name
+ * - Role label
  * - Number of assigned batches
  * - Number of assigned students
  * - Last active timestamp
+ * - Fee access toggle
  */
 
 interface CoachListTableProps {
@@ -22,6 +25,7 @@ interface CoachListTableProps {
   onCoachSelect?: (coach: User) => void;
   onEditCoach?: (coach: User) => void;
   onDeleteCoach?: (coach: User) => void;
+  onFeeAccessToggle?: (coachId: string, value: boolean) => void;
 }
 
 export const CoachListTable: React.FC<CoachListTableProps> = ({ 
@@ -32,6 +36,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
   onCoachSelect,
   onEditCoach,
   onDeleteCoach,
+  onFeeAccessToggle,
 }) => {
   // Calculate assignment statistics for each coach
   const getCoachStats = React.useMemo(() => {
@@ -75,13 +80,27 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
     }
   };
 
-  // Filter only assistant coaches
-  const assistantCoaches = coaches.filter((coach) => coach.role === 'ASSISTANT_COACH');
+  // Show all coaches (HEAD_COACH and ASSISTANT_COACH) — API now returns both
+  const allCoaches = coaches.filter(
+    (coach) => coach.role === 'ASSISTANT_COACH' || coach.role === 'HEAD_COACH'
+  );
 
-  if (assistantCoaches.length === 0) {
+  // Format role label for display
+  const formatRoleLabel = (role: string): string => {
+    switch (role) {
+      case 'HEAD_COACH':
+        return 'Head Coach';
+      case 'ASSISTANT_COACH':
+        return 'Assistant Coach';
+      default:
+        return role;
+    }
+  };
+
+  if (allCoaches.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400">No assistant coaches found</p>
+        <p className="text-gray-500 dark:text-gray-400">No coaches found</p>
       </div>
     );
   }
@@ -96,6 +115,9 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                 Coach Name
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Role
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Specialization
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -103,6 +125,9 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Assigned Students
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Fee Access
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Last Active
@@ -113,7 +138,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {assistantCoaches.map((coach) => {
+            {allCoaches.map((coach) => {
               const stats = getCoachStats(coach.id);
               const isSelected = selectedCoachId === coach.id;
               return (
@@ -151,6 +176,17 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       </div>
                     </div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        coach.role === 'HEAD_COACH'
+                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                      }`}
+                    >
+                      {formatRoleLabel(coach.role)}
+                    </span>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {coach.specialization || '—'}
                   </td>
@@ -160,24 +196,34 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     <span className="font-medium">{stats.studentCount}</span>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <FeeAccessToggle
+                      coachId={coach.id}
+                      coachRole={coach.role}
+                      canAccessFees={coach.canAccessFees ?? false}
+                      onToggle={onFeeAccessToggle ?? (() => {})}
+                    />
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {formatLastActive(coach.lastActive)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <button
-                      onClick={() => onEditCoach?.(coach)}
+                      onClick={(e) => { e.stopPropagation(); onEditCoach?.(coach); }}
                       className="text-action text-action--primary"
                       title="Edit coach"
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => onDeleteCoach?.(coach)}
-                      className="text-action text-action--danger"
-                      title="Delete coach"
-                    >
-                      Delete
-                    </button>
+                    {coach.role === 'ASSISTANT_COACH' && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDeleteCoach?.(coach); }}
+                        className="text-action text-action--danger"
+                        title="Delete coach"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

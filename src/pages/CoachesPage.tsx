@@ -31,12 +31,26 @@ export const CoachesPage: React.FC = () => {
   // Enforce Head Coach-only access
   useRoleGuard(['HEAD_COACH']);
 
-  const { coaches, loading: coachesLoading, error: coachesError, createCoach, refetch: refetchCoaches } = useCoaches();
+  const { coaches: rawCoaches, loading: coachesLoading, error: coachesError, createCoach, refetch: refetchCoaches } = useCoaches();
   const { students, loading: studentsLoading, refetch: refetchStudents } = useStudents();
 
   const [batches, setBatches] = useState<Batch[]>([]);
   const [batchesLoading, setBatchesLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Local fee access overrides — maps coachId to canAccessFees for optimistic UI
+  const [feeAccessOverrides, setFeeAccessOverrides] = useState<Record<string, boolean>>({});
+
+  // Merge overrides into coaches list
+  const coaches = rawCoaches.map((coach) => ({
+    ...coach,
+    canAccessFees: feeAccessOverrides[coach.id] ?? coach.canAccessFees,
+  }));
+
+  // Sync overrides when rawCoaches changes (e.g., after refetch)
+  useEffect(() => {
+    setFeeAccessOverrides({});
+  }, [rawCoaches]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -152,6 +166,11 @@ export const CoachesPage: React.FC = () => {
 
   const deleteStats = getCoachStatsForDelete(coachToDelete);
 
+  // Handle fee access toggle — update local state optimistically
+  const handleFeeAccessToggle = (coachId: string, value: boolean) => {
+    setFeeAccessOverrides((prev) => ({ ...prev, [coachId]: value }));
+  };
+
   return (
     <DashboardLayout>
       <div className="page-container">
@@ -212,6 +231,7 @@ export const CoachesPage: React.FC = () => {
                 onCoachSelect={handleCoachSelect}
                 onEditCoach={handleEditCoach}
                 onDeleteCoach={handleDeleteCoach}
+                onFeeAccessToggle={handleFeeAccessToggle}
               />
             </div>
           )}

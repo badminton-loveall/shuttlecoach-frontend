@@ -13,13 +13,15 @@ import type { UserRole } from '../types';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles?: readonly UserRole[];
+  requireFeeAccess?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   allowedRoles,
+  requireFeeAccess,
 }) => {
-  const { isAuthenticated, role } = useAuth();
+  const { isAuthenticated, role, canAccessFees } = useAuth();
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -28,6 +30,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check role authorization if allowedRoles is specified
   if (allowedRoles && allowedRoles.length > 0 && (!role || !allowedRoles.includes(role))) {
+    return <Navigate to="/access-denied" replace />;
+  }
+
+  // Check fee access permission if required
+  if (requireFeeAccess && !canAccessFees) {
     return <Navigate to="/access-denied" replace />;
   }
 

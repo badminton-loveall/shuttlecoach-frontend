@@ -13,7 +13,7 @@ import apiClient from '../utils/apiClient';
 
 interface LoginResponse {
   token: string;
-  user: User;
+  user: User & { canAccessFees?: boolean };
   role: UserRole;
   centerId?: string;
 }
@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [centerId, setCenterId] = useState<string | null>(null);
+  const [canAccessFees, setCanAccessFees] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = localStorage.getItem('auth_user');
     const storedRole = localStorage.getItem('auth_role');
     const storedCenterId = localStorage.getItem('auth_center_id');
+    const storedCanAccessFees = localStorage.getItem('auth_can_access_fees');
 
     if (storedToken && storedUser && storedRole) {
       try {
@@ -45,11 +47,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedUser = JSON.parse(storedUser) as User;
         const parsedRole = storedRole as UserRole;
         
+        // Derive canAccessFees: ADMIN/HEAD_COACH always true, otherwise use stored value
+        const derivedCanAccessFees =
+          parsedRole === 'ADMIN' || parsedRole === 'HEAD_COACH' || storedCanAccessFees === 'true';
+
         // Batch the state updates
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(parsedUser);
         setRole(parsedRole);
         setCenterId(storedCenterId);
+        setCanAccessFees(derivedCanAccessFees);
         setToken(storedToken);
       } catch (error) {
         console.error('Failed to restore auth state from localStorage:', error);
@@ -58,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('auth_user');
         localStorage.removeItem('auth_role');
         localStorage.removeItem('auth_center_id');
+        localStorage.removeItem('auth_can_access_fees');
       }
     }
 
@@ -105,12 +113,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('auth_center_id');
       }
 
+      // Derive canAccessFees: ADMIN/HEAD_COACH always true, otherwise use API response
+      const derivedCanAccessFees =
+        userRole === 'ADMIN' || userRole === 'HEAD_COACH' || !!response.data.user.canAccessFees;
+      localStorage.setItem('auth_can_access_fees', String(derivedCanAccessFees));
+
       // Store in state (will trigger re-renders)
       // The order matters: token, user, then role so isAuthenticated resolves properly
       setToken(token);
       setUser(userWithParsedDates);
       setRole(userRole);
       setCenterId(userCenterId);
+      setCanAccessFees(derivedCanAccessFees);
     } catch (error) {
       console.error('Login error:', error);
       // Re-throw the error so UI can display it
@@ -126,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setRole(null);
     setCenterId(null);
+    setCanAccessFees(false);
     setToken(null);
 
     // Clear localStorage
@@ -133,6 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('auth_user');
     localStorage.removeItem('auth_role');
     localStorage.removeItem('auth_center_id');
+    localStorage.removeItem('auth_can_access_fees');
   };
 
   const isAuthenticated = !!user && !!token && !!role;
@@ -141,6 +157,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     role,
     centerId,
+    canAccessFees,
     token,
     isAuthenticated,
     login,

@@ -66,7 +66,7 @@ const STUDENT_NAV: NavEntry[] = [
 // --- Component ---
 
 export const TopNav: React.FC = () => {
-  const { user, role, logout } = useAuth();
+  const { user, role, canAccessFees, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -115,14 +115,26 @@ export const TopNav: React.FC = () => {
 
     // Coach roles
     return COACH_NAV.map((entry) => {
-      if (isDropdown(entry) && entry.label === 'Finance' && role === 'HEAD_COACH') {
-        return {
-          ...entry,
-          items: [...entry.items, { label: 'Coaches', path: '/coaches' }],
-        };
+      if (isDropdown(entry) && entry.label === 'Finance') {
+        // Filter fees link based on canAccessFees permission
+        let items = canAccessFees
+          ? entry.items
+          : entry.items.filter((item) => item.path !== '/fees');
+
+        // Add Coaches sub-item for HEAD_COACH
+        if (role === 'HEAD_COACH') {
+          items = [...items, { label: 'Coaches', path: '/coaches' }];
+        }
+
+        // If no items remain after filtering, exclude the dropdown entirely
+        if (items.length === 0) {
+          return null;
+        }
+
+        return { ...entry, items };
       }
       return entry;
-    });
+    }).filter((entry): entry is NavEntry => entry !== null);
   };
 
   const navItems = getNavItems();

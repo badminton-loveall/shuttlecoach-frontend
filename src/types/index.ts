@@ -22,6 +22,7 @@ export interface User {
   qualifications?: string; // For coaches
   certifications?: string; // For coaches
   bio?: string; // For coaches
+  canAccessFees?: boolean; // Fee access permission (returned by GET /api/coaches)
   createdAt: Date;
   lastActive: Date;
 }
@@ -30,6 +31,7 @@ export interface AuthContext {
   user: User | null;
   role: UserRole | null;
   centerId: string | null; // null for ADMIN users
+  canAccessFees: boolean;
   token: string | null;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;

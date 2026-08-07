@@ -30,6 +30,11 @@ vi.mock('../utils/apiClient', () => ({
   },
 }));
 
+vi.mock('../contexts/ToastContext', () => ({
+  ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useToast: () => ({ showToast: vi.fn() }),
+}));
+
 import { useAuth } from '../contexts/AuthContext';
 import { useRoleGuard } from '../hooks/useRoleGuard';
 import { useCoaches } from '../hooks/useCoaches';
