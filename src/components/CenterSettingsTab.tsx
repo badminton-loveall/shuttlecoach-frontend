@@ -5,10 +5,11 @@ import '../styles/pages.css';
 
 /**
  * CenterSettingsTab Component
- * Allows HEAD_COACH and ADMIN users to view and update their center's slug.
- * Displays a branded login URL preview and handles validation/submission.
+ * - ADMIN: Can directly edit the center slug (existing behavior)
+ * - HEAD_COACH: Sees slug as read-only with "Request Change" button (requirement 6.1)
+ * - Others: Read-only display
  *
- * Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6
+ * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6
  */
 
 interface CenterData {
@@ -52,7 +53,17 @@ const CenterSettingsTab: React.FC = () => {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const canEdit = role === 'HEAD_COACH' || role === 'ADMIN';
+  // Slug change request state (HEAD_COACH flow)
+  const [showRequestForm, setShowRequestForm] = useState(false);
+  const [requestSlugValue, setRequestSlugValue] = useState('');
+  const [requestFieldError, setRequestFieldError] = useState<string | null>(null);
+  const [requestSuccessMessage, setRequestSuccessMessage] = useState<string | null>(null);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [hasPendingRequest, setHasPendingRequest] = useState(false);
+
+  const isAdmin = role === 'ADMIN';
+  const isHeadCoach = role === 'HEAD_COACH';
+  const canDirectEdit = isAdmin;
 
   const fetchCenter = useCallback(async () => {
     if (!centerId) {
@@ -81,10 +92,33 @@ const CenterSettingsTab: React.FC = () => {
     }
   }, [centerId]);
 
-  useEffect(() => {
-    fetchCenter();
-  }, [fetchCenter]);
+  /**
+   * Check if the center already has a pending slug change request.
+   * Used to disable the "Request Change" button for HEAD_COACH.
+   */
+  const checkPendingRequest = useCallback(async () => {
+    if (!isHeadCoach) return;
+    try {
+      // Attempt to check pending status via a lightweight call.
+      // If the POST would return 409 "pending exists", we know there's one.
+      // We use a dedicated check — try fetching center data which may include pending status,
+      // or simply rely on the 409 error on submit. For better UX, we attempt a probe.
+      const response = await apiClient.get('/slug-change-requests/pending');
+      if (response.data && response.data.hasPending) {
+        setHasPendingRequest(true);
+      }
+    } catch {
+      // If the endpoint doesn't exist or fails, we'll rely on the 409 during submission
+      // This is a graceful degradation approach
+    }
+  }, [isHeadCoach]);
 
+  useEffect(() => {
+    void fetchCenter();
+    void checkPendingRequest();
+  }, [fetchCenter, checkPendingRequest]);
+
+  // --- ADMIN direct edit handlers ---
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase();
     setSlugValue(value);
@@ -94,12 +128,9 @@ const CenterSettingsTab: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Clear previous messages
     setFieldError(null);
     setSuccessMessage(null);
 
-    // Client-side validation
     const trimmed = slugValue.trim();
     const validation = validateSlug(trimmed);
     if (!validation.valid) {
@@ -107,7 +138,6 @@ const CenterSettingsTab: React.FC = () => {
       return;
     }
 
-    // No change
     if (trimmed === originalSlug) {
       setFieldError('Slug is unchanged');
       return;
@@ -133,6 +163,66 @@ const CenterSettingsTab: React.FC = () => {
     }
   };
 
+  // --- HEAD_COACH slug change request handlers ---
+  const handleRequestSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.toLowerCase();
+    setRequestSlugValue(value);
+    setRequestFieldError(null);
+    setRequestSuccessMessage(null);
+  };
+
+  const handleRequestSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRequestFieldError(null);
+    setRequestSuccessMessage(null);
+
+    const trimmed = requestSlugValue.trim();
+    const validation = validateSlug(trimmed);
+    if (!validation.valid) {
+      setRequestFieldError(validation.error || 'Invalid slug format');
+      return;
+    }
+
+    if (trimmed === originalSlug) {
+      setRequestFieldError('New slug must be different from the current slug');
+      return;
+    }
+
+    try {
+      setSubmittingRequest(true);
+      await apiClient.post('/slug-change-requests', { requestedSlug: trimmed });
+      setRequestSuccessMessage('Slug change request submitted successfully. An admin will review it.');
+      setHasPendingRequest(true);
+      setShowRequestForm(false);
+      setRequestSlugValue('');
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { error?: string; message?: string } } };
+      if (axiosErr.response?.status === 409) {
+        const msg = axiosErr.response.data?.error || axiosErr.response.data?.message || '';
+        if (msg.toLowerCase().includes('pending')) {
+          setRequestFieldError('A pending slug change request already exists');
+          setHasPendingRequest(true);
+        } else {
+          setRequestFieldError('This slug is already taken');
+        }
+      } else if (axiosErr.response?.status === 400) {
+        setRequestFieldError(axiosErr.response.data?.error || axiosErr.response.data?.message || 'Invalid slug format');
+      } else {
+        setRequestFieldError('Failed to submit request. Please try again.');
+      }
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
+  const handleCancelRequest = () => {
+    setShowRequestForm(false);
+    setRequestSlugValue('');
+    setRequestFieldError(null);
+    setRequestSuccessMessage(null);
+  };
+
+  // --- Loading / Error states ---
   if (loading) {
     return (
       <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
@@ -149,186 +239,231 @@ const CenterSettingsTab: React.FC = () => {
     );
   }
 
-  const loginUrl = `${window.location.origin}/login/${slugValue || '...'}`;
+  const loginUrl = `${window.location.origin}/login/${originalSlug || '...'}`;
 
-  return (
-    <div className="card" style={{ padding: '1.5rem' }}>
-      <h3
-        style={{
-          margin: '0 0 0.25rem 0',
-          fontSize: 'var(--font-lg)',
-          fontWeight: 'var(--weight-semibold)',
-          color: 'var(--text-primary)',
-        }}
-      >
-        Branded Login URL
-      </h3>
-      <p
-        style={{
-          margin: '0 0 1.5rem 0',
-          fontSize: 'var(--font-sm)',
-          color: 'var(--text-tertiary)',
-        }}
-      >
-        Customize the login URL for{' '}
-        <strong>{center?.name}</strong>. Share this link with your coaches and students.
-      </p>
+  // --- ADMIN direct-edit view ---
+  if (canDirectEdit) {
+    return (
+      <div className="card" style={{ padding: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+          Branded Login URL
+        </h3>
+        <p style={{ margin: '0 0 1.5rem 0', fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>
+          Customize the login URL for <strong>{center?.name}</strong>. Share this link with your coaches and students.
+        </p>
 
-      <form onSubmit={handleSubmit}>
-        {/* Slug Input Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label
-            htmlFor="center-slug"
-            style={{
-              display: 'block',
-              fontSize: 'var(--font-sm)',
-              fontWeight: 'var(--weight-semibold)',
-              color: 'var(--text-primary)',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Center Slug
-          </label>
-          <input
-            id="center-slug"
-            type="text"
-            value={slugValue}
-            onChange={handleSlugChange}
-            disabled={!canEdit || saving}
-            placeholder="e.g. shuttle-stars-academy"
-            maxLength={50}
-            aria-describedby="slug-help slug-error"
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              fontSize: 'var(--font-sm)',
-              border: `1.5px solid ${fieldError ? 'var(--color-danger)' : 'var(--border-default)'}`,
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: canEdit ? 'var(--surface-card)' : 'var(--surface-hover)',
-              color: 'var(--text-primary)',
-              fontFamily: "'Monaco', 'Courier New', monospace",
-              transition: 'border-color 0.2s',
-              boxSizing: 'border-box',
-            }}
-          />
-          <p
-            id="slug-help"
-            style={{
-              margin: '0.5rem 0 0 0',
-              fontSize: 'var(--font-xs)',
-              color: 'var(--text-tertiary)',
-            }}
-          >
-            Only lowercase letters, numbers, and hyphens. 3–50 characters.
-          </p>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="center-slug" style={{ display: 'block', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+              Center Slug
+            </label>
+            <input
+              id="center-slug"
+              type="text"
+              value={slugValue}
+              onChange={handleSlugChange}
+              disabled={saving}
+              placeholder="e.g. shuttle-stars-academy"
+              maxLength={50}
+              aria-describedby="slug-help slug-error"
+              style={{
+                width: '100%', padding: '8px 12px', fontSize: 'var(--font-sm)',
+                border: `1.5px solid ${fieldError ? 'var(--color-danger)' : 'var(--border-default)'}`,
+                borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--surface-card)',
+                color: 'var(--text-primary)', fontFamily: "'Monaco', 'Courier New', monospace",
+                transition: 'border-color 0.2s', boxSizing: 'border-box',
+              }}
+            />
+            <p id="slug-help" style={{ margin: '0.5rem 0 0 0', fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)' }}>
+              Only lowercase letters, numbers, and hyphens. 3–50 characters.
+            </p>
+          </div>
 
-        {/* Inline Error */}
-        {fieldError && (
-          <p
-            id="slug-error"
-            role="alert"
-            style={{
-              margin: '0 0 1rem 0',
-              fontSize: 'var(--font-sm)',
-              color: 'var(--color-danger)',
-              fontWeight: 'var(--weight-medium)',
-            }}
-          >
-            {fieldError}
-          </p>
-        )}
+          {fieldError && (
+            <p id="slug-error" role="alert" style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-sm)', color: 'var(--color-danger)', fontWeight: 'var(--weight-medium)' }}>
+              {fieldError}
+            </p>
+          )}
 
-        {/* Success Message */}
-        {successMessage && (
-          <p
-            role="status"
-            style={{
-              margin: '0 0 1rem 0',
-              fontSize: 'var(--font-sm)',
-              color: 'var(--color-success)',
-              fontWeight: 'var(--weight-medium)',
-            }}
-          >
-            {successMessage}
-          </p>
-        )}
+          {successMessage && (
+            <p role="status" style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-sm)', color: 'var(--color-success)', fontWeight: 'var(--weight-medium)' }}>
+              {successMessage}
+            </p>
+          )}
 
-        {/* URL Preview */}
-        <div
-          style={{
-            padding: '0.75rem 1rem',
-            backgroundColor: 'var(--surface-hover)',
-            borderRadius: 'var(--radius-sm)',
-            marginBottom: '1.5rem',
-            border: '1px solid var(--border-default)',
-          }}
-        >
-          <span
-            style={{
-              fontSize: 'var(--font-xs)',
-              color: 'var(--text-tertiary)',
-              display: 'block',
-              marginBottom: '0.25rem',
-              fontWeight: 'var(--weight-semibold)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Login URL Preview
-          </span>
-          <code
-            style={{
-              fontSize: 'var(--font-sm)',
-              color: 'var(--text-primary)',
-              wordBreak: 'break-all',
-            }}
-          >
-            {loginUrl}
-          </code>
-        </div>
+          <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', border: '1px solid var(--border-default)' }}>
+            <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.25rem', fontWeight: 'var(--weight-semibold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Login URL Preview
+            </span>
+            <code style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+              {`${window.location.origin}/login/${slugValue || '...'}`}
+            </code>
+          </div>
 
-        {/* Submit Button */}
-        {canEdit && (
           <button
             type="submit"
             disabled={saving || slugValue === originalSlug}
             style={{
-              padding: '10px 24px',
-              fontSize: 'var(--font-sm)',
-              fontWeight: 'var(--weight-semibold)',
-              backgroundColor:
-                saving || slugValue === originalSlug
-                  ? 'var(--surface-hover)'
-                  : 'var(--color-primary)',
-              color:
-                saving || slugValue === originalSlug
-                  ? 'var(--text-tertiary)'
-                  : 'var(--text-primary)',
-              border: 'none',
-              borderRadius: 'var(--radius-pill)',
+              padding: '10px 24px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
+              backgroundColor: saving || slugValue === originalSlug ? 'var(--surface-hover)' : 'var(--color-primary)',
+              color: saving || slugValue === originalSlug ? 'var(--text-tertiary)' : 'var(--text-primary)',
+              border: 'none', borderRadius: 'var(--radius-pill)',
               cursor: saving || slugValue === originalSlug ? 'not-allowed' : 'pointer',
-              transition: 'all 0.2s',
-              fontFamily: 'var(--font-body)',
+              transition: 'all 0.2s', fontFamily: 'var(--font-body)',
             }}
           >
             {saving ? 'Saving...' : 'Update Slug'}
           </button>
-        )}
+        </form>
+      </div>
+    );
+  }
 
-        {!canEdit && (
-          <p
-            style={{
-              margin: '0',
-              fontSize: 'var(--font-sm)',
-              color: 'var(--text-tertiary)',
-              fontStyle: 'italic',
-            }}
-          >
-            Only Head Coaches and Admins can edit the center slug.
+  // --- HEAD_COACH view: read-only slug with "Request Change" flow ---
+  return (
+    <div className="card" style={{ padding: '1.5rem' }}>
+      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+        Branded Login URL
+      </h3>
+      <p style={{ margin: '0 0 1.5rem 0', fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>
+        Your center's branded login URL for <strong>{center?.name}</strong>.
+      </p>
+
+      {/* Current Slug (read-only) */}
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+          Current Slug
+        </label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <code style={{
+            flex: 1, padding: '8px 12px', fontSize: 'var(--font-sm)',
+            border: '1.5px solid var(--border-default)', borderRadius: 'var(--radius-sm)',
+            backgroundColor: 'var(--surface-hover)', color: 'var(--text-primary)',
+            fontFamily: "'Monaco', 'Courier New', monospace",
+          }}>
+            {originalSlug || '—'}
+          </code>
+          {isHeadCoach && (
+            <button
+              type="button"
+              onClick={() => setShowRequestForm(true)}
+              disabled={hasPendingRequest}
+              style={{
+                padding: '8px 16px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
+                backgroundColor: hasPendingRequest ? 'var(--surface-hover)' : 'var(--color-primary)',
+                color: hasPendingRequest ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                border: 'none', borderRadius: 'var(--radius-pill)', whiteSpace: 'nowrap',
+                cursor: hasPendingRequest ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s', fontFamily: 'var(--font-body)',
+              }}
+            >
+              Request Change
+            </button>
+          )}
+        </div>
+        {hasPendingRequest && (
+          <p style={{ margin: '0.5rem 0 0 0', fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+            A slug change request is already pending admin review.
           </p>
         )}
-      </form>
+      </div>
+
+      {/* URL Preview */}
+      <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--surface-hover)', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', border: '1px solid var(--border-default)' }}>
+        <span style={{ fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)', display: 'block', marginBottom: '0.25rem', fontWeight: 'var(--weight-semibold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Login URL
+        </span>
+        <code style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
+          {loginUrl}
+        </code>
+      </div>
+
+      {/* Success message (after successful request submission) */}
+      {requestSuccessMessage && !showRequestForm && (
+        <p role="status" style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-sm)', color: 'var(--color-success)', fontWeight: 'var(--weight-medium)' }}>
+          {requestSuccessMessage}
+        </p>
+      )}
+
+      {/* Inline Request Change Form */}
+      {showRequestForm && isHeadCoach && (
+        <div style={{ padding: '1rem', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--surface-card)', marginBottom: '1rem' }}>
+          <h4 style={{ margin: '0 0 0.75rem 0', fontSize: 'var(--font-md)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+            Request Slug Change
+          </h4>
+          <form onSubmit={handleRequestSubmit}>
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label htmlFor="request-slug" style={{ display: 'block', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-medium)', color: 'var(--text-primary)', marginBottom: '0.375rem' }}>
+                New Slug
+              </label>
+              <input
+                id="request-slug"
+                type="text"
+                value={requestSlugValue}
+                onChange={handleRequestSlugChange}
+                disabled={submittingRequest}
+                placeholder="e.g. my-new-center-name"
+                maxLength={50}
+                aria-describedby="request-slug-help request-slug-error"
+                style={{
+                  width: '100%', padding: '8px 12px', fontSize: 'var(--font-sm)',
+                  border: `1.5px solid ${requestFieldError ? 'var(--color-danger)' : 'var(--border-default)'}`,
+                  borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--surface-card)',
+                  color: 'var(--text-primary)', fontFamily: "'Monaco', 'Courier New', monospace",
+                  transition: 'border-color 0.2s', boxSizing: 'border-box',
+                }}
+              />
+              <p id="request-slug-help" style={{ margin: '0.375rem 0 0 0', fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)' }}>
+                Only lowercase letters, numbers, and hyphens. 3–50 characters. Must start and end with a letter or number.
+              </p>
+            </div>
+
+            {requestFieldError && (
+              <p id="request-slug-error" role="alert" style={{ margin: '0 0 0.75rem 0', fontSize: 'var(--font-sm)', color: 'var(--color-danger)', fontWeight: 'var(--weight-medium)' }}>
+                {requestFieldError}
+              </p>
+            )}
+
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                type="submit"
+                disabled={submittingRequest || !requestSlugValue.trim()}
+                style={{
+                  padding: '8px 20px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
+                  backgroundColor: submittingRequest || !requestSlugValue.trim() ? 'var(--surface-hover)' : 'var(--color-primary)',
+                  color: submittingRequest || !requestSlugValue.trim() ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                  border: 'none', borderRadius: 'var(--radius-pill)',
+                  cursor: submittingRequest || !requestSlugValue.trim() ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s', fontFamily: 'var(--font-body)',
+                }}
+              >
+                {submittingRequest ? 'Submitting...' : 'Submit Request'}
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelRequest}
+                disabled={submittingRequest}
+                style={{
+                  padding: '8px 20px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-medium)',
+                  backgroundColor: 'transparent', color: 'var(--text-secondary)',
+                  border: '1px solid var(--border-default)', borderRadius: 'var(--radius-pill)',
+                  cursor: submittingRequest ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s', fontFamily: 'var(--font-body)',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Non-editable roles info */}
+      {!isHeadCoach && !isAdmin && (
+        <p style={{ margin: '0', fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)', fontStyle: 'italic' }}>
+          Only Head Coaches can request slug changes.
+        </p>
+      )}
     </div>
   );
 };

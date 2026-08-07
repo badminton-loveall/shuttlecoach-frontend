@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../utils/apiClient';
 import './AdminLayout.css';
 
 /**
@@ -40,6 +41,18 @@ const NAV_ITEMS: AdminNavItem[] = [
     ),
   },
   {
+    label: 'Slug Requests',
+    path: '/admin/slug-requests',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+      </svg>
+    ),
+  },
+  {
     label: 'Settings',
     path: '/admin/settings',
     icon: (
@@ -55,6 +68,23 @@ export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [slugRequestCount, setSlugRequestCount] = useState(0);
+
+  useEffect(() => {
+    const fetchSlugRequestCount = async () => {
+      try {
+        const response = await apiClient.get('/admin/slug-change-requests/count');
+        setSlugRequestCount(response.data.count || 0);
+      } catch {
+        // Silently fail — badge just won't show
+      }
+    };
+
+    fetchSlugRequestCount();
+    // Refresh count every 60 seconds
+    const interval = setInterval(fetchSlugRequestCount, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSignOut = () => {
     logout();
@@ -95,6 +125,9 @@ export const AdminLayout: React.FC = () => {
             >
               <span className="admin-layout__nav-icon">{item.icon}</span>
               {!isSidebarCollapsed && <span className="admin-layout__nav-label">{item.label}</span>}
+              {item.path === '/admin/slug-requests' && slugRequestCount > 0 && (
+                <span className="admin-layout__nav-badge">{slugRequestCount}</span>
+              )}
             </NavLink>
           ))}
         </nav>

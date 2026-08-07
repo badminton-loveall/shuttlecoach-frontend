@@ -35,6 +35,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import CentersListPage from './pages/admin/CentersListPage';
 import CreateCenterPage from './pages/admin/CreateCenterPage';
 import CenterDetailPage from './pages/admin/CenterDetailPage';
+import SlugChangeRequestsPage from './pages/admin/SlugChangeRequestsPage';
 import './App.css';
 
 /**
@@ -258,6 +259,7 @@ function App() {
             <Route path="centers" element={<CentersListPage />} />
             <Route path="centers/new" element={<CreateCenterPage />} />
             <Route path="centers/:id" element={<CenterDetailPage />} />
+            <Route path="slug-requests" element={<SlugChangeRequestsPage />} />
           </Route>
 
           {/* Password Management - Public Routes */}

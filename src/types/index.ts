@@ -36,6 +36,32 @@ export interface AuthContext {
   isAuthenticated: boolean;
   login: (username: string, password: string, centerSlug?: string) => Promise<void>;
   logout: () => void;
+  // Multi-center membership fields
+  memberships: CenterMembership[];
+  activeCenterId: string | null;
+  activeRole: UserRole | null;
+  switchCenter: (centerId: string) => void;
+}
+
+/* ============================================================================
+   MULTI-CENTER MEMBERSHIP TYPES
+   ============================================================================ */
+
+export interface CenterMembership {
+  centerId: string;
+  centerName: string;
+  role: UserRole;
+  canAccessFees: boolean;
+}
+
+export interface SlugChangeRequest {
+  id: string;
+  centerId: string;
+  centerName?: string;
+  requestedSlug: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  requestedBy: string;
+  createdAt: string;
 }
 
 /* ============================================================================
@@ -51,12 +77,14 @@ export interface CenterPublicInfo {
 export interface Center {
   id: string;
   name: string;
+  slug?: string;
   location: string;
   contactPhone?: string;
   contactEmail?: string;
   logoUrl?: string;
   isActive: boolean;
   headCoachId?: string;
+  headCoachEmail?: string;
   planType?: string;
   subscriptionExpiresAt?: string;
   createdAt: string;

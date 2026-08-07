@@ -24,6 +24,12 @@ const mockAuthContext: AuthContextInterface = {
     lastActive: new Date(),
   },
   role: 'HEAD_COACH',
+  activeRole: 'HEAD_COACH',
+  canAccessFees: true,
+  centerId: 'center-1',
+  activeCenterId: 'center-1',
+  memberships: [{ centerId: 'center-1', centerName: 'Test Center', role: 'HEAD_COACH', canAccessFees: true }],
+  switchCenter: vi.fn(),
   token: 'test-token',
   isAuthenticated: true,
   login: vi.fn(),
@@ -80,10 +86,11 @@ describe('TopNav Component', () => {
 
   describe('Navigation Links - ASSISTANT_COACH Role', () => {
     it('should not display Coaches link for assistant coaches', () => {
-      const assistantContext = {
+      const assistantContext: AuthContextInterface = {
         ...mockAuthContext,
         role: 'ASSISTANT_COACH',
-        user: { ...mockAuthContext.user, role: 'ASSISTANT_COACH', name: 'Priya Sharma' },
+        activeRole: 'ASSISTANT_COACH',
+        user: { ...mockAuthContext.user!, role: 'ASSISTANT_COACH', name: 'Priya Sharma' },
       };
       renderTopNav(assistantContext);
 
@@ -98,10 +105,11 @@ describe('TopNav Component', () => {
 
   describe('Navigation Links - STUDENT Role', () => {
     it('should display student-specific navigation links', () => {
-      const studentContext = {
+      const studentContext: AuthContextInterface = {
         ...mockAuthContext,
         role: 'STUDENT',
-        user: { ...mockAuthContext.user, role: 'STUDENT', name: 'Aarav Patel' },
+        activeRole: 'STUDENT',
+        user: { ...mockAuthContext.user!, role: 'STUDENT', name: 'Aarav Patel' },
       };
       renderTopNav(studentContext);
 

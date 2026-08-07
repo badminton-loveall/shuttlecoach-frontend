@@ -29,6 +29,7 @@ const apiClient: AxiosInstance = axios.create({
 /**
  * Request Interceptor
  * Adds JWT token from localStorage to Authorization header
+ * Adds X-Center-Id header from localStorage for center-scoped API requests
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
@@ -38,6 +39,12 @@ apiClient.interceptors.request.use(
     // Add Authorization header if token exists
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Add X-Center-Id header for multi-center scoping
+    const centerId = localStorage.getItem('active_center_id');
+    if (centerId && config.headers) {
+      config.headers['X-Center-Id'] = centerId;
     }
 
     return config;

@@ -215,6 +215,70 @@
 }
 
 /* ============================================================================
+   Slug Field
+   ============================================================================ */
+
+.center-detail-page__slug-section {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.center-detail-page__slug-edit {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.center-detail-page__slug-edit .center-detail-page__input {
+  flex: 1;
+  max-width: 320px;
+}
+
+.center-detail-page__input--error {
+  border-color: var(--color-error, #ef4444) !important;
+}
+
+.center-detail-page__slug-save-btn {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.center-detail-page__slug-save-btn:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.center-detail-page__slug-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.center-detail-page__slug-help {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.center-detail-page__slug-error {
+  font-size: var(--font-xs);
+  color: var(--color-error, #ef4444);
+  font-weight: var(--weight-medium);
+}
+
+.center-detail-page__slug-success {
+  font-size: var(--font-xs);
+  color: #22c55e;
+  font-weight: var(--weight-medium);
+}
+
+/* ============================================================================
    Info Grid (Read-Only View)
    ============================================================================ */
 
@@ -359,7 +423,7 @@
 
 .center-detail-page__coach-assigned {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-md);
 }
@@ -382,10 +446,87 @@
   width: fit-content;
 }
 
+.center-detail-page__coach-email {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.center-detail-page__no-email {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-weight: normal;
+}
+
 .center-detail-page__coach-id {
   font-size: var(--font-xs);
   color: var(--text-secondary);
   font-family: monospace;
+}
+
+.center-detail-page__coach-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.center-detail-page__coach-action-buttons {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.center-detail-page__coach-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background-color: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: var(--radius-md);
+  color: #eab308;
+  font-size: var(--font-xs);
+}
+
+.center-detail-page__invite-btn,
+.center-detail-page__reset-btn {
+  padding: var(--space-sm) var(--space-md);
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.center-detail-page__invite-btn:hover:not(:disabled),
+.center-detail-page__reset-btn:hover:not(:disabled) {
+  background-color: var(--surface-muted);
+  border-color: var(--color-primary);
+}
+
+.center-detail-page__invite-btn:disabled,
+.center-detail-page__reset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.center-detail-page__inline-success {
+  padding: var(--space-sm) var(--space-md);
+  background-color: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: var(--radius-md);
+  color: #22c55e;
+  font-size: var(--font-sm);
+  margin-bottom: var(--space-md);
+}
+
+.center-detail-page__inline-success p {
+  margin: 0;
 }
 
 .center-detail-page__unassign-btn {
@@ -541,6 +682,10 @@
   .center-detail-page__coach-assigned {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .center-detail-page__coach-action-buttons {
+    flex-wrap: wrap;
   }
 
   .center-detail-page__activation {

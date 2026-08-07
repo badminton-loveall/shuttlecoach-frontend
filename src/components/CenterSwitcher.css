@@ -1,0 +1,202 @@
+/* ============================================================================
+   CenterSwitcher Component Styles
+   BEM methodology with design tokens consistent with TopNav styling.
+   Displays active center name; dropdown for multi-center users.
+   ============================================================================ */
+
+.center-switcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================================
+   Single-center (plain text) variant
+   ============================================================================ */
+
+.center-switcher--single .center-switcher__name {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* ============================================================================
+   Trigger Button (multi-center)
+   ============================================================================ */
+
+.center-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: none;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.center-switcher__trigger:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+}
+
+.center-switcher__trigger .center-switcher__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+/* ============================================================================
+   Chevron Icon
+   ============================================================================ */
+
+.center-switcher__chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.center-switcher__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ============================================================================
+   Dropdown Panel
+   ============================================================================ */
+
+.center-switcher__dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  max-width: 280px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xs) 0;
+  z-index: var(--z-dropdown, 100);
+  animation: center-switcher-dropdown-in 0.15s ease-out;
+}
+
+@keyframes center-switcher-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   Dropdown Options
+   ============================================================================ */
+
+.center-switcher__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  font-family: inherit;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.center-switcher__option:hover {
+  color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+}
+
+.center-switcher__option--active {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  background-color: rgba(184, 225, 53, 0.1);
+}
+
+.center-switcher__option-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================================
+   Check Icon (active indicator)
+   ============================================================================ */
+
+.center-switcher__check-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-primary);
+}
+
+/* ============================================================================
+   Accessibility
+   ============================================================================ */
+
+.center-switcher__trigger:focus-visible,
+.center-switcher__option:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .center-switcher__trigger {
+    padding: var(--space-xs);
+    max-width: 140px;
+    font-size: var(--font-xs);
+  }
+
+  .center-switcher__trigger .center-switcher__name {
+    max-width: 100px;
+  }
+
+  .center-switcher--single .center-switcher__name {
+    max-width: 120px;
+    font-size: var(--font-xs);
+  }
+
+  .center-switcher__dropdown {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .center-switcher__trigger {
+    max-width: 120px;
+  }
+
+  .center-switcher__trigger .center-switcher__name {
+    max-width: 80px;
+  }
+
+  .center-switcher--single .center-switcher__name {
+    max-width: 90px;
+  }
+}

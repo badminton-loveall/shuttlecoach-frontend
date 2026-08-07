@@ -5,7 +5,8 @@ import { ProtectedRoute } from './ProtectedRoute';
 
 /**
  * ProtectedRoute Component Tests
- * Tests for: authentication check, role-based access, redirect logic
+ * Tests for: authentication check, role-based access, redirect logic,
+ * and center-aware role resolution (Requirements: 3.2, 3.4, 3.6)
  */
 
 // Mock useAuth hook to control authentication state
@@ -30,10 +31,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: false,
         role: null,
+        activeRole: null,
+        canAccessFees: false,
         user: null,
         token: null,
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: null,
+        switchCenter: vi.fn(),
       });
 
       const { container } = render(
@@ -54,10 +60,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: false,
         role: null,
+        activeRole: null,
+        canAccessFees: false,
         user: null,
         token: null,
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: null,
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -78,10 +89,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'HEAD_COACH',
+        activeRole: 'HEAD_COACH',
+        canAccessFees: true,
         user: { id: 'user-1', name: 'Test User', role: 'HEAD_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -101,10 +117,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'HEAD_COACH',
+        activeRole: 'HEAD_COACH',
+        canAccessFees: true,
         user: { id: 'user-1', name: 'Test User', role: 'HEAD_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -125,10 +146,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'STUDENT',
+        activeRole: 'STUDENT',
+        canAccessFees: false,
         user: { id: 'user-2', name: 'Student', role: 'STUDENT' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -148,10 +174,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'HEAD_COACH',
+        activeRole: 'HEAD_COACH',
+        canAccessFees: true,
         user: { id: 'user-1', name: 'Coach', role: 'HEAD_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -170,10 +201,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'ASSISTANT_COACH',
+        activeRole: 'ASSISTANT_COACH',
+        canAccessFees: false,
         user: { id: 'user-2', name: 'Assistant', role: 'ASSISTANT_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -192,10 +228,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'STUDENT',
+        activeRole: 'STUDENT',
+        canAccessFees: false,
         user: { id: 'user-3', name: 'Student', role: 'STUDENT' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -214,10 +255,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'STUDENT',
+        activeRole: 'STUDENT',
+        canAccessFees: false,
         user: { id: 'user-3', name: 'Student', role: 'STUDENT' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -236,10 +282,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'ASSISTANT_COACH',
+        activeRole: 'ASSISTANT_COACH',
+        canAccessFees: false,
         user: { id: 'user-2', name: 'Assistant', role: 'ASSISTANT_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       const allowedRoles = ['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT'] as const;
@@ -262,10 +313,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'HEAD_COACH',
+        activeRole: 'HEAD_COACH',
+        canAccessFees: true,
         user: { id: 'user-1', name: 'Coach', role: 'HEAD_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -286,10 +342,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: 'HEAD_COACH',
+        activeRole: 'HEAD_COACH',
+        canAccessFees: true,
         user: { id: 'user-1', name: 'Coach', role: 'HEAD_COACH' },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: 'center-1',
+        switchCenter: vi.fn(),
       });
 
       render(
@@ -309,10 +370,15 @@ describe('ProtectedRoute Component', () => {
       mockUseAuth.mockReturnValue({
         isAuthenticated: true,
         role: null,
+        activeRole: null,
+        canAccessFees: false,
         user: { id: 'user-1', name: 'User', role: null },
         token: 'test-token',
         login: vi.fn(),
         logout: vi.fn(),
+        memberships: [],
+        activeCenterId: null,
+        switchCenter: vi.fn(),
       });
 
       render(

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import CenterSwitcher from './CenterSwitcher';
 import './TopNav.css';
 
 /**
@@ -70,7 +71,9 @@ const STUDENT_NAV: NavEntry[] = [
 // --- Component ---
 
 export const TopNav: React.FC = () => {
-  const { user, role, canAccessFees, logout } = useAuth();
+  const { user, activeRole, canAccessFees, logout } = useAuth();
+  // Use activeRole for center-aware navigation visibility (Requirements: 3.2)
+  const role = activeRole;
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -269,8 +272,11 @@ export const TopNav: React.FC = () => {
           })}
         </div>
 
-        {/* Right side: Profile Avatar & Mobile Toggle */}
+        {/* Right side: Center Switcher, Profile Avatar & Mobile Toggle */}
         <div className="topnav__right">
+          {/* Center Switcher — only for non-ADMIN authenticated users (Requirement 2.1) */}
+          {role && role !== 'ADMIN' && <CenterSwitcher />}
+
           {/* Profile Avatar */}
           <div className="topnav__profile" ref={profileRef}>
             <button

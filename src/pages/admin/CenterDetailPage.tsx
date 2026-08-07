@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/apiClient';
+import { useAuth } from '../../contexts/AuthContext';
 import type { Center } from '../../types';
 import './CenterDetailPage.css';
 
@@ -38,8 +39,22 @@ export const CenterDetailPage: React.FC = () => {
   const [coachError, setCoachError] = useState<string | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
 
+  // Coach action state (invite / password reset)
+  const [isInviting, setIsInviting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [coachActionSuccess, setCoachActionSuccess] = useState<string | null>(null);
+
   // Activation state
   const [isToggling, setIsToggling] = useState(false);
+
+  // Slug editing state
+  const [slugValue, setSlugValue] = useState('');
+  const [slugError, setSlugError] = useState<string | null>(null);
+  const [slugSuccess, setSlugSuccess] = useState(false);
+  const [isSavingSlug, setIsSavingSlug] = useState(false);
+
+  const { role } = useAuth();
+  const isAdmin = role === 'ADMIN';
 
   const fetchCenter = useCallback(async () => {
     if (!id) return;
@@ -81,6 +96,97 @@ export const CenterDetailPage: React.FC = () => {
   useEffect(() => {
     void fetchCenter();
   }, [fetchCenter]);
+
+  // Sync slug value when center loads
+  useEffect(() => {
+    if (center?.slug) {
+      setSlugValue(center.slug);
+    }
+  }, [center?.slug]);
+
+  /**
+   * Validate slug format:
+   * - 3–50 characters
+   * - Lowercase alphanumeric and hyphens only
+   * - Starts and ends with alphanumeric character
+   * - No consecutive hyphens
+   */
+  const validateSlug = (slug: string): string | null => {
+    if (slug.length < 3 || slug.length > 50) {
+      return 'Slug must be between 3 and 50 characters';
+    }
+    if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(slug) && slug.length >= 3) {
+      if (!/^[a-z0-9]/.test(slug)) {
+        return 'Slug must start with a lowercase letter or number';
+      }
+      if (!/[a-z0-9]$/.test(slug)) {
+        return 'Slug must end with a lowercase letter or number';
+      }
+      if (/[^a-z0-9-]/.test(slug)) {
+        return 'Slug can only contain lowercase letters, numbers, and hyphens';
+      }
+    }
+    if (/--/.test(slug)) {
+      return 'Slug must not contain consecutive hyphens';
+    }
+    return null;
+  };
+
+  // Save slug
+  const handleSlugSave = async () => {
+    if (!id || !center) return;
+
+    const trimmedSlug = slugValue.trim();
+
+    // Client-side format validation
+    const formatError = validateSlug(trimmedSlug);
+    if (formatError) {
+      setSlugError(formatError);
+      setSlugSuccess(false);
+      return;
+    }
+
+    // No change, skip
+    if (trimmedSlug === center.slug) {
+      setSlugError(null);
+      setSlugSuccess(false);
+      return;
+    }
+
+    try {
+      setIsSavingSlug(true);
+      setSlugError(null);
+      setSlugSuccess(false);
+
+      await apiClient.patch(`/admin/centers/${id}`, { slug: trimmedSlug });
+
+      setSlugSuccess(true);
+      // Refresh center data to get updated slug
+      await fetchCenter();
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSlugSuccess(false), 3000);
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err
+      ) {
+        const response = (err as { response?: { status?: number; data?: { error?: string } } }).response;
+        if (response?.status === 409) {
+          setSlugError('This slug is already taken');
+        } else if (response?.data?.error) {
+          setSlugError(response.data.error);
+        } else {
+          setSlugError('Failed to update slug');
+        }
+      } else {
+        setSlugError('Failed to update slug');
+      }
+    } finally {
+      setIsSavingSlug(false);
+    }
+  };
 
   // Start editing
   const handleEditStart = () => {
@@ -207,6 +313,62 @@ export const CenterDetailPage: React.FC = () => {
     }
   };
 
+  // Send invite email to head coach
+  const handleSendInvite = async () => {
+    if (!id) return;
+
+    try {
+      setIsInviting(true);
+      setCoachError(null);
+      setCoachActionSuccess(null);
+      await apiClient.post(`/admin/centers/${id}/invite-coach`);
+      setCoachActionSuccess('Invite email sent successfully');
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      ) {
+        setCoachError(
+          (err as { response: { data: { error: string } } }).response.data.error
+        );
+      } else {
+        setCoachError('Failed to send invite email');
+      }
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
+  // Send password reset to head coach
+  const handleSendPasswordReset = async () => {
+    if (!id) return;
+
+    try {
+      setIsResetting(true);
+      setCoachError(null);
+      setCoachActionSuccess(null);
+      await apiClient.post(`/admin/centers/${id}/reset-coach-password`);
+      setCoachActionSuccess('Password reset email sent successfully');
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      ) {
+        setCoachError(
+          (err as { response: { data: { error: string } } }).response.data.error
+        );
+      } else {
+        setCoachError('Failed to send password reset email');
+      }
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   // Toggle activation
   const handleToggleActive = async () => {
     if (!id || !center) return;
@@ -326,6 +488,57 @@ export const CenterDetailPage: React.FC = () => {
             <p>{editError}</p>
           </div>
         )}
+
+        {/* Slug Field — always visible, independently editable for ADMIN */}
+        <div className="center-detail-page__slug-section">
+          <div className="center-detail-page__field">
+            <label className="center-detail-page__label" htmlFor="slug-field">
+              Slug
+            </label>
+            {isAdmin ? (
+              <div className="center-detail-page__slug-edit">
+                <input
+                  id="slug-field"
+                  className={`center-detail-page__input ${slugError ? 'center-detail-page__input--error' : ''}`}
+                  type="text"
+                  value={slugValue}
+                  onChange={(e) => {
+                    setSlugValue(e.target.value.toLowerCase());
+                    if (slugError) setSlugError(null);
+                    if (slugSuccess) setSlugSuccess(false);
+                  }}
+                  placeholder="e.g. my-center-name"
+                  maxLength={50}
+                  aria-describedby="slug-help slug-error"
+                />
+                <button
+                  className="center-detail-page__slug-save-btn"
+                  onClick={handleSlugSave}
+                  disabled={isSavingSlug || slugValue === center.slug}
+                >
+                  {isSavingSlug ? 'Saving...' : 'Save Slug'}
+                </button>
+              </div>
+            ) : (
+              <span className="center-detail-page__info-value" id="slug-field">
+                {center.slug || '—'}
+              </span>
+            )}
+            <span id="slug-help" className="center-detail-page__slug-help">
+              3–50 characters, lowercase letters, numbers, and hyphens. Must start and end with a letter or number. No consecutive hyphens.
+            </span>
+            {slugError && (
+              <span id="slug-error" className="center-detail-page__slug-error" role="alert">
+                {slugError}
+              </span>
+            )}
+            {slugSuccess && (
+              <span className="center-detail-page__slug-success" role="status">
+                Slug updated successfully
+              </span>
+            )}
+          </div>
+        </div>
 
         {isEditing ? (
           <div className="center-detail-page__edit-form">
@@ -465,27 +678,84 @@ export const CenterDetailPage: React.FC = () => {
           </div>
         )}
 
+        {coachActionSuccess && (
+          <div className="center-detail-page__inline-success">
+            <p>{coachActionSuccess}</p>
+          </div>
+        )}
+
         {center.headCoachId ? (
           <div className="center-detail-page__coach-assigned">
             <div className="center-detail-page__coach-info">
               <span className="center-detail-page__coach-badge">Assigned</span>
+              <span className="center-detail-page__coach-email">
+                {center.headCoachEmail || (
+                  <span className="center-detail-page__no-email">No email on file</span>
+                )}
+              </span>
               <span className="center-detail-page__coach-id">
-                Coach ID: {center.headCoachId}
+                ID: {center.headCoachId}
               </span>
             </div>
-            <button
-              className="center-detail-page__unassign-btn"
-              onClick={handleUnassignCoach}
-              disabled={isAssigning}
-            >
-              {isAssigning ? 'Removing...' : 'Unassign'}
-            </button>
+            <div className="center-detail-page__coach-actions">
+              {!center.headCoachEmail && (
+                <div className="center-detail-page__coach-warning">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  <span>Email actions unavailable — no email on file</span>
+                </div>
+              )}
+              <div className="center-detail-page__coach-action-buttons">
+                <button
+                  className="center-detail-page__invite-btn"
+                  onClick={handleSendInvite}
+                  disabled={isInviting || !center.headCoachEmail}
+                  title={!center.headCoachEmail ? 'Head coach has no email on file' : 'Send invite email to head coach'}
+                >
+                  {isInviting ? 'Sending...' : 'Send Invite'}
+                </button>
+                <button
+                  className="center-detail-page__reset-btn"
+                  onClick={handleSendPasswordReset}
+                  disabled={isResetting || !center.headCoachEmail}
+                  title={!center.headCoachEmail ? 'Head coach has no email on file' : 'Send password reset to head coach'}
+                >
+                  {isResetting ? 'Sending...' : 'Send Password Reset'}
+                </button>
+                <button
+                  className="center-detail-page__unassign-btn"
+                  onClick={handleUnassignCoach}
+                  disabled={isAssigning}
+                >
+                  {isAssigning ? 'Removing...' : 'Unassign'}
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="center-detail-page__coach-unassigned">
             <p className="center-detail-page__no-coach-text">
               No head coach assigned
             </p>
+            <div className="center-detail-page__coach-action-buttons">
+              <button
+                className="center-detail-page__invite-btn"
+                disabled
+                title="No head coach assigned"
+              >
+                Send Invite
+              </button>
+              <button
+                className="center-detail-page__reset-btn"
+                disabled
+                title="No head coach assigned"
+              >
+                Send Password Reset
+              </button>
+            </div>
             <div className="center-detail-page__assign-form">
               <input
                 className="center-detail-page__input"
