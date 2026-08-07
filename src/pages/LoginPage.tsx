@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../types';
-import '../styles/pages.css';
 
 /**
  * LoginPage Component
- * Displays login form with username/password inputs and role-based redirect
- * Validates: Required fields, invalid credentials
- * Redirects: ADMIN → /admin/dashboard, HEAD_COACH/ASSISTANT_COACH → /dashboard, STUDENT → /student-dashboard
+ * Full-screen badminton imagery with a floating login modal on the right.
+ * Clean single-user login form without demo credentials.
  */
 
 interface FormState {
@@ -22,11 +20,6 @@ interface FormErrors {
   general?: string;
 }
 
-/**
- * Determine redirect path based on user role
- * @param role - User role after successful login
- * @returns redirect path
- */
 const getRedirectPath = (role: UserRole): string => {
   switch (role) {
     case 'ADMIN':
@@ -42,6 +35,14 @@ const getRedirectPath = (role: UserRole): string => {
   }
 };
 
+// Badminton-related background images (Unsplash - free to use)
+const BACKGROUND_IMAGES = [
+  'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1920&q=80',
+  'https://images.unsplash.com/photo-1613918431703-aa50889e3be4?auto=format&fit=crop&w=1920&q=80',
+  'https://images.unsplash.com/photo-1599391398131-cd12dfc6c24e?auto=format&fit=crop&w=1920&q=80',
+  'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1920&q=80',
+];
+
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login, isAuthenticated, role } = useAuth();
@@ -54,6 +55,15 @@ export const LoginPage: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasAttempted, setHasAttempted] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Background image slideshow
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -63,43 +73,24 @@ export const LoginPage: React.FC = () => {
     }
   }, [isAuthenticated, role, navigate]);
 
-  /**
-   * Validate form fields
-   * @returns true if form is valid, false otherwise
-   */
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = 'Password is required';
-    }
-
+    if (!formData.username.trim()) newErrors.username = 'Username is required';
+    if (!formData.password.trim()) newErrors.password = 'Password is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  /**
-   * Handle form submission
-   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setHasAttempted(true);
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsLoading(true);
     setErrors({});
 
     try {
-      // Call login from AuthContext
       await login(formData.username, formData.password);
-      // Redirect happens automatically via useEffect when isAuthenticated/role changes
     } catch (error) {
       setErrors({
         general: error instanceof Error ? error.message : 'Login failed. Please try again.',
@@ -108,137 +99,249 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  /**
-   * Handle input change
-   */
   const handleInputChange = (field: keyof FormState, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear error for this field on new input
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (hasAttempted && errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: undefined,
-      }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   return (
-    <div className="page-container login-page">
-      <div className="login-page__container">
-        <div className="login-page__card">
-          {/* Header */}
-          <div className="login-page__header">
-            <h1 className="login-page__title">LoveAll</h1>
-            <p className="login-page__subtitle">Badminton Training Management</p>
+    <div style={styles.container}>
+      {/* Full-screen background images */}
+      {BACKGROUND_IMAGES.map((url, index) => (
+        <div
+          key={url}
+          style={{
+            ...styles.bgImage,
+            backgroundImage: `url(${url})`,
+            opacity: index === currentImageIndex ? 1 : 0,
+          }}
+        />
+      ))}
+
+      {/* Dark overlay for readability */}
+      <div style={styles.overlay} />
+
+      {/* Floating login modal on the right */}
+      <div style={styles.modalWrapper}>
+        <div style={styles.modal}>
+          {/* Brand */}
+          <div style={styles.brandSection}>
+            <h1 style={styles.brandName}>LoveAll</h1>
+            <p style={styles.brandTagline}>Badminton Training Management</p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="login-page__form" noValidate>
-            {/* General Error Message */}
+          <form onSubmit={handleSubmit} noValidate style={styles.form}>
             {errors.general && (
-              <div className="alert-base alert--danger" role="alert">
-                <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 6v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <div className="alert-base__content">
-                  <div className="alert-base__title">{errors.general}</div>
-                </div>
+              <div style={styles.errorBanner}>
+                <span>{errors.general}</span>
               </div>
             )}
 
-            {/* Username Field */}
-            <div className="login-page__form-group">
-              <label htmlFor="username" className="label-base label-base--required">
-                Username
-              </label>
+            <div style={styles.formGroup}>
+              <label htmlFor="username" style={styles.label}>Username</label>
               <input
                 id="username"
                 type="text"
-                className={`input-base ${errors.username ? 'input-base--error' : ''}`}
+                style={{
+                  ...styles.input,
+                  ...(errors.username ? styles.inputError : {}),
+                }}
                 placeholder="Enter your username"
                 value={formData.username}
                 onChange={(e) => handleInputChange('username', e.target.value)}
                 disabled={isLoading}
-                required
                 autoComplete="username"
               />
               {hasAttempted && errors.username && (
-                <span className="error-text">{errors.username}</span>
+                <span style={styles.fieldError}>{errors.username}</span>
               )}
             </div>
 
-            {/* Password Field */}
-            <div className="login-page__form-group">
-              <label htmlFor="password" className="label-base label-base--required">
-                Password
-              </label>
+            <div style={styles.formGroup}>
+              <label htmlFor="password" style={styles.label}>Password</label>
               <input
                 id="password"
                 type="password"
-                className={`input-base ${errors.password ? 'input-base--error' : ''}`}
+                style={{
+                  ...styles.input,
+                  ...(errors.password ? styles.inputError : {}),
+                }}
                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 disabled={isLoading}
-                required
                 autoComplete="current-password"
               />
               {hasAttempted && errors.password && (
-                <span className="error-text">{errors.password}</span>
+                <span style={styles.fieldError}>{errors.password}</span>
               )}
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              className="btn-base btn--primary btn--md btn--full"
+              style={{
+                ...styles.submitBtn,
+                ...(isLoading ? styles.submitBtnDisabled : {}),
+              }}
               disabled={isLoading}
-              aria-busy={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <span className="login-page__spinner" aria-hidden="true"></span>
-                  Logging in...
-                </>
-              ) : (
-                'Sign In'
-              )}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </button>
 
-            {/* Forgot Password Link */}
-            <div style={{ textAlign: 'center', marginTop: 'var(--space-sm)' }}>
-              <Link to="/forgot-password" style={{ color: 'var(--color-primary-dark)', fontSize: 'var(--font-small)', textDecoration: 'none', fontWeight: 'var(--weight-medium)' }}>
+            <div style={styles.forgotLink}>
+              <Link to="/forgot-password" style={styles.link}>
                 Forgot Password?
               </Link>
             </div>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="login-page__demo-credentials">
-            <p className="login-page__demo-title">Demo Credentials</p>
-            <div className="login-page__credential-list">
-              <div className="login-page__credential-item">
-                <span className="login-page__credential-role">Head Coach:</span>
-                <span className="login-page__credential-value">headcoach / password123</span>
-              </div>
-              <div className="login-page__credential-item">
-                <span className="login-page__credential-role">Assistant Coach:</span>
-                <span className="login-page__credential-value">assistant1 / password123</span>
-              </div>
-              <div className="login-page__credential-item">
-                <span className="login-page__credential-role">Student:</span>
-                <span className="login-page__credential-value">aarav / password123</span>
-              </div>
-            </div>
+          {/* Footer */}
+          <div style={styles.footer}>
+            <span style={styles.footerText}>Powered by ShuttleCoach</span>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+// Inline styles for the login page (self-contained, no CSS file dependency)
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    position: 'relative',
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  bgImage: {
+    position: 'absolute',
+    inset: 0,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    transition: 'opacity 1.5s ease-in-out',
+  },
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  modalWrapper: {
+    position: 'relative',
+    zIndex: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    marginRight: '5vw',
+  },
+  modal: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backdropFilter: 'blur(12px)',
+    borderRadius: '16px',
+    padding: '40px 36px',
+    width: '100%',
+    maxWidth: '380px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+  },
+  brandSection: {
+    textAlign: 'center' as const,
+    marginBottom: '32px',
+  },
+  brandName: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: '#1a1a1a',
+    margin: '0 0 4px',
+    letterSpacing: '-0.5px',
+  },
+  brandTagline: {
+    fontSize: '14px',
+    color: '#6b7280',
+    margin: 0,
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '20px',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '6px',
+  },
+  label: {
+    fontSize: '13px',
+    fontWeight: 500,
+    color: '#374151',
+  },
+  input: {
+    width: '100%',
+    padding: '12px 14px',
+    fontSize: '14px',
+    border: '1px solid #d1d5db',
+    borderRadius: '8px',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    backgroundColor: '#fff',
+    boxSizing: 'border-box' as const,
+  },
+  inputError: {
+    borderColor: '#ef4444',
+  },
+  fieldError: {
+    fontSize: '12px',
+    color: '#ef4444',
+  },
+  errorBanner: {
+    padding: '10px 14px',
+    backgroundColor: '#fef2f2',
+    border: '1px solid #fecaca',
+    borderRadius: '8px',
+    color: '#dc2626',
+    fontSize: '13px',
+  },
+  submitBtn: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+    backgroundColor: '#4f46e5',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+    marginTop: '4px',
+  },
+  submitBtnDisabled: {
+    opacity: 0.7,
+    cursor: 'not-allowed',
+  },
+  forgotLink: {
+    textAlign: 'center' as const,
+  },
+  link: {
+    fontSize: '13px',
+    color: '#4f46e5',
+    textDecoration: 'none',
+    fontWeight: 500,
+  },
+  footer: {
+    textAlign: 'center' as const,
+    marginTop: '28px',
+    paddingTop: '16px',
+    borderTop: '1px solid #e5e7eb',
+  },
+  footerText: {
+    fontSize: '12px',
+    color: '#9ca3af',
+  },
 };
 
 export default LoginPage;

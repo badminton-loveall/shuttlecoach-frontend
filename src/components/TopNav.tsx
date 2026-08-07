@@ -31,13 +31,18 @@ function isDropdown(entry: NavEntry): entry is NavDropdown {
 
 const COACH_NAV: NavEntry[] = [
   { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Students', path: '/students' },
+  {
+    label: 'People',
+    items: [
+      { label: 'Students', path: '/students' },
+      // Coaches sub-item is added dynamically for HEAD_COACH
+    ],
+  },
   {
     label: 'Training',
     items: [
       { label: 'Calendar', path: '/calendar' },
       { label: 'Attendance', path: '/attendance' },
-      { label: 'Leave Requests', path: '/leave-requests' },
       { label: 'Analytics', path: '/training-analytics' },
     ],
   },
@@ -46,7 +51,6 @@ const COACH_NAV: NavEntry[] = [
     label: 'Finance',
     items: [
       { label: 'Fees', path: '/fees' },
-      // Coaches sub-item is added dynamically for HEAD_COACH
     ],
   },
 ];
@@ -115,16 +119,29 @@ export const TopNav: React.FC = () => {
 
     // Coach roles
     return COACH_NAV.map((entry) => {
+      if (isDropdown(entry) && entry.label === 'People') {
+        let items = [...entry.items];
+        // Add Coaches sub-item for HEAD_COACH
+        if (role === 'HEAD_COACH') {
+          items = [...items, { label: 'Coaches', path: '/coaches' }];
+        }
+        return { ...entry, items };
+      }
+
+      if (isDropdown(entry) && entry.label === 'Training') {
+        let items = [...entry.items];
+        // Leave Requests only for HEAD_COACH (center admin privilege)
+        if (role === 'HEAD_COACH') {
+          items = [...items.slice(0, 2), { label: 'Leave Requests', path: '/leave-requests' }, ...items.slice(2)];
+        }
+        return { ...entry, items };
+      }
+
       if (isDropdown(entry) && entry.label === 'Finance') {
         // Filter fees link based on canAccessFees permission
         let items = canAccessFees
           ? entry.items
           : entry.items.filter((item) => item.path !== '/fees');
-
-        // Add Coaches sub-item for HEAD_COACH
-        if (role === 'HEAD_COACH') {
-          items = [...items, { label: 'Coaches', path: '/coaches' }];
-        }
 
         // If no items remain after filtering, exclude the dropdown entirely
         if (items.length === 0) {
@@ -181,9 +198,6 @@ export const TopNav: React.FC = () => {
   const isDropdownActive = (entry: NavDropdown): boolean => {
     return entry.items.some((item) => location.pathname === item.path);
   };
-
-  // Profile link for coaches
-  const profilePath = role === 'STUDENT' ? null : `/coaches/${user?.id}`;
 
   return (
     <nav className="topnav">
@@ -276,15 +290,10 @@ export const TopNav: React.FC = () => {
                   <span className="topnav__profile-role">{role?.replace('_', ' ') || 'Guest'}</span>
                 </div>
                 <div className="topnav__profile-divider" />
-                {profilePath && (
-                  <Link to={profilePath} className="topnav__profile-item">
-                    My Profile
-                  </Link>
-                )}
-                <Link to="/change-password" className="topnav__profile-item">
-                  Change Password
+                <Link to="/profile" className="topnav__profile-item">
+                  My Profile
                 </Link>
-                {(role === 'HEAD_COACH' || role === 'ASSISTANT_COACH') && (
+                {role === 'HEAD_COACH' && (
                   <Link to="/master-data" className="topnav__profile-item">
                     Settings
                   </Link>

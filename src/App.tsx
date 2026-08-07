@@ -20,6 +20,7 @@ import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
 import HelpPage from './pages/HelpPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
+import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import DesignSystemTestPage from './pages/DesignSystemTestPage';
@@ -158,11 +159,11 @@ function App() {
             }
           />
 
-          {/* Master Data (Head Coach & Assistant Coach) */}
+          {/* Settings (Head Coach only - center admin) */}
           <Route
             path="/master-data"
             element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <MasterDataPage />
               </ProtectedRoute>
             }
@@ -178,11 +179,11 @@ function App() {
             }
           />
 
-          {/* Leave Requests (Head Coach & Assistant Coach) */}
+          {/* Leave Requests (Head Coach only - center admin privilege) */}
           <Route
             path="/leave-requests"
             element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <LeaveRequestsPage />
               </ProtectedRoute>
             }
@@ -263,6 +264,14 @@ function App() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Password Management - Protected Route (all roles) */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'STUDENT', 'ADMIN']}>
+                <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/change-password"
             element={

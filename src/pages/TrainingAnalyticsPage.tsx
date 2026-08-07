@@ -74,6 +74,13 @@ const TrainingAnalyticsPage: React.FC = () => {
     void loadBatches();
   }, []);
 
+  // Auto-select first batch when batches load
+  useEffect(() => {
+    if (batches.length > 0 && !selectedBatchId) {
+      setSelectedBatchId(batches[0].id);
+    }
+  }, [batches, selectedBatchId]);
+
   // ─── Fetch Students (for student selector) ────────────────────────────────
   const studentFilters = useMemo(
     () => (selectedBatchId ? { batch: selectedBatchId } : undefined),
@@ -166,9 +173,9 @@ const TrainingAnalyticsPage: React.FC = () => {
               boxShadow: 'var(--shadow-card)',
             }}
           >
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-md)', alignItems: 'flex-end' }}>
               {/* Cycle Key Input */}
-              <div className="flex-1">
+              <div style={{ flex: '1 1 150px', minWidth: '140px' }}>
                 <label
                   htmlFor="analytics-cycle-key"
                   className="block text-sm font-medium mb-1"
@@ -192,7 +199,7 @@ const TrainingAnalyticsPage: React.FC = () => {
               </div>
 
               {/* Batch Selector */}
-              <div className="flex-1">
+              <div style={{ flex: '1 1 150px', minWidth: '140px' }}>
                 <label
                   htmlFor="analytics-batch"
                   className="block text-sm font-medium mb-1"
@@ -224,7 +231,7 @@ const TrainingAnalyticsPage: React.FC = () => {
               </div>
 
               {/* Student Selector (for trends tab) */}
-              <div className="flex-1">
+              <div style={{ flex: '1 1 150px', minWidth: '140px' }}>
                 <label
                   htmlFor="analytics-student"
                   className="block text-sm font-medium mb-1"
@@ -256,7 +263,7 @@ const TrainingAnalyticsPage: React.FC = () => {
               {/* Date Range (for patterns) */}
               {activeTab === 'patterns' && (
                 <>
-                  <div className="flex-1">
+                  <div style={{ flex: '1 1 130px', minWidth: '130px' }}>
                     <label
                       htmlFor="analytics-start-date"
                       className="block text-sm font-medium mb-1"
@@ -277,7 +284,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                       }}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div style={{ flex: '1 1 130px', minWidth: '130px' }}>
                     <label
                       htmlFor="analytics-end-date"
                       className="block text-sm font-medium mb-1"
