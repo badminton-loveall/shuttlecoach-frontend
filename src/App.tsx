@@ -26,6 +26,11 @@ import LeaveRequestsPage from './pages/LeaveRequestsPage';
 import TrainingAnalyticsPage from './pages/TrainingAnalyticsPage';
 import SessionCalendarPage from './pages/SessionCalendarPage';
 import BatchSchedulePage from './pages/BatchSchedulePage';
+import AdminLayout from './layouts/AdminLayout';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import CentersListPage from './pages/admin/CentersListPage';
+import CreateCenterPage from './pages/admin/CreateCenterPage';
+import CenterDetailPage from './pages/admin/CenterDetailPage';
 import './App.css';
 
 /**
@@ -237,6 +242,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Admin Routes (ADMIN role only) */}
+          <Route path="/admin" element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="dashboard" element={<AdminDashboardPage />} />
+            <Route path="centers" element={<CentersListPage />} />
+            <Route path="centers/new" element={<CreateCenterPage />} />
+            <Route path="centers/:id" element={<CenterDetailPage />} />
+          </Route>
 
           {/* Access Denied Page */}
           <Route path="/access-denied" element={<AccessDeniedPage />} />

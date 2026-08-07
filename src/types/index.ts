@@ -7,7 +7,7 @@
    USER & AUTHENTICATION TYPES
    ============================================================================ */
 
-export type UserRole = 'HEAD_COACH' | 'ASSISTANT_COACH' | 'STUDENT';
+export type UserRole = 'ADMIN' | 'HEAD_COACH' | 'ASSISTANT_COACH' | 'STUDENT';
 
 export interface User {
   id: string;
@@ -29,10 +29,30 @@ export interface User {
 export interface AuthContext {
   user: User | null;
   role: UserRole | null;
+  centerId: string | null; // null for ADMIN users
   token: string | null;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+}
+
+/* ============================================================================
+   CENTER TYPES
+   ============================================================================ */
+
+export interface Center {
+  id: string;
+  name: string;
+  location: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  logoUrl?: string;
+  isActive: boolean;
+  headCoachId?: string;
+  planType?: string;
+  subscriptionExpiresAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 /* ============================================================================

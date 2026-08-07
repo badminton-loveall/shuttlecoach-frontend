@@ -1,0 +1,211 @@
+/* ============================================================================
+   CreateCenterPage Styles
+   Uses design tokens consistent with AdminLayout
+   ============================================================================ */
+
+.create-center-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 640px;
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.create-center-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.create-center-page__title {
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.create-center-page__subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ============================================================================
+   Server Error
+   ============================================================================ */
+
+.create-center-page__server-error {
+  padding: var(--space-md) var(--space-lg);
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-error, #ef4444);
+  font-size: var(--font-sm);
+}
+
+.create-center-page__server-error p {
+  margin: 0;
+}
+
+/* ============================================================================
+   Form
+   ============================================================================ */
+
+.create-center-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+
+/* ============================================================================
+   Field
+   ============================================================================ */
+
+.create-center-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.create-center-page__label {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+
+.create-center-page__required {
+  color: var(--color-error, #ef4444);
+}
+
+.create-center-page__input,
+.create-center-page__select {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.create-center-page__input:focus,
+.create-center-page__select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.15);
+}
+
+.create-center-page__input--error {
+  border-color: var(--color-error, #ef4444);
+}
+
+.create-center-page__input--error:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.create-center-page__input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.create-center-page__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-md) center;
+  padding-right: calc(var(--space-md) + 20px);
+  cursor: pointer;
+}
+
+.create-center-page__error-text {
+  font-size: var(--font-xs);
+  color: var(--color-error, #ef4444);
+}
+
+/* ============================================================================
+   Actions
+   ============================================================================ */
+
+.create-center-page__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-default);
+}
+
+.create-center-page__cancel-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.create-center-page__cancel-btn:hover {
+  background-color: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.create-center-page__cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.create-center-page__submit-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.create-center-page__submit-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.25);
+}
+
+.create-center-page__submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .create-center-page__form {
+    padding: var(--space-lg);
+  }
+
+  .create-center-page__actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .create-center-page__cancel-btn,
+  .create-center-page__submit-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

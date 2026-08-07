@@ -15,6 +15,7 @@ interface LoginResponse {
   token: string;
   user: User;
   role: UserRole;
+  centerId?: string;
 }
 
 // Create the Auth Context
@@ -27,6 +28,7 @@ export const AuthContext = createContext<AuthContextInterface | undefined>(undef
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
+  const [centerId, setCenterId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -35,6 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedToken = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('auth_user');
     const storedRole = localStorage.getItem('auth_role');
+    const storedCenterId = localStorage.getItem('auth_center_id');
 
     if (storedToken && storedUser && storedRole) {
       try {
@@ -46,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setUser(parsedUser);
         setRole(parsedRole);
+        setCenterId(storedCenterId);
         setToken(storedToken);
       } catch (error) {
         console.error('Failed to restore auth state from localStorage:', error);
@@ -53,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_user');
         localStorage.removeItem('auth_role');
+        localStorage.removeItem('auth_center_id');
       }
     }
 
@@ -81,16 +86,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         lastActive: new Date(userData.lastActive),
       };
 
+      // Extract centerId from token payload (null for ADMIN users)
+      let userCenterId: string | null = null;
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        userCenterId = payload.centerId || null;
+      } catch {
+        userCenterId = null;
+      }
+
       // Persist to localStorage FIRST (before state updates)
       localStorage.setItem('auth_token', token);
       localStorage.setItem('auth_user', JSON.stringify(userWithParsedDates));
       localStorage.setItem('auth_role', userRole);
+      if (userCenterId) {
+        localStorage.setItem('auth_center_id', userCenterId);
+      } else {
+        localStorage.removeItem('auth_center_id');
+      }
 
       // Store in state (will trigger re-renders)
       // The order matters: token, user, then role so isAuthenticated resolves properly
       setToken(token);
       setUser(userWithParsedDates);
       setRole(userRole);
+      setCenterId(userCenterId);
     } catch (error) {
       console.error('Login error:', error);
       // Re-throw the error so UI can display it
@@ -105,12 +125,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Clear state
     setUser(null);
     setRole(null);
+    setCenterId(null);
     setToken(null);
 
     // Clear localStorage
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     localStorage.removeItem('auth_role');
+    localStorage.removeItem('auth_center_id');
   };
 
   const isAuthenticated = !!user && !!token && !!role;
@@ -118,6 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: AuthContextInterface = {
     user,
     role,
+    centerId,
     token,
     isAuthenticated,
     login,

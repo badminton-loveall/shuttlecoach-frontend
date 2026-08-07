@@ -8,7 +8,7 @@ import '../styles/pages.css';
  * LoginPage Component
  * Displays login form with username/password inputs and role-based redirect
  * Validates: Required fields, invalid credentials
- * Redirects: HEAD_COACH/ASSISTANT_COACH → /dashboard, STUDENT → /student-dashboard
+ * Redirects: ADMIN → /admin/dashboard, HEAD_COACH/ASSISTANT_COACH → /dashboard, STUDENT → /student-dashboard
  */
 
 interface FormState {
@@ -29,6 +29,8 @@ interface FormErrors {
  */
 const getRedirectPath = (role: UserRole): string => {
   switch (role) {
+    case 'ADMIN':
+      return '/admin/dashboard';
     case 'HEAD_COACH':
       return '/dashboard';
     case 'ASSISTANT_COACH':
