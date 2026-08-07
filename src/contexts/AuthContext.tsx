@@ -76,13 +76,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Login function - authenticates user against API
    * @param username - User's username
    * @param password - User's password
+   * @param centerSlug - Optional center slug for branded login validation
    */
-  const login = async (username: string, password: string): Promise<void> => {
+  const login = async (username: string, password: string, centerSlug?: string): Promise<void> => {
     try {
-      // Call API login endpoint
+      // Call API login endpoint, include centerSlug if provided for center-scoped validation
       const response = await apiClient.post<LoginResponse>('/auth/login', {
         username,
         password,
+        ...(centerSlug ? { centerSlug } : {}),
       });
 
       const { token, user: userData, role: userRole } = response.data;

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserRole } from '../types';
+import { getCenterPublicInfo } from '../services/api';
+import type { UserRole, CenterPublicInfo } from '../types';
 
 /**
  * LoginPage Component
  * Full-screen badminton imagery with a floating login modal on the right.
- * Clean single-user login form without demo credentials.
+ * Supports center-branded login when accessed via /login/:centerSlug.
+ * Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 6.1, 6.2, 6.3
  */
 
 interface FormState {
@@ -45,6 +47,7 @@ const BACKGROUND_IMAGES = [
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { centerSlug } = useParams<{ centerSlug?: string }>();
   const { login, isAuthenticated, role } = useAuth();
 
   const [formData, setFormData] = useState<FormState>({
@@ -57,6 +60,11 @@ export const LoginPage: React.FC = () => {
   const [hasAttempted, setHasAttempted] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Center branding state
+  const [centerInfo, setCenterInfo] = useState<CenterPublicInfo | null>(null);
+  const [centerLoading, setCenterLoading] = useState(false);
+  const [centerError, setCenterError] = useState(false);
+
   // Background image slideshow
   useEffect(() => {
     const interval = setInterval(() => {
@@ -64,6 +72,21 @@ export const LoginPage: React.FC = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch center info when centerSlug is present
+  useEffect(() => {
+    if (!centerSlug) return;
+    setCenterLoading(true);
+    getCenterPublicInfo(centerSlug)
+      .then((info) => {
+        setCenterInfo(info);
+        setCenterLoading(false);
+      })
+      .catch(() => {
+        setCenterError(true);
+        setCenterLoading(false);
+      });
+  }, [centerSlug]);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -90,7 +113,7 @@ export const LoginPage: React.FC = () => {
     setErrors({});
 
     try {
-      await login(formData.username, formData.password);
+      await login(formData.username, formData.password, centerSlug);
     } catch (error) {
       setErrors({
         general: error instanceof Error ? error.message : 'Login failed. Please try again.',
@@ -105,6 +128,37 @@ export const LoginPage: React.FC = () => {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
+
+  // Loading state while fetching center info
+  if (centerSlug && centerLoading) {
+    return (
+      <div style={styles.loadingContainer}>
+        <div style={styles.spinner} />
+        <p style={styles.loadingText}>Loading...</p>
+      </div>
+    );
+  }
+
+  // Center not found error state
+  if (centerSlug && centerError) {
+    return (
+      <div style={styles.errorContainer}>
+        <div style={styles.errorCard}>
+          <h1 style={styles.errorTitle}>Center not found</h1>
+          <p style={styles.errorMessage}>
+            The center you are looking for does not exist or is no longer available.
+          </p>
+          <Link to="/login" style={styles.errorLink}>
+            Go to login page
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Determine branding: use center info if available, otherwise default
+  const brandName = centerInfo?.name ?? 'LoveAll';
+  const brandLogoUrl = centerInfo?.logoUrl ?? null;
 
   return (
     <div style={styles.container}>
@@ -128,7 +182,14 @@ export const LoginPage: React.FC = () => {
         <div style={styles.modal}>
           {/* Brand */}
           <div style={styles.brandSection}>
-            <h1 style={styles.brandName}>LoveAll</h1>
+            {brandLogoUrl && (
+              <img
+                src={brandLogoUrl}
+                alt={`${brandName} logo`}
+                style={styles.brandLogo}
+              />
+            )}
+            <h1 style={styles.brandName}>{brandName}</h1>
             <p style={styles.brandTagline}>Badminton Training Management</p>
           </div>
 
@@ -253,6 +314,13 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center' as const,
     marginBottom: '32px',
   },
+  brandLogo: {
+    width: '64px',
+    height: '64px',
+    objectFit: 'contain' as const,
+    marginBottom: '12px',
+    borderRadius: '8px',
+  },
   brandName: {
     fontSize: '28px',
     fontWeight: 700,
@@ -341,6 +409,68 @@ const styles: Record<string, React.CSSProperties> = {
   footerText: {
     fontSize: '12px',
     color: '#9ca3af',
+  },
+  // Loading state styles
+  loadingContainer: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f9fafb',
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '4px solid #e5e7eb',
+    borderTopColor: '#4f46e5',
+    borderRadius: '50%',
+    animation: 'spin 0.8s linear infinite',
+  },
+  loadingText: {
+    marginTop: '16px',
+    fontSize: '14px',
+    color: '#6b7280',
+  },
+  // Error state styles
+  errorContainer: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f9fafb',
+  },
+  errorCard: {
+    textAlign: 'center' as const,
+    padding: '48px 36px',
+    backgroundColor: '#fff',
+    borderRadius: '16px',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    maxWidth: '400px',
+  },
+  errorTitle: {
+    fontSize: '24px',
+    fontWeight: 700,
+    color: '#1a1a1a',
+    margin: '0 0 12px',
+  },
+  errorMessage: {
+    fontSize: '14px',
+    color: '#6b7280',
+    margin: '0 0 24px',
+    lineHeight: 1.5,
+  },
+  errorLink: {
+    display: 'inline-block',
+    padding: '10px 24px',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+    backgroundColor: '#4f46e5',
+    borderRadius: '8px',
+    textDecoration: 'none',
   },
 };
 

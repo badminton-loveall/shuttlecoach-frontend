@@ -2,20 +2,22 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import BatchesTab from '../components/BatchesTab';
 import { DrillsTab } from '../components/DrillsTab';
+import CenterSettingsTab from '../components/CenterSettingsTab';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
 /**
- * MasterDataPage
- * Top-level page with tabbed navigation for managing batches and drills.
+ * MasterDataPage (Settings)
+ * Top-level page with tabbed navigation for managing center settings, batches, and drills.
  * Accessible by HEAD_COACH (full CRUD) and ASSISTANT_COACH (read-only).
  *
- * Requirements: 5.1, 5.2, 5.5, 5.6
+ * Requirements: 5.1, 5.2, 5.5, 5.6, 7.1, 7.6
  */
 export const MasterDataPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'batches' | 'drills'>('batches');
+  const [activeTab, setActiveTab] = useState<'batches' | 'drills' | 'center'>('batches');
   const { role } = useAuth();
   const isReadOnly = role !== 'HEAD_COACH';
+  const canViewCenterTab = role === 'HEAD_COACH' || role === 'ADMIN';
 
   return (
     <DashboardLayout>
@@ -24,13 +26,23 @@ export const MasterDataPage: React.FC = () => {
           {/* Page Header */}
           <div className="page-header">
             <div>
-              <h1 className="page-header-title">Master Data</h1>
-              <p className="page-header-subtitle">Manage batches, drills, and reference data</p>
+              <h1 className="page-header-title">Settings</h1>
+              <p className="page-header-subtitle">Manage center settings, batches, and drills</p>
             </div>
           </div>
 
           {/* Tab Navigation */}
-          <nav className="sp-tab-nav" role="tablist" aria-label="Master data tabs">
+          <nav className="sp-tab-nav" role="tablist" aria-label="Settings tabs">
+            {canViewCenterTab && (
+              <button
+                role="tab"
+                aria-selected={activeTab === 'center'}
+                className={`sp-tab${activeTab === 'center' ? ' sp-tab--active' : ''}`}
+                onClick={() => setActiveTab('center')}
+              >
+                Center
+              </button>
+            )}
             <button
               role="tab"
               aria-selected={activeTab === 'batches'}
@@ -50,6 +62,9 @@ export const MasterDataPage: React.FC = () => {
           </nav>
 
           {/* Tab Content */}
+          {activeTab === 'center' && canViewCenterTab && (
+            <CenterSettingsTab />
+          )}
           {activeTab === 'batches' && (
             <BatchesTab readOnly={isReadOnly} />
           )}

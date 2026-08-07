@@ -127,3 +127,10 @@ body {
     background-color: #E8E6DF !important;
   }
 }
+
+/* Spinner animation for loading states */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

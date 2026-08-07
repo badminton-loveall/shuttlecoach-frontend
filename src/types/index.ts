@@ -34,13 +34,19 @@ export interface AuthContext {
   canAccessFees: boolean;
   token: string | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, centerSlug?: string) => Promise<void>;
   logout: () => void;
 }
 
 /* ============================================================================
    CENTER TYPES
    ============================================================================ */
+
+export interface CenterPublicInfo {
+  name: string;
+  logoUrl: string | null;
+  slug: string;
+}
 
 export interface Center {
   id: string;

@@ -69,6 +69,7 @@ function App() {
           <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login/:centerSlug" element={<LoginPage />} />
           
           {/* Design System Test Page (Dev/Testing - No Auth Required) */}
           <Route path="/design-system" element={<DesignSystemTestPage />} />
