@@ -694,7 +694,7 @@ interface StudentListProps {
 const StudentList: React.FC<StudentListProps> = ({
   students,
   coaches,
-  currentCoachId,
+  currentCoachId: _currentCoachId,
   readOnly,
   onMoveStudent,
 }) => {
