@@ -141,9 +141,76 @@ export function useCreateSessionSchedule() {
    -------------------------------------------------------------------------- */
 
 /**
+ * Template-based session returned from the API when a batch has an assigned template.
+ * Requirements: 8.1, 8.3
+ */
+export interface TemplateSession {
+  date: string;        // YYYY-MM-DD
+  day_of_week: string; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+  start_time: string;  // HH:MM
+  duration_hours: number;
+}
+
+/** API response shape for GET /api/session-calendar */
+interface SessionCalendarResponse {
+  entries: CalendarEntry[];
+  sessions?: TemplateSession[];
+}
+
+/**
+ * Map day_of_week string abbreviation to numeric DayOfWeek (0=Sun, 1=Mon, ... 6=Sat).
+ */
+const DAY_NAME_TO_NUMBER: Record<string, CalendarEntry['dayOfWeek']> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+/**
+ * Compute an end time string (HH:MM) from a start time and duration in hours.
+ */
+function computeEndTime(startTime: string, durationHours: number): string {
+  const [hours, minutes] = startTime.split(':').map(Number);
+  const endHours = hours + durationHours;
+  // Clamp to 23:59 if duration overflows midnight (edge case)
+  if (endHours >= 24) {
+    return '23:59';
+  }
+  return `${String(endHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+/**
+ * Convert a TemplateSession into a CalendarEntry-compatible object.
+ * Template sessions lack batch metadata and curriculum info, so those
+ * fields are set to reasonable defaults. Requirement 8.4: batches without
+ * templates produce no sessions (handled by API returning empty array).
+ */
+function templateSessionToCalendarEntry(session: TemplateSession): CalendarEntry {
+  return {
+    date: session.date,
+    dayOfWeek: DAY_NAME_TO_NUMBER[session.day_of_week] ?? 0,
+    startTime: session.start_time,
+    endTime: computeEndTime(session.start_time, session.duration_hours),
+    batchId: '',
+    batchName: 'Template Session',
+    weekNumber: 0,
+    focusArea: '',
+    drills: [],
+    attendanceRecorded: false,
+  };
+}
+
+/**
  * Hook to fetch calendar entries with mapped curriculum drills for a date range.
+ * Merges both legacy entries and template-based sessions into a unified CalendarEntry array.
  * Results are cached per-session with daily TTL to avoid redundant API calls.
  * Call refetch() to force a fresh fetch (bypasses cache).
+ *
+ * Requirements: 8.1, 8.3, 8.4
  */
 export function useSessionCalendar(filters?: SessionCalendarFilters) {
   const [entries, setEntries] = useState<CalendarEntry[]>([]);
@@ -185,16 +252,31 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
       params.append('endDate', filters.endDate);
       if (filters.batchId) params.append('batchId', filters.batchId);
 
-      const response = await apiClient.get<{ entries: CalendarEntry[] }>(
+      const response = await apiClient.get<SessionCalendarResponse>(
         `/session-calendar?${params.toString()}`
       );
-      const result = response.data.entries || [];
-      setEntries(result);
 
-      // Cache the result
+      // Legacy entries from schedule-based batches
+      const legacyEntries: CalendarEntry[] = response.data.entries || [];
+
+      // Template-based sessions (Req 8.1, 8.3) — convert to CalendarEntry format
+      const templateSessions: CalendarEntry[] = (response.data.sessions || []).map(
+        templateSessionToCalendarEntry
+      );
+
+      // Merge both sources and sort by date then start time
+      const merged = [...legacyEntries, ...templateSessions].sort((a, b) => {
+        const dateCompare = a.date.localeCompare(b.date);
+        if (dateCompare !== 0) return dateCompare;
+        return a.startTime.localeCompare(b.startTime);
+      });
+
+      setEntries(merged);
+
+      // Cache the merged result
       try {
         sessionStorage.setItem(cacheKey, JSON.stringify({
-          data: result,
+          data: merged,
           dateKey: new Date().toISOString().slice(0, 10),
           timestamp: Date.now(),
         }));

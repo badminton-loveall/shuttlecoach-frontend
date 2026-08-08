@@ -16,6 +16,15 @@ interface CenterData {
   id: string;
   name: string;
   slug: string;
+  location?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  logoUrl?: string;
+  isActive?: boolean;
+  planType?: string;
+  subscriptionExpiresAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /**
@@ -74,23 +83,39 @@ const CenterSettingsTab: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await apiClient.get('/admin/centers');
-      const centers = response.data as CenterData[];
-      const myCenter = centers.find((c) => c.id === centerId);
 
-      if (myCenter) {
-        setCenter(myCenter);
-        setSlugValue(myCenter.slug || '');
-        setOriginalSlug(myCenter.slug || '');
+      if (isAdmin) {
+        // ADMIN uses the admin endpoint
+        const response = await apiClient.get('/admin/centers');
+        const centers = response.data as CenterData[];
+        const myCenter = centers.find((c) => c.id === centerId);
+
+        if (myCenter) {
+          setCenter(myCenter);
+          setSlugValue(myCenter.slug || '');
+          setOriginalSlug(myCenter.slug || '');
+        } else {
+          setError('Could not find your center');
+        }
       } else {
-        setError('Could not find your center');
+        // HEAD_COACH / other roles use the memberships/my-center endpoint
+        const response = await apiClient.get('/memberships/my-center');
+        const data = response.data as CenterData;
+
+        if (data) {
+          setCenter(data);
+          setSlugValue(data.slug || '');
+          setOriginalSlug(data.slug || '');
+        } else {
+          setError('Could not find your center');
+        }
       }
     } catch {
       setError('Failed to load center data');
     } finally {
       setLoading(false);
     }
-  }, [centerId]);
+  }, [centerId, isAdmin]);
 
   /**
    * Check if the center already has a pending slug change request.
@@ -319,15 +344,80 @@ const CenterSettingsTab: React.FC = () => {
     );
   }
 
-  // --- HEAD_COACH view: read-only slug with "Request Change" flow ---
+  // --- HEAD_COACH view: full center info + slug request flow ---
   return (
-    <div className="card" style={{ padding: '1.5rem' }}>
-      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
-        Branded Login URL
-      </h3>
-      <p style={{ margin: '0 0 1.5rem 0', fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>
-        Your center's branded login URL for <strong>{center?.name}</strong>.
-      </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Center Information Section */}
+      <div className="card" style={{ padding: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+          Center Information
+        </h3>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Name
+            </span>
+            <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>
+              {center?.name || '—'}
+            </span>
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Location
+            </span>
+            <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>
+              {center?.location || '—'}
+            </span>
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Phone
+            </span>
+            <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>
+              {center?.contactPhone || '—'}
+            </span>
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Email
+            </span>
+            <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)' }}>
+              {center?.contactEmail || '—'}
+            </span>
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Plan
+            </span>
+            <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-primary)', textTransform: 'capitalize' }}>
+              {center?.planType || 'basic'}
+            </span>
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.25rem' }}>
+              Status
+            </span>
+            <span style={{
+              fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)',
+              padding: '2px 8px', borderRadius: 'var(--radius-pill)',
+              backgroundColor: center?.isActive ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+              color: center?.isActive ? '#22c55e' : '#ef4444',
+            }}>
+              {center?.isActive ? 'Active' : 'Inactive'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Branded Login URL / Slug Section */}
+      <div className="card" style={{ padding: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-lg)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+          Branded Login URL
+        </h3>
+        <p style={{ margin: '0 0 1.5rem 0', fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>
+          Your center's branded login URL. Share this link with your coaches and students.
+        </p>
 
       {/* Current Slug (read-only) */}
       <div style={{ marginBottom: '1rem' }}>
@@ -464,6 +554,7 @@ const CenterSettingsTab: React.FC = () => {
           Only Head Coaches can request slug changes.
         </p>
       )}
+      </div>
     </div>
   );
 };

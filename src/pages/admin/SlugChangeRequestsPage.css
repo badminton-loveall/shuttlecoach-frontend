@@ -53,6 +53,13 @@
   border: 1px solid var(--border-default);
 }
 
+.slug-requests-page__empty svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-md);
+  opacity: 0.5;
+}
+
 .slug-requests-page__table-wrapper {
   overflow-x: auto;
   background: var(--surface-card);

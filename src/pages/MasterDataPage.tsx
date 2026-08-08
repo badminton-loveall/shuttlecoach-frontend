@@ -3,6 +3,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import BatchesTab from '../components/BatchesTab';
 import { DrillsTab } from '../components/DrillsTab';
 import CenterSettingsTab from '../components/CenterSettingsTab';
+import TemplatesTab from '../components/TemplatesTab';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
@@ -14,10 +15,14 @@ import '../styles/pages.css';
  * Requirements: 5.1, 5.2, 5.5, 5.6, 7.1, 7.6
  */
 export const MasterDataPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'batches' | 'drills' | 'center'>('batches');
   const { role } = useAuth();
   const isReadOnly = role !== 'HEAD_COACH';
   const canViewCenterTab = role === 'HEAD_COACH' || role === 'ADMIN';
+
+  // Default to 'center' tab when user can view it, otherwise 'batches'
+  const [activeTab, setActiveTab] = useState<'batches' | 'drills' | 'center' | 'templates'>(
+    canViewCenterTab ? 'center' : 'batches'
+  );
 
   return (
     <DashboardLayout>
@@ -27,7 +32,7 @@ export const MasterDataPage: React.FC = () => {
           <div className="page-header">
             <div>
               <h1 className="page-header-title">Settings</h1>
-              <p className="page-header-subtitle">Manage center settings, batches, and drills</p>
+              <p className="page-header-subtitle">Manage center settings, batches, templates, and drills</p>
             </div>
           </div>
 
@@ -53,6 +58,14 @@ export const MasterDataPage: React.FC = () => {
             </button>
             <button
               role="tab"
+              aria-selected={activeTab === 'templates'}
+              className={`sp-tab${activeTab === 'templates' ? ' sp-tab--active' : ''}`}
+              onClick={() => setActiveTab('templates')}
+            >
+              Templates
+            </button>
+            <button
+              role="tab"
               aria-selected={activeTab === 'drills'}
               className={`sp-tab${activeTab === 'drills' ? ' sp-tab--active' : ''}`}
               onClick={() => setActiveTab('drills')}
@@ -67,6 +80,9 @@ export const MasterDataPage: React.FC = () => {
           )}
           {activeTab === 'batches' && (
             <BatchesTab readOnly={isReadOnly} />
+          )}
+          {activeTab === 'templates' && (
+            <TemplatesTab readOnly={isReadOnly} />
           )}
           {activeTab === 'drills' && (
             <DrillsTab readOnly={isReadOnly} />

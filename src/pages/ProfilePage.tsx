@@ -126,159 +126,168 @@ export const ProfilePage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="page-container">
-        <div className="profile-page">
-          {/* Section 1: Profile Info */}
-          <div className="profile-page__card">
-            <div className="profile-page__header">
-              <h1 className="profile-page__title">My Profile</h1>
+        <div className="section-stack">
+          {/* Page Header */}
+          <div className="page-header">
+            <div>
+              <h1 className="page-header-title">My Profile</h1>
+              <p className="page-header-subtitle">Manage your account</p>
             </div>
+          </div>
 
-            <div className="profile-page__info">
-              {/* Avatar */}
-              <div className="profile-page__avatar-section">
+          {/* Two-column layout: Profile + Security side by side on desktop */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.5fr)', gap: '1.25rem', alignItems: 'start' }}>
+            {/* Profile Info Card — compact */}
+            <div className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', textAlign: 'center' }}>
                 {user.profilePhoto ? (
                   <img
                     src={user.profilePhoto}
                     alt={`${user.name}'s profile photo`}
-                    className="profile-page__avatar-img"
+                    style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover' }}
                   />
                 ) : (
-                  <div className="profile-page__avatar-fallback">
+                  <div style={{
+                    width: '56px', height: '56px', borderRadius: '50%',
+                    backgroundColor: 'var(--color-primary)', color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 'var(--font-md)', fontWeight: 'var(--weight-bold)',
+                  }}>
                     {getInitials(user.name)}
                   </div>
                 )}
+                <div>
+                  <p style={{ margin: 0, fontSize: 'var(--font-md)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+                    {user.name}
+                  </p>
+                  <span style={{
+                    display: 'inline-block', marginTop: '4px',
+                    padding: '2px 8px', borderRadius: 'var(--radius-pill)',
+                    fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)',
+                    backgroundColor: 'rgba(184, 225, 53, 0.15)', color: 'var(--color-primary)',
+                  }}>
+                    {formatRole(role)}
+                  </span>
+                </div>
               </div>
 
-              {/* Details */}
-              <div className="profile-page__details">
-                <div className="profile-page__detail-row">
-                  <span className="profile-page__detail-label">Name</span>
-                  <span className="profile-page__detail-value">{user.name}</span>
-                </div>
-                <div className="profile-page__detail-row">
-                  <span className="profile-page__detail-label">Username</span>
-                  <span className="profile-page__detail-value">{user.username}</span>
+              <div style={{ marginTop: '1rem', borderTop: '1px solid var(--border-default)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-sm)' }}>
+                  <span style={{ color: 'var(--text-tertiary)' }}>Username</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 'var(--weight-medium)' }}>{user.username}</span>
                 </div>
                 {user.email && (
-                  <div className="profile-page__detail-row">
-                    <span className="profile-page__detail-label">Email</span>
-                    <span className="profile-page__detail-value">{user.email}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-sm)' }}>
+                    <span style={{ color: 'var(--text-tertiary)' }}>Email</span>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 'var(--weight-medium)' }}>{user.email}</span>
                   </div>
                 )}
-                <div className="profile-page__detail-row">
-                  <span className="profile-page__detail-label">Role</span>
-                  <span className="profile-page__role-badge">{formatRole(role)}</span>
-                </div>
               </div>
             </div>
-          </div>
 
-          {/* Divider */}
-          <div className="profile-page__divider" />
-
-          {/* Section 2: Change Password */}
-          <div className="profile-page__card">
-            <div className="profile-page__header">
-              <h2 className="profile-page__section-title">Security</h2>
-              <p className="profile-page__subtitle">
-                Update your account password. You will need to enter your current password for verification.
+            {/* Security - Change Password Card — compact */}
+            <div className="card" style={{ padding: '1.25rem' }}>
+              <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-md)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+                Change Password
+              </h3>
+              <p style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)' }}>
+                Enter your current password and choose a new one.
               </p>
-            </div>
 
-            {/* Success Message */}
-            {successMessage && (
-              <div className="alert-base alert--success" role="alert">
-                <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill="currentColor"/>
-                </svg>
-                <div className="alert-base__content">
-                  <div className="alert-base__title">{successMessage}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Password Form */}
-            <form onSubmit={handleSubmit} className="profile-page__form" noValidate>
-              {errors.general && (
-                <div className="alert-base alert--danger" role="alert">
-                  <svg className="alert-base__icon" aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM10 6v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <div className="alert-base__content">
-                    <div className="alert-base__title">{errors.general}</div>
-                  </div>
+              {successMessage && (
+                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', fontSize: 'var(--font-sm)' }} role="alert">
+                  {successMessage}
                 </div>
               )}
 
-              <div className="profile-page__form-group">
-                <label htmlFor="currentPassword" className="label-base label-base--required">
-                  Current Password
-                </label>
-                <input
-                  id="currentPassword"
-                  type="password"
-                  className={`input-base ${errors.currentPassword ? 'input-base--error' : ''}`}
-                  placeholder="Enter your current password"
-                  value={formData.currentPassword}
-                  onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                  disabled={isLoading}
-                  required
-                  autoComplete="current-password"
-                />
-                {hasAttempted && errors.currentPassword && (
-                  <span className="error-text">{errors.currentPassword}</span>
-                )}
-              </div>
+              {errors.general && (
+                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontSize: 'var(--font-sm)' }} role="alert">
+                  {errors.general}
+                </div>
+              )}
 
-              <div className="profile-page__form-group">
-                <label htmlFor="newPassword" className="label-base label-base--required">
-                  New Password
-                </label>
-                <input
-                  id="newPassword"
-                  type="password"
-                  className={`input-base ${errors.newPassword ? 'input-base--error' : ''}`}
-                  placeholder="Enter new password (min 8 characters)"
-                  value={formData.newPassword}
-                  onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                  disabled={isLoading}
-                  required
-                  autoComplete="new-password"
-                />
-                {hasAttempted && errors.newPassword && (
-                  <span className="error-text">{errors.newPassword}</span>
-                )}
-              </div>
+              <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div>
+                  <label htmlFor="currentPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                    Current Password <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    className={`input-base ${errors.currentPassword ? 'input-base--error' : ''}`}
+                    placeholder="••••••••"
+                    value={formData.currentPassword}
+                    onChange={(e) => handleInputChange('currentPassword', e.target.value)}
+                    disabled={isLoading}
+                    required
+                    autoComplete="current-password"
+                    style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
+                  />
+                  {hasAttempted && errors.currentPassword && (
+                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.currentPassword}</span>
+                  )}
+                </div>
 
-              <div className="profile-page__form-group">
-                <label htmlFor="confirmPassword" className="label-base label-base--required">
-                  Confirm New Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  className={`input-base ${errors.confirmPassword ? 'input-base--error' : ''}`}
-                  placeholder="Confirm your new password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  disabled={isLoading}
-                  required
-                  autoComplete="new-password"
-                />
-                {hasAttempted && errors.confirmPassword && (
-                  <span className="error-text">{errors.confirmPassword}</span>
-                )}
-              </div>
+                <div>
+                  <label htmlFor="newPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                    New Password <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    className={`input-base ${errors.newPassword ? 'input-base--error' : ''}`}
+                    placeholder="Min 8 characters"
+                    value={formData.newPassword}
+                    onChange={(e) => handleInputChange('newPassword', e.target.value)}
+                    disabled={isLoading}
+                    required
+                    autoComplete="new-password"
+                    style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
+                  />
+                  {hasAttempted && errors.newPassword && (
+                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.newPassword}</span>
+                  )}
+                </div>
 
-              <button
-                type="submit"
-                className="btn-base btn--primary btn--md btn--full"
-                disabled={isLoading}
-                aria-busy={isLoading}
-              >
-                {isLoading ? 'Changing Password...' : 'Change Password'}
-              </button>
-            </form>
+                <div>
+                  <label htmlFor="confirmPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+                    Confirm Password <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    className={`input-base ${errors.confirmPassword ? 'input-base--error' : ''}`}
+                    placeholder="Re-enter new password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    disabled={isLoading}
+                    required
+                    autoComplete="new-password"
+                    style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
+                  />
+                  {hasAttempted && errors.confirmPassword && (
+                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.confirmPassword}</span>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  aria-busy={isLoading}
+                  style={{
+                    marginTop: '0.25rem', padding: '10px 24px', width: 'fit-content',
+                    fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
+                    backgroundColor: isLoading ? 'var(--surface-hover)' : 'var(--color-primary)',
+                    color: isLoading ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                    border: 'none', borderRadius: 'var(--radius-pill)',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s', fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  {isLoading ? 'Updating...' : 'Update Password'}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>

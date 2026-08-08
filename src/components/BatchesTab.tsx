@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../utils/apiClient';
+import CoachAssignmentPanel from './CoachAssignmentPanel';
 import '../styles/pages.css';
 
 /**
@@ -26,6 +27,12 @@ interface BatchRecord {
   start_time?: string;
   end_time?: string;
   description?: string;
+  template_id?: string | null;
+}
+
+interface TemplateOption {
+  id: string;
+  name: string;
 }
 
 interface BatchFormData {
@@ -96,6 +103,12 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
   // Coach list state
   const [coaches, setCoaches] = useState<Coach[]>([]);
 
+  // Template list state for assignment dropdown
+  const [templates, setTemplates] = useState<TemplateOption[]>([]);
+
+  // Expanded batch row state for CoachAssignmentPanel
+  const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null);
+
   const fetchBatches = async () => {
     setLoading(true);
     setError(null);
@@ -136,6 +149,22 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
 
   useEffect(() => {
     fetchCoaches();
+  }, []);
+
+  // Fetch available templates for assignment dropdown
+  const fetchTemplates = async () => {
+    try {
+      const response = await apiClient.get('/batch-time-templates');
+      const data = Array.isArray(response.data) ? response.data : [];
+      setTemplates(data.map((t: any) => ({ id: t.id, name: t.name })));
+    } catch (err) {
+      // Gracefully handle — template dropdown will be empty but page still works
+      console.error('Failed to fetch templates:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTemplates();
   }, []);
 
   const resetForm = () => {
@@ -343,6 +372,27 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Handle template assignment change for a batch
+  const handleTemplateAssign = async (batchId: string, templateId: string | null) => {
+    try {
+      await apiClient.patch(`/batches/${batchId}`, { template_id: templateId });
+      // Update local state to reflect the change
+      setBatches(prev =>
+        prev.map(b => b.id === batchId ? { ...b, template_id: templateId } : b)
+      );
+      setSuccessMessage('Template assignment updated');
+    } catch (err: any) {
+      setError(err?.response?.data?.error || 'Failed to update template assignment.');
+    }
+  };
+
+  // Helper to get template name by id
+  const getTemplateName = (templateId: string | null | undefined): string => {
+    if (!templateId) return '—';
+    const t = templates.find(tpl => tpl.id === templateId);
+    return t ? t.name : '—';
   };
 
   // Loading state
@@ -654,36 +704,84 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
                   <th>Name</th>
                   <th>Schedule</th>
                   <th>Coach</th>
-                  {!readOnly && <th>Actions</th>}
+                  <th>Template</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {batches.map((batch) => (
-                  <tr key={batch.id}>
-                    <td className="text-bold">{batch.name}</td>
-                    <td className="text-muted">{batch.schedule ? `Schedule: ${batch.schedule}` : '—'}</td>
-                    <td className="text-muted">{batch.coach_name ? `Coach: ${batch.coach_name}` : '—'}</td>
-                    {!readOnly && (
+                  <React.Fragment key={batch.id}>
+                    <tr>
+                      <td className="text-bold">{batch.name}</td>
+                      <td className="text-muted">{batch.schedule ? `Schedule: ${batch.schedule}` : '—'}</td>
+                      <td className="text-muted">{batch.coach_name ? `Coach: ${batch.coach_name}` : '—'}</td>
                       <td>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleEditClick(batch)}
-                            className="table-action-link table-action-link--info"
-                            aria-label={`Edit ${batch.name}`}
+                        {!readOnly ? (
+                          <select
+                            value={batch.template_id || ''}
+                            onChange={(e) => handleTemplateAssign(batch.id, e.target.value || null)}
+                            className="form-input"
+                            style={{ minWidth: '140px', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                            aria-label={`Assign template to ${batch.name}`}
                           >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(batch)}
-                            className="table-action-link table-action-link--danger"
-                            aria-label={`Delete ${batch.name}`}
-                          >
-                            Delete
-                          </button>
-                        </div>
+                            <option value="">No template</option>
+                            {templates.map(t => (
+                              <option key={t.id} value={t.id}>{t.name}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-muted">{getTemplateName(batch.template_id)}</span>
+                        )}
                       </td>
+                      {!readOnly && (
+                        <td>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setExpandedBatchId(expandedBatchId === batch.id ? null : batch.id)}
+                              className="table-action-link table-action-link--info"
+                              aria-label={`${expandedBatchId === batch.id ? 'Collapse' : 'Expand'} coaches for ${batch.name}`}
+                              aria-expanded={expandedBatchId === batch.id}
+                            >
+                              {expandedBatchId === batch.id ? '▾ Coaches' : '▸ Coaches'}
+                            </button>
+                            <button
+                              onClick={() => handleEditClick(batch)}
+                              className="table-action-link table-action-link--info"
+                              aria-label={`Edit ${batch.name}`}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteClick(batch)}
+                              className="table-action-link table-action-link--danger"
+                              aria-label={`Delete ${batch.name}`}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                      {readOnly && (
+                        <td>
+                          <button
+                            onClick={() => setExpandedBatchId(expandedBatchId === batch.id ? null : batch.id)}
+                            className="table-action-link table-action-link--info"
+                            aria-label={`${expandedBatchId === batch.id ? 'Collapse' : 'Expand'} coaches for ${batch.name}`}
+                            aria-expanded={expandedBatchId === batch.id}
+                          >
+                            {expandedBatchId === batch.id ? '▾ Coaches' : '▸ Coaches'}
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                    {expandedBatchId === batch.id && (
+                      <tr>
+                        <td colSpan={!readOnly ? 5 : 5}>
+                          <CoachAssignmentPanel batchId={batch.id} readOnly={readOnly} />
+                        </td>
+                      </tr>
                     )}
-                  </tr>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
