@@ -16,6 +16,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentProfilePage from './pages/StudentProfilePage';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
+import BatchesPage from './pages/BatchesPage';
+import DrillsPage from './pages/DrillsPage';
 import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
 import HelpPage from './pages/HelpPage';
@@ -118,6 +120,26 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH']}>
                 <BatchSchedulePage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Batches (Coach - under Training menu) */}
+          <Route
+            path="/batches"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <BatchesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Drills (Coach - under Training menu) */}
+          <Route
+            path="/drills"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <DrillsPage />
               </ProtectedRoute>
             }
           />

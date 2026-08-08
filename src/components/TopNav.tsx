@@ -44,10 +44,12 @@ const COACH_NAV: NavEntry[] = [
     items: [
       { label: 'Calendar', path: '/calendar' },
       { label: 'Attendance', path: '/attendance' },
+      { label: 'Curriculum', path: '/curriculum' },
+      { label: 'Batches', path: '/batches' },
+      { label: 'Drills', path: '/drills' },
       { label: 'Analytics', path: '/training-analytics' },
     ],
   },
-  { label: 'Curriculum', path: '/curriculum' },
   {
     label: 'Finance',
     items: [
