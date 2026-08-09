@@ -12,12 +12,12 @@ import type { UserRole, CenterPublicInfo } from '../types';
  */
 
 interface FormState {
-  username: string;
+  email: string;
   password: string;
 }
 
 interface FormErrors {
-  username?: string;
+  email?: string;
   password?: string;
   general?: string;
 }
@@ -37,41 +37,24 @@ const getRedirectPath = (role: UserRole): string => {
   }
 };
 
-// Badminton-related background images (Unsplash - free to use)
-const BACKGROUND_IMAGES = [
-  'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1920&q=80',
-  'https://images.unsplash.com/photo-1613918431703-aa50889e3be4?auto=format&fit=crop&w=1920&q=80',
-  'https://images.unsplash.com/photo-1599391398131-cd12dfc6c24e?auto=format&fit=crop&w=1920&q=80',
-  'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=1920&q=80',
-];
-
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { centerSlug } = useParams<{ centerSlug?: string }>();
   const { login, isAuthenticated, role } = useAuth();
 
   const [formData, setFormData] = useState<FormState>({
-    username: '',
+    email: '',
     password: '',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [hasAttempted, setHasAttempted] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Center branding state
   const [centerInfo, setCenterInfo] = useState<CenterPublicInfo | null>(null);
   const [centerLoading, setCenterLoading] = useState(false);
   const [centerError, setCenterError] = useState(false);
-
-  // Background image slideshow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % BACKGROUND_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Fetch center info when centerSlug is present
   useEffect(() => {
@@ -98,7 +81,7 @@ export const LoginPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!formData.username.trim()) newErrors.username = 'Username is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!formData.password.trim()) newErrors.password = 'Password is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -113,7 +96,7 @@ export const LoginPage: React.FC = () => {
     setErrors({});
 
     try {
-      await login(formData.username, formData.password, centerSlug);
+      await login(formData.email, formData.password, centerSlug);
     } catch (error) {
       setErrors({
         general: error instanceof Error ? error.message : 'Login failed. Please try again.',
@@ -162,22 +145,19 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      {/* Full-screen background images */}
-      {BACKGROUND_IMAGES.map((url, index) => (
-        <div
-          key={url}
-          style={{
-            ...styles.bgImage,
-            backgroundImage: `url(${url})`,
-            opacity: index === currentImageIndex ? 1 : 0,
-          }}
-        />
-      ))}
+      {/* Static background image from public folder (optimized WebP) */}
+      <div
+        style={{
+          ...styles.bgImage,
+          backgroundImage: `url(/login_bg.webp), url(/login_bg.png)`,
+          opacity: 1,
+        }}
+      />
 
       {/* Dark overlay for readability */}
       <div style={styles.overlay} />
 
-      {/* Floating login modal on the right */}
+      {/* Centered login card */}
       <div style={styles.modalWrapper}>
         <div style={styles.modal}>
           {/* Brand */}
@@ -202,22 +182,22 @@ export const LoginPage: React.FC = () => {
             )}
 
             <div style={styles.formGroup}>
-              <label htmlFor="username" style={styles.label}>Username</label>
+              <label htmlFor="email" style={styles.label}>Email</label>
               <input
-                id="username"
-                type="text"
+                id="email"
+                type="email"
                 style={{
                   ...styles.input,
-                  ...(errors.username ? styles.inputError : {}),
+                  ...(errors.email ? styles.inputError : {}),
                 }}
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 disabled={isLoading}
-                autoComplete="username"
+                autoComplete="email"
               />
-              {hasAttempted && errors.username && (
-                <span style={styles.fieldError}>{errors.username}</span>
+              {hasAttempted && errors.email && (
+                <span style={styles.fieldError}>{errors.email}</span>
               )}
             </div>
 
@@ -290,7 +270,7 @@ const styles: Record<string, React.CSSProperties> = {
   overlay: {
     position: 'absolute',
     inset: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalWrapper: {
     position: 'relative',
@@ -299,93 +279,98 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '24px',
-    marginRight: '5vw',
+    marginRight: '6vw',
+    width: '100%',
+    maxWidth: '480px',
   },
   modal: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    backdropFilter: 'blur(12px)',
-    borderRadius: '16px',
-    padding: '40px 36px',
+    backgroundColor: 'rgba(255, 255, 255, 0.97)',
+    backdropFilter: 'blur(16px)',
+    borderRadius: '20px',
+    padding: '48px 44px',
     width: '100%',
-    maxWidth: '380px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+    boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.4)',
   },
   brandSection: {
     textAlign: 'center' as const,
-    marginBottom: '32px',
+    marginBottom: '36px',
   },
   brandLogo: {
-    width: '64px',
-    height: '64px',
+    width: '72px',
+    height: '72px',
     objectFit: 'contain' as const,
-    marginBottom: '12px',
-    borderRadius: '8px',
+    marginBottom: '16px',
+    borderRadius: '12px',
   },
   brandName: {
-    fontSize: '28px',
+    fontSize: '32px',
     fontWeight: 700,
     color: '#1a1a1a',
-    margin: '0 0 4px',
+    margin: '0 0 6px',
     letterSpacing: '-0.5px',
   },
   brandTagline: {
-    fontSize: '14px',
+    fontSize: '15px',
     color: '#6b7280',
     margin: 0,
   },
   form: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '20px',
+    gap: '22px',
   },
   formGroup: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '6px',
+    gap: '8px',
   },
   label: {
-    fontSize: '13px',
-    fontWeight: 500,
-    color: '#374151',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#1f2937',
   },
   input: {
     width: '100%',
-    padding: '12px 14px',
-    fontSize: '14px',
-    border: '1px solid #d1d5db',
-    borderRadius: '8px',
+    padding: '14px 16px',
+    fontSize: '15px',
+    border: '1.5px solid #e5e7eb',
+    borderRadius: '10px',
     outline: 'none',
-    transition: 'border-color 0.2s',
-    backgroundColor: '#fff',
+    transition: 'border-color 0.2s, box-shadow 0.2s',
+    backgroundColor: '#fafafa',
     boxSizing: 'border-box' as const,
   },
   inputError: {
     borderColor: '#ef4444',
+    backgroundColor: '#fef2f2',
   },
   fieldError: {
     fontSize: '12px',
     color: '#ef4444',
+    fontWeight: 500,
   },
   errorBanner: {
-    padding: '10px 14px',
+    padding: '12px 16px',
     backgroundColor: '#fef2f2',
     border: '1px solid #fecaca',
-    borderRadius: '8px',
+    borderRadius: '10px',
     color: '#dc2626',
     fontSize: '13px',
+    fontWeight: 500,
   },
   submitBtn: {
     width: '100%',
-    padding: '12px',
-    fontSize: '14px',
+    padding: '14px',
+    fontSize: '15px',
     fontWeight: 600,
-    color: '#fff',
-    backgroundColor: '#4f46e5',
+    color: '#1a1a1a',
+    backgroundColor: '#B8E135',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '10px',
     cursor: 'pointer',
-    transition: 'background-color 0.2s',
-    marginTop: '4px',
+    transition: 'background-color 0.2s, transform 0.1s',
+    marginTop: '8px',
+    boxShadow: '0 4px 12px rgba(184, 225, 53, 0.35)',
   },
   submitBtnDisabled: {
     opacity: 0.7,
@@ -393,22 +378,24 @@ const styles: Record<string, React.CSSProperties> = {
   },
   forgotLink: {
     textAlign: 'center' as const,
+    marginTop: '4px',
   },
   link: {
     fontSize: '13px',
-    color: '#4f46e5',
+    color: '#6b8a0a',
     textDecoration: 'none',
     fontWeight: 500,
   },
   footer: {
     textAlign: 'center' as const,
-    marginTop: '28px',
-    paddingTop: '16px',
+    marginTop: '32px',
+    paddingTop: '20px',
     borderTop: '1px solid #e5e7eb',
   },
   footerText: {
     fontSize: '12px',
     color: '#9ca3af',
+    letterSpacing: '0.3px',
   },
   // Loading state styles
   loadingContainer: {
@@ -424,7 +411,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: '40px',
     height: '40px',
     border: '4px solid #e5e7eb',
-    borderTopColor: '#4f46e5',
+    borderTopColor: '#B8E135',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   },
@@ -467,8 +454,8 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '10px 24px',
     fontSize: '14px',
     fontWeight: 600,
-    color: '#fff',
-    backgroundColor: '#4f46e5',
+    color: '#1a1a1a',
+    backgroundColor: '#B8E135',
     borderRadius: '8px',
     textDecoration: 'none',
   },

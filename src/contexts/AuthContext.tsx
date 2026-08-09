@@ -137,14 +137,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   /**
    * Login function - authenticates user against API.
    * Parses LoginResponseMultiCenter when memberships are present.
-   * @param username - User's username
+   * @param email - User's email
    * @param password - User's password
    * @param centerSlug - Optional center slug for branded login validation
    */
-  const login = async (username: string, password: string, centerSlug?: string): Promise<void> => {
+  const login = async (email: string, password: string, centerSlug?: string): Promise<void> => {
     try {
       const response = await apiClient.post<LoginResponse>('/auth/login', {
-        username,
+        email,
         password,
         ...(centerSlug ? { centerSlug } : {}),
       });

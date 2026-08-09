@@ -498,8 +498,9 @@ export interface FormState<T> {
    ============================================================================ */
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
+  centerSlug?: string;
 }
 
 export interface LoginResponse {

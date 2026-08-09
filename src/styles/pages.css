@@ -221,6 +221,8 @@
   max-width: var(--max-width-wide);
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .hc-dashboard-content {
@@ -396,6 +398,8 @@
   max-width: var(--max-width-wide);
   margin: 0 auto;
   padding: var(--space-lg) var(--space-md);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ac-welcome {

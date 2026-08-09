@@ -1,0 +1,208 @@
+/* ============================================================================
+   OnboardingChecklist Component Styles
+   Card-based onboarding widget shown at the top of the head coach dashboard.
+   BEM methodology, responsive design (full-width mobile, max-width card desktop).
+   ============================================================================ */
+
+/* Block */
+.onboarding-checklist {
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+/* ============================================================================
+   Header Section
+   ============================================================================ */
+
+.onboarding-checklist__header {
+  padding: 20px 24px 0 24px;
+}
+
+.onboarding-checklist__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.onboarding-checklist__progress {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  padding-bottom: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* ============================================================================
+   Checklist Items
+   ============================================================================ */
+
+.onboarding-checklist__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.onboarding-checklist__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.15s ease;
+}
+
+.onboarding-checklist__item:last-child {
+  border-bottom: none;
+}
+
+.onboarding-checklist__item:hover {
+  background-color: #f9fafb;
+}
+
+/* Icon */
+.onboarding-checklist__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.onboarding-checklist__icon--complete {
+  color: #059669;
+  font-weight: 700;
+}
+
+.onboarding-checklist__icon--incomplete {
+  color: #9ca3af;
+}
+
+/* Label */
+.onboarding-checklist__label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  min-width: 0;
+}
+
+.onboarding-checklist__item--complete .onboarding-checklist__label {
+  color: #059669;
+}
+
+/* Link */
+.onboarding-checklist__link {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2563eb;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.onboarding-checklist__link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.onboarding-checklist__link:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================================================
+   Footer (Dismiss + Error)
+   ============================================================================ */
+
+.onboarding-checklist__footer {
+  padding: 16px 24px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.onboarding-checklist__dismiss-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.onboarding-checklist__dismiss-btn:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.onboarding-checklist__dismiss-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.onboarding-checklist__dismiss-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error text */
+.onboarding-checklist__error {
+  font-size: 12px;
+  color: #dc2626;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ============================================================================
+   Responsive Design
+   ============================================================================ */
+
+@media (min-width: 768px) {
+  .onboarding-checklist {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 767px) {
+  .onboarding-checklist {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-bottom: 16px;
+  }
+
+  .onboarding-checklist__header {
+    padding: 16px 16px 0 16px;
+  }
+
+  .onboarding-checklist__item {
+    padding: 12px 16px;
+  }
+
+  .onboarding-checklist__footer {
+    padding: 12px 16px;
+  }
+}

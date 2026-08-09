@@ -257,7 +257,7 @@ export const CenterDetailPage: React.FC = () => {
   // Coach assignment
   const handleAssignCoach = async () => {
     if (!id || !coachIdInput.trim()) {
-      setCoachError('Please enter a coach ID');
+      setCoachError('Please enter a coach email');
       return;
     }
 
@@ -759,14 +759,14 @@ export const CenterDetailPage: React.FC = () => {
             <div className="center-detail-page__assign-form">
               <input
                 className="center-detail-page__input"
-                type="text"
+                type="email"
                 value={coachIdInput}
                 onChange={(e) => {
                   setCoachIdInput(e.target.value);
                   if (coachError) setCoachError(null);
                 }}
-                placeholder="Enter coach user ID"
-                aria-label="Coach user ID"
+                placeholder="Enter coach email"
+                aria-label="Coach email"
               />
               <button
                 className="center-detail-page__assign-btn"

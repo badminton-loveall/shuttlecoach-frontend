@@ -9,12 +9,14 @@ import RecentActivity from '../components/RecentActivity';
 import { AttendanceStatsWidget } from '../components/AttendanceStatsWidget';
 import { SessionCard } from '../components/SessionCard';
 import { QuickAttendanceWidget } from '../components/QuickAttendanceWidget';
+import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
 import { useFees } from '../hooks/useFees';
 import { useBatches } from '../hooks/useBatches';
 import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
+import { useOnboardingChecklist } from '../hooks/useOnboardingChecklist';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { isDueForAssessment, daysOverdue, getLastAssessment } from '../utils/reviewUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
@@ -117,6 +119,15 @@ const HeadCoachDashboardContent: React.FC<{
   users: User[];
   getBatchName: (batchId: string | undefined) => string;
 }> = ({ user, navigate, students, fees, assessments, trainingLogs, users, getBatchName }) => {
+  // Onboarding checklist hook (Requirements: 5.1, 5.6, 7.1, 7.2, 7.3, 7.4, 7.5)
+  const {
+    checklist,
+    loading: checklistLoading,
+    error: checklistError,
+    dismiss: dismissChecklist,
+    dismissing: checklistDismissing,
+  } = useOnboardingChecklist();
+
   // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const sevenDaysAgo = useMemo(() => {
@@ -185,6 +196,16 @@ const HeadCoachDashboardContent: React.FC<{
     <DashboardLayout>
       <div className="hc-dashboard">
         <div className="hc-dashboard-content">
+          {/* Onboarding Checklist Widget — shown only when data loaded and available */}
+          {checklist && !checklistLoading && (
+            <OnboardingChecklist
+              checklist={checklist}
+              dismiss={dismissChecklist}
+              dismissing={checklistDismissing}
+              error={checklistError}
+            />
+          )}
+
           {/* Welcome Section */}
           <div className="hc-welcome">
             <h1 className="hc-welcome-title">Welcome, {user?.name}!</h1>
