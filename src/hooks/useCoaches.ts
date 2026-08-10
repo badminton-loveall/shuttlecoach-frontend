@@ -19,6 +19,7 @@ export interface CreateCoachData {
   email?: string;
   profilePhoto?: string;
   specialization?: string;
+  seniorCoachId?: string;
 }
 
 export interface AssignCoachData {

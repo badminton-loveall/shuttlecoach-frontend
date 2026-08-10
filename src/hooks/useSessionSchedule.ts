@@ -74,8 +74,7 @@ export function useSessionSchedule(batchId?: string) {
         `/session-schedules/${batchId}`
       );
       setSchedule(response.data);
-    } catch (err) {
-      console.error('Failed to fetch session schedule:', err);
+    } catch {
       setError('Failed to load session schedule. Please try again.');
       setSchedule(null);
     } finally {
@@ -118,7 +117,6 @@ export function useCreateSessionSchedule() {
         );
         return response.data;
       } catch (err) {
-        console.error('Failed to create session schedule:', err);
         const message = 'Failed to save session schedule. Please try again.';
         setError(message);
         throw err;
@@ -281,8 +279,8 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
           timestamp: Date.now(),
         }));
       } catch { /* ignore */ }
-    } catch (err) {
-      // Silently return empty data for 500 errors (table may not exist yet)
+    } catch {
+      // Silently return empty data for errors (table may not exist or server issues)
       setEntries([]);
     } finally {
       setLoading(false);
@@ -337,8 +335,7 @@ export function useSessionNotes(filters?: SessionNoteFilters) {
 
       const response = await apiClient.get<SessionNote[]>(url);
       setNotes(response.data);
-    } catch (err) {
-      console.error('Failed to fetch session notes:', err);
+    } catch {
       setError('Failed to load session notes. Please try again.');
       setNotes([]);
     } finally {
@@ -381,7 +378,6 @@ export function useCreateSessionNote() {
         );
         return response.data;
       } catch (err) {
-        console.error('Failed to create session note:', err);
         const message = 'Failed to save session note. Please try again.';
         setError(message);
         throw err;

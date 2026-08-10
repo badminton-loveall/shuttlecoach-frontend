@@ -81,9 +81,9 @@ const CenterSwitcher: React.FC = () => {
 
       {isOpen && (
         <div className="center-switcher__dropdown" role="listbox" aria-label="Available centers">
-          {memberships.map((membership) => (
+          {memberships.map((membership, index) => (
             <button
-              key={membership.centerId}
+              key={`${membership.centerId}-${index}`}
               className={`center-switcher__option ${
                 membership.centerId === activeCenterId ? 'center-switcher__option--active' : ''
               }`}

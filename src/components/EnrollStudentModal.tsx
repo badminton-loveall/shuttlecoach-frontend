@@ -23,6 +23,7 @@ export interface EnrollStudentFormData {
   batchId: string;
   skillLevel: SkillLevel;
   assignedCoachId: string;
+  monthlyFee?: number;
 }
 
 export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
@@ -113,10 +114,6 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
 
     if (!formData.batchId) {
       newErrors.batchId = 'Please select a batch';
-    }
-
-    if (!formData.assignedCoachId) {
-      newErrors.assignedCoachId = 'Please assign a coach';
     }
 
     setErrors(newErrors);
@@ -224,7 +221,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
     {
       id: 'academy' as const,
       label: 'Academy',
-      hasError: !!(errors.batchId || errors.assignedCoachId),
+      hasError: !!(errors.batchId),
     },
   ];
 
@@ -418,35 +415,17 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                     {errors.batchId && <span className="form-error-text">{errors.batchId}</span>}
                   </div>
                   <div className="form-group">
-                    <label htmlFor="skillLevel" className="form-label">Initial Skill Level *</label>
-                    <select
-                      id="skillLevel"
-                      value={formData.skillLevel}
-                      onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as SkillLevel })}
+                    <label htmlFor="monthlyFee" className="form-label">Monthly Fee (₹)</label>
+                    <input
+                      id="monthlyFee"
+                      type="number"
+                      min="0"
+                      value={formData.monthlyFee || ''}
+                      onChange={(e) => setFormData({ ...formData, monthlyFee: e.target.value ? Number(e.target.value) : undefined })}
                       className="form-input"
+                      placeholder="e.g. 3000"
                       disabled={isSubmitting}
-                    >
-                      <option value="Beginner">Beginner</option>
-                      <option value="Intermediate">Intermediate</option>
-                      <option value="Advanced">Advanced</option>
-                      <option value="Professional">Professional</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="assignedCoachId" className="form-label">Assign Coach *</label>
-                    <select
-                      id="assignedCoachId"
-                      value={formData.assignedCoachId}
-                      onChange={(e) => setFormData({ ...formData, assignedCoachId: e.target.value })}
-                      className={`form-input ${errors.assignedCoachId ? 'form-input-error' : ''}`}
-                      disabled={isSubmitting}
-                    >
-                      <option value="">Select a coach</option>
-                      {coaches.map((coach) => (
-                        <option key={coach.id} value={coach.id}>{coach.name}</option>
-                      ))}
-                    </select>
-                    {errors.assignedCoachId && <span className="form-error-text">{errors.assignedCoachId}</span>}
+                    />
                   </div>
                 </>
               )}

@@ -31,7 +31,7 @@ describe('AddCoachModal', () => {
       />
     );
 
-    expect(screen.getByText('Add Assistant Coach')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Add Coach' })).toBeInTheDocument();
     expect(screen.getByLabelText(/Name/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Username/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Password/)).toBeInTheDocument();

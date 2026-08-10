@@ -127,7 +127,7 @@ export const StudentsPage: React.FC = () => {
         baidNumber:      studentData.baidNumber,
         batchId:         studentData.batchId,
         skillLevel:      studentData.skillLevel,
-        assignedCoachId: studentData.assignedCoachId,
+        assignedCoachId: studentData.assignedCoachId || undefined,
         strengths:       [],
         weaknesses:      [],
       });

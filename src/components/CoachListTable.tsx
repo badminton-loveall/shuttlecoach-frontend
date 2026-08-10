@@ -99,8 +99,17 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
 
   if (allCoaches.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500 dark:text-gray-400">No coaches found</p>
+      <div className="empty-state">
+        <div className="empty-state__icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <h3 className="empty-state__title">No Coaches Found</h3>
+        <p className="empty-state__text">No coaches to display. Start by adding your first coach.</p>
       </div>
     );
   }

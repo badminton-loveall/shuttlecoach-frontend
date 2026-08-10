@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import type { User } from '../types';
 
 /**
  * AddCoachModal Component
- * Modal dialog for adding a new assistant coach
- * Requirements: 15.3, 15.4, 15.5
+ * Modal dialog for adding a new coach (head coach or assistant coach)
+ * Requirements: 1.1, 1.3, 15.3, 15.4, 15.5
  * 
  * Features:
- * - Form fields: name (required), username (required), password (required), specialization (optional), profilePhoto (optional)
+ * - Form fields: name (required), username (required), password (required), specialization (optional), profilePhoto (optional), seniorCoachId (optional)
  * - Validates required fields
  * - Submits form data to create new coach
  * - Closes modal on success or cancel
@@ -19,18 +20,21 @@ export interface CoachFormData {
   email?: string;
   specialization?: string;
   profilePhoto?: string;
+  seniorCoachId?: string;
 }
 
 interface AddCoachModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (coachData: CoachFormData) => Promise<void>;
+  coaches?: User[];
 }
 
 export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
+  coaches = [],
 }) => {
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -38,6 +42,7 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   const [email, setEmail] = useState<string>('');
   const [specialization, setSpecialization] = useState<string>('');
   const [profilePhoto, setProfilePhoto] = useState<string>('');
+  const [seniorCoachId, setSeniorCoachId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -50,6 +55,7 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
       setEmail('');
       setSpecialization('');
       setProfilePhoto('');
+      setSeniorCoachId('');
       setErrors({});
       setIsSubmitting(false);
     }
@@ -99,6 +105,7 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
         email: email.trim() || undefined,
         specialization: specialization.trim() || undefined,
         profilePhoto: profilePhoto.trim() || undefined,
+        seniorCoachId: seniorCoachId || undefined,
       };
 
       await onSubmit(coachData);
@@ -129,8 +136,8 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
         {/* Header */}
         <div className="modal-header">
           <div>
-            <h2 className="modal-title">Add Assistant Coach</h2>
-            <p className="modal-subtitle">Create a new assistant coach account</p>
+            <h2 className="modal-title">Add Coach</h2>
+            <p className="modal-subtitle">Create a new coach account</p>
           </div>
           <button type="button" className="modal-close-btn" onClick={handleCancel} disabled={isSubmitting}>✕</button>
         </div>
@@ -184,6 +191,22 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
               <input type="text" id="coach-photo" value={profilePhoto} onChange={(e) => setProfilePhoto(e.target.value)}
                 placeholder="https://example.com/photo.jpg"
                 className="form-input" disabled={isSubmitting} />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="coach-senior" className="form-label">Senior Coach <span className="form-optional">(optional)</span></label>
+              <select
+                id="coach-senior"
+                value={seniorCoachId}
+                onChange={(e) => setSeniorCoachId(e.target.value)}
+                className="form-input"
+                disabled={isSubmitting}
+              >
+                <option value="">— None (Top-level coach) —</option>
+                {[...coaches].sort((a, b) => a.name.localeCompare(b.name)).map(coach => (
+                  <option key={coach.id} value={coach.id}>{coach.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 

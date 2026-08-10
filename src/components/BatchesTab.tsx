@@ -17,6 +17,8 @@ interface BatchRecord {
   schedule: string | null;
   assigned_coach_id: string | null;
   coach_name: string | null;
+  coach_role: string | null;
+  template_name: string | null;
   is_archived: boolean;
   created_at: string;
   updated_at: string;
@@ -28,6 +30,7 @@ interface BatchRecord {
   end_time?: string;
   description?: string;
   template_id?: string | null;
+  student_count?: number;
 }
 
 interface TemplateOption {
@@ -46,6 +49,7 @@ interface BatchFormData {
   startTime: string;
   endTime: string;
   description: string;
+  template_id: string | null;
 }
 
 interface FormErrors {
@@ -72,6 +76,40 @@ interface BatchesTabProps {
   readOnly: boolean;
 }
 
+/**
+ * Simple inline component to show students assigned to a batch.
+ */
+const StudentListForBatch: React.FC<{ batchId: string }> = ({ batchId }) => {
+  const [students, setStudents] = useState<{ id: string; full_name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await apiClient.get(`/students?batch=${batchId}&limit=100`);
+        const data = response.data?.students || response.data || [];
+        setStudents(Array.isArray(data) ? data.map((s: any) => ({ id: s.id, full_name: s.fullName || s.full_name })) : []);
+      } catch {
+        setStudents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudents();
+  }, [batchId]);
+
+  if (loading) return <p style={{ margin: '0.5rem 0', color: 'var(--text-tertiary)' }}>Loading...</p>;
+  if (students.length === 0) return <p style={{ margin: '0.5rem 0', color: 'var(--text-tertiary)' }}>No students in this batch.</p>;
+
+  return (
+    <ul style={{ margin: '0.5rem 0', padding: '0 0 0 1.25rem', listStyle: 'disc' }}>
+      {students.map(s => (
+        <li key={s.id} style={{ color: 'var(--text-primary)', marginBottom: '0.25rem' }}>{s.full_name}</li>
+      ))}
+    </ul>
+  );
+};
+
 const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
   const [batches, setBatches] = useState<BatchRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -90,7 +128,8 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
     daysOfWeek: [], 
     startTime: '', 
     endTime: '', 
-    description: '' 
+    description: '',
+    template_id: null,
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -226,6 +265,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       startTime: batch.start_time || '',
       endTime: batch.end_time || '',
       description: batch.description || '',
+      template_id: batch.template_id || null,
     });
     setFormErrors({});
     setShowForm(true);
@@ -338,6 +378,9 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       }
       if (formData.description.trim()) {
         payload.description = formData.description.trim();
+      }
+      if (formData.template_id) {
+        payload.template_id = formData.template_id;
       }
 
       if (editingBatch) {
@@ -521,151 +564,23 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
                   </div>
                 </div>
 
-                {/* Row 2: Capacity + Skill Level + Monthly Fee */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label htmlFor="batch-capacity" className="form-label">
-                      Capacity
-                    </label>
-                    <input
-                      id="batch-capacity"
-                      type="number"
-                      min="0"
-                      value={formData.capacity}
-                      onChange={(e) => setFormData({ ...formData, capacity: e.target.value === '' ? '' : Number(e.target.value) })}
-                      className={`form-input ${formErrors.capacity ? 'form-input-error' : ''}`}
-                      placeholder="Max"
-                      disabled={submitting}
-                    />
-                    {formErrors.capacity && (
-                      <p className="text-red-500 text-xs mt-0.5">{formErrors.capacity}</p>
-                    )}
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label htmlFor="batch-skill-level" className="form-label">
-                      Skill Level
-                    </label>
-                    <select
-                      id="batch-skill-level"
-                      value={formData.skillLevel}
-                      onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as BatchFormData['skillLevel'] })}
-                      className={`form-input ${formErrors.skillLevel ? 'form-input-error' : ''}`}
-                      disabled={submitting}
-                    >
-                      <option value="">Select...</option>
-                      <option value="Beginner">Beginner</option>
-                      <option value="Intermediate">Intermediate</option>
-                      <option value="Advanced">Advanced</option>
-                      <option value="Professional">Professional</option>
-                    </select>
-                    {formErrors.skillLevel && (
-                      <p className="text-red-500 text-xs mt-0.5">{formErrors.skillLevel}</p>
-                    )}
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label htmlFor="batch-monthly-fee" className="form-label">
-                      Monthly Fee
-                    </label>
-                    <input
-                      id="batch-monthly-fee"
-                      type="number"
-                      min="0"
-                      value={formData.monthlyFee}
-                      onChange={(e) => setFormData({ ...formData, monthlyFee: e.target.value === '' ? '' : Number(e.target.value) })}
-                      className={`form-input ${formErrors.monthlyFee ? 'form-input-error' : ''}`}
-                      placeholder="₹"
-                      disabled={submitting}
-                    />
-                    {formErrors.monthlyFee && (
-                      <p className="text-red-500 text-xs mt-0.5">{formErrors.monthlyFee}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Row 3: Start/End time */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label htmlFor="batch-start-time" className="form-label">
-                      Start Time
-                    </label>
-                    <input
-                      id="batch-start-time"
-                      type="time"
-                      value={formData.startTime}
-                      onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                      className={`form-input ${formErrors.startTime ? 'form-input-error' : ''}`}
-                      disabled={submitting}
-                    />
-                    {formErrors.startTime && (
-                      <p className="text-red-500 text-xs mt-0.5">{formErrors.startTime}</p>
-                    )}
-                  </div>
-
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label htmlFor="batch-end-time" className="form-label">
-                      End Time
-                    </label>
-                    <input
-                      id="batch-end-time"
-                      type="time"
-                      value={formData.endTime}
-                      onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                      className={`form-input ${formErrors.endTime ? 'form-input-error' : ''}`}
-                      disabled={submitting}
-                    />
-                    {formErrors.endTime && (
-                      <p className="text-red-500 text-xs mt-0.5">{formErrors.endTime}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Row 4: Days of Week — compact grid with letters on top, checkboxes below */}
+                {/* Row 2: Batch Template */}
                 <div className="form-group" style={{ marginBottom: 0 }}>
-                  <span className="form-label">Days of Week</span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 2.25rem)', gap: '0.125rem', justifyItems: 'center' }}>
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                      <label key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', fontSize: '0.65rem', fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.2 }}>
-                        {day}
-                        <input
-                          type="checkbox"
-                          checked={formData.daysOfWeek.includes(day)}
-                          onChange={(e) => {
-                            const newDays = e.target.checked
-                              ? [...formData.daysOfWeek, day]
-                              : formData.daysOfWeek.filter(d => d !== day);
-                            setFormData({ ...formData, daysOfWeek: newDays });
-                          }}
-                          disabled={submitting}
-                          style={{ marginTop: '2px', width: '14px', height: '14px' }}
-                        />
-                      </label>
-                    ))}
-                  </div>
-                  {formErrors.daysOfWeek && (
-                    <p className="text-red-500 text-xs mt-0.5">{formErrors.daysOfWeek}</p>
-                  )}
-                </div>
-
-                {/* Row 5: Description — compact textarea */}
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label htmlFor="batch-description" className="form-label">
-                    Description
+                  <label htmlFor="batch-template" className="form-label">
+                    Batch Template <span style={{ fontWeight: 'normal', color: 'var(--text-tertiary)' }}>(for timing)</span>
                   </label>
-                  <textarea
-                    id="batch-description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className={`form-input ${formErrors.description ? 'form-input-error' : ''}`}
-                    placeholder="Optional notes..."
+                  <select
+                    id="batch-template"
+                    value={formData.template_id || ''}
+                    onChange={(e) => setFormData({ ...formData, template_id: e.target.value || null })}
+                    className="form-input"
                     disabled={submitting}
-                    rows={2}
-                    style={{ resize: 'vertical' }}
-                  />
-                  {formErrors.description && (
-                    <p className="text-red-500 text-xs mt-0.5">{formErrors.description}</p>
-                  )}
+                  >
+                    <option value="">No template</option>
+                    {templates.map(t => (
+                      <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="form-actions">
@@ -702,82 +617,53 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Schedule</th>
                   <th>Coach</th>
                   <th>Template</th>
+                  <th>Students</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {batches.map((batch) => (
                   <React.Fragment key={batch.id}>
-                    <tr>
+                    <tr
+                      onClick={() => setExpandedBatchId(expandedBatchId === batch.id ? null : batch.id)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <td className="text-bold">{batch.name}</td>
-                      <td className="text-muted">{batch.schedule ? `Schedule: ${batch.schedule}` : '—'}</td>
-                      <td className="text-muted">{batch.coach_name ? `Coach: ${batch.coach_name}` : '—'}</td>
+                      <td className="text-muted">{batch.coach_name || '—'}</td>
+                      <td className="text-muted">{batch.template_name || '—'}</td>
+                      <td className="text-muted">{batch.student_count || 0}</td>
                       <td>
-                        {!readOnly ? (
-                          <select
-                            value={batch.template_id || ''}
-                            onChange={(e) => handleTemplateAssign(batch.id, e.target.value || null)}
-                            className="form-input"
-                            style={{ minWidth: '140px', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
-                            aria-label={`Assign template to ${batch.name}`}
-                          >
-                            <option value="">No template</option>
-                            {templates.map(t => (
-                              <option key={t.id} value={t.id}>{t.name}</option>
-                            ))}
-                          </select>
-                        ) : (
-                          <span className="text-muted">{getTemplateName(batch.template_id)}</span>
-                        )}
+                        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                          {!readOnly && (
+                            <>
+                              <button
+                                onClick={() => handleEditClick(batch)}
+                                className="table-action-link table-action-link--info"
+                                aria-label={`Edit ${batch.name}`}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(batch)}
+                                className="table-action-link table-action-link--danger"
+                                aria-label={`Delete ${batch.name}`}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
-                      {!readOnly && (
-                        <td>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => setExpandedBatchId(expandedBatchId === batch.id ? null : batch.id)}
-                              className="table-action-link table-action-link--info"
-                              aria-label={`${expandedBatchId === batch.id ? 'Collapse' : 'Expand'} coaches for ${batch.name}`}
-                              aria-expanded={expandedBatchId === batch.id}
-                            >
-                              {expandedBatchId === batch.id ? '▾ Coaches' : '▸ Coaches'}
-                            </button>
-                            <button
-                              onClick={() => handleEditClick(batch)}
-                              className="table-action-link table-action-link--info"
-                              aria-label={`Edit ${batch.name}`}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(batch)}
-                              className="table-action-link table-action-link--danger"
-                              aria-label={`Delete ${batch.name}`}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                      {readOnly && (
-                        <td>
-                          <button
-                            onClick={() => setExpandedBatchId(expandedBatchId === batch.id ? null : batch.id)}
-                            className="table-action-link table-action-link--info"
-                            aria-label={`${expandedBatchId === batch.id ? 'Collapse' : 'Expand'} coaches for ${batch.name}`}
-                            aria-expanded={expandedBatchId === batch.id}
-                          >
-                            {expandedBatchId === batch.id ? '▾ Coaches' : '▸ Coaches'}
-                          </button>
-                        </td>
-                      )}
                     </tr>
                     {expandedBatchId === batch.id && (
                       <tr>
-                        <td colSpan={!readOnly ? 5 : 5}>
-                          <CoachAssignmentPanel batchId={batch.id} readOnly={readOnly} />
+                        <td colSpan={5} style={{ padding: '1rem', backgroundColor: 'var(--surface-hover)' }}>
+                          <div style={{ fontSize: 'var(--font-sm)' }}>
+                            <strong>Students in this batch:</strong>
+                            <StudentListForBatch batchId={batch.id} />
+                          </div>
                         </td>
                       </tr>
                     )}

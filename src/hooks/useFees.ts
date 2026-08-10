@@ -82,9 +82,14 @@ export function useFees(filters?: FeeFilters) {
       );
 
       setFees(parsedFees);
-    } catch (err) {
-      console.error('Failed to fetch fees:', err);
-      setError('Failed to load fees. Please try again.');
+    } catch (err: any) {
+      // 403 means user doesn't have fee access — not an error, just no permission
+      if (err?.response?.status === 403) {
+        setFees([]);
+      } else {
+        console.error('Failed to fetch fees:', err);
+        setError('Failed to load fees. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

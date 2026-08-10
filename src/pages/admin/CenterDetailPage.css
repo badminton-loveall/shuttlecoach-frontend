@@ -215,70 +215,6 @@
 }
 
 /* ============================================================================
-   Slug Field
-   ============================================================================ */
-
-.center-detail-page__slug-section {
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-default);
-}
-
-.center-detail-page__slug-edit {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-.center-detail-page__slug-edit .center-detail-page__input {
-  flex: 1;
-  max-width: 320px;
-}
-
-.center-detail-page__input--error {
-  border-color: var(--color-error, #ef4444) !important;
-}
-
-.center-detail-page__slug-save-btn {
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-primary);
-  color: var(--text-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: var(--font-sm);
-  font-weight: var(--weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  white-space: nowrap;
-}
-
-.center-detail-page__slug-save-btn:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-}
-
-.center-detail-page__slug-save-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.center-detail-page__slug-help {
-  font-size: var(--font-xs);
-  color: var(--text-secondary);
-}
-
-.center-detail-page__slug-error {
-  font-size: var(--font-xs);
-  color: var(--color-error, #ef4444);
-  font-weight: var(--weight-medium);
-}
-
-.center-detail-page__slug-success {
-  font-size: var(--font-xs);
-  color: #22c55e;
-  font-weight: var(--weight-medium);
-}
-
-/* ============================================================================
    Info Grid (Read-Only View)
    ============================================================================ */
 
@@ -594,6 +530,23 @@
 .center-detail-page__assign-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ============================================================================
+   Center Owner Actions
+   ============================================================================ */
+
+.center-detail-page__owner-email {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.center-detail-page__owner-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
 /* ============================================================================

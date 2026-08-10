@@ -96,6 +96,7 @@ export const CoachesPage: React.FC = () => {
       email: coachData.email,
       profilePhoto: coachData.profilePhoto,
       specialization: coachData.specialization,
+      seniorCoachId: coachData.seniorCoachId,
     });
     setIsAddModalOpen(false);
   };
@@ -198,7 +199,7 @@ export const CoachesPage: React.FC = () => {
               >
                 <path d="M12 5v14M5 12h14" />
               </svg>
-              Add Assistant Coach
+              Add Coach
             </button>
           </div>
 
@@ -251,6 +252,7 @@ export const CoachesPage: React.FC = () => {
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onSubmit={handleAddCoach}
+            coaches={coaches}
           />
 
           {/* Edit Coach Modal */}
