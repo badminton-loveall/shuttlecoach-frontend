@@ -62,16 +62,9 @@ const CenterSettingsTab: React.FC = () => {
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Slug change request state (HEAD_COACH flow)
-  const [showRequestForm, setShowRequestForm] = useState(false);
-  const [requestSlugValue, setRequestSlugValue] = useState('');
-  const [requestFieldError, setRequestFieldError] = useState<string | null>(null);
-  const [requestSuccessMessage, setRequestSuccessMessage] = useState<string | null>(null);
-  const [submittingRequest, setSubmittingRequest] = useState(false);
-  const [hasPendingRequest, setHasPendingRequest] = useState(false);
+
 
   const isAdmin = role === 'ADMIN';
-  const isHeadCoach = role === 'HEAD_COACH';
   const canDirectEdit = isAdmin;
 
   const fetchCenter = useCallback(async () => {
@@ -117,31 +110,9 @@ const CenterSettingsTab: React.FC = () => {
     }
   }, [centerId, isAdmin]);
 
-  /**
-   * Check if the center already has a pending slug change request.
-   * Used to disable the "Request Change" button for HEAD_COACH.
-   */
-  const checkPendingRequest = useCallback(async () => {
-    if (!isHeadCoach) return;
-    try {
-      // Attempt to check pending status via a lightweight call.
-      // If the POST would return 409 "pending exists", we know there's one.
-      // We use a dedicated check — try fetching center data which may include pending status,
-      // or simply rely on the 409 error on submit. For better UX, we attempt a probe.
-      const response = await apiClient.get('/slug-change-requests/pending');
-      if (response.data && response.data.hasPending) {
-        setHasPendingRequest(true);
-      }
-    } catch {
-      // If the endpoint doesn't exist or fails, we'll rely on the 409 during submission
-      // This is a graceful degradation approach
-    }
-  }, [isHeadCoach]);
-
   useEffect(() => {
     void fetchCenter();
-    void checkPendingRequest();
-  }, [fetchCenter, checkPendingRequest]);
+  }, [fetchCenter]);
 
   // --- ADMIN direct edit handlers ---
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -188,64 +159,7 @@ const CenterSettingsTab: React.FC = () => {
     }
   };
 
-  // --- HEAD_COACH slug change request handlers ---
-  const handleRequestSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
-    setRequestSlugValue(value);
-    setRequestFieldError(null);
-    setRequestSuccessMessage(null);
-  };
 
-  const handleRequestSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setRequestFieldError(null);
-    setRequestSuccessMessage(null);
-
-    const trimmed = requestSlugValue.trim();
-    const validation = validateSlug(trimmed);
-    if (!validation.valid) {
-      setRequestFieldError(validation.error || 'Invalid slug format');
-      return;
-    }
-
-    if (trimmed === originalSlug) {
-      setRequestFieldError('New slug must be different from the current slug');
-      return;
-    }
-
-    try {
-      setSubmittingRequest(true);
-      await apiClient.post('/slug-change-requests', { requestedSlug: trimmed });
-      setRequestSuccessMessage('Slug change request submitted successfully. An admin will review it.');
-      setHasPendingRequest(true);
-      setShowRequestForm(false);
-      setRequestSlugValue('');
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { status?: number; data?: { error?: string; message?: string } } };
-      if (axiosErr.response?.status === 409) {
-        const msg = axiosErr.response.data?.error || axiosErr.response.data?.message || '';
-        if (msg.toLowerCase().includes('pending')) {
-          setRequestFieldError('A pending slug change request already exists');
-          setHasPendingRequest(true);
-        } else {
-          setRequestFieldError('This slug is already taken');
-        }
-      } else if (axiosErr.response?.status === 400) {
-        setRequestFieldError(axiosErr.response.data?.error || axiosErr.response.data?.message || 'Invalid slug format');
-      } else {
-        setRequestFieldError('Failed to submit request. Please try again.');
-      }
-    } finally {
-      setSubmittingRequest(false);
-    }
-  };
-
-  const handleCancelRequest = () => {
-    setShowRequestForm(false);
-    setRequestSlugValue('');
-    setRequestFieldError(null);
-    setRequestSuccessMessage(null);
-  };
 
   // --- Loading / Error states ---
   if (loading) {
@@ -263,8 +177,6 @@ const CenterSettingsTab: React.FC = () => {
       </div>
     );
   }
-
-  const loginUrl = `${window.location.origin}/login/${originalSlug || '...'}`;
 
   // --- ADMIN direct-edit view ---
   if (canDirectEdit) {

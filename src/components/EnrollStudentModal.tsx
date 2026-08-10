@@ -31,7 +31,6 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   onClose,
   onSubmit,
   batches,
-  coaches,
   error,
 }) => {
   const [formData, setFormData] = useState<EnrollStudentFormData>({

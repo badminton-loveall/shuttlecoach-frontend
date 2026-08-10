@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../utils/apiClient';
-import CoachAssignmentPanel from './CoachAssignmentPanel';
 import '../styles/pages.css';
 
 /**
@@ -213,6 +212,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       name: '', 
       schedule: '', 
       assignedCoachId: null, 
+      template_id: null,
       capacity: '', 
       skillLevel: '', 
       monthlyFee: '', 
@@ -242,7 +242,8 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       daysOfWeek: [], 
       startTime: '', 
       endTime: '', 
-      description: '' 
+      description: '',
+      template_id: null,
     });
     setFormErrors({});
     setShowForm(true);
@@ -415,27 +416,6 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  // Handle template assignment change for a batch
-  const handleTemplateAssign = async (batchId: string, templateId: string | null) => {
-    try {
-      await apiClient.patch(`/batches/${batchId}`, { template_id: templateId });
-      // Update local state to reflect the change
-      setBatches(prev =>
-        prev.map(b => b.id === batchId ? { ...b, template_id: templateId } : b)
-      );
-      setSuccessMessage('Template assignment updated');
-    } catch (err: any) {
-      setError(err?.response?.data?.error || 'Failed to update template assignment.');
-    }
-  };
-
-  // Helper to get template name by id
-  const getTemplateName = (templateId: string | null | undefined): string => {
-    if (!templateId) return '—';
-    const t = templates.find(tpl => tpl.id === templateId);
-    return t ? t.name : '—';
   };
 
   // Loading state
