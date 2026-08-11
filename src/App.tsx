@@ -18,6 +18,7 @@ import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import BatchesPage from './pages/BatchesPage';
 import DrillsPage from './pages/DrillsPage';
+import CourseManagementPage from './pages/CourseManagementPage';
 import MasterDataPage from './pages/MasterDataPage';
 import AccessDeniedPage from './pages/AccessDeniedPage';
 import HelpPage from './pages/HelpPage';
@@ -150,6 +151,16 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
                 <DrillsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Courses (Coach - under Training menu) */}
+          <Route
+            path="/courses"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <CourseManagementPage />
               </ProtectedRoute>
             }
           />

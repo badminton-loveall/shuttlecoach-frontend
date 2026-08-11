@@ -4,6 +4,7 @@ import DrillLibrary from '../components/DrillLibrary';
 import { generateCycleKey, isCycleArchived, getAllCyclesFromPlans } from '../utils/skillUtils';
 import { useBatches } from '../hooks/useBatches';
 import { useCurriculum } from '../hooks/useCurriculum';
+import { useCourses } from '../hooks/useCourses';
 import type { WeekPlan, Drill } from '../types';
 import '../styles/pages.css';
 
@@ -24,8 +25,12 @@ const CurriculumBuilderPage: React.FC = () => {
   const [isArchived, setIsArchived] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string>('');
+  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+  const [isAttaching, setIsAttaching] = useState(false);
+  const [showOverwriteConfirm, setShowOverwriteConfirm] = useState(false);
 
   const { batches, loading: batchesLoading } = useBatches();
+  const { courses, loading: coursesLoading, attachCourseToBatch } = useCourses();
 
   // Fetch curriculum plans from API, filtered by batchId and cycleKey
   const {
@@ -61,6 +66,8 @@ const CurriculumBuilderPage: React.FC = () => {
   useEffect(() => {
     if (selectedBatch && selectedCycle) {
       setIsArchived(isCycleArchived(selectedCycle));
+      // Clear course selection when batch/cycle changes
+      setSelectedCourseId('');
 
       if (curriculumLoading) return;
 
@@ -130,6 +137,81 @@ const CurriculumBuilderPage: React.FC = () => {
       setSaveMessage('Error saving. Please try again.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  /**
+   * Handle course selection from dropdown.
+   * When a course is selected, populate weeks from the course's structure.
+   * When "manual" is selected, revert to empty weeks or loaded plan.
+   */
+  const handleCourseChange = (courseId: string) => {
+    setSelectedCourseId(courseId);
+
+    if (!courseId) {
+      // Manual mode: reset to empty weeks or loaded batch plan
+      const existingPlan = plans.find(
+        (p) => p.batchId === selectedBatch && p.cycleKey === selectedCycle
+      );
+      setWeeks(existingPlan
+        ? (existingPlan.weeks as WeekPlan[])
+        : Array.from({ length: 8 }, (_, i) => ({
+            weekNumber: (i + 1) as WeekPlan['weekNumber'],
+            focusArea: '', drills: [], objective: ''
+          }))
+      );
+      setActiveWeek(1);
+      return;
+    }
+
+    // Find the selected course and populate weeks
+    const selectedCourse = courses.find((c) => c.id === courseId);
+    if (selectedCourse) {
+      const courseWeeks: WeekPlan[] = selectedCourse.weeks.map((w) => ({
+        weekNumber: w.weekNumber as WeekPlan['weekNumber'],
+        focusArea: w.focusArea,
+        objective: w.objective,
+        drills: w.drills,
+      }));
+      setWeeks(courseWeeks);
+      setActiveWeek(1);
+    }
+  };
+
+  /**
+   * Attach the selected course to the batch via the API.
+   * Handles 409 conflict by showing a confirmation dialog.
+   */
+  const handleAttachCourse = async (confirmOverwrite = false) => {
+    if (!selectedCourseId || !selectedBatch) return;
+
+    setIsAttaching(true);
+    setSaveMessage('');
+    setShowOverwriteConfirm(false);
+
+    try {
+      const result = await attachCourseToBatch(selectedCourseId, {
+        batchId: selectedBatch,
+        cycleKey: selectedCycle,
+        confirmOverwrite,
+      });
+
+      // Refresh plans after attach
+      await refetchPlans();
+
+      const batchName = batches.find(b => b.id === selectedBatch)?.name || 'batch';
+      setSaveMessage(`Course attached! Created ${result.studentPlans.length} student plan(s) for ${batchName}.`);
+      setTimeout(() => setSaveMessage(''), 5000);
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { status?: number; data?: { conflict?: boolean; message?: string } } };
+      if (axiosError.response?.status === 409 && axiosError.response?.data?.conflict) {
+        // Show overwrite confirmation dialog
+        setShowOverwriteConfirm(true);
+      } else {
+        setSaveMessage('Error attaching course. Please try again.');
+      }
+    } finally {
+      setIsAttaching(false);
     }
   };
 
@@ -235,6 +317,23 @@ const CurriculumBuilderPage: React.FC = () => {
                 </select>
               </div>
 
+              <div className="form-group-inline">
+                <label className="text-label">Course Template</label>
+                <select
+                  value={selectedCourseId}
+                  onChange={(e) => handleCourseChange(e.target.value)}
+                  className="input"
+                  disabled={coursesLoading || !selectedBatch || isArchived}
+                >
+                  <option value="">Manual (no course template)</option>
+                  {courses.map((course) => (
+                    <option key={course.id} value={course.id}>
+                      {course.name} ({course.weeks.length} weeks)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="form-group-inline form-group-inline--action">
                 <button
                   onClick={handleSaveBatchPlan}
@@ -244,6 +343,16 @@ const CurriculumBuilderPage: React.FC = () => {
                 >
                   {isSaving ? 'Saving...' : 'Save Batch Plan'}
                 </button>
+                {selectedCourseId && selectedBatch && !isArchived && (
+                  <button
+                    onClick={() => handleAttachCourse(false)}
+                    disabled={isAttaching}
+                    className="btn btn-secondary"
+                    style={{ width: '100%', marginTop: 'var(--space-xs)' }}
+                  >
+                    {isAttaching ? 'Attaching...' : 'Attach Course'}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -255,6 +364,28 @@ const CurriculumBuilderPage: React.FC = () => {
                 style={{ marginTop: 'var(--space-md)' }}
               >
                 {saveMessage}
+              </div>
+            )}
+
+            {showOverwriteConfirm && (
+              <div className="alert-base alert-warning" style={{ marginTop: 'var(--space-md)' }}>
+                <span className="alert-title">Existing Plan Found</span>
+                <span className="alert-message"> — This batch already has a curriculum plan for this cycle. Overwrite it?</span>
+                <div style={{ marginTop: 'var(--space-sm)', display: 'flex', gap: 'var(--space-sm)' }}>
+                  <button
+                    onClick={() => handleAttachCourse(true)}
+                    disabled={isAttaching}
+                    className="btn btn-primary"
+                  >
+                    {isAttaching ? 'Overwriting...' : 'Confirm Overwrite'}
+                  </button>
+                  <button
+                    onClick={() => setShowOverwriteConfirm(false)}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -18,6 +18,8 @@ interface BatchRecord {
   coach_name: string | null;
   coach_role: string | null;
   template_name: string | null;
+  curriculum_id: string | null;
+  curriculum_name: string | null;
   is_archived: boolean;
   created_at: string;
   updated_at: string;
@@ -37,6 +39,12 @@ interface TemplateOption {
   name: string;
 }
 
+interface CourseOption {
+  id: string;
+  name: string;
+  weekCount: number;
+}
+
 interface BatchFormData {
   name: string;
   schedule: string;
@@ -49,6 +57,7 @@ interface BatchFormData {
   endTime: string;
   description: string;
   template_id: string | null;
+  curriculum_id: string | null;
 }
 
 interface FormErrors {
@@ -144,6 +153,9 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
   // Template list state for assignment dropdown
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
 
+  // Course list state for curriculum assignment dropdown
+  const [courses, setCourses] = useState<CourseOption[]>([]);
+
   // Expanded batch row state for CoachAssignmentPanel
   const [expandedBatchId, setExpandedBatchId] = useState<string | null>(null);
 
@@ -205,6 +217,21 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
     fetchTemplates();
   }, []);
 
+  // Fetch available courses for curriculum assignment dropdown
+  const fetchCourses = async () => {
+    try {
+      const response = await apiClient.get('/courses');
+      const data = response.data?.courses || [];
+      setCourses(data.map((c: any) => ({ id: c.id, name: c.name, weekCount: c.weeks?.length || 0 })));
+    } catch (err) {
+      console.error('Failed to fetch courses:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
   const resetForm = () => {
     setShowForm(false);
     setEditingBatch(null);
@@ -213,6 +240,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       schedule: '', 
       assignedCoachId: null, 
       template_id: null,
+      curriculum_id: null,
       capacity: '', 
       skillLevel: '', 
       monthlyFee: '', 
@@ -244,6 +272,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       endTime: '', 
       description: '',
       template_id: null,
+      curriculum_id: null,
     });
     setFormErrors({});
     setShowForm(true);
@@ -267,6 +296,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       endTime: batch.end_time || '',
       description: batch.description || '',
       template_id: batch.template_id || null,
+      curriculum_id: batch.curriculum_id || null,
     });
     setFormErrors({});
     setShowForm(true);
@@ -382,6 +412,9 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       }
       if (formData.template_id) {
         payload.template_id = formData.template_id;
+      }
+      if (formData.curriculum_id) {
+        payload.curriculum_id = formData.curriculum_id;
       }
 
       if (editingBatch) {
@@ -559,6 +592,25 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
                     <option value="">No template</option>
                     {templates.map(t => (
                       <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Row 3: Curriculum */}
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label htmlFor="batch-curriculum" className="form-label">
+                    Curriculum <span style={{ fontWeight: 'normal', color: 'var(--text-tertiary)' }}>(course template)</span>
+                  </label>
+                  <select
+                    id="batch-curriculum"
+                    value={formData.curriculum_id || ''}
+                    onChange={(e) => setFormData({ ...formData, curriculum_id: e.target.value || null })}
+                    className="form-input"
+                    disabled={submitting}
+                  >
+                    <option value="">No curriculum</option>
+                    {courses.map(c => (
+                      <option key={c.id} value={c.id}>{c.name} ({c.weekCount}w)</option>
                     ))}
                   </select>
                 </div>

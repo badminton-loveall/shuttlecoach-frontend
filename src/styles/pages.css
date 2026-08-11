@@ -1504,10 +1504,10 @@
    CURRICULUM BUILDER PAGE
    ============================================================================ */
 
-/* Controls bar: 3-column grid matching the dashboard filter pattern */
+/* Controls bar: 4-column grid matching the dashboard filter pattern */
 .curriculum-controls {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 1fr auto;
   gap: var(--space-md);
   align-items: end;
 }
