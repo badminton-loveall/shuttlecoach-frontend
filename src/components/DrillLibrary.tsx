@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import type { Drill } from '../types';
-import drillsData from '../data/drills.json';
+import { useDrills } from '../hooks/useDrills';
 import { DRILL_CATEGORIES } from '../constants/drillCategories';
 
 /**
  * DrillLibrary Component
- * Requirements: 1.2, 3.1, 3.2, 3.3, 5.2
- * Loads drills from local drills.json and provides search, filter, and drag-and-drop functionality.
+ * Requirements: 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 5.2
+ * Fetches drills from API via useDrills hook and provides search, filter, and drag-and-drop functionality.
  */
 
-const DrillLibrary: React.FC = () => {
-  const drills: Drill[] = drillsData.drills as Drill[];
+interface DrillLibraryProps {
+  /** Change this value to trigger a refetch of drills from the API */
+  refreshTrigger?: number;
+}
+
+const DrillLibrary: React.FC<DrillLibraryProps> = ({ refreshTrigger }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  const { drills, loading, error, refetch } = useDrills({ refreshTrigger });
 
   const handleDragStart = (e: React.DragEvent, drill: Drill) => {
     e.dataTransfer.setData('drill', JSON.stringify(drill));
@@ -26,6 +32,45 @@ const DrillLibrary: React.FC = () => {
     const matchesCategory = selectedCategory === 'All' || drill.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Loading state
+  if (loading && drills.length === 0) {
+    return (
+      <div className="card drill-library">
+        <div className="drill-library__header">
+          <h2 className="text-h3" style={{ margin: '0 0 var(--space-sm)' }}>Drill Library</h2>
+        </div>
+        <div className="drill-library__list">
+          <div className="animate-pulse" style={{ padding: 'var(--space-lg)' }}>
+            <div style={{ height: '1rem', background: 'var(--bg-tertiary, #e5e7eb)', borderRadius: '0.25rem', marginBottom: 'var(--space-sm)' }}></div>
+            <div style={{ height: '2.5rem', background: 'var(--bg-tertiary, #e5e7eb)', borderRadius: '0.25rem', marginBottom: 'var(--space-sm)' }}></div>
+            <div style={{ height: '2.5rem', background: 'var(--bg-tertiary, #e5e7eb)', borderRadius: '0.25rem', marginBottom: 'var(--space-sm)' }}></div>
+            <div style={{ height: '2.5rem', background: 'var(--bg-tertiary, #e5e7eb)', borderRadius: '0.25rem', marginBottom: 'var(--space-sm)' }}></div>
+            <div style={{ height: '2.5rem', background: 'var(--bg-tertiary, #e5e7eb)', borderRadius: '0.25rem' }}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error && drills.length === 0) {
+    return (
+      <div className="card drill-library">
+        <div className="drill-library__header">
+          <h2 className="text-h3" style={{ margin: '0 0 var(--space-sm)' }}>Drill Library</h2>
+        </div>
+        <div className="drill-library__list" style={{ textAlign: 'center', padding: 'var(--space-lg)' }}>
+          <p className="text-small" style={{ color: 'var(--color-error, #dc2626)', marginBottom: 'var(--space-sm)' }}>
+            {error}
+          </p>
+          <button onClick={() => void refetch()} className="btn btn-secondary" style={{ fontSize: '0.875rem' }}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card drill-library">

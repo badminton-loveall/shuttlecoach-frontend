@@ -140,6 +140,7 @@ export function useCreateSessionSchedule() {
 
 /**
  * Template-based session returned from the API when a batch has an assigned template.
+ * Now includes curriculum drill data populated by the backend.
  * Requirements: 8.1, 8.3
  */
 export interface TemplateSession {
@@ -147,9 +148,14 @@ export interface TemplateSession {
   day_of_week: string; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
   start_time: string;  // HH:MM
   duration_hours: number;
+  batchId?: string;
+  batchName?: string;
+  weekNumber?: number;
+  focusArea?: string;
+  drills?: string[];
 }
 
-/** API response shape for GET /api/session-calendar */
+/** API response shape for GET /api/session-calendar (includes curriculum drill data) */
 interface SessionCalendarResponse {
   entries: CalendarEntry[];
   sessions?: TemplateSession[];
@@ -183,9 +189,9 @@ function computeEndTime(startTime: string, durationHours: number): string {
 
 /**
  * Convert a TemplateSession into a CalendarEntry-compatible object.
- * Template sessions lack batch metadata and curriculum info, so those
- * fields are set to reasonable defaults. Requirement 8.4: batches without
- * templates produce no sessions (handled by API returning empty array).
+ * Template sessions now include curriculum drill data from the API.
+ * Requirement 8.4: batches without templates produce no sessions
+ * (handled by API returning empty array).
  */
 function templateSessionToCalendarEntry(session: TemplateSession): CalendarEntry {
   return {
@@ -193,13 +199,22 @@ function templateSessionToCalendarEntry(session: TemplateSession): CalendarEntry
     dayOfWeek: DAY_NAME_TO_NUMBER[session.day_of_week] ?? 0,
     startTime: session.start_time,
     endTime: computeEndTime(session.start_time, session.duration_hours),
-    batchId: '',
-    batchName: 'Template Session',
-    weekNumber: 0,
-    focusArea: '',
-    drills: [],
+    batchId: session.batchId || '',
+    batchName: session.batchName || 'Template Session',
+    weekNumber: session.weekNumber || 0,
+    focusArea: session.focusArea || '',
+    drills: extractCurriculumDrills(session),
     attendanceRecorded: false,
   };
+}
+
+/**
+ * Extract curriculum drill names from a template session.
+ * The API populates drills from the assigned curriculum plan.
+ */
+function extractCurriculumDrills(session: TemplateSession): string[] {
+  const curriculumDrills = session.drills || [];
+  return curriculumDrills;
 }
 
 /**

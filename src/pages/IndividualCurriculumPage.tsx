@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DrillLibrary from '../components/DrillLibrary';
+import { CurriculumReassignConfirmDialog } from '../components/CurriculumReassignConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { generateCycleKey, isCycleArchived, getAllCyclesFromPlans } from '../utils/skillUtils';
 import { useCurriculum } from '../hooks/useCurriculum';
+import { useTrainingLogs } from '../hooks/useTrainingLogs';
 import { useStudent } from '../hooks/useStudent';
 import type { CurriculumPlan, WeekPlan, Drill } from '../types';
 import '../styles/pages.css';
@@ -43,6 +45,13 @@ const IndividualCurriculumPage: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string>('');
   const [isArchived, setIsArchived] = useState(false);
+  const [showReassignConfirm, setShowReassignConfirm] = useState(false);
+
+  // Fetch training logs for this student in the current cycle to check progress
+  const { logs: trainingLogs, loading: logsLoading } = useTrainingLogs({
+    studentId: studentId || undefined,
+    cycleKey: selectedCycle || undefined,
+  });
 
   // Check permissions and redirect if needed
   useEffect(() => {
@@ -230,6 +239,29 @@ const IndividualCurriculumPage: React.FC = () => {
     );
   };
 
+  /**
+   * Check if student has existing training log progress in the current cycle.
+   * Progress exists if any log has week_number > 1 OR is_completed = true.
+   */
+  const hasExistingProgress = (): boolean => {
+    if (logsLoading || !trainingLogs || trainingLogs.length === 0) return false;
+    return trainingLogs.some(
+      (log) => log.weekNumber > 1 || log.isCompleted === true
+    );
+  };
+
+  /**
+   * Get the highest week number the student has reached in training logs.
+   */
+  const getProgressWeek = (): number => {
+    if (!trainingLogs || trainingLogs.length === 0) return 1;
+    return Math.max(...trainingLogs.map((log) => log.weekNumber));
+  };
+
+  /**
+   * Initiate save - checks for existing progress before proceeding.
+   * If student has progress and we're creating a new plan (reassignment), show warning.
+   */
   const handleSavePlan = async () => {
     if (isArchived) {
       setSaveMessage('Cannot edit archived curriculum plans');
@@ -240,6 +272,22 @@ const IndividualCurriculumPage: React.FC = () => {
       setSaveMessage('Student not found');
       return;
     }
+
+    // If creating a new plan (reassigning) and student has existing progress, show warning
+    if (!currentPlan && hasExistingProgress()) {
+      setShowReassignConfirm(true);
+      return;
+    }
+
+    // Proceed with save directly
+    await executeSave();
+  };
+
+  /**
+   * Execute the actual save operation (called directly or after confirmation).
+   */
+  const executeSave = async () => {
+    if (!student) return;
 
     setIsSaving(true);
     setSaveMessage('');
@@ -266,6 +314,21 @@ const IndividualCurriculumPage: React.FC = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  /**
+   * Handle confirmation of reassignment - proceed with save after user confirms.
+   */
+  const confirmReassign = async () => {
+    setShowReassignConfirm(false);
+    await executeSave();
+  };
+
+  /**
+   * Handle cancellation of reassignment - close dialog without saving.
+   */
+  const handleCancelReassign = () => {
+    setShowReassignConfirm(false);
   };
 
   // Loading state
@@ -613,6 +676,16 @@ const IndividualCurriculumPage: React.FC = () => {
 
         </div>
       </div>
+
+      {/* Curriculum Reassignment Confirmation Dialog */}
+      <CurriculumReassignConfirmDialog
+        isOpen={showReassignConfirm}
+        studentName={student.fullName}
+        currentWeek={getProgressWeek()}
+        onConfirm={confirmReassign}
+        onCancel={handleCancelReassign}
+        isLoading={isSaving}
+      />
     </DashboardLayout>
   );
 };

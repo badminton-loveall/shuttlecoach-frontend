@@ -29,6 +29,7 @@ import DesignSystemTestPage from './pages/DesignSystemTestPage';
 import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
 import AttendancePage from './pages/AttendancePage';
 import LeaveRequestsPage from './pages/LeaveRequestsPage';
+import LedgerPage from './pages/LedgerPage';
 import TrainingAnalyticsPage from './pages/TrainingAnalyticsPage';
 import SessionCalendarPage from './pages/SessionCalendarPage';
 import BatchSchedulePage from './pages/BatchSchedulePage';
@@ -102,6 +103,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'ADMIN']} requireFeeAccess>
                 <FeesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/ledger"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH', 'ADMIN']} requireFeeAccess>
+                <LedgerPage />
               </ProtectedRoute>
             }
           />

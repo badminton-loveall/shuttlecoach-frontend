@@ -54,6 +54,7 @@ const COACH_NAV: NavEntry[] = [
     label: 'Finance',
     items: [
       { label: 'Fees', path: '/fees' },
+      { label: 'Accounts', path: '/ledger' },
     ],
   },
 ];
@@ -143,10 +144,10 @@ export const TopNav: React.FC = () => {
       }
 
       if (isDropdown(entry) && entry.label === 'Finance') {
-        // Filter fees link based on canAccessFees permission
+        // Filter finance links based on canAccessFees permission
         let items = canAccessFees
           ? entry.items
-          : entry.items.filter((item) => item.path !== '/fees');
+          : entry.items.filter((item) => item.path !== '/fees' && item.path !== '/ledger');
 
         // If no items remain after filtering, exclude the dropdown entirely
         if (items.length === 0) {

@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           setActiveCenterId(resolvedCenterId);
           setActiveRole(activeMembership?.role ?? null);
-          setCanAccessFees(activeMembership?.canAccessFees ?? false);
+          setCanAccessFees(activeMembership?.role === 'HEAD_COACH' || activeMembership?.role === 'ADMIN' || (activeMembership?.canAccessFees ?? false));
 
           // Persist resolved center ID
           if (resolvedCenterId) {
@@ -188,7 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setMemberships(parsedMemberships);
         setActiveCenterId(activeCenter);
         setActiveRole(role);
-        setCanAccessFees(activeMembership?.canAccessFees ?? false);
+        setCanAccessFees(role === 'HEAD_COACH' || role === 'ADMIN' || (activeMembership?.canAccessFees ?? false));
       } else {
         // Legacy login response (backward compat)
         const { token: authToken, user: userData, role: userRole } = data;
@@ -267,11 +267,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setActiveCenterId(centerId);
     setActiveRole(membership.role);
-    setCanAccessFees(membership.canAccessFees);
+    const feeAccess = membership.role === 'HEAD_COACH' || membership.role === 'ADMIN' || membership.canAccessFees;
+    setCanAccessFees(feeAccess);
     localStorage.setItem('active_center_id', centerId);
     localStorage.setItem('auth_center_id', centerId);
     localStorage.setItem('auth_role', membership.role);
-    localStorage.setItem('auth_can_access_fees', String(membership.canAccessFees));
+    localStorage.setItem('auth_can_access_fees', String(feeAccess));
   }, [memberships]);
 
   /**

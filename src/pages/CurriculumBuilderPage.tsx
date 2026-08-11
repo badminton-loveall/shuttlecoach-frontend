@@ -3,14 +3,16 @@ import DashboardLayout from '../components/DashboardLayout';
 import DrillLibrary from '../components/DrillLibrary';
 import { generateCycleKey, isCycleArchived, getAllCyclesFromPlans } from '../utils/skillUtils';
 import { useBatches } from '../hooks/useBatches';
-import type { CurriculumPlan, WeekPlan, Drill } from '../types';
-import curriculumData from '../data/curriculum.json';
-import studentsData from '../data/students.json';
+import { useCurriculum } from '../hooks/useCurriculum';
+import type { WeekPlan, Drill } from '../types';
 import '../styles/pages.css';
 
 /**
  * CurriculumBuilderPage
  * Requirements: 18.1–18.6
+ *
+ * Creates and manages 8-week batch curriculum plans via the API backend.
+ * After saving a batch plan, clones individual plans for all students in the batch server-side.
  */
 
 const CurriculumBuilderPage: React.FC = () => {
@@ -25,13 +27,23 @@ const CurriculumBuilderPage: React.FC = () => {
 
   const { batches, loading: batchesLoading } = useBatches();
 
+  // Fetch curriculum plans from API, filtered by batchId and cycleKey
+  const {
+    plans,
+    loading: curriculumLoading,
+    error: curriculumError,
+    createPlan,
+    cloneBatchPlan,
+    refetch: refetchPlans,
+  } = useCurriculum({
+    batchId: selectedBatch || undefined,
+    cycleKey: selectedCycle || undefined,
+  });
+
+  // Initialize cycle on mount
   useEffect(() => {
     const currentCycle = generateCycleKey();
     setSelectedCycle(currentCycle);
-
-    const storedPlans = localStorage.getItem('curriculumPlans');
-    const plansData = storedPlans ? JSON.parse(storedPlans) : curriculumData;
-    setAvailableCycles(getAllCyclesFromPlans(plansData));
 
     setWeeks(Array.from({ length: 8 }, (_, i) => ({
       weekNumber: (i + 1) as WeekPlan['weekNumber'],
@@ -39,18 +51,22 @@ const CurriculumBuilderPage: React.FC = () => {
     })));
   }, []);
 
+  // Update available cycles from API plans data
+  useEffect(() => {
+    if (curriculumLoading) return;
+    setAvailableCycles(getAllCyclesFromPlans(plans));
+  }, [plans, curriculumLoading]);
+
+  // Load existing batch plan when batch/cycle changes
   useEffect(() => {
     if (selectedBatch && selectedCycle) {
       setIsArchived(isCycleArchived(selectedCycle));
 
-      const storedPlans = localStorage.getItem('curriculumPlans');
-      let plansToSearch = curriculumData as any[];
-      if (storedPlans) {
-        try { plansToSearch = JSON.parse(storedPlans); } catch (e) { /* ignore */ }
-      }
+      if (curriculumLoading) return;
 
-      const existingPlan = plansToSearch.find(
-        (p: any) => p.batchId === selectedBatch && p.cycleKey === selectedCycle
+      // Find existing batch plan from API-fetched plans
+      const existingPlan = plans.find(
+        (p) => p.batchId === selectedBatch && p.cycleKey === selectedCycle
       );
 
       setWeeks(existingPlan
@@ -61,7 +77,7 @@ const CurriculumBuilderPage: React.FC = () => {
           }))
       );
     }
-  }, [selectedBatch, selectedCycle]);
+  }, [selectedBatch, selectedCycle, plans, curriculumLoading]);
 
   const handleWeekUpdate = (weekNumber: number, field: keyof WeekPlan, value: string) => {
     if (isArchived) { setSaveMessage('Cannot edit archived plans'); setTimeout(() => setSaveMessage(''), 3000); return; }
@@ -95,30 +111,20 @@ const CurriculumBuilderPage: React.FC = () => {
     setIsSaving(true);
     setSaveMessage('');
     try {
-      const timestamp = Date.now();
-      const batchPlanId = `curriculum-${timestamp}`;
-      const batchPlan: CurriculumPlan = {
-        id: batchPlanId, cycleKey: selectedCycle, batchId: selectedBatch,
-        studentId: undefined, sourceBatchPlanId: undefined, weeks,
-        createdAt: new Date(), updatedAt: new Date(), isArchived: isCycleArchived(selectedCycle)
-      };
-      const batchStudents = studentsData.filter((s) => s.batchId === selectedBatch);
-      const individualPlans: CurriculumPlan[] = batchStudents.map((student, i) => ({
-        id: `curriculum-${timestamp}-student-${i}`, cycleKey: selectedCycle, batchId: undefined,
-        studentId: student.id, sourceBatchPlanId: batchPlanId,
-        weeks: JSON.parse(JSON.stringify(weeks)),
-        createdAt: new Date(), updatedAt: new Date(), isArchived: isCycleArchived(selectedCycle)
-      }));
+      // Persist batch plan via API
+      const batchPlan = await createPlan({
+        cycleKey: selectedCycle,
+        batchId: selectedBatch,
+        weeks,
+      });
 
-      const existingPlans = JSON.parse(localStorage.getItem('curriculumPlans') || '[]');
-      const filteredPlans = existingPlans.filter((p: CurriculumPlan) =>
-        !(p.batchId === selectedBatch && p.cycleKey === selectedCycle) &&
-        !(p.sourceBatchPlanId === batchPlanId ||
-          (batchStudents.some(s => s.id === p.studentId) && p.cycleKey === selectedCycle && p.sourceBatchPlanId))
-      );
-      localStorage.setItem('curriculumPlans', JSON.stringify([...filteredPlans, batchPlan, ...individualPlans]));
+      // Clone batch plan to generate individual student plans server-side
+      const clonedPlans = await cloneBatchPlan(batchPlan.id, { batchId: selectedBatch });
 
-      setSaveMessage(`Saved! Created ${individualPlans.length} individual plan(s) for ${batches.find(b => b.id === selectedBatch)?.name}.`);
+      // Refresh plans list after save
+      await refetchPlans();
+
+      setSaveMessage(`Saved! Created ${clonedPlans.length} individual plan(s) for ${batches.find(b => b.id === selectedBatch)?.name}.`);
       setTimeout(() => setSaveMessage(''), 5000);
     } catch {
       setSaveMessage('Error saving. Please try again.');
@@ -126,6 +132,55 @@ const CurriculumBuilderPage: React.FC = () => {
       setIsSaving(false);
     }
   };
+
+  // Loading state
+  if (curriculumLoading && selectedBatch) {
+    return (
+      <DashboardLayout>
+        <div className="page-container">
+          <div className="section-stack">
+            <div className="page-header">
+              <div>
+                <h1 className="page-header-title">Curriculum Builder</h1>
+                <p className="page-header-subtitle">Loading curriculum data...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Error state
+  if (curriculumError && selectedBatch) {
+    return (
+      <DashboardLayout>
+        <div className="page-container">
+          <div className="section-stack">
+            <div className="page-header">
+              <div>
+                <h1 className="page-header-title">Curriculum Builder</h1>
+                <p className="page-header-subtitle">Create and manage 8-week training curriculum for batches</p>
+              </div>
+            </div>
+            <div className="card">
+              <div className="alert-base alert-warning">
+                <span className="alert-title">Error</span>
+                <span className="alert-message"> — {curriculumError}</span>
+              </div>
+              <button
+                onClick={() => refetchPlans()}
+                className="btn btn-secondary"
+                style={{ marginTop: 'var(--space-md)' }}
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
