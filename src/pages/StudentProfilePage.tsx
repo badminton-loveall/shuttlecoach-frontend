@@ -399,20 +399,6 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
         )}
       </div>
 
-      {/* Weekly Schedule info from batch */}
-      {(() => {
-        const currentBatch = batches.find((b) => b.id === student.batchId);
-        const hasScheduleInfo = currentBatch && (currentBatch.schedule || (currentBatch as any).days_of_week);
-        return hasScheduleInfo ? (
-          <div style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-md)', background: 'var(--surface-secondary, #f8f9fa)', borderRadius: 'var(--radius-sm, 6px)', border: '1px solid var(--border-default, #e5e7eb)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
-              <span className="text-body" style={{ fontWeight: 600 }}>Weekly Schedule:</span>
-              <span className="text-body">{currentBatch.schedule || 'Not specified'}</span>
-            </div>
-          </div>
-        ) : null;
-      })()}
-
       {/* Calendar component */}
       <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} />
     </div>

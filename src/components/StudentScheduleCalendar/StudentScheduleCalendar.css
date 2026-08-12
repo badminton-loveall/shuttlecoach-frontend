@@ -73,18 +73,18 @@
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: var(--space-xs);
+  gap: 3px;
 }
 
 /* 4. Day-of-week header cells */
 .calendar-grid__header {
   text-align: center;
-  font-size: var(--font-xs);
+  font-size: 10px;
   font-weight: var(--weight-semibold);
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: var(--letter-label);
-  padding: var(--space-sm) 0;
+  padding: var(--space-xs) 0;
   user-select: none;
 }
 
@@ -99,10 +99,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   aspect-ratio: 1;
-  padding: var(--space-xs);
+  padding: 4px;
   border-radius: var(--radius-sm);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs, 12px);
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -136,25 +137,25 @@
   font-weight: var(--weight-bold);
 }
 
-/* 8. Highlighted — days with sessions (lime/green accent) */
+/* 8. Highlighted — days with sessions (light green) */
 .day-cell--highlighted {
-  background-color: rgba(184, 225, 53, 0.18);
+  background-color: rgba(74, 222, 128, 0.2);
   font-weight: var(--weight-semibold);
-  color: var(--color-primary-dark);
+  color: #166534;
 }
 
 .day-cell--highlighted:hover {
-  background-color: rgba(184, 225, 53, 0.3);
+  background-color: rgba(74, 222, 128, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
   .day-cell--highlighted {
-    background-color: rgba(184, 225, 53, 0.15);
-    color: var(--color-primary-light);
+    background-color: rgba(74, 222, 128, 0.15);
+    color: #86efac;
   }
 
   .day-cell--highlighted:hover {
-    background-color: rgba(184, 225, 53, 0.25);
+    background-color: rgba(74, 222, 128, 0.25);
   }
 }
 
@@ -425,4 +426,121 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
+}
+
+
+/* ============================================================================
+   DAY CELL HOVER TOOLTIP
+   Shows session details (time, focus area, drills) on hover.
+   ============================================================================ */
+
+.day-cell__tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  max-width: 260px;
+  background-color: var(--surface-card, #fff);
+  border: 1px solid var(--border-default, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: var(--space-sm, 8px) var(--space-md, 12px);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Arrow pointing down */
+.day-cell__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--surface-card, #fff);
+}
+
+.day-cell__tooltip-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.day-cell__tooltip-entry + .day-cell__tooltip-entry {
+  margin-top: var(--space-xs, 4px);
+  padding-top: var(--space-xs, 4px);
+  border-top: 1px solid var(--border-default, #e5e7eb);
+}
+
+.day-cell__tooltip-heading {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-default, #e5e7eb);
+}
+
+.day-cell__tooltip-time {
+  font-size: var(--font-xs, 11px);
+  font-weight: var(--weight-semibold, 600);
+  color: var(--text-primary, #1f2937);
+}
+
+.day-cell__tooltip-focus {
+  font-size: var(--font-xs, 11px);
+  color: var(--text-secondary, #6b7280);
+}
+
+.day-cell__tooltip-no-drills {
+  font-size: 10px;
+  color: var(--text-tertiary, #9ca3af);
+  font-style: italic;
+}
+
+.day-cell__tooltip-drills {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.day-cell__tooltip-drill {
+  font-size: 10px;
+  color: #166534;
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell__tooltip {
+    background-color: var(--surface-dark-card, #1f2937);
+    border-color: var(--border-dark, #374151);
+  }
+  .day-cell__tooltip::after {
+    border-top-color: var(--surface-dark-card, #1f2937);
+  }
+  .day-cell__tooltip-heading {
+    color: var(--text-dark-primary, #f9fafb);
+    border-bottom-color: var(--border-dark, #374151);
+  }
+  .day-cell__tooltip-time {
+    color: var(--text-dark-primary, #f9fafb);
+  }
+  .day-cell__tooltip-focus {
+    color: var(--text-dark-secondary, #9ca3af);
+  }
+  .day-cell__tooltip-drill {
+    color: #86efac;
+  }
+  .day-cell__tooltip-no-drills {
+    color: var(--text-dark-tertiary, #6b7280);
+  }
+}
+
+@media (max-width: 600px) {
+  .day-cell__tooltip {
+    min-width: 140px;
+    max-width: 200px;
+    font-size: 10px;
+  }
 }

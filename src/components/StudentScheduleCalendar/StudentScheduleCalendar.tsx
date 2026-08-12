@@ -8,7 +8,6 @@ import {
 } from './calendarUtils';
 import MonthNavigator from './MonthNavigator';
 import CalendarGrid from './CalendarGrid';
-import DetailPanel from './DetailPanel';
 import './StudentScheduleCalendar.css';
 import type { SkillLevel } from '../../types';
 
@@ -68,23 +67,18 @@ export default function StudentScheduleCalendar({
     setSelectedDate(null);
   }, []);
 
-  // Day click handler
+  // Day click handler — toggles selection ring on the day
   const handleDayClick = useCallback(
     (date: string) => {
       const dayEntries = entriesByDate.get(date);
       if (dayEntries && dayEntries.length > 0) {
-        setSelectedDate(date);
+        setSelectedDate((prev) => prev === date ? null : date);
       } else {
         setSelectedDate(null);
       }
     },
     [entriesByDate]
   );
-
-  // Close detail panel
-  const handleCloseDetail = useCallback(() => {
-    setSelectedDate(null);
-  }, []);
 
   // No batch assigned state
   if (!batchId) {
@@ -131,14 +125,6 @@ export default function StudentScheduleCalendar({
         <p className="student-schedule-calendar__no-sessions">
           No sessions scheduled this month
         </p>
-      )}
-
-      {selectedDate && entriesByDate.has(selectedDate) && (
-        <DetailPanel
-          entries={entriesByDate.get(selectedDate)!}
-          date={selectedDate}
-          onClose={handleCloseDetail}
-        />
       )}
     </div>
   );

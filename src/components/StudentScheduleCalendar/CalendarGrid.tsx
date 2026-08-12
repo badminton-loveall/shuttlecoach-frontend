@@ -44,6 +44,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           onClick={() => onDayClick(day.date)}
           skillLevel={skillLevel}
           batchColors={batchColorsByDate?.get(day.date)}
+          entries={entriesByDate.get(day.date)}
         />
       ))}
     </div>

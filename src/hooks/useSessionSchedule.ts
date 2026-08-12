@@ -9,7 +9,7 @@
  * - Creates/updates and fetches session notes
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type {
   SessionSchedule,
   CalendarEntry,
@@ -229,7 +229,6 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
   const [entries, setEntries] = useState<CalendarEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef(false);
 
   const fetchCalendar = useCallback(async (bypassCache = false) => {
     if (!filters?.startDate || !filters?.endDate) {
@@ -303,10 +302,7 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
   }, [filters?.startDate, filters?.endDate, filters?.batchId]);
 
   useEffect(() => {
-    if (!hasFetched.current) {
-      hasFetched.current = true;
-      void fetchCalendar();
-    }
+    void fetchCalendar();
   }, [fetchCalendar]);
 
   const refetch = useCallback(() => fetchCalendar(true), [fetchCalendar]);
