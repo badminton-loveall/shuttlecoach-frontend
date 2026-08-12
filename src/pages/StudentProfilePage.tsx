@@ -414,7 +414,7 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
       })()}
 
       {/* Calendar component */}
-      <StudentScheduleCalendar batchId={student.batchId || ''} />
+      <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} />
     </div>
   );
 };

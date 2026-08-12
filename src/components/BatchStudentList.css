@@ -1,0 +1,117 @@
+/* BatchStudentList Styles
+   Displays student list for a batch with loading/error states.
+   Uses design tokens from the global theme.
+   Requirements: 3.3, 3.4, 4.1
+*/
+
+.batch-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+/* Loading skeleton */
+.batch-student-list--loading {
+  gap: var(--space-sm);
+}
+
+.batch-student-list__skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-hover);
+}
+
+.batch-student-list__skeleton-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--border-default);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.batch-student-list__skeleton-text {
+  height: 12px;
+  width: 60%;
+  border-radius: var(--radius-sm);
+  background-color: var(--border-default);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Error state */
+.batch-student-list--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+.batch-student-list__error-message {
+  font-size: var(--font-xs, 12px);
+  color: var(--color-danger, #ef4444);
+  margin: 0;
+  text-align: center;
+}
+
+.batch-student-list__retry-btn {
+  font-size: var(--font-xs, 12px);
+  color: var(--color-primary, #3b82f6);
+  background: none;
+  border: 1px solid var(--color-primary, #3b82f6);
+  border-radius: var(--radius-md);
+  padding: 4px 12px;
+  cursor: pointer;
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.batch-student-list__retry-btn:hover {
+  background-color: var(--color-primary, #3b82f6);
+  color: #fff;
+}
+
+/* Empty state */
+.batch-student-list--empty {
+  padding: var(--space-sm) var(--space-md);
+}
+
+.batch-student-list__empty-message {
+  font-size: var(--font-xs, 12px);
+  color: var(--text-tertiary);
+  margin: 0;
+  font-style: italic;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .batch-student-list__skeleton-row {
+    background-color: var(--surface-dark-hover);
+  }
+
+  .batch-student-list__skeleton-dot,
+  .batch-student-list__skeleton-text {
+    background-color: var(--border-dark);
+  }
+
+  .batch-student-list__error-message {
+    color: var(--color-danger-light, #fca5a5);
+  }
+
+  .batch-student-list__empty-message {
+    color: var(--text-dark-tertiary);
+  }
+}

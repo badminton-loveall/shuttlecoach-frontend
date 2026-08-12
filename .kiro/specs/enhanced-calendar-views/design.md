@@ -317,3 +317,117 @@ WHERE batch_id = $batchId;
 
 ---
 
+
+## Correctness Properties
+
+*A property is a characteristic or behavior that should hold true across all valid executions of a system — essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+
+### Property 1: Batch Color Assignment Consistency and Uniqueness
+
+*For any* set of batch IDs (1 to N), `assignBatchColors` shall return the same color for the same batch ID on every invocation, assign distinct colors for distinct batches (up to palette size of 6), and cycle deterministically for batch indices > 6.
+
+**Validates: Requirements 2.2, 2.5, 5.1, 5.2**
+
+### Property 2: Week Number Computation Correctness
+
+*For any* valid `cycleStartDate`, `repeatEvery` (1 or 2), and `targetDate` that falls within 8 curriculum weeks of the cycle start, the computed `weekNumber` shall equal `floor((targetDate - cycleStartDate) / (repeatEvery * 7)) + 1` and be clamped to the range [1, 8], and the drills returned shall correspond to `curriculum_plans.weeks[weekNumber - 1].drills`.
+
+**Validates: Requirements 4.3, 6.2, 6.5**
+
+### Property 3: Skill-Level Class Mapping Completeness
+
+*For any* valid `SkillLevel` value and any themed UI element (day cell background, selected ring, drill badge), the applied CSS class shall contain the correct skill-level identifier, and all themed elements shall use the same skill-level class for a given student.
+
+**Validates: Requirements 1.1, 1.4**
+
+### Property 4: Batch Grouping from Calendar Entries
+
+*For any* set of `CalendarEntry` objects for a given date, grouping by `batchId` shall produce exactly the set of unique batch IDs present in the entries, preserving all entry data and producing no duplicates or omissions.
+
+**Validates: Requirements 2.3, 3.1**
+
+### Property 5: Rendered Batch Detail Data Completeness
+
+*For any* `BatchStudentDrill` response containing N students each with M drills, the rendered detail panel shall display all N student names with skill-level indicators, and expanding any student shall reveal all M drill names with their associated focus areas.
+
+**Validates: Requirements 3.2, 3.3, 4.2**
+
+---
+
+## Error Handling
+
+### Frontend Error States
+
+| Scenario | Handling |
+|----------|----------|
+| `useBatchStudentsDrills` API returns 403 | Display "You don't have access to this batch" message in the detail panel |
+| `useBatchStudentsDrills` API returns 400 | Display "Invalid request — please try again" (should not occur in normal flow) |
+| `useBatchStudentsDrills` API returns 500 or network error | Display "Student data is temporarily unavailable" with retry button |
+| `useSessionCalendar` returns empty entries for coach | Show "No sessions scheduled" empty state (existing behavior) |
+| `skillLevel` prop is undefined/null | Default to 'Beginner' color (blue) — graceful fallback |
+| Curriculum plan not found for student or batch | Return empty drills array `[]` from API — frontend shows "No drills scheduled" |
+| `cycleStartDate` is null for a batch schedule | Return empty drills array — cannot compute week number without cycle start |
+
+### Backend Error Responses
+
+```typescript
+// 400 Bad Request — validation errors
+{ error: "Missing required parameter: batchId" }
+{ error: "Invalid date format. Expected YYYY-MM-DD" }
+{ error: "Date must not be in the future" }
+
+// 403 Forbidden — authorization
+{ error: "You are not authorized to access this batch" }
+
+// 500 Internal Server Error — unexpected failures
+{ error: "An error occurred while fetching student drills" }
+```
+
+### Resilience Patterns
+
+- **Graceful degradation**: If drill data fails to load, the batch card still shows batch name, time, and focus area from local `CalendarEntry` data.
+- **Cache tolerance**: The coach calendar hook caches entries in `sessionStorage` with daily TTL (existing pattern). Color assignment derives from cached batch IDs.
+- **Loading states**: Each `BatchStudentList` instance shows a skeleton loader independently, so one slow batch doesn't block others.
+
+---
+
+## Testing Strategy
+
+### Unit Tests (Example-Based)
+
+| Test | Validates |
+|------|-----------|
+| DayCell renders `day-cell--skill-beginner` when skillLevel is 'Beginner' | Req 1.2 |
+| DayCell renders `day-cell--skill-professional` when skillLevel is 'Professional' | Req 1.2 |
+| DayCell re-renders with new class when skillLevel prop changes | Req 1.3 |
+| CoachDayDetailPanel shows error message on API failure | Req 3.5 |
+| StudentDrillAccordion collapses on second click | Req 4.5 |
+| StudentDrillAccordion shows "No drills scheduled" for empty array | Req 4.4 |
+| Tooltip shows batch name on hover over color dot | Req 5.4 |
+| API returns 403 for unauthorized batchId | Req 6.3 |
+| API returns 400 for missing date param | Req 6.4 |
+| API returns 400 for invalid date format (e.g., "not-a-date") | Req 6.4 |
+
+### Property-Based Tests
+
+| Property | Library | Min Iterations | Validates |
+|----------|---------|----------------|-----------|
+| Batch color assignment consistency | fast-check | 100 | Req 2.2, 2.5, 5.1, 5.2 |
+| Week number computation correctness | fast-check | 100 | Req 4.3, 6.2, 6.5 |
+| Skill-level class mapping completeness | fast-check | 100 | Req 1.1, 1.4 |
+| Batch grouping from calendar entries | fast-check | 100 | Req 2.3, 3.1 |
+| Rendered batch detail data completeness | fast-check | 100 | Req 3.2, 3.3, 4.2 |
+
+**Property test configuration:**
+- Library: `fast-check` (already compatible with Vitest test runner)
+- Minimum 100 iterations per property
+- Each test tagged with: `Feature: enhanced-calendar-views, Property {N}: {title}`
+
+### Integration Tests
+
+| Test | Validates |
+|------|-----------|
+| `GET /api/batch-students-drills` returns correct response shape | Req 6.1, 6.2 |
+| `GET /api/session-calendar` without batchId returns all coach batches | Req 2.1 |
+| Coach calendar renders color dots for multi-batch days | Req 2.3 |
+| End-to-end: day click → panel → student click → drills shown | Req 3.1, 4.1 |

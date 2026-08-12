@@ -1,6 +1,6 @@
 import React from 'react';
 import type { GridDay } from './calendarUtils';
-import type { CalendarEntry } from '../../types';
+import type { CalendarEntry, SkillLevel } from '../../types';
 import DayCell from './DayCell';
 
 interface CalendarGridProps {
@@ -9,6 +9,8 @@ interface CalendarGridProps {
   selectedDate: string | null;
   today: string;
   onDayClick: (date: string) => void;
+  skillLevel?: SkillLevel;
+  batchColorsByDate?: Map<string, Array<{ batchId: string; batchName: string; color: string }>>;
 }
 
 const WEEKDAY_HEADERS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -19,6 +21,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   selectedDate,
   today,
   onDayClick,
+  skillLevel,
+  batchColorsByDate,
 }) => {
   return (
     <div className="calendar-grid">
@@ -38,6 +42,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           isSelected={day.date === selectedDate}
           isToday={day.date === today}
           onClick={() => onDayClick(day.date)}
+          skillLevel={skillLevel}
+          batchColors={batchColorsByDate?.get(day.date)}
         />
       ))}
     </div>

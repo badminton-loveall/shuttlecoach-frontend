@@ -1,16 +1,22 @@
 /**
  * SessionCalendarPage
  * Calendar view of training sessions with drill/focus area details.
- * Coach view: multi-batch with quick-access attendance marking button.
+ * Coach view: multi-batch color-coded calendar with batch color legend.
  * Student view: read-only with curriculum details on session click.
  *
- * Requirements: 14.4, 14.5, 15.4, 15.5, 15.6
+ * Requirements: 2.1, 2.2, 2.3, 2.4, 14.4, 14.5, 15.4, 15.5, 15.6
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
-import CalendarView from '../components/CalendarView';
+import CalendarGrid from '../components/StudentScheduleCalendar/CalendarGrid';
+import MonthNavigator from '../components/StudentScheduleCalendar/MonthNavigator';
+import { BatchColorLegend } from '../components/BatchColorLegend';
+import { CoachDayDetailPanel } from '../components/CoachDayDetailPanel';
+import type { CoachBatchEntry } from '../components/CoachDayDetailPanel';
+import { buildGridDays, buildEntriesMap, getToday } from '../components/StudentScheduleCalendar/calendarUtils';
+import { assignBatchColors } from '../utils/batchColors';
 import { useAuth } from '../contexts/AuthContext';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import type { CalendarEntry } from '../types';
@@ -64,20 +70,128 @@ const SessionCalendarPage: React.FC = () => {
 
   const isCoach = role === 'HEAD_COACH' || role === 'ASSISTANT_COACH';
 
-  // Date range for calendar query (3-month window)
+  // Date range for calendar query (3-month window) — no batchId filter (Req 2.1)
   const { startDate, endDate } = useMemo(() => getDefaultDateRange(), []);
 
   const { entries, loading, error } = useSessionCalendar({ startDate, endDate });
 
-  // Selected session for detail panel
-  const [selectedEntry, setSelectedEntry] = useState<CalendarEntry | null>(null);
+  // Month navigation state
+  const now = new Date();
+  const [viewedYear, setViewedYear] = useState(now.getFullYear());
+  const [viewedMonth, setViewedMonth] = useState(now.getMonth());
 
-  const handleSessionClick = useCallback((entry: CalendarEntry) => {
-    setSelectedEntry(entry);
+  const handlePrevMonth = useCallback(() => {
+    setViewedMonth((prev) => {
+      if (prev === 0) {
+        setViewedYear((y) => y - 1);
+        return 11;
+      }
+      return prev - 1;
+    });
   }, []);
+
+  const handleNextMonth = useCallback(() => {
+    setViewedMonth((prev) => {
+      if (prev === 11) {
+        setViewedYear((y) => y + 1);
+        return 0;
+      }
+      return prev + 1;
+    });
+  }, []);
+
+  // Build grid days for the current viewed month
+  const gridDays = useMemo(() => buildGridDays(viewedYear, viewedMonth), [viewedYear, viewedMonth]);
+
+  // Build entries map for CalendarGrid
+  const entriesByDate = useMemo(() => buildEntriesMap(entries), [entries]);
+
+  // Assign batch colors (Req 2.2)
+  const uniqueBatchIds = useMemo(
+    () => [...new Set(entries.map((e) => e.batchId))],
+    [entries]
+  );
+  const batchColorMap = useMemo(() => assignBatchColors(uniqueBatchIds), [uniqueBatchIds]);
+
+  // Build batchColorsByDate map for CalendarGrid (Req 2.3)
+  const batchColorsByDate = useMemo(() => {
+    const map = new Map<string, Array<{ batchId: string; batchName: string; color: string }>>();
+    entries.forEach((entry) => {
+      const existing = map.get(entry.date) || [];
+      if (!existing.some((b) => b.batchId === entry.batchId)) {
+        existing.push({
+          batchId: entry.batchId,
+          batchName: entry.batchName,
+          color: batchColorMap.get(entry.batchId) || '#888',
+        });
+      }
+      map.set(entry.date, existing);
+    });
+    return map;
+  }, [entries, batchColorMap]);
+
+  // Build legend data (Req 2.4) — all unique batches with their colors
+  const legendBatches = useMemo(() => {
+    return uniqueBatchIds.map((id) => {
+      const entry = entries.find((e) => e.batchId === id);
+      return {
+        batchId: id,
+        batchName: entry?.batchName || id,
+        color: batchColorMap.get(id) || '#888',
+      };
+    });
+  }, [uniqueBatchIds, entries, batchColorMap]);
+
+  // Selected date and session for detail panel
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<CalendarEntry | null>(null);
+  // Coach day detail panel state (Req 3.1)
+  const [coachDayEntries, setCoachDayEntries] = useState<CoachBatchEntry[] | null>(null);
+
+  const today = getToday();
+
+  const handleDayClick = useCallback(
+    (date: string) => {
+      setSelectedDate(date);
+      const dayEntries = entries.filter((e) => e.date === date);
+
+      if (isCoach) {
+        // Coach view: group entries by batchId and build CoachBatchEntry array (Req 3.1)
+        const batchMap = new Map<string, CalendarEntry>();
+        dayEntries.forEach((entry) => {
+          if (!batchMap.has(entry.batchId)) {
+            batchMap.set(entry.batchId, entry);
+          }
+        });
+
+        const batchEntries: CoachBatchEntry[] = Array.from(batchMap.values()).map((entry) => ({
+          batchId: entry.batchId,
+          batchName: entry.batchName,
+          batchColor: batchColorMap.get(entry.batchId) || '#888',
+          startTime: entry.startTime,
+          endTime: entry.endTime,
+          focusArea: entry.focusArea || '',
+        }));
+
+        setCoachDayEntries(batchEntries);
+        setSelectedEntry(null);
+      } else {
+        // Student view: show single session detail
+        setCoachDayEntries(null);
+        if (dayEntries.length > 0) {
+          setSelectedEntry(dayEntries[0]);
+        } else {
+          setSelectedEntry(null);
+        }
+      }
+    },
+    [entries, isCoach, batchColorMap]
+  );
 
   const handleCloseDetail = useCallback(() => {
     setSelectedEntry(null);
+    setSelectedDate(null);
+    setCoachDayEntries(null);
   }, []);
 
   /**
@@ -146,21 +260,48 @@ const SessionCalendarPage: React.FC = () => {
             </div>
           )}
 
-          {/* Main Content: Calendar + Detail Panel */}
+          {/* Main Content: Calendar Grid + Detail Panel */}
           {!loading || entries.length > 0 ? (
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Calendar View */}
-              <div className={selectedEntry ? 'flex-1 min-w-0' : 'w-full'}>
-                <CalendarView
-                  entries={entries}
-                  initialViewMode="week"
-                  onSessionClick={handleSessionClick}
-                  className="w-full"
+              {/* Calendar with Month Navigator and Grid */}
+              <div className={(selectedEntry || coachDayEntries) ? 'flex-1 min-w-0' : 'w-full'}>
+                {/* Batch Color Legend (Req 2.4) */}
+                {isCoach && legendBatches.length > 0 && (
+                  <BatchColorLegend batches={legendBatches} />
+                )}
+
+                {/* Month Navigator */}
+                <MonthNavigator
+                  year={viewedYear}
+                  month={viewedMonth}
+                  onPrev={handlePrevMonth}
+                  onNext={handleNextMonth}
+                />
+
+                {/* Calendar Grid with batch color dots */}
+                <CalendarGrid
+                  days={gridDays}
+                  entriesByDate={entriesByDate}
+                  selectedDate={selectedDate}
+                  today={today}
+                  onDayClick={handleDayClick}
+                  batchColorsByDate={isCoach ? batchColorsByDate : undefined}
                 />
               </div>
 
-              {/* Session Detail Panel */}
-              {selectedEntry && (
+              {/* Coach Day Detail Panel (Req 3.1, 3.2, 3.3, 4.1) */}
+              {isCoach && coachDayEntries && selectedDate && (
+                <aside className="w-full lg:w-96 shrink-0" aria-label="Day details">
+                  <CoachDayDetailPanel
+                    date={selectedDate}
+                    batchEntries={coachDayEntries}
+                    onClose={handleCloseDetail}
+                  />
+                </aside>
+              )}
+
+              {/* Student Session Detail Panel */}
+              {!isCoach && selectedEntry && (
                 <SessionDetailPanel
                   entry={selectedEntry}
                   isCoach={isCoach}

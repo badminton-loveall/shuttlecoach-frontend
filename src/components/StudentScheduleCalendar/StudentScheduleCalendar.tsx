@@ -10,13 +10,16 @@ import MonthNavigator from './MonthNavigator';
 import CalendarGrid from './CalendarGrid';
 import DetailPanel from './DetailPanel';
 import './StudentScheduleCalendar.css';
+import type { SkillLevel } from '../../types';
 
 interface StudentScheduleCalendarProps {
   batchId: string; // empty string means no batch assigned
+  skillLevel?: SkillLevel;
 }
 
 export default function StudentScheduleCalendar({
   batchId,
+  skillLevel,
 }: StudentScheduleCalendarProps) {
   const now = new Date();
   const [viewedYear, setViewedYear] = useState(now.getFullYear());
@@ -121,6 +124,7 @@ export default function StudentScheduleCalendar({
         selectedDate={selectedDate}
         today={today}
         onDayClick={handleDayClick}
+        skillLevel={skillLevel}
       />
 
       {!hasSessionsThisMonth && (

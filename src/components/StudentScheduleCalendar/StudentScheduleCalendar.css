@@ -360,3 +360,69 @@
     padding: var(--space-sm);
   }
 }
+
+/* ============================================================================
+   SKILL-LEVEL HIGHLIGHT COLORS — Student Calendar
+   Each skill level gets a distinct color theme for session day highlights.
+   ============================================================================ */
+
+.day-cell--skill-beginner {
+  background-color: rgba(59, 130, 246, 0.18);
+  font-weight: var(--weight-semibold);
+  color: #1e40af;
+}
+.day-cell--skill-beginner:hover {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.day-cell--skill-intermediate {
+  background-color: rgba(249, 115, 22, 0.18);
+  font-weight: var(--weight-semibold);
+  color: #9a3412;
+}
+.day-cell--skill-intermediate:hover {
+  background-color: rgba(249, 115, 22, 0.3);
+}
+
+.day-cell--skill-advanced {
+  background-color: rgba(139, 92, 246, 0.18);
+  font-weight: var(--weight-semibold);
+  color: #5b21b6;
+}
+.day-cell--skill-advanced:hover {
+  background-color: rgba(139, 92, 246, 0.3);
+}
+
+.day-cell--skill-professional {
+  background-color: rgba(16, 185, 129, 0.18);
+  font-weight: var(--weight-semibold);
+  color: #065f46;
+}
+.day-cell--skill-professional:hover {
+  background-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Dark mode variants for skill-level colors */
+@media (prefers-color-scheme: dark) {
+  .day-cell--skill-beginner { background-color: rgba(59, 130, 246, 0.15); color: #93c5fd; }
+  .day-cell--skill-intermediate { background-color: rgba(249, 115, 22, 0.15); color: #fdba74; }
+  .day-cell--skill-advanced { background-color: rgba(139, 92, 246, 0.15); color: #c4b5fd; }
+  .day-cell--skill-professional { background-color: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+}
+
+/* ============================================================================
+   COACH CALENDAR BATCH COLOR DOTS
+   Multi-batch day indicators for the coach calendar view.
+   ============================================================================ */
+
+.day-cell__dots {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  margin-top: 2px;
+}
+.day-cell__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
