@@ -19,6 +19,7 @@ import { useBatches } from '../hooks/useBatches';
 import { useAssessments } from '../hooks/useAssessments';
 import { useAttendanceRecords } from '../hooks/useAttendance';
 import { useStudentTrends } from '../hooks/useAnalytics';
+import { StudentScheduleCalendar } from '../components/StudentScheduleCalendar';
 import { deriveProgressState } from '../utils/progressState';
 import { canEditStudent, canArchiveStudent, classifyError } from '../utils/studentProfileUtils';
 import apiClient from '../utils/apiClient';
@@ -33,7 +34,7 @@ import '../styles/pages.css';
  * Requirements: 5.6 (3-tab layout), 2.5 (navigate from student card), 3.4, 3.5 (access control)
  */
 
-type TabId = 'profile' | 'training' | 'progress' | 'fees' | 'attendance' | 'skill-analytics';
+type TabId = 'profile' | 'schedule' | 'training' | 'progress' | 'fees' | 'attendance' | 'skill-analytics';
 
 interface TabConfig {
   id: TabId;
@@ -42,6 +43,7 @@ interface TabConfig {
 
 const TABS: TabConfig[] = [
   { id: 'profile', label: 'Profile' },
+  { id: 'schedule', label: 'Schedule' },
   { id: 'training', label: 'Training' },
   { id: 'progress', label: 'Progress' },
   { id: 'fees', label: 'Fees' },
@@ -292,6 +294,7 @@ export const StudentProfilePage: React.FC = () => {
             aria-labelledby={`tab-${validTab}`}
           >
             {validTab === 'profile' && <ProfileTabContent student={student} />}
+            {validTab === 'schedule' && <ScheduleTabContent student={student} refetchStudent={refetch} />}
             {validTab === 'training' && <TrainingTabContent student={student} />}
             {validTab === 'progress' && <ProgressTabContent student={student} />}
             {validTab === 'fees' && <FeesTabContent student={student} />}
@@ -332,6 +335,89 @@ export const StudentProfilePage: React.FC = () => {
 const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
   <PersonalInfoForm student={student} />
 );
+
+/**
+ * Schedule Tab — prominent batch assignment + training calendar
+ * Shows the student's current batch with a dropdown to change it,
+ * and displays the upcoming training sessions based on the batch's schedule.
+ */
+const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => void }> = ({ student, refetchStudent }) => {
+  const [selectedBatchId, setSelectedBatchId] = useState(student.batchId || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const { batches } = useBatches();
+
+  const handleBatchChange = async () => {
+    if (selectedBatchId === (student.batchId || '')) return;
+
+    setIsSaving(true);
+    setSaveMessage('');
+    try {
+      await apiClient.patch(`/students/${student.id}`, { batchId: selectedBatchId || null });
+      setSaveMessage('Batch updated successfully');
+      refetchStudent();
+      setTimeout(() => setSaveMessage(''), 3000);
+    } catch {
+      setSaveMessage('Error updating batch. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Batch & Training Schedule</h2>
+
+      {/* Batch Assignment */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)', flexWrap: 'wrap' }}>
+        <div className="form-group" style={{ marginBottom: 0, flex: '1 1 280px' }}>
+          <label htmlFor="student-batch" className="form-label" style={{ fontWeight: 600 }}>Assigned Batch</label>
+          <select
+            id="student-batch"
+            value={selectedBatchId}
+            onChange={(e) => setSelectedBatchId(e.target.value)}
+            className="form-input"
+            disabled={isSaving}
+          >
+            <option value="">No batch assigned</option>
+            {batches.map((batch) => (
+              <option key={batch.id} value={batch.id}>{batch.name}</option>
+            ))}
+          </select>
+        </div>
+        <button
+          onClick={handleBatchChange}
+          disabled={isSaving || selectedBatchId === (student.batchId || '')}
+          className="btn btn-primary"
+        >
+          {isSaving ? 'Saving...' : 'Update Batch'}
+        </button>
+        {saveMessage && (
+          <span className="text-small" style={{ color: saveMessage.includes('Error') ? 'var(--color-danger, #dc2626)' : 'var(--color-success, #16a34a)' }}>
+            {saveMessage}
+          </span>
+        )}
+      </div>
+
+      {/* Weekly Schedule info from batch */}
+      {(() => {
+        const currentBatch = batches.find((b) => b.id === student.batchId);
+        const hasScheduleInfo = currentBatch && (currentBatch.schedule || (currentBatch as any).days_of_week);
+        return hasScheduleInfo ? (
+          <div style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-md)', background: 'var(--surface-secondary, #f8f9fa)', borderRadius: 'var(--radius-sm, 6px)', border: '1px solid var(--border-default, #e5e7eb)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+              <span className="text-body" style={{ fontWeight: 600 }}>Weekly Schedule:</span>
+              <span className="text-body">{currentBatch.schedule || 'Not specified'}</span>
+            </div>
+          </div>
+        ) : null;
+      })()}
+
+      {/* Calendar component */}
+      <StudentScheduleCalendar batchId={student.batchId || ''} />
+    </div>
+  );
+};
 
 /**
  * Training Tab - displays strengths, weaknesses, and coach feedback

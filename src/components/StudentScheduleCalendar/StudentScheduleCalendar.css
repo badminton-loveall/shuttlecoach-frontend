@@ -1,0 +1,362 @@
+/* ============================================================================
+   STUDENT SCHEDULE CALENDAR
+   Monthly grid calendar for the Schedule tab on StudentProfilePage.
+   Uses project design tokens exclusively — no external calendar libraries.
+   ============================================================================ */
+
+/* 1. Outer container */
+.schedule-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+/* 2. Month navigator — prev/next + centered label */
+.month-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+}
+
+.month-navigator__label {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .month-navigator__label {
+    color: var(--text-dark-primary);
+  }
+}
+
+.month-navigator__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: var(--font-base);
+  line-height: 1;
+}
+
+.month-navigator__btn:hover {
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  .month-navigator__btn {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    color: var(--text-dark-secondary);
+  }
+
+  .month-navigator__btn:hover {
+    border-color: var(--color-primary);
+    color: var(--text-dark-primary);
+    background-color: var(--surface-dark-hover);
+  }
+}
+
+/* 3. Calendar grid — 7 equal columns */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-xs);
+}
+
+/* 4. Day-of-week header cells */
+.calendar-grid__header {
+  text-align: center;
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+  padding: var(--space-sm) 0;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .calendar-grid__header {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+/* 5. Base day cell */
+.day-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+  position: relative;
+}
+
+.day-cell:hover {
+  background-color: var(--surface-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell {
+    color: var(--text-dark-primary);
+  }
+
+  .day-cell:hover {
+    background-color: var(--surface-dark-hover);
+  }
+}
+
+/* 6. Muted — leading/trailing days */
+.day-cell--muted {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* 7. Today indicator */
+.day-cell--today {
+  border: 2px solid var(--color-primary);
+  font-weight: var(--weight-bold);
+}
+
+/* 8. Highlighted — days with sessions (lime/green accent) */
+.day-cell--highlighted {
+  background-color: rgba(184, 225, 53, 0.18);
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary-dark);
+}
+
+.day-cell--highlighted:hover {
+  background-color: rgba(184, 225, 53, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell--highlighted {
+    background-color: rgba(184, 225, 53, 0.15);
+    color: var(--color-primary-light);
+  }
+
+  .day-cell--highlighted:hover {
+    background-color: rgba(184, 225, 53, 0.25);
+  }
+}
+
+/* 9. Selected day — darker highlight with ring */
+.day-cell--selected {
+  background-color: var(--color-primary);
+  color: var(--text-primary);
+  font-weight: var(--weight-bold);
+  box-shadow: 0 0 0 2px var(--color-primary-dark);
+}
+
+.day-cell--selected:hover {
+  background-color: var(--color-primary-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-cell--selected {
+    background-color: var(--color-primary);
+    color: var(--color-slate-950);
+  }
+}
+
+/* 10. Detail panel — card below calendar */
+.detail-panel {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-top: var(--space-md);
+  box-shadow: var(--shadow-card);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+/* 11. Detail panel header — date + close button */
+.detail-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.detail-panel__date {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__date {
+    color: var(--text-dark-primary);
+  }
+}
+
+.detail-panel__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-base);
+}
+
+.detail-panel__close-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__close-btn {
+    color: var(--text-dark-tertiary);
+  }
+
+  .detail-panel__close-btn:hover {
+    background-color: var(--surface-dark-hover);
+    color: var(--text-dark-primary);
+  }
+}
+
+/* 12. Single session block */
+.detail-panel__session {
+  padding: var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-hover);
+}
+
+.detail-panel__session + .detail-panel__session {
+  margin-top: var(--space-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__session {
+    border-color: var(--border-dark);
+    background-color: var(--surface-dark-hover);
+  }
+}
+
+.detail-panel__session-time {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__session-time {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.detail-panel__session-focus {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__session-focus {
+    color: var(--text-dark-primary);
+  }
+}
+
+/* 13. Drill list within a session */
+.detail-panel__drills {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* 14. Individual drill badge */
+.detail-panel__drill-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary-dark);
+  background-color: rgba(184, 225, 53, 0.12);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__drill-item {
+    color: var(--color-primary-light);
+    background-color: rgba(184, 225, 53, 0.1);
+  }
+}
+
+/* 15. Empty drills muted text */
+.detail-panel__drills--empty {
+  font-size: var(--font-xs);
+  font-style: italic;
+  color: var(--text-tertiary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .detail-panel__drills--empty {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE — viewport < 600px
+   ============================================================================ */
+
+@media (max-width: 600px) {
+  .calendar-grid {
+    gap: 2px;
+  }
+
+  .day-cell {
+    padding: 2px;
+    font-size: var(--font-xs);
+  }
+
+  .calendar-grid__header {
+    font-size: 10px;
+    padding: var(--space-xs) 0;
+  }
+
+  .month-navigator__label {
+    font-size: var(--font-base);
+  }
+
+  .detail-panel {
+    padding: var(--space-md);
+  }
+
+  .detail-panel__session {
+    padding: var(--space-sm);
+  }
+}
