@@ -389,6 +389,8 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       }
       if (formData.assignedCoachId) {
         payload.assigned_coach_id = formData.assignedCoachId;
+      } else {
+        payload.assigned_coach_id = null;
       }
       if (formData.capacity !== '') {
         payload.capacity = formData.capacity;
@@ -413,9 +415,13 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
       }
       if (formData.template_id) {
         payload.template_id = formData.template_id;
+      } else {
+        payload.template_id = null;
       }
       if (formData.curriculum_id) {
         payload.curriculum_id = formData.curriculum_id;
+      } else {
+        payload.curriculum_id = null;
       }
 
       if (editingBatch) {
