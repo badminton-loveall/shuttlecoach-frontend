@@ -16,7 +16,7 @@ import type { User } from '../types';
 export interface CoachFormData {
   name: string;
   username: string;
-  password: string;
+  password?: string;
   email?: string;
   specialization?: string;
   profilePhoto?: string;
@@ -86,7 +86,6 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
       const coachData: CoachFormData = {
         name: name.trim(),
         username: email.trim().toLowerCase(),
-        password: '',
         email: email.trim().toLowerCase(),
         specialization: specialization.trim() || undefined,
         profilePhoto: profilePhoto.trim() || undefined,
