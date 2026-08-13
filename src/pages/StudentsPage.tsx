@@ -7,7 +7,10 @@ import CollapsibleFilterPanel from '../components/CollapsibleFilterPanel';
 import { useStudents } from '../hooks/useStudents';
 import type { User, Batch } from '../types';
 import apiClient from '../utils/apiClient';
-import USERS_DATA from '../data/users.json';
+import _USERS_DATA from '../data/users.json';
+
+// Type assertion for empty JSON array
+const USERS_DATA = _USERS_DATA as Array<{ id: string; username: string; role: string; name: string; email: string | null; profilePhoto: string | null; specialization: string | null; createdAt: string; lastActive: string }>;
 
 /**
  * StudentsPage

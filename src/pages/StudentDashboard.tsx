@@ -23,9 +23,13 @@ import { calculateAge } from '../utils/studentUtils';
 import apiClient from '../utils/apiClient';
 import curriculumData from '../data/curriculum.json';
 import studentsData from '../data/students.json';
-import skillAssessmentsData from '../data/skillAssessments.json';
 import batchesData from '../data/batches.json';
-import usersData from '../data/users.json';
+import _skillAssessmentsData from '../data/skillAssessments.json';
+import _usersData from '../data/users.json';
+
+// Type the JSON imports since they're empty arrays
+const skillAssessmentsData = _skillAssessmentsData as Array<{ id?: string; studentId: string; cycleKey: string; recordedBy: string; recordedAt: string; scores: Record<string, unknown>; isLocked?: boolean }>;
+const usersData = _usersData as Array<{ id: string; username: string; role: string; name: string; email: string | null; profilePhoto: string | null; specialization: string | null; createdAt: string; lastActive: string }>;
 
 /**
  * StudentDashboard Page
@@ -262,7 +266,8 @@ export const StudentDashboard: React.FC = () => {
       .map((a) => ({
         ...a,
         recordedAt: new Date(a.recordedAt),
-      })) as SkillAssessment[];
+        isLocked: a.isLocked ?? false,
+      })) as unknown as SkillAssessment[];
 
     if (assessments.length === 0) return null;
 

@@ -138,6 +138,7 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
     endTime: '', 
     description: '',
     template_id: null,
+    curriculum_id: null,
   });
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);

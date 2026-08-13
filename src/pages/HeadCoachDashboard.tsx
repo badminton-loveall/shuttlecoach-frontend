@@ -44,8 +44,8 @@ export const HeadCoachDashboard: React.FC = () => {
   const { fees, loading: feesLoading } = useFees();
   const { getBatchName } = useBatches();
   const { coaches, loading: coachesLoading } = useCoaches();
-  const { assessments, loading: assessmentsLoading } = useAssessments();
-  const { logs: trainingLogs, loading: trainingLogsLoading } = useTrainingLogs();
+  const { assessments } = useAssessments();
+  const { logs: trainingLogs } = useTrainingLogs();
 
   // Cast coaches to User[] for compatibility with getCoachWorkloads
   const users: User[] = coaches;
