@@ -128,10 +128,9 @@ export const AddBatchModal: React.FC<AddBatchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
+    <div className="modal-overlay">
       <div
         className="modal-content modal-content--small"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="modal-header">

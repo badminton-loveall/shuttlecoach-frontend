@@ -27,10 +27,9 @@ export const ArchiveConfirmDialog: React.FC<ArchiveConfirmDialogProps> = ({
   }
 
   return (
-    <div className="modal-overlay" onClick={!isLoading ? onCancel : undefined}>
+    <div className="modal-overlay">
       <div
         className="modal-content max-w-md"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
           <h2 className="text-lg font-semibold text-gray-900">

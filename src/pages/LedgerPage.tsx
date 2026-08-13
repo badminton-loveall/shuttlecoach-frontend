@@ -113,8 +113,8 @@ const AddEntryModal: React.FC<AddEntryModalProps> = ({ isOpen, onClose, onSubmit
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ maxWidth: '480px' }}>
         <div className="modal-header">
           <h2 className="modal-title">Add Ledger Entry</h2>
           <button className="modal-close-btn" onClick={handleClose} title="Close">

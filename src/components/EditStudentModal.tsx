@@ -62,22 +62,14 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
     }
   }, [isSubmitting, onClose]);
 
-  const handleOverlayClick = useCallback(() => {
-    if (!isSubmitting) {
-      setError(null);
-      onClose();
-    }
-  }, [isSubmitting, onClose]);
-
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div className="modal-overlay" onClick={handleOverlayClick} data-testid="edit-student-modal">
+    <div className="modal-overlay" data-testid="edit-student-modal">
       <div
         className="modal-content"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
           <div>

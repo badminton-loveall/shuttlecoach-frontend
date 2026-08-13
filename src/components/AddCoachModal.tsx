@@ -37,8 +37,6 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   coaches = [],
 }) => {
   const [name, setName] = useState<string>('');
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [specialization, setSpecialization] = useState<string>('');
   const [profilePhoto, setProfilePhoto] = useState<string>('');
@@ -50,8 +48,6 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setName('');
-      setUsername('');
-      setPassword('');
       setEmail('');
       setSpecialization('');
       setProfilePhoto('');
@@ -64,24 +60,13 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Required fields
     if (!name.trim()) {
       newErrors.name = 'Name is required';
     }
-    if (!username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (username.trim().length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    }
-    if (!password.trim()) {
-      newErrors.password = 'Password is required';
-    } else if (password.trim().length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    // Optional email validation - only validate if provided
-    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      newErrors.email = 'Invalid email format';
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
     setErrors(newErrors);
@@ -100,9 +85,9 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
     try {
       const coachData: CoachFormData = {
         name: name.trim(),
-        username: username.trim(),
-        password: password.trim(),
-        email: email.trim() || undefined,
+        username: email.trim().toLowerCase(),
+        password: '',
+        email: email.trim().toLowerCase(),
         specialization: specialization.trim() || undefined,
         profilePhoto: profilePhoto.trim() || undefined,
         seniorCoachId: seniorCoachId || undefined,
@@ -128,10 +113,9 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
   }
 
   return (
-    <div className="modal-overlay" onClick={handleCancel}>
+    <div className="modal-overlay">
       <div
         className="modal-content"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="modal-header">
@@ -156,26 +140,11 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
             </div>
 
             <div className="form-group">
-              <label htmlFor="coach-username" className="form-label">Username <span className="form-required">*</span></label>
-              <input type="text" id="coach-username" value={username} onChange={(e) => setUsername(e.target.value)}
-                placeholder="Login username (min 3 characters)"
-                className={`form-input ${errors.username ? 'form-input-error' : ''}`} disabled={isSubmitting} />
-              {errors.username && <span className="form-error-text">{errors.username}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="coach-password" className="form-label">Password <span className="form-required">*</span></label>
-              <input type="password" id="coach-password" value={password} onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 6 characters"
-                className={`form-input ${errors.password ? 'form-input-error' : ''}`} disabled={isSubmitting} />
-              {errors.password && <span className="form-error-text">{errors.password}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="coach-email" className="form-label">Email <span className="form-optional">(optional)</span></label>
-              <input type="text" id="coach-email" value={email} onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@example.com"
+              <label htmlFor="coach-email" className="form-label">Email <span className="form-required">*</span></label>
+              <input type="email" id="coach-email" value={email} onChange={(e) => setEmail(e.target.value)}
+                placeholder="coach@example.com"
                 className={`form-input ${errors.email ? 'form-input-error' : ''}`} disabled={isSubmitting} />
+              <span className="form-hint">This will be used as the login username</span>
               {errors.email && <span className="form-error-text">{errors.email}</span>}
             </div>
 

@@ -30,10 +30,9 @@ export const CurriculumReassignConfirmDialog: React.FC<CurriculumReassignConfirm
   }
 
   return (
-    <div className="modal-overlay" onClick={!isLoading ? onCancel : undefined}>
+    <div className="modal-overlay">
       <div
         className="modal-content max-w-md"
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="reassign-dialog-title"

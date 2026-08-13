@@ -446,10 +446,9 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
 
       {/* Assign Coach Modal */}
       {showAssignCoachModal && (
-        <div className="modal-overlay" onClick={() => setShowAssignCoachModal(false)}>
+        <div className="modal-overlay">
           <div
             className="modal-content modal-content--small"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2 className="modal-title">Assign Coach</h2>
@@ -524,10 +523,9 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
 
       {/* Remove Coach Confirmation Modal */}
       {removingCoach && (
-        <div className="modal-overlay" onClick={() => setRemovingCoach(null)}>
+        <div className="modal-overlay">
           <div
             className="modal-content modal-content--small"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2 className="modal-title">Remove Coach?</h2>
@@ -567,10 +565,9 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
 
       {/* Assign Student Modal */}
       {showAssignStudentModal && (
-        <div className="modal-overlay" onClick={() => setShowAssignStudentModal(false)}>
+        <div className="modal-overlay">
           <div
             className="modal-content modal-content--small"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2 className="modal-title">Assign Student</h2>
@@ -622,10 +619,9 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
 
       {/* Move Student Modal */}
       {movingStudent && (
-        <div className="modal-overlay" onClick={() => setMovingStudent(null)}>
+        <div className="modal-overlay">
           <div
             className="modal-content modal-content--small"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2 className="modal-title">Move Student</h2>

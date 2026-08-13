@@ -34,8 +34,8 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
   if (!isOpen || !fee || !student) return null;
 
   return (
-    <div className="dialog-overlay" onClick={onClose}>
-      <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+    <div className="dialog-overlay">
+      <div className="dialog-content">
         <div className="dialog-icon-danger">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 9v2M12 17v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

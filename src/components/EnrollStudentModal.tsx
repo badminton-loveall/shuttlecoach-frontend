@@ -225,8 +225,8 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   ];
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content modal-content--large" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-content modal-content--large">
         {/* Modal Header */}
         <div className="modal-header">
           <div>

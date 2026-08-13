@@ -67,8 +67,8 @@ export const WaiveFeeModal: React.FC<WaiveFeeModalProps> = ({
   }
 
   return (
-    <div className="modal-overlay" onClick={handleCancel}>
-      <div className="modal-content modal-content--small" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-content modal-content--small">
         <div className="modal-header">
           <div>
             <h2 className="modal-title">Waive Fee</h2>

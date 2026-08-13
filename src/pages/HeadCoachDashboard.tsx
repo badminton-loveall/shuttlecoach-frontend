@@ -8,7 +8,7 @@ import CoachWorkload from '../components/CoachWorkload';
 import RecentActivity from '../components/RecentActivity';
 import { AttendanceStatsWidget } from '../components/AttendanceStatsWidget';
 import { SessionCard } from '../components/SessionCard';
-import { QuickAttendanceWidget } from '../components/QuickAttendanceWidget';
+import { DashboardAttendanceBlock } from '../components/attendance/DashboardAttendanceBlock';
 import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
@@ -217,6 +217,12 @@ const HeadCoachDashboardContent: React.FC<{
             />
           </div>
 
+          {/* Dashboard Attendance Block — prominent position above overview grid */}
+          <DashboardAttendanceBlock
+            calendarEntries={calendarEntries}
+            calendarLoading={calendarLoading}
+          />
+
           {/* Attendance and Session Widgets - Requirements: 5.1, 5.4, 17.1, 17.2 */}
           <div className="hc-overview-grid" style={{ marginTop: 'var(--space-lg)' }}>
             <AttendanceStatsWidget
@@ -230,14 +236,6 @@ const HeadCoachDashboardContent: React.FC<{
               loading={calendarLoading}
               error={calendarError}
               variant="coach"
-            />
-          </div>
-
-          {/* Quick Attendance Widget */}
-          <div style={{ marginTop: 'var(--space-lg)' }}>
-            <QuickAttendanceWidget
-              calendarEntries={calendarEntries}
-              calendarLoading={calendarLoading}
             />
           </div>
 

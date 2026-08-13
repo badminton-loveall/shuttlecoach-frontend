@@ -283,8 +283,8 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
 
       {/* Modal Form (Create/Edit) */}
       {showForm && (
-        <div className="modal-overlay" onClick={handleCloseForm}>
-          <div className="modal-content modal-content--small" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content modal-content--small">
             <div className="modal-header">
               <h2 className="modal-title">{editingDrill ? 'Edit Drill' : 'Add Drill'}</h2>
               <button className="modal-close-btn" onClick={handleCloseForm}>✕</button>
@@ -365,8 +365,8 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
 
       {/* Delete Confirmation Dialog */}
       {deletingDrill && (
-        <div className="modal-overlay" onClick={handleCancelDelete}>
-          <div className="modal-content modal-content--small" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content modal-content--small">
             <div className="modal-header">
               <h2 className="modal-title text-red-600 dark:text-red-400">Delete Drill?</h2>
               <button className="modal-close-btn" onClick={handleCancelDelete}>✕</button>

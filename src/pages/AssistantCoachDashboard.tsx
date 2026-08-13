@@ -9,7 +9,7 @@ import FeeAlerts from '../components/FeeAlerts';
 import RecentActivity from '../components/RecentActivity';
 import { AttendanceStatsWidget } from '../components/AttendanceStatsWidget';
 import { SessionCard } from '../components/SessionCard';
-import { QuickAttendanceWidget } from '../components/QuickAttendanceWidget';
+import { DashboardAttendanceBlock } from '../components/attendance/DashboardAttendanceBlock';
 import type { FilterValues } from '../components/FilterBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
@@ -262,6 +262,14 @@ export const AssistantCoachDashboard: React.FC = () => {
               />
             </div>
 
+            {/* Dashboard Attendance Block - Requirements: 5.2, 6.1, 6.2, 6.4 */}
+            <div style={{ marginTop: 'var(--space-lg)' }}>
+              <DashboardAttendanceBlock
+                calendarEntries={calendarEntries}
+                calendarLoading={calendarLoading}
+              />
+            </div>
+
             {/* Attendance and Session Widgets - Requirements: 5.1, 5.4, 17.1, 17.2 */}
             <div className="ac-overview-grid" style={{ marginTop: 'var(--space-lg)' }}>
               <AttendanceStatsWidget
@@ -275,14 +283,6 @@ export const AssistantCoachDashboard: React.FC = () => {
                 loading={calendarLoading}
                 error={calendarError}
                 variant="coach"
-              />
-            </div>
-
-            {/* Quick Attendance Widget */}
-            <div style={{ marginTop: 'var(--space-lg)' }}>
-              <QuickAttendanceWidget
-                calendarEntries={calendarEntries}
-                calendarLoading={calendarLoading}
               />
             </div>
 

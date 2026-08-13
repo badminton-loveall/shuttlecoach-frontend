@@ -57,14 +57,12 @@ export const DeleteCoachConfirmDialog: React.FC<DeleteCoachConfirmDialogProps> =
       {/* Backdrop */}
       <div
         className="dialog-overlay"
-        onClick={() => !isDeleting && onClose()}
       />
 
       {/* Dialog */}
       <div className="fixed inset-0 flex items-center justify-center" style={{ padding: 'var(--space-md)', zIndex: 1001 }}>
         <div
           className="dialog-content"
-          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div style={{ paddingBottom: 'var(--space-md)', borderBottom: '1px solid var(--border-default)' }}>

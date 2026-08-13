@@ -83,8 +83,8 @@ export const MarkPaidModal: React.FC<MarkPaidModalProps> = ({
   }
 
   return (
-    <div className="modal-overlay" onClick={handleCancel}>
-      <div className="modal-content modal-content--small" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-content modal-content--small">
         <div className="modal-header">
           <div>
             <h2 className="modal-title">Mark Fee as Paid</h2>

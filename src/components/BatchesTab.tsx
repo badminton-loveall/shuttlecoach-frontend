@@ -511,8 +511,8 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
 
       {/* Modal form for create/edit */}
       {showForm && (
-        <div className="modal-overlay" onClick={handleCloseForm}>
-          <div className="modal-content" style={{ maxWidth: '540px', width: '95%' }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '540px', width: '95%' }}>
             <div className="modal-header" style={{ paddingBottom: '0.5rem' }}>
               <h2 className="modal-title">{editingBatch ? 'Edit Batch' : 'Add Batch'}</h2>
               <button className="modal-close-btn" onClick={handleCloseForm}>✕</button>
@@ -710,8 +710,8 @@ const BatchesTab: React.FC<BatchesTabProps> = ({ readOnly }) => {
 
       {/* Delete confirmation dialog */}
       {deletingBatch && (
-        <div className="modal-overlay" onClick={handleDeleteCancel}>
-          <div className="modal-content modal-content--small" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content modal-content--small">
             <div className="modal-header">
               <h2 className="modal-title">Delete Batch?</h2>
               <button className="modal-close-btn" onClick={handleDeleteCancel}>✕</button>

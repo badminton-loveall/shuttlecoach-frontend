@@ -251,10 +251,9 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
+    <div className="modal-overlay">
       <div
         className="modal-content modal-content--large"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="modal-header">

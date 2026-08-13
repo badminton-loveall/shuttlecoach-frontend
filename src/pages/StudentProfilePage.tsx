@@ -376,8 +376,24 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
             id="student-batch"
             value={selectedBatchId}
             onChange={(e) => setSelectedBatchId(e.target.value)}
-            className="form-input"
             disabled={isSaving}
+            style={{
+              width: '100%',
+              padding: '10px 14px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              border: '1px solid hsl(var(--border))',
+              borderRadius: 'var(--radius)',
+              backgroundColor: 'hsl(var(--card))',
+              color: 'hsl(var(--foreground))',
+              appearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 12px center',
+              paddingRight: '36px',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              opacity: isSaving ? 0.6 : 1,
+            }}
           >
             <option value="">No batch assigned</option>
             {batches.map((batch) => (

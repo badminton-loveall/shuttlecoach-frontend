@@ -267,10 +267,9 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
 
       {/* Delete confirmation dialog */}
       {deletingTemplate && (
-        <div className="modal-overlay" onClick={handleDeleteCancel}>
+        <div className="modal-overlay">
           <div
             className="modal-content modal-content--small"
-            onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-header">
               <h2 className="modal-title">Delete Template?</h2>
