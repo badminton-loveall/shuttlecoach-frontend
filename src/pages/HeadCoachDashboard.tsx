@@ -14,6 +14,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useStudents } from '../hooks/useStudents';
 import { useFees } from '../hooks/useFees';
 import { useBatches } from '../hooks/useBatches';
+import { useCoaches } from '../hooks/useCoaches';
+import { useAssessments } from '../hooks/useAssessments';
+import { useTrainingLogs } from '../hooks/useTrainingLogs';
 import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { useOnboardingChecklist } from '../hooks/useOnboardingChecklist';
@@ -21,9 +24,6 @@ import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { isDueForAssessment, daysOverdue, getLastAssessment } from '../utils/reviewUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
 import { generateActivityFeed, getCoachWorkloads } from '../utils/activityUtils';
-import USERS_DATA from '../data/users.json';
-import SKILL_ASSESSMENTS_DATA from '../data/skillAssessments.json';
-import TRAINING_LOGS_DATA from '../data/trainingLogs.json';
 import type { SkillAssessment, TrainingLog, User } from '../types';
 import '../styles/pages.css';
 
@@ -35,34 +35,6 @@ import '../styles/pages.css';
  * Pure CSS implementation using design tokens
  */
 
-// Parse skill assessments with proper date types
-const parseAssessments = (data: unknown): SkillAssessment[] => {
-  const assessmentArray = data as Array<Record<string, unknown>>;
-  return assessmentArray.map((a) => ({
-    ...(a as unknown as SkillAssessment),
-    recordedAt: new Date(a.recordedAt as string),
-  }));
-};
-
-// Parse training logs with proper date types
-const parseTrainingLogs = (data: unknown): TrainingLog[] => {
-  const logArray = data as Array<Record<string, unknown>>;
-  return logArray.map((l) => ({
-    ...(l as unknown as TrainingLog),
-    recordedAt: new Date(l.recordedAt as string),
-  }));
-};
-
-// Parse users with proper date types
-const parseUsers = (data: unknown): User[] => {
-  const userArray = data as Array<Record<string, unknown>>;
-  return userArray.map((u) => ({
-    ...(u as unknown as User),
-    createdAt: new Date(u.createdAt as string),
-    lastActive: new Date(u.lastActive as string),
-  }));
-};
-
 export const HeadCoachDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -71,14 +43,15 @@ export const HeadCoachDashboard: React.FC = () => {
   const { students, loading: studentsLoading } = useStudents();
   const { fees, loading: feesLoading } = useFees();
   const { getBatchName } = useBatches();
+  const { coaches, loading: coachesLoading } = useCoaches();
+  const { assessments, loading: assessmentsLoading } = useAssessments();
+  const { logs: trainingLogs, loading: trainingLogsLoading } = useTrainingLogs();
 
-  // Static JSON data (no API hooks yet for these)
-  const assessments = useMemo(() => parseAssessments(SKILL_ASSESSMENTS_DATA), []);
-  const trainingLogs = useMemo(() => parseTrainingLogs(TRAINING_LOGS_DATA), []);
-  const users = useMemo(() => parseUsers(USERS_DATA), []);
+  // Cast coaches to User[] for compatibility with getCoachWorkloads
+  const users: User[] = coaches;
 
   // Show loading spinner while API data loads
-  if (studentsLoading || feesLoading) {
+  if (studentsLoading || feesLoading || coachesLoading) {
     return (
       <DashboardLayout>
         <div className="hc-dashboard">

@@ -86,6 +86,7 @@ export interface Center {
   headCoachId?: string;
   headCoachEmail?: string;
   planType?: string;
+  sport?: string | null;
   subscriptionExpiresAt?: string;
   createdAt: string;
   updatedAt: string;

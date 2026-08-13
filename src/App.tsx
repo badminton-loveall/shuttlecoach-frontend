@@ -9,7 +9,6 @@ import StudentsPage from './pages/StudentsPage';
 import FeesPage from './pages/FeesPage';
 import CoachesPage from './pages/CoachesPage';
 import CoachDetailPage from './pages/CoachDetailPage';
-import CurriculumBuilderPage from './pages/CurriculumBuilderPage';
 import IndividualCurriculumPage from './pages/IndividualCurriculumPage';
 import TrainingLogPage from './pages/TrainingLogPage';
 import StudentDashboard from './pages/StudentDashboard';
@@ -40,6 +39,7 @@ import CentersListPage from './pages/admin/CentersListPage';
 import CreateCenterPage from './pages/admin/CreateCenterPage';
 import CenterDetailPage from './pages/admin/CenterDetailPage';
 import SlugChangeRequestsPage from './pages/admin/SlugChangeRequestsPage';
+import AdminDrillCatalogPage from './pages/admin/AdminDrillCatalogPage';
 import './App.css';
 
 /**
@@ -117,14 +117,8 @@ function App() {
             }
           />
 
-          <Route
-            path="/curriculum"
-            element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
-                <CurriculumBuilderPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Curriculum route redirects to dashboard (hidden from nav, code preserved) */}
+          <Route path="/curriculum" element={<Navigate to="/dashboard" replace />} />
 
           <Route
             path="/batch-schedule"
@@ -303,6 +297,7 @@ function App() {
             <Route path="centers/new" element={<CreateCenterPage />} />
             <Route path="centers/:id" element={<CenterDetailPage />} />
             <Route path="slug-requests" element={<SlugChangeRequestsPage />} />
+            <Route path="drill-catalog" element={<AdminDrillCatalogPage />} />
           </Route>
 
           {/* Password Management - Public Routes */}

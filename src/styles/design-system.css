@@ -750,6 +750,22 @@ body {
   gap: var(--space-xl);
 }
 
+/* Tab bar for page-level tab navigation */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  padding: 0 0 0 0;
+  border-bottom: 1px solid var(--border-default);
+  margin-bottom: var(--space-lg);
+  overflow-x: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tab-bar {
+    border-bottom-color: var(--border-dark);
+  }
+}
+
 /* Responsive card / stat grid */
 .card-grid {
   display: grid;

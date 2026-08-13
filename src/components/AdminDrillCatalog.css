@@ -1,0 +1,392 @@
+/* ============================================================================
+   AdminDrillCatalog Styles
+   Uses design tokens consistent with AdminLayout and CenterDetailPage
+   ============================================================================ */
+
+.admin-drill-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.admin-drill-catalog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.admin-drill-catalog__title {
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.admin-drill-catalog__subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: var(--space-xs) 0 0 0;
+}
+
+.admin-drill-catalog__create-btn {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast, #111827);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.admin-drill-catalog__create-btn:hover {
+  background-color: var(--color-primary-dark, #a5cc2e);
+  transform: translateY(-1px);
+}
+
+/* ============================================================================
+   Error & Loading States
+   ============================================================================ */
+
+.admin-drill-catalog__error {
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  color: var(--color-error, #ef4444);
+  font-size: var(--font-sm);
+}
+
+.admin-drill-catalog__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xxl) var(--space-lg);
+  color: var(--text-secondary);
+  gap: var(--space-md);
+}
+
+.admin-drill-catalog__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: admin-drill-spin 0.8s linear infinite;
+}
+
+@keyframes admin-drill-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.admin-drill-catalog__empty {
+  text-align: center;
+  padding: var(--space-xxl) var(--space-lg);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  background-color: var(--surface-muted, #f9fafb);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-default);
+}
+
+/* ============================================================================
+   Filters
+   ============================================================================ */
+
+.admin-drill-catalog__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.admin-drill-catalog__filter-select,
+.admin-drill-catalog__search-input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-default, #fff);
+  transition: border-color var(--transition-base);
+  min-width: 160px;
+}
+
+.admin-drill-catalog__filter-select:focus,
+.admin-drill-catalog__search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.15);
+}
+
+.admin-drill-catalog__search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* ============================================================================
+   Create / Edit Form
+   ============================================================================ */
+
+.admin-drill-catalog__form {
+  background-color: var(--surface-muted, #f9fafb);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.admin-drill-catalog__form-title {
+  font-size: var(--font-md);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.admin-drill-catalog__form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.admin-drill-catalog__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.admin-drill-catalog__field--full {
+  grid-column: 1 / -1;
+}
+
+.admin-drill-catalog__label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-drill-catalog__input,
+.admin-drill-catalog__select,
+.admin-drill-catalog__textarea {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  background-color: var(--surface-default, #fff);
+  transition: border-color var(--transition-base);
+}
+
+.admin-drill-catalog__input:focus,
+.admin-drill-catalog__select:focus,
+.admin-drill-catalog__textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.15);
+}
+
+.admin-drill-catalog__textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.admin-drill-catalog__form-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.admin-drill-catalog__btn-primary {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast, #111827);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.admin-drill-catalog__btn-primary:hover {
+  background-color: var(--color-primary-dark, #a5cc2e);
+}
+
+.admin-drill-catalog__btn-secondary {
+  padding: var(--space-sm) var(--space-lg);
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.admin-drill-catalog__btn-secondary:hover {
+  background-color: var(--surface-muted);
+  border-color: var(--text-secondary);
+}
+
+/* ============================================================================
+   Table
+   ============================================================================ */
+
+.admin-drill-catalog__table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-default, #fff);
+}
+
+.admin-drill-catalog__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm);
+}
+
+.admin-drill-catalog__table thead {
+  background-color: var(--surface-muted, #f9fafb);
+}
+
+.admin-drill-catalog__table th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.admin-drill-catalog__table td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle, #f3f4f6);
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+.admin-drill-catalog__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-drill-catalog__table tbody tr:hover {
+  background-color: var(--surface-muted, #f9fafb);
+}
+
+.admin-drill-catalog__row--editing {
+  background-color: var(--surface-muted, #f9fafb);
+}
+
+.admin-drill-catalog__cell-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-drill-catalog__drill-name {
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+
+.admin-drill-catalog__drill-desc {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-drill-catalog__cell-actions {
+  display: flex;
+  gap: var(--space-xs);
+  white-space: nowrap;
+}
+
+.admin-drill-catalog__btn-action {
+  padding: 4px var(--space-sm);
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.admin-drill-catalog__btn-action:hover {
+  background-color: var(--surface-muted);
+  border-color: var(--color-primary);
+}
+
+.admin-drill-catalog__btn-action--danger {
+  color: var(--color-error, #ef4444);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.admin-drill-catalog__btn-action--danger:hover {
+  background-color: rgba(239, 68, 68, 0.06);
+  border-color: var(--color-error, #ef4444);
+}
+
+/* ============================================================================
+   Inline Edit Form (inside table)
+   ============================================================================ */
+
+.admin-drill-catalog__inline-edit {
+  padding: var(--space-md);
+}
+
+.admin-drill-catalog__edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-sm);
+}
+
+.admin-drill-catalog__edit-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .admin-drill-catalog__header {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .admin-drill-catalog__filters {
+    flex-direction: column;
+  }
+
+  .admin-drill-catalog__filter-select,
+  .admin-drill-catalog__search-input {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .admin-drill-catalog__form-grid {
+    grid-template-columns: 1fr;
+  }
+}

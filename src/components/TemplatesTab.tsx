@@ -192,7 +192,7 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
       {/* Header with Create button */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-          Templates ({templates.length})
+          Batch Timing Templates ({templates.length})
         </h2>
         {!readOnly && (
           <button

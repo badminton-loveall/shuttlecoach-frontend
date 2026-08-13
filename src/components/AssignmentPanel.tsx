@@ -43,8 +43,16 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
   }
 
   // Data preparation
-  const assignedBatches = batches.filter((batch) => batch.assignedCoachId === selectedCoach.id);
-  const assignedStudents = students.filter((student) => student.assignedCoachId === selectedCoach.id);
+  const isHeadCoach = selectedCoach.role === 'HEAD_COACH';
+  
+  // Head coach sees ALL batches and students in the center (readonly overview)
+  // Assistant coaches only see their directly assigned ones
+  const assignedBatches = isHeadCoach
+    ? batches
+    : batches.filter((batch) => batch.assignedCoachId === selectedCoach.id);
+  const assignedStudents = isHeadCoach
+    ? students
+    : students.filter((student) => student.assignedCoachId === selectedCoach.id);
   const unassignedBatches = batches.filter((batch) => !batch.assignedCoachId);
   const unassignedStudents = students.filter((student) => !student.assignedCoachId);
 
@@ -112,12 +120,19 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
       {/* Header */}
       <div className="assignment-header">
         <div>
-          <h2 className="assignment-title">Assignments for {selectedCoach.name}</h2>
-          <p className="assignment-subtitle">Manage batch and student assignments for this coach</p>
+          <h2 className="assignment-title">
+            {isHeadCoach ? `Overview for ${selectedCoach.name}` : `Assignments for ${selectedCoach.name}`}
+          </h2>
+          <p className="assignment-subtitle">
+            {isHeadCoach
+              ? 'All batches and students in your center'
+              : 'Manage batch and student assignments for this coach'}
+          </p>
         </div>
       </div>
 
-      {/* Assignment Form Card - Separate Above */}
+      {/* Assignment Form Card - Only for assistant coaches */}
+      {!isHeadCoach && (
       <div className="assignment-form-section">
         <div className="assignment-form-card">
           <div className="form-card-header">
@@ -177,12 +192,13 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* Current Assignments - Two Column Grid */}
       <div className="assignment-display-section">
         {/* Left Column: Batches */}
         <div className="assignment-column">
-          <h4 className="assignment-section-title">Assigned Batches • {assignedBatches.length}</h4>
+          <h4 className="assignment-section-title">{isHeadCoach ? 'All Center Batches' : 'Assigned Batches'} • {assignedBatches.length}</h4>
           
           {assignedBatches.length > 0 ? (
             <div className="assignment-items">
@@ -206,6 +222,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                       }}
                       className="btn-action btn-action--danger"
                       title="Delete"
+                      style={isHeadCoach ? { display: 'none' } : undefined}
                     >
                       Delete
                     </button>
@@ -225,7 +242,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
           <h4 className="assignment-section-title">
             {selectedBatchFilterId
               ? `${getBatchName(selectedBatchFilterId)} Students • ${filteredStudents.length}`
-              : `Assigned Students • ${assignedStudents.length}`}
+              : `${isHeadCoach ? 'All Center Students' : 'Assigned Students'} • ${assignedStudents.length}`}
           </h4>
           
           {filteredStudents.length > 0 ? (
@@ -240,6 +257,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                     onClick={() => handleUnassignStudent(student.id)}
                     className="btn-action btn-action--danger"
                     title="Delete"
+                    style={isHeadCoach ? { display: 'none' } : undefined}
                   >
                     Delete
                   </button>

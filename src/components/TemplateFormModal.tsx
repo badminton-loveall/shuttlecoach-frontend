@@ -260,12 +260,12 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
         <div className="modal-header">
           <div>
             <h2 className="modal-title">
-              {isEditing ? 'Edit Template' : 'Create Template'}
+              {isEditing ? 'Edit Batch Timing Template' : 'Create Batch Timing Template'}
             </h2>
             <p className="modal-subtitle">
               {isEditing
                 ? 'Update the template name and session slots'
-                : 'Define a reusable weekly session schedule'}
+                : 'Define a reusable weekly session schedule for your batches'}
             </p>
           </div>
           <button
@@ -450,7 +450,7 @@ export const TemplateFormModal: React.FC<TemplateFormModalProps> = ({
             >
               {isSubmitting
                 ? (isEditing ? 'Saving...' : 'Creating...')
-                : (isEditing ? 'Save Changes' : 'Create Template')}
+                : (isEditing ? 'Save Changes' : 'Create Batch Timing Template')}
             </button>
           </div>
         </form>

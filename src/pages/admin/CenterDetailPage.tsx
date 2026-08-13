@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/apiClient';
 import type { Center } from '../../types';
+import { SUPPORTED_SPORTS, SPORT_LABELS } from '../../constants/sports';
+import type { Sport } from '../../constants/sports';
 import './CenterDetailPage.css';
 
 /**
@@ -98,6 +100,7 @@ export const CenterDetailPage: React.FC = () => {
       contactEmail: center.contactEmail || '',
       logoUrl: center.logoUrl || '',
       planType: center.planType || 'basic',
+      sport: center.sport || '',
     });
     setEditError(null);
     setIsEditing(true);
@@ -130,6 +133,7 @@ export const CenterDetailPage: React.FC = () => {
         contactEmail: editForm.contactEmail?.trim() || undefined,
         logoUrl: editForm.logoUrl?.trim() || undefined,
         planType: editForm.planType || undefined,
+        sport: editForm.sport ? (editForm.sport as Sport) : null,
       };
 
       await apiClient.patch(`/admin/centers/${id}`, payload);
@@ -411,6 +415,24 @@ export const CenterDetailPage: React.FC = () => {
                 <option value="premium">Premium</option>
               </select>
             </div>
+            <div className="center-detail-page__field">
+              <label className="center-detail-page__label" htmlFor="edit-sport">
+                Sport
+              </label>
+              <select
+                id="edit-sport"
+                className="center-detail-page__select"
+                value={editForm.sport || ''}
+                onChange={(e) => setEditForm((f) => ({ ...f, sport: e.target.value }))}
+              >
+                <option value="">None (show all sports)</option>
+                {SUPPORTED_SPORTS.map((sport) => (
+                  <option key={sport} value={sport}>
+                    {SPORT_LABELS[sport]}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="center-detail-page__edit-actions">
               <button
                 className="center-detail-page__cancel-btn"
@@ -452,6 +474,12 @@ export const CenterDetailPage: React.FC = () => {
               <span className="center-detail-page__info-label">Plan</span>
               <span className="center-detail-page__info-value center-detail-page__info-value--capitalize">
                 {center.planType || 'basic'}
+              </span>
+            </div>
+            <div className="center-detail-page__info-item">
+              <span className="center-detail-page__info-label">Sport</span>
+              <span className="center-detail-page__info-value center-detail-page__info-value--capitalize">
+                {center.sport ? SPORT_LABELS[center.sport as Sport] : 'None'}
               </span>
             </div>
           </div>

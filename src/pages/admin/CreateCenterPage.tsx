@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/apiClient';
 import type { Center } from '../../types';
+import { SUPPORTED_SPORTS, SPORT_LABELS } from '../../constants/sports';
+import type { Sport } from '../../constants/sports';
 import './CreateCenterPage.css';
 
 /**
@@ -19,6 +21,7 @@ interface CreateCenterForm {
   contactEmail: string;
   logoUrl: string;
   planType: string;
+  sport: string;
 }
 
 const INITIAL_FORM: CreateCenterForm = {
@@ -28,6 +31,7 @@ const INITIAL_FORM: CreateCenterForm = {
   contactEmail: '',
   logoUrl: '',
   planType: 'basic',
+  sport: '',
 };
 
 export const CreateCenterPage: React.FC = () => {
@@ -85,6 +89,7 @@ export const CreateCenterPage: React.FC = () => {
         contactEmail: form.contactEmail.trim() || undefined,
         logoUrl: form.logoUrl.trim() || undefined,
         planType: form.planType || undefined,
+        sport: form.sport ? (form.sport as Sport) : null,
       };
 
       await apiClient.post('/admin/centers', payload);
@@ -244,6 +249,26 @@ export const CreateCenterPage: React.FC = () => {
             <option value="basic">Basic</option>
             <option value="standard">Standard</option>
             <option value="premium">Premium</option>
+          </select>
+        </div>
+
+        {/* Sport */}
+        <div className="create-center-page__field">
+          <label className="create-center-page__label" htmlFor="center-sport">
+            Sport
+          </label>
+          <select
+            id="center-sport"
+            className="create-center-page__select"
+            value={form.sport}
+            onChange={(e) => handleChange('sport', e.target.value)}
+          >
+            <option value="">None (show all sports)</option>
+            {SUPPORTED_SPORTS.map((sport) => (
+              <option key={sport} value={sport}>
+                {SPORT_LABELS[sport]}
+              </option>
+            ))}
           </select>
         </div>
 
