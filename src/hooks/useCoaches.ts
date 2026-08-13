@@ -14,7 +14,7 @@ import apiClient from '../utils/apiClient';
 
 export interface CreateCoachData {
   username: string;
-  password: string;
+  password?: string;
   name: string;
   email?: string;
   profilePhoto?: string;
