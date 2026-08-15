@@ -1,0 +1,163 @@
+/* ============================================================================
+   CoachStep Component Styles
+   Step 3 — Coach selection grid with responsive card layout
+   Matches the curriculum card aesthetic (lime border + subtle fill on selection)
+   ============================================================================ */
+
+.coach-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ============================================================================
+   Hint Text
+   ============================================================================ */
+
+.coach-step__hint {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  margin: 0;
+}
+
+/* ============================================================================
+   Loading & Error States
+   ============================================================================ */
+
+.coach-step__loading {
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  text-align: center;
+  padding: var(--space-xl) 0;
+}
+
+.coach-step__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+  color: var(--text-secondary);
+}
+
+.coach-step__error p {
+  margin: 0;
+  color: var(--color-danger);
+}
+
+/* ============================================================================
+   Coach Card Grid
+   ============================================================================ */
+
+.coach-step__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ============================================================================
+   Coach Card — matches curriculum card styling
+   ============================================================================ */
+
+.coach-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card);
+  cursor: pointer;
+  transition: border-color var(--transition-base), background-color var(--transition-base), box-shadow var(--transition-base);
+  text-align: left;
+  width: 100%;
+}
+
+.coach-card:hover {
+  border-color: rgba(184, 225, 53, 0.5);
+  background-color: var(--surface-hover);
+}
+
+.coach-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selected state — strong lime border + lime tinted background (same as curriculum card) */
+.coach-card--selected {
+  border-color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+  box-shadow: 0 0 0 1px rgba(184, 225, 53, 0.3);
+}
+
+.coach-card--selected:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.12);
+}
+
+/* ============================================================================
+   Coach Card Content
+   ============================================================================ */
+
+.coach-card__name {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.coach-card__role {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  background-color: rgba(184, 225, 53, 0.15);
+  color: var(--color-primary-dark);
+}
+
+.coach-card__role--assistant_coach {
+  background-color: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   Confirmation
+   ============================================================================ */
+
+.coach-step__confirmation {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary-dark);
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  background-color: rgba(184, 225, 53, 0.08);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(184, 225, 53, 0.2);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (min-width: 768px) {
+  .coach-step__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .coach-step__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .coach-step__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-card {
+    padding: var(--space-md);
+  }
+}

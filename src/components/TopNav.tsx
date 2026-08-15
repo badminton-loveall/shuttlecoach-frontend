@@ -32,24 +32,8 @@ function isDropdown(entry: NavEntry): entry is NavDropdown {
 
 const COACH_NAV: NavEntry[] = [
   { label: 'Dashboard', path: '/dashboard' },
-  {
-    label: 'People',
-    items: [
-      { label: 'Students', path: '/students' },
-      // Coaches sub-item is added dynamically for HEAD_COACH
-    ],
-  },
-  {
-    label: 'Training',
-    items: [
-      { label: 'Calendar', path: '/calendar' },
-      { label: 'Attendance', path: '/attendance' },
-      { label: 'Courses', path: '/courses' },
-      { label: 'Batches', path: '/batches' },
-      { label: 'Drills', path: '/drills' },
-      { label: 'Analytics', path: '/training-analytics' },
-    ],
-  },
+  { label: 'Batches', path: '/batches' },
+  { label: 'Students', path: '/students' },
   {
     label: 'Finance',
     items: [
@@ -123,29 +107,11 @@ export const TopNav: React.FC = () => {
       return STUDENT_NAV;
     }
 
-    // Coach roles
+    // Coach roles — simplified 4-item nav
     return COACH_NAV.map((entry) => {
-      if (isDropdown(entry) && entry.label === 'People') {
-        let items = [...entry.items];
-        // Add Coaches sub-item for HEAD_COACH
-        if (role === 'HEAD_COACH') {
-          items = [...items, { label: 'Coaches', path: '/coaches' }];
-        }
-        return { ...entry, items };
-      }
-
-      if (isDropdown(entry) && entry.label === 'Training') {
-        let items = [...entry.items];
-        // Leave Requests only for HEAD_COACH (center admin privilege)
-        if (role === 'HEAD_COACH') {
-          items = [...items.slice(0, 2), { label: 'Leave Requests', path: '/leave-requests' }, ...items.slice(2)];
-        }
-        return { ...entry, items };
-      }
-
       if (isDropdown(entry) && entry.label === 'Finance') {
         // Filter finance links based on canAccessFees permission
-        let items = canAccessFees
+        const items = canAccessFees
           ? entry.items
           : entry.items.filter((item) => item.path !== '/fees' && item.path !== '/ledger');
 

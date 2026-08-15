@@ -370,8 +370,8 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
 
       {/* Batch Assignment */}
       <div style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)', flexWrap: 'wrap' }}>
-        <div className="form-group" style={{ marginBottom: 0, flex: '1 1 280px' }}>
-          <label htmlFor="student-batch" className="form-label" style={{ fontWeight: 600 }}>Assigned Batch</label>
+        <div style={{ marginBottom: 0, flex: '1 1 280px' }}>
+          <label htmlFor="student-batch" style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', color: 'hsl(var(--foreground))', marginBottom: '6px' }}>Assigned Batch</label>
           <select
             id="student-batch"
             value={selectedBatchId}
@@ -382,9 +382,9 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
               padding: '10px 14px',
               fontSize: '0.875rem',
               fontWeight: 500,
-              border: '1px solid hsl(var(--border))',
+              border: '1px solid #d1d5db',
               borderRadius: 'var(--radius)',
-              backgroundColor: 'hsl(var(--card))',
+              backgroundColor: 'transparent',
               color: 'hsl(var(--foreground))',
               appearance: 'none',
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,

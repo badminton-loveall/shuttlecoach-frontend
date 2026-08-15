@@ -1,0 +1,113 @@
+/**
+ * BatchListPage Styles
+ * Batch listing page with role-based action visibility.
+ */
+
+.batch-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.batch-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+}
+
+.batch-list__title {
+  font-size: var(--font-xl, 1.25rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.batch-list__table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-md, 0.5rem);
+  border: 1px solid var(--border-default, #e5e7eb);
+  background: var(--surface-primary, #fff);
+}
+
+.batch-list__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-sm, 0.875rem);
+}
+
+.batch-list__table th {
+  text-align: left;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--surface-secondary, #f9fafb);
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-default, #e5e7eb);
+  white-space: nowrap;
+}
+
+.batch-list__table td {
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-default, #e5e7eb);
+}
+
+.batch-list__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.batch-list__table tbody tr:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.batch-list__name {
+  font-weight: 500;
+}
+
+.batch-list__muted {
+  color: var(--text-secondary);
+}
+
+.batch-list__actions {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+}
+
+.batch-list__edit-link {
+  color: var(--color-primary, #2563eb);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-sm, 0.875rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-sm, 0.25rem);
+  text-decoration: none;
+}
+
+.batch-list__edit-link:hover {
+  background: var(--surface-hover, #f3f4f6);
+  text-decoration: underline;
+}
+
+.batch-list__empty {
+  text-align: center;
+  padding: var(--space-8, 2rem);
+  color: var(--text-secondary);
+}
+
+.batch-list__loading {
+  text-align: center;
+  padding: var(--space-8, 2rem);
+  color: var(--text-secondary);
+}
+
+.batch-list__error {
+  text-align: center;
+  padding: var(--space-6, 1.5rem);
+  color: var(--color-error, #dc2626);
+}
+
+.batch-list__retry-btn {
+  margin-top: var(--space-3, 0.75rem);
+}

@@ -1,0 +1,164 @@
+/* ============================================================================
+   DetailsStep Component Styles
+   Step 4: Batch Details & Summary — uses canonical design tokens
+   ============================================================================ */
+
+.details-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ─── Summary Card ────────────────────────────────────────────── */
+
+.details-step__summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-hover);
+}
+
+.details-step__summary-title {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xs) 0;
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+.details-step__summary-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.details-step__summary-row:last-child {
+  border-bottom: none;
+}
+
+.details-step__summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  font-size: var(--font-base);
+  flex-shrink: 0;
+}
+
+.details-step__summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.details-step__summary-label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+.details-step__summary-value {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* ─── Form Section ────────────────────────────────────────────── */
+
+.details-step__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.details-step__form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 480px) {
+  .details-step__form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.details-step__form-title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.details-step__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.details-step__label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+.details-step__required {
+  color: var(--color-danger);
+}
+
+.details-step__input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+
+.details-step__input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.details-step__input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.details-step__select {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.details-step__select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.details-step__error-text {
+  font-size: var(--font-xs);
+  color: var(--color-danger);
+}

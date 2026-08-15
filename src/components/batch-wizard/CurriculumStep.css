@@ -1,0 +1,270 @@
+/* ============================================================================
+   CurriculumStep Component Styles
+   Course selection cards and inline creation form for wizard Step 2
+   BEM methodology using design tokens
+   ============================================================================ */
+
+.curriculum-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ============================================================================
+   Section Header
+   ============================================================================ */
+
+.curriculum-step__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.curriculum-step__title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.curriculum-step__hint {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+/* ============================================================================
+   Course Card Grid
+   ============================================================================ */
+
+.curriculum-step__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+/* ============================================================================
+   Course Card
+   ============================================================================ */
+
+.curriculum-step__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.curriculum-step__card:hover {
+  border-color: rgba(184, 225, 53, 0.5);
+  background-color: var(--surface-hover);
+}
+
+.curriculum-step__card--selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px rgba(184, 225, 53, 0.4);
+  background-color: rgba(184, 225, 53, 0.05);
+}
+
+.curriculum-step__card--selected:hover {
+  border-color: var(--color-primary);
+  background-color: rgba(184, 225, 53, 0.08);
+}
+
+.curriculum-step__card-name {
+  font-size: var(--font-md);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.curriculum-step__card-meta {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ============================================================================
+   Inline Create Section (Collapsible)
+   ============================================================================ */
+
+.curriculum-step__create-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.curriculum-step__create-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) 0;
+  border: none;
+  background: transparent;
+  color: var(--color-primary-dark);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.curriculum-step__create-toggle:hover {
+  color: var(--color-primary);
+}
+
+.curriculum-step__create-toggle-icon {
+  display: inline-flex;
+  font-size: var(--font-md);
+  transition: transform 0.2s ease;
+}
+
+.curriculum-step__create-toggle-icon--open {
+  transform: rotate(45deg);
+}
+
+.curriculum-step__create-form {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--surface-hover);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+}
+
+.curriculum-step__create-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.curriculum-step__create-label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+}
+
+.curriculum-step__create-input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-card);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
+}
+
+.curriculum-step__create-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.curriculum-step__create-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.curriculum-step__create-error {
+  font-size: var(--font-xs);
+  color: var(--color-danger);
+  margin: 0;
+}
+
+/* ============================================================================
+   Selected Summary
+   ============================================================================ */
+
+.curriculum-step__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-color: rgba(184, 225, 53, 0.06);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(184, 225, 53, 0.2);
+}
+
+.curriculum-step__summary-icon {
+  color: var(--color-primary-dark);
+  font-size: var(--font-md);
+}
+
+.curriculum-step__summary-text {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  font-weight: var(--weight-medium);
+}
+
+.curriculum-step__summary-clear {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: var(--font-sm);
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.curriculum-step__summary-clear:hover {
+  color: var(--color-danger);
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+/* ============================================================================
+   Loading & Error States
+   ============================================================================ */
+
+.curriculum-step__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+}
+
+.curriculum-step__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  color: var(--color-danger);
+  font-size: var(--font-sm);
+  text-align: center;
+}
+
+.curriculum-step__empty {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .curriculum-step__grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .curriculum-step__create-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .curriculum-step__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,86 @@
+/* ============================================================================
+   WizardShell Component Styles
+   Card-based layout for the multi-step wizard container
+   BEM methodology using design tokens
+   ============================================================================ */
+
+.wizard-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+
+.wizard-shell__header {
+  margin-bottom: var(--space-md);
+}
+
+.wizard-shell__title {
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: var(--letter-tight);
+}
+
+/* ============================================================================
+   Card Container
+   ============================================================================ */
+
+.wizard-shell__card {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-lg) var(--space-xl);
+}
+
+@media (prefers-color-scheme: dark) {
+  .wizard-shell__card {
+    background-color: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+}
+
+/* ============================================================================
+   Step Content Area
+   ============================================================================ */
+
+.wizard-shell__content {
+  padding: var(--space-lg) 0;
+  min-height: 200px;
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .wizard-shell {
+    padding: var(--space-md);
+  }
+
+  .wizard-shell__card {
+    padding: var(--space-md);
+  }
+
+  .wizard-shell__content {
+    padding: var(--space-md) 0;
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wizard-shell {
+    padding: var(--space-sm);
+  }
+
+  .wizard-shell__card {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+  }
+}

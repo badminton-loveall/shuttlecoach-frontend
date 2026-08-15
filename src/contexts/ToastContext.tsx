@@ -59,7 +59,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       {/* Toast container - fixed, top-right corner */}
       <div
-        className="pointer-events-none fixed top-4 right-4 z-50 flex flex-col gap-2"
+        className="pointer-events-none fixed top-4 right-4 flex flex-col gap-2"
+        style={{ zIndex: 'var(--z-toast, 1100)' }}
         aria-label="Notifications"
       >
         {toasts.map((toast) => (

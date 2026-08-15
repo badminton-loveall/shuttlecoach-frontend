@@ -293,8 +293,18 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                     <input
                       id="dateOfBirth"
                       type="date"
-                      value={formData.dateOfBirth.toISOString().split('T')[0]}
-                      onChange={(e) => setFormData({ ...formData, dateOfBirth: new Date(e.target.value) })}
+                      value={formData.dateOfBirth instanceof Date && !isNaN(formData.dateOfBirth.getTime())
+                        ? formData.dateOfBirth.toISOString().split('T')[0]
+                        : ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val) {
+                          const parsed = new Date(val);
+                          if (!isNaN(parsed.getTime())) {
+                            setFormData({ ...formData, dateOfBirth: parsed });
+                          }
+                        }
+                      }}
                       className={`form-input ${errors.dateOfBirth ? 'form-input-error' : ''}`}
                       disabled={isSubmitting}
                     />

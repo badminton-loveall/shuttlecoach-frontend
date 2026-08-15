@@ -1,0 +1,77 @@
+/* ============================================================================
+   ConfirmDialog — Compact confirmation modal
+   Heading bar separated, comfortable button spacing
+   ============================================================================ */
+
+.confirm-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal, 1000);
+  animation: fadeIn 0.15s ease-out;
+  backdrop-filter: blur(2px);
+}
+
+.confirm-dialog__content {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-overlay);
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.2s ease-out;
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+}
+
+/* ─── Header bar (separated) ─────────────────────────────────── */
+
+.confirm-dialog__header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.confirm-dialog__title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ─── Body ────────────────────────────────────────────────────── */
+
+.confirm-dialog__body {
+  padding: var(--space-md) var(--space-lg);
+}
+
+.confirm-dialog__message {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: var(--line-normal);
+}
+
+/* ─── Actions ─────────────────────────────────────────────────── */
+
+.confirm-dialog__actions {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-default);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

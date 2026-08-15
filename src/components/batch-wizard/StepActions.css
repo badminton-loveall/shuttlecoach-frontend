@@ -1,0 +1,52 @@
+/* ============================================================================
+   StepActions Component Styles
+   Button bar for wizard navigation (Back / Next / Cancel / Submit)
+   BEM methodology using design tokens
+   ============================================================================ */
+
+.step-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-default);
+}
+
+.step-actions__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.step-actions__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Pill-shaped secondary buttons to match primary CTA hierarchy */
+.step-actions .btn-secondary {
+  border-radius: var(--radius-pill);
+}
+
+/* ============================================================================
+   Responsive
+   ============================================================================ */
+
+@media (max-width: 480px) {
+  .step-actions {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+    align-items: stretch;
+  }
+
+  .step-actions__left,
+  .step-actions__right {
+    justify-content: stretch;
+  }
+
+  .step-actions__left .btn,
+  .step-actions__right .btn {
+    flex: 1;
+  }
+}

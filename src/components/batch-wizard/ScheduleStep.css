@@ -1,0 +1,285 @@
+/* ============================================================================
+   ScheduleStep Component Styles
+   Step 1: Batch Timing Template — uses canonical design tokens
+   ============================================================================ */
+
+.schedule-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.schedule-step__section-title {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ─── Template Cards Grid ─────────────────────────────────────── */
+
+.schedule-step__templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.schedule-step__template-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-default);
+  background: var(--surface-card);
+  cursor: pointer;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.schedule-step__template-card:hover {
+  border-color: var(--color-primary);
+}
+
+.schedule-step__template-card--selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.25);
+}
+
+.schedule-step__template-name {
+  font-weight: var(--weight-semibold);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.schedule-step__template-days {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.schedule-step__template-time {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+/* ─── Toggle Section ──────────────────────────────────────────── */
+
+.schedule-step__toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.schedule-step__toggle-btn:hover {
+  background: var(--surface-hover);
+}
+
+.schedule-step__toggle-btn--open {
+  background: var(--surface-hover);
+}
+
+/* ─── Inline Form ─────────────────────────────────────────────── */
+
+.schedule-step__inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+.schedule-step__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.schedule-step__label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+}
+
+.schedule-step__input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+
+.schedule-step__input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.schedule-step__select {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.schedule-step__select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ─── Day Toggles (Pill Buttons) ──────────────────────────────── */
+
+.schedule-step__day-toggles {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.schedule-step__day-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 2rem;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-default);
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.schedule-step__day-pill:hover {
+  border-color: var(--color-primary);
+}
+
+.schedule-step__day-pill--active {
+  background: var(--color-primary);
+  color: var(--text-primary);
+  border-color: var(--color-primary);
+}
+
+/* ─── Form Row (time + duration side by side) ─────────────────── */
+
+.schedule-step__form-row {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.schedule-step__form-row > .schedule-step__field {
+  flex: 1;
+}
+
+/* ─── Save Template Button ────────────────────────────────────── */
+
+.schedule-step__save-btn {
+  align-self: flex-start;
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.schedule-step__save-btn:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
+}
+
+.schedule-step__save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Schedule Summary ────────────────────────────────────────── */
+
+.schedule-step__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: rgba(184, 225, 53, 0.1);
+  border: 1px solid rgba(184, 225, 53, 0.3);
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+}
+
+.schedule-step__summary-icon {
+  font-size: var(--font-base);
+}
+
+/* ─── Loading & Error States ──────────────────────────────────── */
+
+.schedule-step__loading {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
+
+.schedule-step__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--feedback-danger-light);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-danger);
+  font-size: var(--font-xs);
+}
+
+.schedule-step__error-retry {
+  margin-left: auto;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-danger);
+  font-size: var(--font-xs);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.schedule-step__error-retry:hover {
+  background: var(--feedback-danger-light);
+}
+
+.schedule-step__empty {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+}
