@@ -1,19 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useTrainingLogs } from '../hooks/useTrainingLogs';
-import { useCurriculum } from '../hooks/useCurriculum';
+import { useBatchStudentsDrills } from '../hooks/useBatchStudentsDrills';
+import { useSkillScores } from '../hooks/useSkillScores';
 import { generateCycleKey } from '../utils/skillUtils';
-import { sortTrainingLogs } from '../utils/sortTrainingLogs';
-import { formatAuditTimestamp } from '../utils/dateUtils';
-import type { Student, TrainingLog, CurriculumPlan } from '../types';
+import { DrillSkillsMatrix } from './DrillSkillsMatrix';
+import { TrainingHistoryPanel } from './TrainingHistoryPanel';
+import type { Student } from '../types';
+import type { SkillCategory, SkillScore } from '../constants/skillCatalog';
 import './TrainingTab.css';
 
 /**
  * TrainingTab Component
- * Displays training logs (from API via useTrainingLogs), curriculum summary (from API via useCurriculum),
- * and existing strengths/weaknesses/coach feedback.
- * 
- * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9
+ *
+ * Composes the redesigned training tab:
+ * 1. Drill Skills Matrix (tap-to-set scoring grid)
+ * 2. Training History Panel (per-drill, expandable)
+ * 3. Curriculum Drills List (grouped by focus area)
+ * 4. Strengths / Weaknesses / Coach Feedback (tag-based)
+ *
+ * Requirements: 1.1, 7.1, 7.2, 7.3, 7.4
  */
 
 interface TrainingTabProps {
@@ -32,51 +37,107 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
   const { role } = useAuth();
   const isCoach = role === 'HEAD_COACH' || role === 'ASSISTANT_COACH';
 
-  // Fetch training logs and curriculum from API
-  const { logs, loading: logsLoading, error: logsError } = useTrainingLogs({ studentId: student.id });
-  const { plans, loading: curriculumLoading, error: curriculumError } = useCurriculum({ studentId: student.id });
+  // ─── Data fetching ───────────────────────────────────────────────────────
 
-  // Strengths/weaknesses/feedback local state (preserved from existing implementation)
+  const today = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const currentCycleKey = useMemo(() => generateCycleKey(), []);
+
+  const {
+    students: batchStudents,
+    loading: drillsLoading,
+    error: drillsError,
+    refetch: refetchDrills,
+  } = useBatchStudentsDrills({
+    batchId: student.batchId || '',
+    date: today,
+  });
+
+  const {
+    scores: skillScores,
+    loading: scoresLoading,
+    error: scoresError,
+    recordScores,
+    refetch: refetchScores,
+  } = useSkillScores({ studentId: student.id });
+
+  // ─── Derived data ────────────────────────────────────────────────────────
+
+  // Extract curriculum drills for the current student from batch data
+  const curriculumDrills = useMemo(() => {
+    const studentData = batchStudents.find((s) => s.studentId === student.id);
+    return studentData?.drills ?? [];
+  }, [batchStudents, student.id]);
+
+  // Build a drillName → latest score map from the scores array
+  const drillScoreMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const entry of skillScores) {
+      // Use the most recent score per skillId (scores are sorted by recency from API)
+      if (!(entry.skillId in map)) {
+        map[entry.skillId] = entry.score;
+      }
+    }
+    return map;
+  }, [skillScores]);
+
+  // ─── Selected drill state (training history) ─────────────────────────────
+
+  const [selectedDrillId, setSelectedDrillId] = useState<string | null>(null);
+
+  const handleDrillSelect = useCallback((drillName: string) => {
+    setSelectedDrillId((prev) => (prev === drillName ? null : drillName));
+  }, []);
+
+  // Training dates for the selected drill
+  const trainingDatesForDrill = useMemo(() => {
+    if (!selectedDrillId) return [];
+    return skillScores
+      .filter((s) => s.skillId === selectedDrillId || s.skillName === selectedDrillId)
+      .map((s) => ({ date: s.recordedAt.toISOString(), score: s.score }));
+  }, [selectedDrillId, skillScores]);
+
+  // ─── Score change handler ────────────────────────────────────────────────
+
+  const handleScoreChange = useCallback(
+    async (drillName: string, score: number) => {
+      // Find the drill's focus area for the category field
+      const drill = curriculumDrills.find((d) => d.name === drillName);
+      const category = (drill?.focusArea || 'forehand') as SkillCategory;
+
+      await recordScores({
+        studentId: student.id,
+        cycleKey: currentCycleKey,
+        weekNumber: 1,
+        scores: [
+          {
+            skillId: drillName,
+            skillName: drillName,
+            category,
+            score: score as SkillScore,
+          },
+        ],
+      });
+    },
+    [curriculumDrills, recordScores, student.id, currentCycleKey]
+  );
+
+  // ─── Error / retry handling ──────────────────────────────────────────────
+
+  const hasConsolidatedError = !!(drillsError && scoresError);
+
+  const handleRetry = useCallback(() => {
+    void refetchDrills();
+    void refetchScores();
+  }, [refetchDrills, refetchScores]);
+
+  // ─── Strengths / Weaknesses / Feedback ───────────────────────────────────
+
   const [strengths, setStrengths] = useState<string[]>(student.strengths);
   const [weaknesses, setWeaknesses] = useState<string[]>(student.weaknesses);
   const [feedback, setFeedback] = useState<string>(student.coachFeedback || '');
   const [newStrength, setNewStrength] = useState('');
   const [newWeakness, setNewWeakness] = useState('');
 
-  // Derive current cycle key
-  const currentCycleKey = useMemo(() => generateCycleKey(), []);
-
-  // Sort logs and group by cycle
-  const sortedLogs = useMemo(() => sortTrainingLogs(logs), [logs]);
-
-  const logsByCycle = useMemo(() => {
-    const grouped: Record<string, TrainingLog[]> = {};
-    for (const log of sortedLogs) {
-      if (!grouped[log.cycleKey]) {
-        grouped[log.cycleKey] = [];
-      }
-      grouped[log.cycleKey].push(log);
-    }
-    return grouped;
-  }, [sortedLogs]);
-
-  // Get cycle keys sorted with current cycle first
-  const cycleKeys = useMemo(() => {
-    const keys = Object.keys(logsByCycle);
-    return keys.sort((a, b) => {
-      if (a === currentCycleKey) return -1;
-      if (b === currentCycleKey) return 1;
-      return 0;
-    });
-  }, [logsByCycle, currentCycleKey]);
-
-  // Find active curriculum plan
-  const activePlan: CurriculumPlan | undefined = useMemo(
-    () => plans.find((p) => p.cycleKey === currentCycleKey && !p.isArchived),
-    [plans, currentCycleKey]
-  );
-
-  // Strengths/weaknesses handlers
   const handleAddStrength = () => {
     const trimmed = newStrength.trim();
     if (!trimmed) return;
@@ -128,153 +189,69 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
     }
   };
 
+  // ─── Render ──────────────────────────────────────────────────────────────
+
   return (
     <div className="training-tab" data-testid="training-tab">
       <h2 className="tab-section-title">Training Overview</h2>
 
-      {/* Training Logs Section */}
-      <div className="mb-6" data-testid="training-logs-section">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Training Logs</h3>
+      {/* Consolidated error state when both APIs fail */}
+      {hasConsolidatedError && (
+        <div className="training-error-state" data-testid="training-consolidated-error">
+          <p className="training-error-state__text">
+            Unable to load training data. Please check your connection and try again.
+          </p>
+          <button
+            className="training-error-state__retry"
+            onClick={handleRetry}
+            type="button"
+            data-testid="training-retry-button"
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
-        {logsLoading && (
-          <div className="flex items-center justify-center py-8" data-testid="training-logs-loading">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 dark:border-green-400" />
-            <span className="ml-3 text-gray-500 dark:text-gray-400">Loading training logs...</span>
-          </div>
-        )}
-
-        {logsError && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg" data-testid="training-logs-error">
-            <p className="text-red-600 dark:text-red-400 text-sm">{logsError}</p>
-          </div>
-        )}
-
-        {!logsLoading && !logsError && logs.length === 0 && (
-          <div className="p-6 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700" data-testid="training-logs-empty">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No training logs recorded yet for this student.</p>
-          </div>
-        )}
-
-        {!logsLoading && !logsError && logs.length > 0 && (
-          <div className="space-y-4" data-testid="training-logs-list">
-            {cycleKeys.map((cycleKey) => (
-              <div
-                key={cycleKey}
-                className={`rounded-lg border ${
-                  cycleKey === currentCycleKey
-                    ? 'border-green-300 dark:border-green-500/50 bg-green-50 dark:bg-green-900/10'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
-                } p-4`}
-                data-testid={`cycle-group-${cycleKey}`}
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">{cycleKey}</h4>
-                  {cycleKey === currentCycleKey && (
-                    <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 rounded-full" data-testid="current-cycle-badge">
-                      Current
-                    </span>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  {logsByCycle[cycleKey].map((log) => (
-                    <div
-                      key={log.id}
-                      className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-md"
-                      data-testid={`training-log-${log.id}`}
-                    >
-                      <div className="flex-shrink-0 mt-0.5">
-                        <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-medium ${
-                          log.isCompleted ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                        }`}>
-                          W{log.weekNumber}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap">{log.sessionNotes}</p>
-                        <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
-                          <span>{formatAuditTimestamp(log.recordedAt)}</span>
-                          <span>·</span>
-                          <span>{log.recordedBy}</span>
-                          {log.isCompleted && (
-                            <>
-                              <span>·</span>
-                              <span className="text-green-600 dark:text-green-400">Completed</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Curriculum Summary Section */}
-      <div className="mb-6" data-testid="curriculum-section">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Curriculum</h3>
-
-        {curriculumLoading && (
-          <div className="flex items-center justify-center py-8" data-testid="curriculum-loading">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400" />
-            <span className="ml-3 text-gray-500 dark:text-gray-400">Loading curriculum...</span>
-          </div>
-        )}
-
-        {curriculumError && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg" data-testid="curriculum-error">
-            <p className="text-red-600 dark:text-red-400 text-sm">{curriculumError}</p>
-          </div>
-        )}
-
-        {!curriculumLoading && !curriculumError && !activePlan && (
-          <div className="p-6 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700" data-testid="curriculum-empty">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No curriculum plan found for the current cycle ({currentCycleKey}).</p>
-          </div>
-        )}
-
-        {!curriculumLoading && !curriculumError && activePlan && (
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800" data-testid="curriculum-plan">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {activePlan.cycleKey} Plan
-              </h4>
-              <span className="text-xs text-gray-500 dark:text-gray-500">
-                {activePlan.weeks.length} weeks planned
-              </span>
+      {/* Section 1: Drill Skills Matrix */}
+      {!hasConsolidatedError && (
+        <section className="training-section" data-testid="drill-skills-matrix-section">
+          <h3 className="training-tab-heading">Skill Scores</h3>
+          {scoresError && !drillsError && (
+            <div className="training-error-state" data-testid="scores-error">
+              <p className="training-error-state__text">{scoresError}</p>
             </div>
-            <div className="space-y-2">
-              {activePlan.weeks.slice(0, 4).map((week) => (
-                <div
-                  key={week.weekNumber}
-                  className="flex items-center gap-3 text-sm"
-                >
-                  <span className="flex-shrink-0 text-xs text-gray-500 dark:text-gray-500 w-8">
-                    W{week.weekNumber}
-                  </span>
-                  <span className="text-gray-700 dark:text-gray-300">{week.focusArea}</span>
-                </div>
-              ))}
-              {activePlan.weeks.length > 4 && (
-                <p className="text-xs text-gray-500 dark:text-gray-500 pl-11">
-                  +{activePlan.weeks.length - 4} more weeks
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+          )}
+          <DrillSkillsMatrix
+            drills={curriculumDrills}
+            scores={drillScoreMap}
+            onScoreChange={handleScoreChange}
+            readOnly={!isCoach}
+            onDrillSelect={handleDrillSelect}
+            selectedDrill={selectedDrillId}
+            loading={scoresLoading || drillsLoading}
+          />
+        </section>
+      )}
 
-      {/* Existing Strengths/Weaknesses/Feedback Sections */}
+      {/* Section 2: Training History (shown when a drill is selected) */}
+      {selectedDrillId && !hasConsolidatedError && (
+        <section className="training-section" data-testid="training-history-section">
+          <TrainingHistoryPanel
+            drillName={selectedDrillId}
+            trainingDates={trainingDatesForDrill}
+            isOpen={true}
+          />
+        </section>
+      )}
+
+      {/* Section 4: Strengths / Weaknesses / Feedback */}
       <div className="training-tab-sections">
         {/* Strengths Section */}
         <div className="tag-section" data-testid="strengths-section">
-          <h3 className="tag-section-title">Strengths</h3>
+          <h3 className="training-tab-heading">Strengths</h3>
           <div className="tag-list">
             {strengths.map((strength) => (
-              <span key={strength} className="tag tag-strength" data-testid="strength-tag">
+              <span key={strength} className="tag-strength" data-testid="strength-tag">
                 {strength}
                 {isCoach && (
                   <button
@@ -317,10 +294,10 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
 
         {/* Weaknesses Section */}
         <div className="tag-section" data-testid="weaknesses-section">
-          <h3 className="tag-section-title">Areas to Improve</h3>
+          <h3 className="training-tab-heading">Areas to Improve</h3>
           <div className="tag-list">
             {weaknesses.map((weakness) => (
-              <span key={weakness} className="tag tag-weakness" data-testid="weakness-tag">
+              <span key={weakness} className="tag-weakness" data-testid="weakness-tag">
                 {weakness}
                 {isCoach && (
                   <button
@@ -363,7 +340,7 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
 
         {/* Coach Feedback Section */}
         <div className="feedback-section" data-testid="feedback-section">
-          <h3 className="tag-section-title">Coach Feedback</h3>
+          <h3 className="training-tab-heading">Coach Feedback</h3>
           {isCoach ? (
             <textarea
               className="coach-feedback-textarea"

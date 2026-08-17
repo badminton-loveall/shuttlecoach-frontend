@@ -1,53 +1,345 @@
-/* TrainingTab Styles */
+/* ============================================================================
+   TRAINING TAB — Redesigned with Design System Tokens
+   All styling uses CSS variables from design-system.css.
+   No Tailwind dark-mode classes. No prefers-color-scheme media queries.
+   ============================================================================ */
+
+/* === 1. Container Layout === */
 
 .training-tab {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 .training-tab-sections {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: var(--space-xl);
 }
 
-/* Tag Input Group */
+/* === 2. Section Headings === */
+
+.training-tab-heading {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  line-height: var(--line-snug);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.training-tab-subheading {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+/* === 3. Drill Skills Matrix === */
+
+.drill-skills-matrix {
+  display: grid;
+  grid-template-columns: 1fr repeat(5, 1fr) 56px;
+  gap: 0;
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.drill-skills-matrix__header {
+  display: contents;
+}
+
+.drill-skills-matrix__header-cell {
+  padding: var(--space-sm) var(--space-xs);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-align: center;
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.drill-skills-matrix__header-cell:first-child {
+  text-align: left;
+  padding-left: var(--space-md);
+}
+
+.drill-skills-matrix__row {
+  display: contents;
+}
+
+.drill-skills-matrix__row:hover .drill-skills-matrix__drill-name,
+.drill-skills-matrix__row:hover .score-cell,
+.drill-skills-matrix__row:hover .drill-skills-matrix__status {
+  background: var(--surface-hover);
+}
+
+.drill-skills-matrix__drill-name {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.drill-skills-matrix__status {
+  padding: var(--space-sm) var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-default);
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  transition: background var(--transition-fast);
+}
+
+.drill-skills-matrix__status--saving {
+  color: var(--color-warning);
+}
+
+.drill-skills-matrix__status--saved {
+  color: var(--color-success);
+}
+
+.drill-skills-matrix__status--error {
+  color: var(--color-danger);
+}
+
+/* === 4. Score Cells === */
+
+.score-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-xs);
+  border-bottom: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.score-cell__indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-card);
+  border: 2px solid var(--border-strong);
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.score-cell__radio-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+}
+
+.score-cell:hover .score-cell__indicator {
+  border-color: var(--color-primary);
+}
+
+.score-cell--active .score-cell__indicator {
+  border-color: var(--color-primary);
+  background: var(--surface-card);
+}
+
+.score-cell--active:hover .score-cell__indicator {
+  border-color: var(--color-primary-dark);
+}
+
+.score-cell--saving .score-cell__indicator {
+  animation: pulse-saving 1s ease-in-out infinite;
+}
+
+.score-cell--error .score-cell__indicator {
+  border-color: var(--color-danger);
+  animation: flash-error 0.4s ease-out;
+}
+
+.score-cell--readonly {
+  cursor: default;
+}
+
+.score-cell--readonly:hover .score-cell__indicator {
+  background: var(--surface-hover);
+  color: var(--text-tertiary);
+}
+
+/* Score cell focus ring (keyboard navigation) */
+.score-cell:focus-visible .score-cell__indicator {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+.score-cell:focus:not(:focus-visible) .score-cell__indicator {
+  outline: none;
+  box-shadow: none;
+}
+
+/* === 5. Training History Panel === */
+
+.training-history-panel {
+  grid-column: 1 / -1;
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  overflow: hidden;
+  animation: slide-down 200ms ease-out;
+}
+
+.training-history-panel__title {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.training-history-panel__dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.training-history-panel__date {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-sm);
+}
+
+.training-history-panel__empty {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* === 6. Curriculum Drills List === */
+
+.curriculum-drills-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.focus-area-group {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.focus-area-group__header {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.focus-area-group__drills {
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.focus-area-group__drill-item {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.focus-area-group__drill-item:last-child {
+  border-bottom: none;
+}
+
+/* === 7. Strengths / Weaknesses Tags === */
+
+.tag-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.feedback-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.coach-feedback-text {
+  font-size: var(--font-sm);
+  line-height: var(--line-relaxed);
+  color: var(--text-secondary);
+  padding: var(--space-md);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+  margin: 0;
+}
+
 .tag-input-group {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
 }
 
 .tag-input {
   flex: 1;
-  padding: 8px 12px;
-  font-size: 13px;
-  color: var(--slate-100, #f1f4f6);
-  background: var(--slate-800, #1f262e);
-  border: 1px solid var(--slate-700, #333d47);
-  border-radius: 6px;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .tag-input:focus {
-  border-color: var(--slate-500, #6b7885);
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
 }
 
 .tag-input::placeholder {
-  color: var(--slate-500, #6b7885);
+  color: var(--text-tertiary);
 }
 
 /* Tag Add Buttons */
 .tag-add-btn {
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .tag-add-btn:disabled {
@@ -56,21 +348,21 @@
 }
 
 .tag-add-btn-strength {
-  background: rgba(184, 225, 53, 0.15);
-  color: #b8e135;
+  background: var(--feedback-success-light);
+  color: var(--color-success-text);
 }
 
 .tag-add-btn-strength:hover:not(:disabled) {
-  background: rgba(184, 225, 53, 0.25);
+  background: var(--color-success-light);
 }
 
 .tag-add-btn-weakness {
-  background: rgba(232, 57, 74, 0.15);
-  color: #e8394a;
+  background: var(--feedback-danger-light);
+  color: var(--color-danger-text);
 }
 
 .tag-add-btn-weakness:hover:not(:disabled) {
-  background: rgba(232, 57, 74, 0.25);
+  background: var(--color-danger-light);
 }
 
 /* Tag Remove Button */
@@ -80,123 +372,226 @@
   justify-content: center;
   width: 16px;
   height: 16px;
-  margin-left: 6px;
-  font-size: 14px;
+  margin-left: var(--space-xs);
+  font-size: var(--font-sm);
   line-height: 1;
   background: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-fast);
   padding: 0;
 }
 
 .tag-strength .tag-remove {
-  color: #b8e135;
+  color: var(--color-success-text);
 }
 
 .tag-weakness .tag-remove {
-  color: #e8394a;
+  color: var(--color-danger-text);
 }
 
 .tag-remove:hover {
   opacity: 1;
 }
 
+/* Tag Pill Base */
+.tag-strength,
+.tag-weakness {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+}
+
+.tag-strength {
+  background: var(--feedback-success-light);
+  color: var(--color-success-text);
+}
+
+.tag-weakness {
+  background: var(--feedback-danger-light);
+  color: var(--color-danger-text);
+}
+
 /* Tag Empty State */
 .tag-empty {
-  font-size: 13px;
-  color: var(--slate-500, #6b7885);
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
   font-style: italic;
 }
 
-/* Coach Feedback Textarea */
+/* === 8. Coach Feedback Textarea === */
+
 .coach-feedback-textarea {
   width: 100%;
   min-height: 120px;
-  padding: 16px;
-  font-size: 14px;
-  line-height: 1.6;
+  padding: var(--space-md);
+  font-size: var(--font-sm);
+  line-height: var(--line-relaxed);
   font-family: inherit;
-  color: var(--slate-200, #e4e9ec);
-  background: var(--slate-800, #1f262e);
-  border: 1px solid var(--slate-700, #333d47);
-  border-radius: 8px;
-  border-left: 3px solid #b8e135;
+  color: var(--text-primary);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
   resize: vertical;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
   box-sizing: border-box;
 }
 
 .coach-feedback-textarea:focus {
-  border-color: var(--slate-500, #6b7885);
-  border-left-color: #b8e135;
+  border-color: var(--border-focus);
+  border-left-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
 }
 
 .coach-feedback-textarea::placeholder {
-  color: var(--slate-500, #6b7885);
+  color: var(--text-tertiary);
 }
 
-/* Light mode support */
-@media (prefers-color-scheme: light) {
-  .tag-input {
-    color: var(--slate-800, #1f262e);
-    background: var(--slate-100, #f1f4f6);
-    border-color: var(--slate-300, #d1d9de);
-  }
+/* === 9. Loading Skeletons === */
 
-  .tag-input:focus {
-    border-color: var(--slate-500, #6b7885);
-  }
+.training-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
 
-  .tag-input::placeholder {
-    color: var(--slate-400, #9ca8b3);
-  }
+.training-skeleton__row {
+  height: 40px;
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
 
-  .tag-add-btn-strength {
-    background: rgba(122, 163, 29, 0.12);
-    color: #5a7a14;
-  }
+.training-skeleton__row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--surface-card) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
 
-  .tag-add-btn-strength:hover:not(:disabled) {
-    background: rgba(122, 163, 29, 0.2);
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
   }
-
-  .tag-add-btn-weakness {
-    background: rgba(232, 57, 74, 0.1);
-    color: #c0293a;
-  }
-
-  .tag-add-btn-weakness:hover:not(:disabled) {
-    background: rgba(232, 57, 74, 0.18);
-  }
-
-  .tag-empty {
-    color: var(--slate-400, #9ca8b3);
-  }
-
-  .coach-feedback-textarea {
-    color: var(--slate-700, #333d47);
-    background: var(--slate-100, #f1f4f6);
-    border-color: var(--slate-300, #d1d9de);
-  }
-
-  .coach-feedback-textarea:focus {
-    border-color: var(--slate-400, #9ca8b3);
-    border-left-color: #7aa31d;
-  }
-
-  .coach-feedback-textarea::placeholder {
-    color: var(--slate-400, #9ca8b3);
+  100% {
+    transform: translateX(100%);
   }
 }
 
-/* Responsive */
+/* === 10. Empty / Error States === */
+
+.training-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+}
+
+.training-empty-state__icon {
+  font-size: var(--font-xl);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-sm);
+}
+
+.training-empty-state__text {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+}
+
+.training-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  background: var(--feedback-danger-light);
+  border: 1px solid var(--color-danger-light);
+  border-radius: var(--radius-md);
+}
+
+.training-error-state__text {
+  font-size: var(--font-sm);
+  color: var(--color-danger-text);
+  margin-bottom: var(--space-md);
+}
+
+.training-error-state__retry {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-danger-text);
+  background: transparent;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.training-error-state__retry:hover {
+  background: var(--color-danger-light);
+}
+
+.training-error-state__retry:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+/* === Animations === */
+
+@keyframes slide-down {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 300px;
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-saving {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes flash-error {
+  0% {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  }
+  100% {
+    border-color: transparent;
+    box-shadow: none;
+  }
+}
+
+/* === Responsive === */
+
 @media (max-width: 768px) {
   .training-tab-sections {
-    gap: 24px;
+    gap: var(--space-lg);
   }
 
   .tag-input-group {
@@ -205,5 +600,20 @@
 
   .tag-add-btn {
     align-self: flex-start;
+  }
+
+  .drill-skills-matrix {
+    grid-template-columns: 1fr repeat(5, 1fr) 44px;
+  }
+
+  .score-cell__indicator {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+  }
+
+  .drill-skills-matrix__drill-name {
+    font-size: var(--font-xs);
+    padding: var(--space-xs) var(--space-sm);
   }
 }

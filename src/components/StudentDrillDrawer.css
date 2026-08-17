@@ -1,0 +1,177 @@
+/* ============================================================================
+   StudentDrillDrawer — Slide-over panel from the right
+   Displays today's drills for a selected student, grouped by focus area.
+   ============================================================================ */
+
+.student-drill-drawer__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-modal, 1000);
+  animation: sdd-fade-in 0.2s ease-out;
+  backdrop-filter: blur(2px);
+}
+
+.student-drill-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 380px;
+  max-width: 90vw;
+  background-color: var(--surface-card);
+  border-left: 1px solid var(--border-default);
+  z-index: var(--z-modal, 1000);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: sdd-slide-in 0.25s ease-out;
+  box-shadow: var(--shadow-overlay);
+}
+
+/* ─── Header ──────────────────────────────────────────────────── */
+
+.student-drill-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.student-drill-drawer__student-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.student-drill-drawer__name {
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.student-drill-drawer__skill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-medium);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid;
+  width: fit-content;
+}
+
+.student-drill-drawer__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+}
+
+.student-drill-drawer__close-btn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* ─── Body / Drill List ───────────────────────────────────────── */
+
+.student-drill-drawer__body {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ─── Focus Area Group ────────────────────────────────────────── */
+
+.student-drill-drawer__focus-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.student-drill-drawer__focus-label {
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.student-drill-drawer__drill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.student-drill-drawer__drill-item {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--surface-body);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+}
+
+/* ─── States: Loading, Error, Empty ───────────────────────────── */
+
+.student-drill-drawer__loading,
+.student-drill-drawer__error,
+.student-drill-drawer__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  gap: var(--space-sm);
+  flex: 1;
+}
+
+.student-drill-drawer__loading-text,
+.student-drill-drawer__empty-text {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.student-drill-drawer__error-text {
+  font-size: var(--font-sm);
+  color: var(--color-danger, #ef4444);
+  margin: 0;
+}
+
+/* ─── Animations ──────────────────────────────────────────────── */
+
+@keyframes sdd-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sdd-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { getTodaySessions, getCurrentSession } from '../../utils/attendanceBlockUtils';
 import { useBatchStudents } from '../../hooks/useBatchStudents';
-import { useMarkAttendance } from '../../hooks/useAttendance';
+import { useMarkAttendance, useAttendanceRecords } from '../../hooks/useAttendance';
+import { useSessionDrillDown } from '../../hooks/useSessionDrillDown';
 import { SessionTabBar } from './SessionTabBar';
 import { StudentAttendanceList } from './StudentAttendanceList';
 import { AttendanceSubmitFooter } from './AttendanceSubmitFooter';
+import { StudentDrillDrawer } from '../StudentDrillDrawer';
 import type { CalendarEntry, AttendanceStatus } from '../../types';
 import type { MarkAttendanceData } from '../../hooks/useAttendance';
 
@@ -67,6 +69,39 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
   const { students, loading: studentsLoading } = useBatchStudents(selectedSession?.batchId);
   const { markAttendance, loading: submitting } = useMarkAttendance();
 
+  // ─── Session drill-down state (for student drill drawer) ─────────────────────
+  const {
+    selectedStudent,
+    drawerOpen,
+    handleStudentClick,
+    closeDrawer,
+  } = useSessionDrillDown();
+
+  // Today's date for drill drawer and attendance lookup
+  const todayDateStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  // Fetch existing attendance records for today's batch to pre-fill the map
+  const { records: existingRecords } = useAttendanceRecords({
+    batchId: selectedSession?.batchId,
+    startDate: todayDateStr,
+    endDate: todayDateStr,
+  });
+
+  // Pre-populate attendanceMap from existing records (retain for the whole day)
+  useEffect(() => {
+    if (existingRecords && existingRecords.length > 0 && Object.keys(attendanceMap).length === 0) {
+      const map: AttendanceMap = {};
+      for (const rec of existingRecords) {
+        if (rec.studentId && rec.status) {
+          map[rec.studentId] = rec.status as AttendanceStatus;
+        }
+      }
+      if (Object.keys(map).length > 0) {
+        setAttendanceMap(map);
+      }
+    }
+  }, [existingRecords]);
+
   // ─── Auto-select current session on mount / when entries change ─────────────
   useEffect(() => {
     if (calendarLoading) {
@@ -109,11 +144,16 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
     setWidgetState('idle');
   }, []);
 
-  const handleToggle = useCallback((studentId: string, status: AttendanceStatus) => {
-    setAttendanceMap((prev) => ({
-      ...prev,
-      [studentId]: status,
-    }));
+  const handleToggle = useCallback((studentId: string, status: AttendanceStatus | undefined) => {
+    setAttendanceMap((prev) => {
+      if (status === undefined) {
+        // Toggle off — remove from map
+        const next = { ...prev };
+        delete next[studentId];
+        return next;
+      }
+      return { ...prev, [studentId]: status };
+    });
   }, []);
 
   const handleSubmit = useCallback(async () => {
@@ -134,9 +174,9 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
     try {
       await markAttendance(payload);
       setWidgetState('success');
-      setAttendanceMap({});
+      // Keep attendanceMap intact so P/A buttons stay filled after submission
 
-      // Reset to idle after 3 seconds
+      // Reset to idle after 3 seconds (buttons remain filled showing recorded status)
       successTimerRef.current = setTimeout(() => {
         setWidgetState('idle');
       }, 3000);
@@ -197,12 +237,13 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
             </div>
           )}
 
-          {/* Student list */}
+          {/* Unified student list — click name for drills, P/A to toggle attendance */}
           <StudentAttendanceList
             students={students}
             attendanceMap={attendanceMap}
             onToggle={handleToggle}
             loading={studentsLoading}
+            onNameClick={handleStudentClick}
           />
 
           {/* Submit footer */}
@@ -213,6 +254,17 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
             onSubmit={handleSubmit}
           />
         </>
+      )}
+
+      {/* Student drill drawer — opens when clicking a student name */}
+      {selectedStudent && selectedSession && (
+        <StudentDrillDrawer
+          isOpen={drawerOpen}
+          onClose={closeDrawer}
+          student={selectedStudent}
+          batchId={selectedSession.batchId}
+          sessionDate={todayDateStr}
+        />
       )}
     </div>
   );
@@ -237,20 +289,21 @@ const LoadingSkeleton: React.FC = () => (
    ============================================================================ */
 
 const wrapperStyle: React.CSSProperties = {
-  backgroundColor: 'hsl(var(--card))',
-  border: '1px solid hsl(var(--border))',
-  borderRadius: 'var(--radius)',
-  padding: '1.25rem',
+  backgroundColor: 'var(--surface-card)',
+  border: '1px solid var(--border-default)',
+  borderRadius: 'var(--radius-md)',
+  padding: 'var(--space-lg)',
   display: 'flex',
   flexDirection: 'column',
-  gap: '1rem',
+  gap: 'var(--space-md)',
+  boxShadow: 'var(--shadow-card)',
 };
 
 const titleStyle: React.CSSProperties = {
   margin: 0,
-  fontSize: '1.125rem',
+  fontSize: 'var(--font-lg)',
   fontWeight: 700,
-  color: 'hsl(var(--foreground))',
+  color: 'var(--text-primary)',
 };
 
 const tabBarWrapperStyle: React.CSSProperties = {
@@ -274,8 +327,8 @@ const emptyIconStyle: React.CSSProperties = {
 
 const emptyTextStyle: React.CSSProperties = {
   margin: 0,
-  fontSize: '0.875rem',
-  color: 'hsl(var(--muted-foreground))',
+  fontSize: 'var(--font-sm)',
+  color: 'var(--text-secondary)',
   fontWeight: 500,
 };
 
@@ -292,14 +345,14 @@ const completeStateStyle: React.CSSProperties = {
 
 const completeIconStyle: React.CSSProperties = {
   fontSize: '1.75rem',
-  color: 'hsl(var(--primary))',
+  color: 'var(--color-primary)',
   fontWeight: 700,
 };
 
 const completeTextStyle: React.CSSProperties = {
   margin: 0,
-  fontSize: '0.875rem',
-  color: 'hsl(var(--muted-foreground))',
+  fontSize: 'var(--font-sm)',
+  color: 'var(--text-secondary)',
   fontWeight: 500,
 };
 
@@ -316,14 +369,14 @@ const successStateStyle: React.CSSProperties = {
 
 const successIconStyle: React.CSSProperties = {
   fontSize: '1.75rem',
-  color: 'hsl(var(--primary))',
+  color: 'var(--color-primary)',
   fontWeight: 700,
 };
 
 const successTextStyle: React.CSSProperties = {
   margin: 0,
-  fontSize: '0.875rem',
-  color: 'hsl(var(--foreground))',
+  fontSize: 'var(--font-sm)',
+  color: 'var(--text-primary)',
   fontWeight: 600,
 };
 
@@ -332,14 +385,14 @@ const successTextStyle: React.CSSProperties = {
 const skeletonContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '0.75rem',
-  padding: '0.5rem 0',
+  gap: 'var(--space-sm)',
+  padding: 'var(--space-sm) 0',
 };
 
 const skeletonBarStyle: React.CSSProperties = {
   height: '1rem',
-  borderRadius: 'var(--radius)',
-  backgroundColor: 'hsl(var(--muted))',
+  borderRadius: 'var(--radius-sm)',
+  backgroundColor: 'var(--surface-hover)',
   animation: 'pulse 1.5s ease-in-out infinite',
   opacity: 0.6,
 };

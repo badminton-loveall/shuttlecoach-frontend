@@ -4,26 +4,37 @@ import type { Student, AttendanceStatus } from '../../types';
 export interface StudentAttendanceRowProps {
   student: Student;
   status: AttendanceStatus | undefined;
-  onToggle: (studentId: string, status: AttendanceStatus) => void;
+  onToggle: (studentId: string, status: AttendanceStatus | undefined) => void;
+  onNameClick?: (student: Student) => void;
 }
 
 /**
  * StudentAttendanceRow Component
- * Renders a single student row with Present/Absent toggle buttons.
- * Applies immediate visual confirmation on toggle (optimistic UI).
+ * Renders a single student row with clickable name and Present/Absent toggle buttons.
+ * Clicking the name opens the drill detail panel.
+ * P/A toggles apply immediate visual confirmation (optimistic UI).
  */
 export const StudentAttendanceRow: React.FC<StudentAttendanceRowProps> = ({
   student,
   status,
   onToggle,
+  onNameClick,
 }) => {
   return (
     <div style={rowStyle}>
-      <span style={nameStyle}>{student.fullName}</span>
+      <span
+        style={{ ...nameStyle, ...(onNameClick ? clickableNameStyle : {}) }}
+        onClick={onNameClick ? () => onNameClick(student) : undefined}
+        role={onNameClick ? 'button' : undefined}
+        tabIndex={onNameClick ? 0 : undefined}
+        onKeyDown={onNameClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onNameClick(student); } } : undefined}
+      >
+        {student.fullName}
+      </span>
       <div style={toggleGroupStyle}>
         <button
           type="button"
-          onClick={() => onToggle(student.id, 'PRESENT')}
+          onClick={() => onToggle(student.id, status === 'PRESENT' ? undefined : 'PRESENT')}
           style={getButtonStyle(status === 'PRESENT', 'PRESENT')}
           aria-label={`Mark ${student.fullName} present`}
           aria-pressed={status === 'PRESENT'}
@@ -32,7 +43,7 @@ export const StudentAttendanceRow: React.FC<StudentAttendanceRowProps> = ({
         </button>
         <button
           type="button"
-          onClick={() => onToggle(student.id, 'ABSENT')}
+          onClick={() => onToggle(student.id, status === 'ABSENT' ? undefined : 'ABSENT')}
           style={getButtonStyle(status === 'ABSENT', 'ABSENT')}
           aria-label={`Mark ${student.fullName} absent`}
           aria-pressed={status === 'ABSENT'}
@@ -50,15 +61,15 @@ const rowStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '0.5rem 0.75rem',
-  borderBottom: '1px solid hsl(var(--border))',
-  gap: '0.75rem',
+  padding: 'var(--space-sm) var(--space-md)',
+  borderBottom: '1px solid var(--border-default)',
+  gap: 'var(--space-sm)',
 };
 
 const nameStyle: React.CSSProperties = {
-  fontSize: '0.875rem',
+  fontSize: 'var(--font-sm)',
   fontWeight: 500,
-  color: 'hsl(var(--foreground))',
+  color: 'var(--text-primary)',
   flex: 1,
   minWidth: 0,
   overflow: 'hidden',
@@ -66,9 +77,14 @@ const nameStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
+const clickableNameStyle: React.CSSProperties = {
+  cursor: 'pointer',
+  color: 'var(--color-primary-dark)',
+};
+
 const toggleGroupStyle: React.CSSProperties = {
   display: 'flex',
-  gap: '0.375rem',
+  gap: 'var(--space-xs)',
   flexShrink: 0,
 };
 
@@ -79,11 +95,11 @@ function getButtonStyle(
   const base: React.CSSProperties = {
     width: '32px',
     height: '32px',
-    borderRadius: 'var(--radius)',
-    border: '1px solid hsl(var(--border))',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--border-default)',
     cursor: 'pointer',
     fontWeight: 600,
-    fontSize: '0.75rem',
+    fontSize: 'var(--font-xs)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -93,26 +109,26 @@ function getButtonStyle(
   if (!isActive) {
     return {
       ...base,
-      backgroundColor: 'hsl(var(--muted))',
-      color: 'hsl(var(--muted-foreground))',
+      backgroundColor: 'var(--surface-hover)',
+      color: 'var(--text-tertiary)',
     };
   }
 
   if (buttonType === 'PRESENT') {
     return {
       ...base,
-      backgroundColor: 'hsl(var(--primary))',
-      color: 'hsl(var(--primary-foreground, 222.2 47.4% 11.2%))',
-      borderColor: 'hsl(var(--primary))',
+      backgroundColor: 'var(--color-primary)',
+      color: 'var(--text-primary)',
+      borderColor: 'var(--color-primary)',
     };
   }
 
   // ABSENT active
   return {
     ...base,
-    backgroundColor: 'hsl(var(--destructive))',
-    color: 'hsl(var(--destructive-foreground))',
-    borderColor: 'hsl(var(--destructive))',
+    backgroundColor: 'var(--color-danger)',
+    color: '#fff',
+    borderColor: 'var(--color-danger)',
   };
 }
 

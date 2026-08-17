@@ -18,6 +18,10 @@ export interface SessionCardProps {
   error?: string | null;
   /** Whether this is a coach view (shows multiple batches) or student view (single batch) */
   variant?: 'student' | 'coach';
+  /** Callback when a session entry is clicked (enables drill-down interaction) */
+  onSessionClick?: (entry: CalendarEntry) => void;
+  /** Currently expanded session's batchId (to show active/expanded visual state) */
+  expandedBatchId?: string;
 }
 
 /**
@@ -52,10 +56,32 @@ function formatDate(dateStr: string): string {
 
 /**
  * Renders a single session entry within the card.
+ * When `onClick` is provided, the entry becomes interactive with hover/active styling.
+ *
+ * Requirements: 7.1, 7.2, 7.3
  */
-function SessionEntry({ entry, showDate }: { entry: CalendarEntry; showDate: boolean }) {
+function SessionEntry({
+  entry,
+  showDate,
+  onClick,
+  isExpanded,
+}: {
+  entry: CalendarEntry;
+  showDate: boolean;
+  onClick?: (entry: CalendarEntry) => void;
+  isExpanded?: boolean;
+}) {
+  const isClickable = !!onClick;
+
   return (
-    <div className="rounded-lg p-4 bg-[var(--surface-card)]" style={{ border: '1px solid var(--border-default)' }}>
+    <div
+      className={`rounded-lg p-4 bg-[var(--surface-card)] transition-all duration-200${isClickable ? ' cursor-pointer hover:shadow-md hover:border-blue-300' : ''}${isExpanded ? ' border-blue-500 shadow-sm' : ''}`}
+      style={{ border: `1px solid ${isExpanded ? 'var(--color-blue-500, #3b82f6)' : 'var(--border-default)'}` }}
+      onClick={isClickable ? () => onClick(entry) : undefined}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(entry); } } : undefined}
+    >
       {/* Header: Time and Batch */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
@@ -78,9 +104,28 @@ function SessionEntry({ entry, showDate }: { entry: CalendarEntry; showDate: boo
             {formatTime(entry.startTime)} - {formatTime(entry.endTime)}
           </span>
         </div>
-        <span className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-          {entry.batchName}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+            {entry.batchName}
+          </span>
+          {/* Chevron indicator — rotates when expanded */}
+          {isClickable && (
+            <svg
+              className={`w-4 h-4 text-gray-500 transition-transform duration-200${isExpanded ? ' rotate-90' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          )}
+        </div>
       </div>
 
       {/* Date indicator (shown for future sessions) */}
@@ -158,6 +203,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
   loading = false,
   error = null,
   variant = 'student',
+  onSessionClick,
+  expandedBatchId,
 }) => {
   const todayStr = useMemo(() => getTodayStr(), []);
 
@@ -271,7 +318,13 @@ export const SessionCard: React.FC<SessionCardProps> = ({
       {/* Session Entries */}
       <div className="space-y-3">
         {sessionsToShow.map((entry, idx) => (
-          <SessionEntry key={`${entry.date}-${entry.startTime}-${entry.batchId}-${idx}`} entry={entry} showDate={isFutureDate} />
+          <SessionEntry
+            key={`${entry.date}-${entry.startTime}-${entry.batchId}-${idx}`}
+            entry={entry}
+            showDate={isFutureDate}
+            onClick={onSessionClick}
+            isExpanded={expandedBatchId === entry.batchId}
+          />
         ))}
       </div>
     </div>

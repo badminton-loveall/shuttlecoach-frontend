@@ -6,8 +6,6 @@ import StudentGrid from '../components/StudentGrid';
 import FeeAlerts from '../components/FeeAlerts';
 import CoachWorkload from '../components/CoachWorkload';
 import RecentActivity from '../components/RecentActivity';
-import { AttendanceStatsWidget } from '../components/AttendanceStatsWidget';
-import { SessionCard } from '../components/SessionCard';
 import { DashboardAttendanceBlock } from '../components/attendance/DashboardAttendanceBlock';
 import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useAuth } from '../contexts/AuthContext';
@@ -17,7 +15,6 @@ import { useBatches } from '../hooks/useBatches';
 import { useCoaches } from '../hooks/useCoaches';
 import { useAssessments } from '../hooks/useAssessments';
 import { useTrainingLogs } from '../hooks/useTrainingLogs';
-import { useAttendanceStats, useAttendanceRecords } from '../hooks/useAttendance';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { useOnboardingChecklist } from '../hooks/useOnboardingChecklist';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
@@ -42,7 +39,7 @@ export const HeadCoachDashboard: React.FC = () => {
   // Live data from API
   const { students, loading: studentsLoading } = useStudents();
   const { fees, loading: feesLoading } = useFees();
-  const { getBatchName } = useBatches();
+  const { getBatchName, batches } = useBatches();
   const { coaches, loading: coachesLoading } = useCoaches();
   const { assessments } = useAssessments();
   const { logs: trainingLogs } = useTrainingLogs();
@@ -77,6 +74,7 @@ export const HeadCoachDashboard: React.FC = () => {
     assessments={assessments}
     trainingLogs={trainingLogs}
     users={users}
+    batches={batches}
     getBatchName={getBatchName}
   />;
 };
@@ -90,8 +88,9 @@ const HeadCoachDashboardContent: React.FC<{
   assessments: SkillAssessment[];
   trainingLogs: TrainingLog[];
   users: User[];
+  batches: ReturnType<typeof useBatches>['batches'];
   getBatchName: (batchId: string | undefined) => string;
-}> = ({ user, navigate, students, fees, assessments, trainingLogs, users, getBatchName }) => {
+}> = ({ user, navigate, students, fees, assessments, trainingLogs, users, batches, getBatchName }) => {
   // Onboarding checklist hook (Requirements: 5.1, 5.6, 7.1, 7.2, 7.3, 7.4, 7.5)
   const {
     checklist,
@@ -103,31 +102,22 @@ const HeadCoachDashboardContent: React.FC<{
 
   // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const sevenDaysAgo = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 7);
-    return d.toISOString().slice(0, 10);
-  }, []);
 
-  const { stats: attendanceStats, loading: attendanceStatsLoading, error: attendanceStatsError } =
-    useAttendanceStats({ startDate: todayStr, endDate: todayStr });
-  const { records: recentAttendanceRecords, loading: recentRecordsLoading, error: recentRecordsError } =
-    useAttendanceRecords({ startDate: sevenDaysAgo, endDate: todayStr });
-
-  // Session calendar for SessionCard (Requirements: 17.1, 17.2)
+  // Session calendar (Requirements: 17.1, 17.2)
   const fourteenDaysAhead = useMemo(() => {
     const d = new Date();
     d.setDate(d.getDate() + 14);
     return d.toISOString().slice(0, 10);
   }, []);
 
-  const { entries: calendarEntries, loading: calendarLoading, error: calendarError } =
+  const { entries: calendarEntries, loading: calendarLoading } =
     useSessionCalendar({ startDate: todayStr, endDate: fourteenDaysAhead });
+
   // Calculate overdue fees grouped by student
   const overdueFees = useMemo(() => getOverdueFeesByStudent(fees, students), [fees, students]);
 
   // Calculate coach workloads
-  const coachWorkloads = useMemo(() => getCoachWorkloads(students, users), [students, users]);
+  const coachWorkloads = useMemo(() => getCoachWorkloads(students, users, batches), [students, users, batches]);
 
   // Generate recent activity feed
   const recentActivities = useMemo(
@@ -203,7 +193,7 @@ const HeadCoachDashboardContent: React.FC<{
             />
             <StatCard
               title="Batches"
-              value={stats.batchCount}
+              value={batches.length}
               label="Active batches"
               icon={<BatchIconSvg />}
               variant="warning"
@@ -222,22 +212,6 @@ const HeadCoachDashboardContent: React.FC<{
             calendarEntries={calendarEntries}
             calendarLoading={calendarLoading}
           />
-
-          {/* Attendance and Session Widgets - Requirements: 5.1, 5.4, 17.1, 17.2 */}
-          <div className="hc-overview-grid" style={{ marginTop: 'var(--space-lg)' }}>
-            <AttendanceStatsWidget
-              stats={attendanceStats}
-              recentRecords={recentAttendanceRecords}
-              loading={attendanceStatsLoading || recentRecordsLoading}
-              error={attendanceStatsError || recentRecordsError}
-            />
-            <SessionCard
-              entries={calendarEntries}
-              loading={calendarLoading}
-              error={calendarError}
-              variant="coach"
-            />
-          </div>
 
           {/* Students Due for Review Section */}
           {studentsDueForReview.length > 0 && (

@@ -5,8 +5,9 @@ import type { Student, AttendanceStatus } from '../../types';
 export interface StudentAttendanceListProps {
   students: Student[];
   attendanceMap: Record<string, AttendanceStatus>;
-  onToggle: (studentId: string, status: AttendanceStatus) => void;
+  onToggle: (studentId: string, status: AttendanceStatus | undefined) => void;
   loading: boolean;
+  onNameClick?: (student: Student) => void;
 }
 
 /**
@@ -22,6 +23,7 @@ export const StudentAttendanceList: React.FC<StudentAttendanceListProps> = ({
   attendanceMap,
   onToggle,
   loading,
+  onNameClick,
 }) => {
   if (loading) {
     return (
@@ -52,6 +54,7 @@ export const StudentAttendanceList: React.FC<StudentAttendanceListProps> = ({
           student={student}
           status={attendanceMap[student.id]}
           onToggle={onToggle}
+          onNameClick={onNameClick}
         />
       ))}
     </div>
@@ -63,26 +66,26 @@ export const StudentAttendanceList: React.FC<StudentAttendanceListProps> = ({
 const containerStyle: React.CSSProperties = {
   maxHeight: '320px',
   overflowY: 'auto',
-  border: '1px solid hsl(var(--border))',
-  borderRadius: 'var(--radius)',
-  backgroundColor: 'hsl(var(--card))',
+  border: '1px solid var(--border-default)',
+  borderRadius: 'var(--radius-md)',
+  backgroundColor: 'var(--surface-card)',
 };
 
 const loadingStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: '0.5rem',
-  padding: '2rem 1rem',
-  color: 'hsl(var(--muted-foreground))',
-  fontSize: '0.875rem',
+  gap: 'var(--space-sm)',
+  padding: 'var(--space-xl) var(--space-md)',
+  color: 'var(--text-secondary)',
+  fontSize: 'var(--font-sm)',
 };
 
 const spinnerStyle: React.CSSProperties = {
   width: '16px',
   height: '16px',
-  border: '2px solid hsl(var(--border))',
-  borderTopColor: 'hsl(var(--primary))',
+  border: '2px solid var(--border-default)',
+  borderTopColor: 'var(--color-primary)',
   borderRadius: '50%',
   animation: 'spin 0.8s linear infinite',
 };
@@ -91,9 +94,9 @@ const emptyStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '2rem 1rem',
-  color: 'hsl(var(--muted-foreground))',
-  fontSize: '0.875rem',
+  padding: 'var(--space-xl) var(--space-md)',
+  color: 'var(--text-secondary)',
+  fontSize: 'var(--font-sm)',
 };
 
 export default StudentAttendanceList;

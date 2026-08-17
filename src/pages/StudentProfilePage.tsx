@@ -511,33 +511,26 @@ const AttendanceTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading attendance history...</p>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-xl)' }}>
+        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>Loading attendance…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-xl)' }}>
+        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--color-danger)' }}>{error}</p>
       </div>
     );
   }
 
   if (records.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            No attendance records found for {student.fullName}.
-          </p>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-xl)' }}>
+        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
+          No attendance records found for {student.fullName}.
+        </p>
       </div>
     );
   }
@@ -557,75 +550,75 @@ const AttendanceTabContent: React.FC<{ student: Student }> = ({ student }) => {
     : '0.0';
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-gray-100 mb-4">Attendance History</h2>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div className="rounded-lg bg-gray-700/50 p-4 text-center">
-          <p className="text-2xl font-bold text-gray-100">{totalSessions}</p>
-          <p className="text-xs text-gray-400">Total Sessions</p>
-        </div>
-        <div className="rounded-lg bg-green-900/30 p-4 text-center">
-          <p className="text-2xl font-bold text-green-400">{presentCount}</p>
-          <p className="text-xs text-gray-400">Present</p>
-        </div>
-        <div className="rounded-lg bg-yellow-900/30 p-4 text-center">
-          <p className="text-2xl font-bold text-yellow-400">{lateCount}</p>
-          <p className="text-xs text-gray-400">Late</p>
-        </div>
-        <div className="rounded-lg bg-red-900/30 p-4 text-center">
-          <p className="text-2xl font-bold text-red-400">{absentCount}</p>
-          <p className="text-xs text-gray-400">Absent</p>
-        </div>
-      </div>
-
-      {/* Attendance Percentage */}
-      <div className="mb-6 flex items-center gap-3">
-        <span className="text-sm text-gray-400">Attendance Rate:</span>
-        <span className={`text-lg font-semibold ${
-          Number(attendancePercentage) >= 75 ? 'text-green-400' : 'text-red-400'
-        }`}>
-          {attendancePercentage}%
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+      {/* Compact summary row — inline stats, not cards */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)', flexWrap: 'wrap', padding: 'var(--space-sm) 0' }}>
+        <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
+          Sessions: <strong style={{ color: 'var(--text-primary)' }}>{totalSessions}</strong>
         </span>
-        {Number(attendancePercentage) < 75 && (
-          <span className="text-xs text-red-400 bg-red-900/30 px-2 py-0.5 rounded">Below 75%</span>
+        <span style={{ fontSize: 'var(--font-sm)', color: 'var(--color-success)' }}>
+          Present: <strong>{presentCount}</strong>
+        </span>
+        {lateCount > 0 && (
+          <span style={{ fontSize: 'var(--font-sm)', color: 'var(--color-warning)' }}>
+            Late: <strong>{lateCount}</strong>
+          </span>
         )}
+        <span style={{ fontSize: 'var(--font-sm)', color: 'var(--color-danger)' }}>
+          Absent: <strong>{absentCount}</strong>
+        </span>
+        <span style={{
+          fontSize: 'var(--font-sm)',
+          fontWeight: 600,
+          color: Number(attendancePercentage) >= 75 ? 'var(--color-success)' : 'var(--color-danger)',
+        }}>
+          Rate: {attendancePercentage}%
+        </span>
       </div>
 
-      {/* Records Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs uppercase text-gray-400 border-b border-gray-700">
-            <tr>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Leave Type</th>
+      {/* Records Table — primary focus */}
+      <div style={{ border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', overflow: 'hidden', backgroundColor: 'var(--surface-card)' }}>
+        <table style={{ width: '100%', fontSize: 'var(--font-sm)', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--border-default)', backgroundColor: 'var(--surface-hover)' }}>
+              <th style={{ padding: 'var(--space-sm) var(--space-md)', textAlign: 'left', fontSize: 'var(--font-xs)', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Date</th>
+              <th style={{ padding: 'var(--space-sm) var(--space-md)', textAlign: 'left', fontSize: 'var(--font-xs)', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Status</th>
+              <th style={{ padding: 'var(--space-sm) var(--space-md)', textAlign: 'left', fontSize: 'var(--font-xs)', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Leave Type</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700/50">
+          <tbody>
             {sortedRecords.map((record: AttendanceRecord) => (
-              <tr key={record.id} className="hover:bg-gray-700/30">
-                <td className="px-4 py-3 text-gray-200">
+              <tr key={record.id} style={{ borderBottom: '1px solid var(--border-default)' }}>
+                <td style={{ padding: 'var(--space-sm) var(--space-md)', color: 'var(--text-primary)' }}>
                   {new Date(record.sessionDate).toLocaleDateString('en-IN', {
                     weekday: 'short',
-                    year: 'numeric',
-                    month: 'short',
                     day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
                   })}
                 </td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    record.status === 'PRESENT'
-                      ? 'bg-green-900/40 text-green-400'
+                <td style={{ padding: 'var(--space-sm) var(--space-md)' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    padding: '2px var(--space-sm)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: 'var(--font-xs)',
+                    fontWeight: 600,
+                    backgroundColor: record.status === 'PRESENT'
+                      ? 'var(--feedback-success-light)'
                       : record.status === 'LATE'
-                        ? 'bg-yellow-900/40 text-yellow-400'
-                        : 'bg-red-900/40 text-red-400'
-                  }`}>
+                        ? 'var(--feedback-warning-light)'
+                        : 'var(--feedback-danger-light)',
+                    color: record.status === 'PRESENT'
+                      ? 'var(--color-success-text)'
+                      : record.status === 'LATE'
+                        ? 'var(--color-warning-text)'
+                        : 'var(--color-danger-text)',
+                  }}>
                     {record.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-gray-400">
+                <td style={{ padding: 'var(--space-sm) var(--space-md)', color: 'var(--text-secondary)' }}>
                   {record.leaveType
                     ? record.leaveType.replace('_', ' ')
                     : '—'}

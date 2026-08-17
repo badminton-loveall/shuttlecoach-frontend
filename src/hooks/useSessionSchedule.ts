@@ -245,11 +245,12 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
         const raw = sessionStorage.getItem(cacheKey);
         if (raw) {
           const cached = JSON.parse(raw);
-          if (cached.dateKey === new Date().toISOString().slice(0, 10)) {
+          if (cached.dateKey === new Date().toISOString().slice(0, 10) && cached.data && cached.data.length > 0) {
             setEntries(cached.data);
             setLoading(false);
             return;
           }
+          // Remove stale or empty cached data
           sessionStorage.removeItem(cacheKey);
         }
       } catch { /* ignore */ }
@@ -285,14 +286,19 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
 
       setEntries(merged);
 
-      // Cache the merged result
-      try {
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          data: merged,
-          dateKey: new Date().toISOString().slice(0, 10),
-          timestamp: Date.now(),
-        }));
-      } catch { /* ignore */ }
+      // Cache the merged result (only if non-empty — avoids caching empty results from missing templates)
+      if (merged.length > 0) {
+        try {
+          sessionStorage.setItem(cacheKey, JSON.stringify({
+            data: merged,
+            dateKey: new Date().toISOString().slice(0, 10),
+            timestamp: Date.now(),
+          }));
+        } catch { /* ignore */ }
+      } else {
+        // Remove any stale cache for this key
+        try { sessionStorage.removeItem(cacheKey); } catch { /* ignore */ }
+      }
     } catch {
       // Silently return empty data for errors (table may not exist or server issues)
       setEntries([]);

@@ -1,0 +1,278 @@
+/**
+ * SessionDrillDown Component Styles
+ * Expandable panel showing batch students with skill level badges.
+ * Uses design tokens for consistent spacing and typography.
+ *
+ * Requirements: 1.1, 2.1, 2.2, 2.3, 2.4, 5.1, 6.1, 7.3
+ */
+
+/* ============================================================================
+   Panel Container — animated expand/collapse
+   ============================================================================ */
+
+.session-drill-down {
+  overflow: hidden;
+  max-height: 500px;
+  animation: session-drill-down-expand 250ms ease-out;
+  border-left: 3px solid var(--color-primary);
+  margin: 0 var(--space-xs);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  background-color: var(--surface-card);
+}
+
+@keyframes session-drill-down-expand {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+.session-drill-down__panel {
+  padding: var(--space-sm) var(--space-md);
+}
+
+/* ============================================================================
+   Loading Skeleton
+   ============================================================================ */
+
+.session-drill-down__loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.session-drill-down__skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-hover);
+}
+
+.session-drill-down__skeleton-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--border-default);
+  animation: session-drill-down-pulse 1.5s ease-in-out infinite;
+}
+
+.session-drill-down__skeleton-text {
+  flex: 1;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background-color: var(--border-default);
+  animation: session-drill-down-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+
+.session-drill-down__skeleton-badge {
+  width: 60px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  background-color: var(--border-default);
+  animation: session-drill-down-pulse 1.5s ease-in-out infinite;
+  animation-delay: 0.2s;
+}
+
+@keyframes session-drill-down-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ============================================================================
+   Error State
+   ============================================================================ */
+
+.session-drill-down__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.session-drill-down__error-message {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--color-danger);
+}
+
+.session-drill-down__retry-btn {
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.session-drill-down__retry-btn:hover {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ============================================================================
+   Empty State
+   ============================================================================ */
+
+.session-drill-down__empty {
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.session-drill-down__empty-message {
+  margin: 0;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   Student List
+   ============================================================================ */
+
+.session-drill-down__student-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.session-drill-down__student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.session-drill-down__student-row:hover {
+  background-color: var(--surface-hover);
+}
+
+.session-drill-down__student-row:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Selected / highlighted row */
+.session-drill-down__student-row--selected {
+  background-color: rgba(184, 225, 53, 0.12);
+  border-left: 3px solid var(--color-primary);
+}
+
+.session-drill-down__student-row--selected:hover {
+  background-color: rgba(184, 225, 53, 0.18);
+}
+
+/* Student name */
+.session-drill-down__student-name {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================================================
+   Skill Level Badge
+   ============================================================================ */
+
+.session-drill-down__skill-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-label);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-label);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.session-drill-down__badge--beginner {
+  background-color: var(--feedback-info-light);
+  color: var(--color-info-text);
+}
+
+.session-drill-down__badge--intermediate {
+  background-color: var(--feedback-warning-light);
+  color: var(--color-warning-text);
+}
+
+.session-drill-down__badge--advanced {
+  background-color: rgba(139, 92, 246, 0.12);
+  color: #7c3aed;
+}
+
+.session-drill-down__badge--professional {
+  background-color: var(--feedback-success-light);
+  color: var(--color-success-text);
+}
+
+/* ============================================================================
+   Dark Mode
+   ============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .session-drill-down {
+    background-color: var(--surface-dark-card);
+    border-left-color: var(--color-primary-dark);
+  }
+
+  .session-drill-down__skeleton-row {
+    background-color: var(--surface-dark-hover);
+  }
+
+  .session-drill-down__skeleton-avatar,
+  .session-drill-down__skeleton-text,
+  .session-drill-down__skeleton-badge {
+    background-color: var(--border-dark);
+  }
+
+  .session-drill-down__student-row:hover {
+    background-color: var(--surface-dark-hover);
+  }
+
+  .session-drill-down__student-row--selected {
+    background-color: rgba(184, 225, 53, 0.08);
+  }
+
+  .session-drill-down__student-row--selected:hover {
+    background-color: rgba(184, 225, 53, 0.14);
+  }
+
+  .session-drill-down__student-name {
+    color: var(--text-dark-primary);
+  }
+
+  .session-drill-down__empty-message {
+    color: var(--text-dark-secondary);
+  }
+
+  .session-drill-down__badge--advanced {
+    background-color: rgba(139, 92, 246, 0.18);
+    color: #c4b5fd;
+  }
+}

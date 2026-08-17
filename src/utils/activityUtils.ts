@@ -118,9 +118,10 @@ export interface CoachWorkload {
 
 export function getCoachWorkloads(
   students: Student[],
-  coaches: User[]
+  coaches: User[],
+  batches?: Array<{ id: string; assignedCoachId?: string; studentCount?: number }>
 ): CoachWorkload[] {
-  // Count students per coach
+  // Count students per coach using direct assignment
   const studentCounts = new Map<string, number>();
   
   students.forEach((student) => {
@@ -129,6 +130,29 @@ export function getCoachWorkloads(
       studentCounts.set(student.assignedCoachId, current + 1);
     }
   });
+
+  // Also count students by batch ownership if batches are provided
+  // This handles cases where students have batchId but no assignedCoachId
+  if (batches && batches.length > 0) {
+    // Build batchId → coachId map
+    const batchCoachMap = new Map<string, string>();
+    for (const batch of batches) {
+      if (batch.assignedCoachId) {
+        batchCoachMap.set(batch.id, batch.assignedCoachId);
+      }
+    }
+
+    students.forEach((student) => {
+      // Only count if student has a batchId but no direct assignedCoachId
+      if (student.batchId && !student.assignedCoachId) {
+        const coachId = batchCoachMap.get(student.batchId);
+        if (coachId) {
+          const current = studentCounts.get(coachId) || 0;
+          studentCounts.set(coachId, current + 1);
+        }
+      }
+    });
+  }
   
   // Map to workload objects
   const workloads: CoachWorkload[] = coaches
