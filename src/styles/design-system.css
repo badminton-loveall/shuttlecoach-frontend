@@ -121,7 +121,7 @@ body {
   --surface-elevated: #FFFFFF;
 
   /* Text colors */
-  --text-primary: #0A0D11;
+  --text-primary: #1B2B4E;
   --text-secondary: #4A5662;
   --text-tertiary: #6B7885;
   --text-inverse: #FFFFFF;
@@ -162,7 +162,7 @@ body {
   --color-slate-700: #333D47;
   --color-slate-800: #1F262E;
   --color-slate-900: #131820;
-  --color-slate-950: #0A0D11;
+  --color-slate-950: #1B2B4E;
 
   /* ============================================================================
      2. TYPOGRAPHY
@@ -991,7 +991,7 @@ html,
 body,
 #root {
   background-color: #E8E6DF !important;
-  color: #0A0D11 !important;
+  color: #1B2B4E !important;
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -1002,7 +1002,7 @@ body,
   body,
   #root {
     background-color: #E8E6DF !important;
-    color: #0A0D11 !important;
+    color: #1B2B4E !important;
   }
   
   * {

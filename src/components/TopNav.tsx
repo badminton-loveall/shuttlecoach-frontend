@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CenterSwitcher from './CenterSwitcher';
+import logoImg from '../assets/logo.png';
 import './TopNav.css';
 
 /**
@@ -176,7 +177,7 @@ export const TopNav: React.FC = () => {
       <div className="topnav__container">
         {/* Logo / Brand */}
         <Link to="/" className="topnav__logo">
-          <span className="topnav__logo-text">LoveAll</span>
+          <img src={logoImg} alt="LoveAll Badminton Zone" className="topnav__logo-img" />
         </Link>
 
         {/* Navigation Links - Desktop */}

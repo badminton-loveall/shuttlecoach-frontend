@@ -114,14 +114,14 @@ html {
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background-color: #FFFFFF;
-  color: #0A0D11;
+  color: #1B2B4E;
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
 }
 
 body.dark {
-  background-color: #0A0D11;
+  background-color: #1B2B4E;
   color: #F8FAFB;
 }
 
@@ -631,7 +631,7 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 @media print {
   body {
     background-color: #FFFFFF;
-    color: #000000;
+    color: #1B2B4E;
   }
 
   a {

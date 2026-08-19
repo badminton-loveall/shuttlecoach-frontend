@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getCenterPublicInfo } from '../services/api';
 import type { UserRole, CenterPublicInfo } from '../types';
+import logoImg from '../assets/logo.png';
 
 /**
  * LoginPage Component
@@ -162,14 +163,11 @@ export const LoginPage: React.FC = () => {
         <div style={styles.modal}>
           {/* Brand */}
           <div style={styles.brandSection}>
-            {brandLogoUrl && (
-              <img
-                src={brandLogoUrl}
-                alt={`${brandName} logo`}
-                style={styles.brandLogo}
-              />
-            )}
-            <h1 style={styles.brandName}>{brandName}</h1>
+            <img
+              src={brandLogoUrl ?? logoImg}
+              alt={`${brandName} logo`}
+              style={styles.brandLogo}
+            />
             <p style={styles.brandTagline}>Badminton Training Management</p>
           </div>
 
@@ -284,30 +282,25 @@ const styles: Record<string, React.CSSProperties> = {
     maxWidth: '480px',
   },
   modal: {
-    backgroundColor: 'rgba(255, 255, 255, 0.97)',
-    backdropFilter: 'blur(16px)',
+    backgroundColor: '#ffffff',
     borderRadius: '20px',
     padding: '48px 44px',
     width: '100%',
     boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.4)',
   },
   brandSection: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
     textAlign: 'center' as const,
     marginBottom: '36px',
   },
   brandLogo: {
-    width: '72px',
-    height: '72px',
+    width: '160px',
+    height: '160px',
     objectFit: 'contain' as const,
-    marginBottom: '16px',
-    borderRadius: '12px',
-  },
-  brandName: {
-    fontSize: '32px',
-    fontWeight: 700,
-    color: '#1a1a1a',
-    margin: '0 0 6px',
-    letterSpacing: '-0.5px',
+    marginBottom: '12px',
+    display: 'block',
   },
   brandTagline: {
     fontSize: '15px',

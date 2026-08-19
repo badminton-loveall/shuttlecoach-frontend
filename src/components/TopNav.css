@@ -36,6 +36,13 @@
   flex-shrink: 0;
 }
 
+.topnav__logo-img {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .topnav__logo-text {
   font-size: var(--font-xl);
   font-weight: var(--weight-bold);
@@ -481,6 +488,10 @@
 
   .topnav__logo-text {
     font-size: var(--font-h5);
+  }
+
+  .topnav__logo-img {
+    height: 34px;
   }
 
   .topnav__user-avatar {
