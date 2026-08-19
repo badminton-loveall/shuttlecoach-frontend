@@ -1,7 +1,8 @@
 .skill-assessment-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
+  padding: var(--space-lg);
 }
 
 .skill-assessment-header {
@@ -10,70 +11,98 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+  margin-bottom: var(--space-md);
 }
 
 .skill-assessment-cycle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text, #111827);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
 }
 
 .skill-assessment-readonly-banner {
   padding: 8px 12px;
-  background: #fef3c7;
-  border: 1px solid #f59e0b;
-  border-radius: 6px;
-  color: #92400e;
-  font-size: 0.875rem;
-  font-weight: 500;
+  background: var(--feedback-warning-light);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-md);
+  color: var(--color-warning-text);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-md);
 }
 
+/* Category tabs */
 .skill-assessment-tabs {
   display: flex;
-  gap: 4px;
-  border-bottom: 2px solid var(--color-border, #e5e7eb);
+  gap: 2px;
+  border-bottom: 1px solid var(--border-default);
   overflow-x: auto;
-  padding-bottom: 0;
+  margin-bottom: 0;
 }
 
 .skill-assessment-tab {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border: none;
   background: none;
-  color: var(--color-text-secondary, #6b7280);
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -1px;
   white-space: nowrap;
-  transition: color 0.15s ease, border-color 0.15s ease;
-  text-transform: capitalize;
+  transition: color 0.15s, border-color 0.15s;
+  font-family: inherit;
 }
 
 .skill-assessment-tab:hover {
-  color: var(--color-primary, #3b82f6);
+  color: var(--text-primary);
 }
 
 .skill-assessment-tab--active {
-  color: var(--color-primary, #3b82f6);
-  border-bottom-color: var(--color-primary, #3b82f6);
+  color: var(--text-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: var(--weight-semibold);
 }
 
+/* Column header labels */
+.skill-assessment-column-headers {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-hover);
+}
+
+.skill-assessment-col-skill-label {
+  min-width: 160px;
+  width: 200px;
+}
+
+.skill-assessment-col-header {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 0 4px;
+}
+
+/* Skills list */
 .skill-assessment-skills-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 0;
 }
 
 .skill-assessment-skill-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--color-border, #f3f4f6);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .skill-assessment-skill-row:last-child {
@@ -81,78 +110,34 @@
 }
 
 .skill-assessment-skill-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text, #111827);
-  min-width: 140px;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  min-width: 160px;
+  width: 200px;
+  flex-shrink: 0;
 }
 
+/* Actions */
 .skill-assessment-actions {
   display: flex;
-  gap: 12px;
   align-items: center;
-  padding-top: 8px;
-}
-
-.skill-assessment-save-btn {
-  padding: 8px 20px;
-  background: var(--color-primary, #3b82f6);
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.skill-assessment-save-btn:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.skill-assessment-save-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  justify-content: space-between;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-default);
+  margin-top: var(--space-md);
 }
 
 .skill-assessment-error {
-  color: #dc2626;
-  font-size: 0.8rem;
-  font-weight: 500;
+  color: var(--color-danger);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
 }
 
 .skill-assessment-success {
-  color: #059669;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-@media (prefers-color-scheme: dark) {
-  .skill-assessment-cycle {
-    color: var(--color-text-dark, #f3f4f6);
-  }
-
-  .skill-assessment-readonly-banner {
-    background: #78350f;
-    border-color: #92400e;
-    color: #fde68a;
-  }
-
-  .skill-assessment-tabs {
-    border-bottom-color: var(--color-border-dark, #374151);
-  }
-
-  .skill-assessment-tab {
-    color: var(--color-text-secondary-dark, #9ca3af);
-  }
-
-  .skill-assessment-skill-row {
-    border-bottom-color: var(--color-border-dark, #1f2937);
-  }
-
-  .skill-assessment-skill-name {
-    color: var(--color-text-dark, #f3f4f6);
-  }
+  color: var(--color-success);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
 }
 
 @media (max-width: 640px) {
@@ -160,5 +145,9 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+
+  .skill-assessment-column-headers {
+    display: none;
   }
 }

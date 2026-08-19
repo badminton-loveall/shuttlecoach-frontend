@@ -7,6 +7,7 @@ import { SkillRadarChart } from '../components/SkillRadarChart';
 import { TrendLineChart } from '../components/TrendLineChart';
 import { WeaknessTracker } from '../components/WeaknessTracker';
 import { SkillHistory } from '../components/SkillHistory';
+import { SkillAssessmentForm } from '../components/SkillAssessmentForm';
 import { StudentFeeTab } from '../components/StudentFeeTab';
 import { SkillProgressionTracker } from '../components/SkillProgressionTracker';
 import { SkillTrendChart } from '../components/SkillTrendChart';
@@ -443,16 +444,14 @@ const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
 /**
  * Progress Tab - skill assessment radar chart and progress tracking
- * Wired to useAssessments hook with deriveProgressState utility
- * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9
  */
 const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
-  const { assessments, loading, error } = useAssessments({ studentId: student.id });
+  const { role } = useAuth();
+  const isCoach = role === 'HEAD_COACH' || role === 'ASSISTANT_COACH';
+  const { assessments, loading, error, refetch } = useAssessments({ studentId: student.id });
+  const [showForm, setShowForm] = useState(false);
 
-  // Derive current and previous assessments from sorted data
   const { currentScores, currentAssessment, previousAssessment } = deriveProgressState(assessments);
-
-  // Historical assessments sorted ascending (oldest first) for trend chart
   const historicalAssessments = [...assessments].sort(
     (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
   );
@@ -461,8 +460,8 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
     return (
       <div className="progress-tab-content flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading assessments...</p>
+          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-500">Loading assessments...</p>
         </div>
       </div>
     );
@@ -471,38 +470,73 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
   if (error) {
     return (
       <div className="progress-tab-content flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (assessments.length === 0) {
-    return (
-      <div className="progress-tab-content flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">No assessments recorded yet for {student.fullName}.</p>
-        </div>
+        <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>
       </div>
     );
   }
 
   return (
     <div className="progress-tab-content">
-      <SkillProgressionTracker studentId={student.id} />
-      <hr className="my-8" style={{ borderColor: 'var(--border-default)' }} />
-      <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Progress & Assessments</h2>
-      <p className="progress-subtitle">
-        Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
-      </p>
-      <SkillRadarChart scores={currentScores} />
-      <TrendLineChart assessments={historicalAssessments} />
-      <WeaknessTracker
-        currentAssessment={currentAssessment}
-        previousAssessment={previousAssessment}
-      />
-      <SkillHistory assessments={historicalAssessments} />
+      {/* Header row with Record Assessment button */}
+      {isCoach && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-md)' }}>
+          <button
+            type="button"
+            className="btn-create-fee"
+            onClick={() => setShowForm((v) => !v)}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            {showForm ? 'Cancel Assessment' : 'Record Assessment'}
+          </button>
+        </div>
+      )}
+
+      {/* Inline assessment form */}
+      {showForm && isCoach && (
+        <div style={{ marginBottom: 'var(--space-xl)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+          <SkillAssessmentForm
+            studentId={student.id}
+            onCancel={() => setShowForm(false)}
+            onSave={() => {
+              setShowForm(false);
+              void refetch();
+            }}
+          />
+        </div>
+      )}
+
+      {assessments.length === 0 && !showForm ? (
+        <div className="flex items-center justify-center py-12">
+          <div style={{ textAlign: 'center' }}>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)' }}>
+              No assessments recorded yet for {student.fullName}.
+            </p>
+            {isCoach && (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Click "Record Assessment" above to start the first assessment.
+              </p>
+            )}
+          </div>
+        </div>
+      ) : assessments.length > 0 ? (
+        <>
+          <SkillProgressionTracker studentId={student.id} />
+          <hr className="my-8" style={{ borderColor: 'var(--border-default)' }} />
+          <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Progress & Assessments</h2>
+          <p className="progress-subtitle">
+            Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
+          </p>
+          <SkillRadarChart scores={currentScores} />
+          <TrendLineChart assessments={historicalAssessments} />
+          <WeaknessTracker
+            currentAssessment={currentAssessment}
+            previousAssessment={previousAssessment}
+          />
+          <SkillHistory assessments={historicalAssessments} />
+        </>
+      ) : null}
     </div>
   );
 };

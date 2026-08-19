@@ -1,24 +1,28 @@
 .skill-score-button-group {
   display: flex;
-  gap: 4px;
+  gap: 6px;
+  flex: 1;
 }
 
 .skill-score-btn {
-  min-width: 40px;
-  padding: 4px 8px;
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: 4px;
-  background: var(--color-surface, #ffffff);
-  color: var(--color-text-secondary, #6b7280);
-  font-size: 0.75rem;
-  font-weight: 500;
+  flex: 1;
+  padding: 6px 4px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
   cursor: pointer;
   transition: all 0.15s ease;
+  font-family: inherit;
+  text-align: center;
 }
 
 .skill-score-btn:hover:not(:disabled) {
-  border-color: var(--color-primary, #3b82f6);
-  color: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary);
+  color: var(--text-primary);
+  background: rgba(184, 225, 53, 0.08);
 }
 
 .skill-score-btn:disabled {
@@ -26,40 +30,38 @@
   opacity: 0.6;
 }
 
+/* Active states — use design system semantic colours */
 .skill-score-btn--active {
-  color: #ffffff;
+  color: var(--text-primary);
   border-color: transparent;
 }
 
+/* Level 0: Not scored — neutral grey */
 .skill-score-btn--active.skill-score-btn--level-0 {
-  background: #9ca3af;
+  background: var(--color-slate-300);
+  color: var(--text-primary);
 }
 
+/* Level 1: Beginner — warning amber */
 .skill-score-btn--active.skill-score-btn--level-1 {
-  background: #f59e0b;
+  background: var(--color-warning);
+  color: #fff;
 }
 
+/* Level 2: Intermediate — info blue */
 .skill-score-btn--active.skill-score-btn--level-2 {
-  background: #3b82f6;
+  background: var(--color-info);
+  color: #fff;
 }
 
+/* Level 3: Advanced — primary lime */
 .skill-score-btn--active.skill-score-btn--level-3 {
-  background: #8b5cf6;
+  background: var(--color-primary);
+  color: var(--text-primary);
 }
 
+/* Level 4: Pro — success green */
 .skill-score-btn--active.skill-score-btn--level-4 {
-  background: #10b981;
-}
-
-@media (prefers-color-scheme: dark) {
-  .skill-score-btn {
-    background: var(--color-surface-dark, #1f2937);
-    border-color: var(--color-border-dark, #374151);
-    color: var(--color-text-secondary-dark, #9ca3af);
-  }
-
-  .skill-score-btn:hover:not(:disabled) {
-    border-color: var(--color-primary, #60a5fa);
-    color: var(--color-primary, #60a5fa);
-  }
+  background: var(--color-success);
+  color: #fff;
 }
