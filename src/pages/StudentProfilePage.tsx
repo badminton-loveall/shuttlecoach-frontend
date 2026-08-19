@@ -422,11 +422,24 @@ const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => voi
 };
 
 /**
- * Training Tab - displays strengths, weaknesses, and coach feedback
+ * Training Tab - displays strengths, weaknesses, coach feedback with API persistence
  */
-const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => (
-  <TrainingTab student={student} />
-);
+const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => {
+  const handleSave = async (updates: {
+    strengths?: string[];
+    weaknesses?: string[];
+    coachFeedback?: string;
+  }) => {
+    await apiClient.patch(`/students/${student.id}`, updates);
+  };
+
+  return (
+    <TrainingTab
+      student={student}
+      onSave={handleSave}
+    />
+  );
+};
 
 /**
  * Progress Tab - skill assessment radar chart and progress tracking

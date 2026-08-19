@@ -26,6 +26,7 @@ interface TrainingTabProps {
   onUpdateStrengths?: (strengths: string[]) => void;
   onUpdateWeaknesses?: (weaknesses: string[]) => void;
   onUpdateFeedback?: (feedback: string) => void;
+  onSave?: (updates: { strengths?: string[]; weaknesses?: string[]; coachFeedback?: string }) => Promise<void>;
 }
 
 export const TrainingTab: React.FC<TrainingTabProps> = ({
@@ -33,9 +34,15 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
   onUpdateStrengths,
   onUpdateWeaknesses,
   onUpdateFeedback,
+  onSave,
 }) => {
   const { role } = useAuth();
   const isCoach = role === 'HEAD_COACH' || role === 'ASSISTANT_COACH';
+
+  // Save state
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [saveErr, setSaveErr] = useState<string | null>(null);
 
   // ─── Data fetching ───────────────────────────────────────────────────────
 
@@ -186,6 +193,23 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
     if (e.key === 'Enter') {
       e.preventDefault();
       handleAddWeakness();
+    }
+  };
+
+  // Save all to API
+  const handleSaveAll = async () => {
+    if (!onSave) return;
+    setIsSaving(true);
+    setSaveErr(null);
+    setSaveMsg(null);
+    try {
+      await onSave({ strengths, weaknesses, coachFeedback: feedback });
+      setSaveMsg('Saved ✓');
+      setTimeout(() => setSaveMsg(null), 3000);
+    } catch {
+      setSaveErr('Failed to save. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -357,6 +381,23 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
             </p>
           )}
         </div>
+
+        {/* Save button */}
+        {isCoach && onSave && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: 'var(--space-md)' }}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleSaveAll}
+              disabled={isSaving}
+              style={{ padding: '10px 28px' }}
+            >
+              {isSaving ? 'Saving…' : 'Save'}
+            </button>
+            {saveMsg && <span style={{ fontSize: '13px', color: 'var(--color-success)', fontWeight: 500 }}>{saveMsg}</span>}
+            {saveErr && <span style={{ fontSize: '13px', color: 'var(--color-danger)' }}>{saveErr}</span>}
+          </div>
+        )}
       </div>
     </div>
   );

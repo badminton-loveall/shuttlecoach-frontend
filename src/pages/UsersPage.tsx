@@ -14,6 +14,7 @@ import { useCoaches } from '../hooks/useCoaches';
 import type { User, Student, Batch } from '../types';
 import apiClient from '../utils/apiClient';
 import _USERS_DATA from '../data/users.json';
+import { useBatches } from '@/hooks/useBatches';
 
 const USERS_DATA = _USERS_DATA as Array<{
   id: string; username: string; role: string; name: string;
@@ -36,12 +37,12 @@ export const StudentsPage: React.FC = () => {
     search: searchTerm || undefined,
   });
 
+  const { batches: batchList, getBatchName } = useBatches();
+
   const [batches, setBatches] = useState<Batch[]>([]);
   useEffect(() => {
-    apiClient.get('/batches')
-      .then((r) => { const d = r.data.batches || r.data; setBatches(Array.isArray(d) ? d : []); })
-      .catch(() => setBatches([]));
-  }, []);
+    setBatches(batchList);
+  }, [batchList]);
 
   const [coachUsers, setCoachUsers] = useState<User[]>([]);
   useEffect(() => {
@@ -152,7 +153,7 @@ export const StudentsPage: React.FC = () => {
               <div className="animate-spin" style={{ width: '32px', height: '32px', borderRadius: 'var(--radius-pill)', borderBottom: '2px solid var(--color-primary)' }} />
             </div>
           ) : (
-            <StudentGrid students={filteredStudents} onStudentClick={(id) => navigate(`/student/${id}`)} />
+            <StudentGrid students={filteredStudents} onStudentClick={(id) => navigate(`/student/${id}`)} getBatchName={getBatchName} />
           )}
 
           <EnrollStudentModal
