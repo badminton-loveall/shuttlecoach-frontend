@@ -6,9 +6,8 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HeadCoachDashboard from './pages/HeadCoachDashboard';
 import AssistantCoachDashboard from './pages/AssistantCoachDashboard';
-import StudentsPage from './pages/StudentsPage';
+import { StudentsPage, CoachesPage as CoachesPageFromUsers } from './pages/UsersPage';
 import FeesPage from './pages/FeesPage';
-import CoachesPage from './pages/CoachesPage';
 import CoachDetailPage from './pages/CoachDetailPage';
 import IndividualCurriculumPage from './pages/IndividualCurriculumPage';
 import TrainingLogPage from './pages/TrainingLogPage';
@@ -94,6 +93,7 @@ function App() {
             }
           />
 
+          {/* Students page */}
           <Route
             path="/students"
             element={
@@ -102,6 +102,19 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Coaches page (Head Coach only) */}
+          <Route
+            path="/coaches"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
+                <CoachesPageFromUsers />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Redirect /users → /students */}
+          <Route path="/users" element={<Navigate to="/students" replace />} />
 
           <Route
             path="/fees"
@@ -210,16 +223,6 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
                 <TrainingLogPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Head Coach Only - Coaches Management */}
-          <Route
-            path="/coaches"
-            element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
-                <CoachesPage />
               </ProtectedRoute>
             }
           />

@@ -12,13 +12,10 @@ interface CoachWorkloadProps {
 }
 
 export const CoachWorkload: React.FC<CoachWorkloadProps> = ({ workloads }) => {
-  if (workloads.length === 0) {
-    return (
-      <div className="coach-workload">
-        <h3 className="coach-workload__title">Coach Workloads</h3>
-        <p className="coach-workload__subtitle">No coach assignments</p>
-      </div>
-    );
+  // Hide entirely when there are no coaches or all coaches have zero students
+  const hasAssignments = workloads.some((w) => w.studentCount > 0);
+  if (workloads.length === 0 || !hasAssignments) {
+    return null;
   }
 
   return (

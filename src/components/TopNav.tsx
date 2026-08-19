@@ -34,7 +34,13 @@ function isDropdown(entry: NavEntry): entry is NavDropdown {
 const COACH_NAV: NavEntry[] = [
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Batches', path: '/batches' },
-  { label: 'Students', path: '/students' },
+  {
+    label: 'Users',
+    items: [
+      { label: 'Students', path: '/students' },
+      { label: 'Coaches', path: '/coaches' },
+    ],
+  },
   {
     label: 'Finance',
     items: [
@@ -108,8 +114,17 @@ export const TopNav: React.FC = () => {
       return STUDENT_NAV;
     }
 
-    // Coach roles — simplified 4-item nav
+    // Coach roles — simplified nav
     return COACH_NAV.map((entry) => {
+      if (isDropdown(entry) && entry.label === 'Users') {
+        // Hide Coaches sub-item for ASSISTANT_COACH
+        const items = role === 'HEAD_COACH'
+          ? entry.items
+          : entry.items.filter((item) => item.path !== '/coaches');
+        if (items.length === 0) return null;
+        return { ...entry, items };
+      }
+
       if (isDropdown(entry) && entry.label === 'Finance') {
         // Filter finance links based on canAccessFees permission
         const items = canAccessFees
