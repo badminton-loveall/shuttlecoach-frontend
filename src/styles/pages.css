@@ -1400,7 +1400,7 @@
   background-color: var(--color-primary);
   color: var(--text-primary);
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: 6px;
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;

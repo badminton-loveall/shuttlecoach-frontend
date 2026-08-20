@@ -91,11 +91,12 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
         // Update — use PATCH with just the scores
         await apiClient.patch(`/assessments/${existingAssessment.id}`, { scores });
       } else {
-        // Create — API expects { studentId, cycleKey, scores }
+        // Create — API expects { studentId, cycleKey, scores, recordedBy }
         await apiClient.post('/assessments', {
           studentId,
           cycleKey: displayCycleKey,
           scores,
+          recordedBy: user?.name ?? user?.username ?? 'Coach',
         });
       }
 
@@ -179,32 +180,33 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
         ))}
       </div>
 
-      {/* Actions — Save (primary, left) + Cancel (secondary, right) */}
+      {/* Actions — Cancel (secondary, left) + Save Assessment (primary, right) */}
       <div className="skill-assessment-actions">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button
-            type="button"
-            className="btn-create-fee"
-            onClick={handleSave}
-            disabled={isReadOnly || isSaving}
-            data-testid="save-assessment-btn"
-          >
-            {isSaving ? 'Saving…' : 'Save Assessment'}
-          </button>
+        <div style={{ display: 'flex', alignItems: 'right', gap: '12px' }}>
+          {onCancel && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onCancel}
+              style={{ padding: '8px 20px', fontSize: '13px', borderRadius: '6px' }}
+            >
+              Cancel
+            </button>
+          )}
           {error && <span className="skill-assessment-error" data-testid="assessment-error">{error}</span>}
           {success && <span className="skill-assessment-success" data-testid="assessment-success">{success}</span>}
         </div>
-        {onCancel && (
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={onCancel}
-            style={{ padding: '8px 20px', fontSize: '13px' }}
-          >
-            Cancel
-          </button>
-        )}
+        <button
+          type="button"
+          className="btn-create-fee"
+          onClick={handleSave}
+          disabled={isReadOnly || isSaving}
+          data-testid="save-assessment-btn"
+        >
+          {isSaving ? 'Saving…' : 'Save Assessment'}
+        </button>
       </div>
-    </div>
+      </div>
+    
   );
 };

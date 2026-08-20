@@ -477,18 +477,18 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
   return (
     <div className="progress-tab-content">
-      {/* Header row with Record Assessment button */}
-      {isCoach && (
+      {/* Header row — Record Assessment button only when form is hidden */}
+      {isCoach && !showForm && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-md)' }}>
           <button
             type="button"
             className="btn-create-fee"
-            onClick={() => setShowForm((v) => !v)}
+            onClick={() => setShowForm(true)}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 5v14M5 12h14" />
             </svg>
-            {showForm ? 'Cancel Assessment' : 'Record Assessment'}
+            Record Assessment
           </button>
         </div>
       )}

@@ -521,7 +521,7 @@ body {
 .btn-primary {
   background-color: var(--color-primary);
   color: var(--text-primary);
-  border-radius: var(--radius-pill);
+  border-radius: 6px;
   padding: 10px 24px;
   font-size: var(--font-sm);
 }

@@ -229,7 +229,7 @@ textarea::placeholder {
 button {
   cursor: pointer;
   border: none;
-  border-radius: 12px;
+  border-radius: 6px;
   font-weight: 600;
   transition: all 0.2s ease;
 }

@@ -21,10 +21,8 @@ export interface SkillScoreButtonProps {
 }
 
 /**
- * SkillScoreButton — A 5-button group selector for skill scores (0-4).
- * Displays short labels (?, Beg, Int, Adv, Pro).
- *
- * Requirements: 7.3
+ * SkillScoreButton — A 5-cell radio selector for skill scores (0-4).
+ * Renders as pure radio circles — no labels (header row provides context).
  */
 export const SkillScoreButton: React.FC<SkillScoreButtonProps> = ({
   value,
@@ -45,9 +43,7 @@ export const SkillScoreButton: React.FC<SkillScoreButtonProps> = ({
           className={`skill-score-btn ${value === score ? 'skill-score-btn--active' : ''} skill-score-btn--level-${score}`}
           disabled={disabled}
           onClick={() => onChange(score)}
-        >
-          {BUTTON_LABELS[score]}
-        </button>
+        />
       ))}
     </div>
   );
