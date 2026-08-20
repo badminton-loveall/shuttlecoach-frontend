@@ -182,7 +182,7 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
 
       {/* Actions — Cancel (secondary, left) + Save Assessment (primary, right) */}
       <div className="skill-assessment-actions">
-        <div style={{ display: 'flex', alignItems: 'right', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {onCancel && (
             <button
               type="button"
@@ -206,7 +206,6 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
           {isSaving ? 'Saving…' : 'Save Assessment'}
         </button>
       </div>
-      </div>
-    
+    </div>
   );
 };
