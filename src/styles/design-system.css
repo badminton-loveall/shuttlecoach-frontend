@@ -349,6 +349,22 @@ body {
   color: var(--text-secondary);
 }
 
+/* Form field label — sentence case, no letter-spacing. Same weight/color as
+   .text-label but reads softer on a form (matches the enrollment modal's
+   label style); .text-label's uppercase treatment is for section headings
+   and stat labels, not individual field labels. Named .form-field-label
+   (not .field-label) because .field-label already exists, unscoped, in
+   PersonalInfoForm.css with different (uppercase) styling — this app has
+   several such global class collisions across per-component CSS files. */
+.form-field-label {
+  font-family: var(--font-body);
+  font-size: var(--font-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 /* Text color utilities */
 .text-primary {
   color: var(--text-primary);
@@ -474,9 +490,29 @@ body {
   transition: all var(--transition-base);
 }
 
-.card:hover {
-  background-color: var(--surface-hover);
-  box-shadow: var(--shadow-float);
+@media (max-width: 480px) {
+  .card {
+    padding: var(--space-md);
+  }
+}
+
+/* Shared "back" button used at the top of detail/edit pages (student
+   profile, training record, curriculum). Hidden on mobile once the route is
+   registered as a subpage in TopNav, which shows its own back button there
+   instead — desktop keeps both since the header there always shows the logo. */
+@media (max-width: 768px) {
+  .page-back-btn {
+    display: none;
+  }
+}
+
+/* Scoped to real pointers (mouse/trackpad) — on touch screens a tap leaves
+   :hover "stuck" until the user taps elsewhere, which reads as a UI bug. */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background-color: var(--surface-hover);
+    box-shadow: var(--shadow-float);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -741,6 +777,8 @@ body {
   margin: 0 auto;
   width: 100%;
   padding: var(--space-lg) var(--space-md);
+  padding-left: max(var(--space-md), var(--safe-left, 0px));
+  padding-right: max(var(--space-md), var(--safe-right, 0px));
 }
 
 /* Vertical stack of page sections */
@@ -783,6 +821,20 @@ body {
 @media (max-width: 768px) {
   .page-container {
     padding: var(--space-xl) var(--space-md);
+  }
+}
+
+/* Tighter, more app-like margins on phones — less "wasted" edge whitespace.
+   Declared after the 768px rule above (not before it) because both queries
+   match at phone widths and CSS resolves same-specificity conflicts by
+   source order, not by which range is narrower — placed earlier, this block
+   would silently lose to the 768px one on every phone. */
+@media (max-width: 480px) {
+  .page-container {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+    padding-left: max(12px, var(--safe-left, 0px));
+    padding-right: max(12px, var(--safe-right, 0px));
   }
 }
 

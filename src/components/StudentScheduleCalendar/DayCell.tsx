@@ -77,6 +77,9 @@ const DayCell: React.FC<DayCellProps> = ({
           {entries.map((entry, idx) => (
             <div key={idx} className="day-cell__tooltip-entry">
               <div className="day-cell__tooltip-time">🕐 {entry.startTime} – {entry.endTime}</div>
+              {entry.weekNumber != null && (
+                <div className="day-cell__tooltip-week">Week {entry.weekNumber} · {entry.batchName}</div>
+              )}
               {entry.focusArea && <div className="day-cell__tooltip-focus">📌 {entry.focusArea}</div>}
               {entry.drills && entry.drills.length > 0 && (
                 <div className="day-cell__tooltip-drills">
@@ -88,6 +91,13 @@ const DayCell: React.FC<DayCellProps> = ({
               {(!entry.drills || entry.drills.length === 0) && (
                 <div className="day-cell__tooltip-no-drills">No drills assigned</div>
               )}
+              {entry.coachNote && (
+                <div className="day-cell__tooltip-note">💬 {entry.coachNote}</div>
+              )}
+              {entry.attendanceRecorded && (
+                <div className="day-cell__tooltip-attendance">✓ Attendance recorded</div>
+              )}
+              <div className="day-cell__tooltip-hint">Click for full details →</div>
             </div>
           ))}
         </div>

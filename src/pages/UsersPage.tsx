@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
-import StudentGrid from '../components/StudentGrid';
+import StudentListTable from '../components/StudentListTable';
 import EnrollStudentModal, { type EnrollStudentFormData } from '../components/EnrollStudentModal';
 import CollapsibleFilterPanel from '../components/CollapsibleFilterPanel';
 import CoachListTable from '../components/CoachListTable';
@@ -76,7 +76,7 @@ export const StudentsPage: React.FC = () => {
   const handleFilterChange = useCallback((f: typeof filters) => setFilters(f), []);
 
   const handleEnrollSubmit = async (data: EnrollStudentFormData) => {
-    await createStudent({
+    const newStudent = await createStudent({
       fullName: data.fullName, dateOfBirth: data.dateOfBirth,
       gender: data.gender, contactPhone: data.contactPhone,
       email: data.email, guardianName: data.guardianName,
@@ -85,14 +85,31 @@ export const StudentsPage: React.FC = () => {
       assignedCoachId: data.assignedCoachId || undefined,
       strengths: [], weaknesses: [],
     });
+
+    // Establish the student's own journey — template/curriculum/coach/start date —
+    // right at enrollment time, anchored to their joining date.
+    if (data.startDate) {
+      try {
+        await apiClient.post(`/students/${newStudent.id}/enrollments`, {
+          batchTimeTemplateId: data.batchTimeTemplateId || null,
+          curriculumId: data.curriculumId || null,
+          coachId: data.assignedCoachId || null,
+          startDate: data.startDate,
+          monthlyFee: data.monthlyFee ?? null,
+        });
+      } catch (err) {
+        console.error('Failed to create initial enrollment:', err);
+      }
+    }
+
     setIsEnrollModalOpen(false);
     await refetch();
   };
 
   return (
     <DashboardLayout>
-      <div className="hc-dashboard">
-        <div className="hc-dashboard-content">
+      <div className="page-container">
+        <div className="section-stack">
           <div className="page-header">
             <div>
               <h1 className="page-header-title">Students</h1>
@@ -149,11 +166,20 @@ export const StudentsPage: React.FC = () => {
           )}
 
           {loading ? (
-            <div className="flex-center" style={{ paddingTop: 'var(--space-3xl)', paddingBottom: 'var(--space-3xl)' }}>
-              <div className="animate-spin" style={{ width: '32px', height: '32px', borderRadius: 'var(--radius-pill)', borderBottom: '2px solid var(--color-primary)' }} />
+            <div className="card" style={{ padding: 'var(--space-xl)' }}>
+              <div className="animate-pulse flex flex-col" style={{ gap: 'var(--space-md)' }}>
+                <div className="h-4 rounded w-3/4" style={{ backgroundColor: 'var(--border-default)' }} />
+                <div className="h-4 rounded" style={{ backgroundColor: 'var(--border-default)' }} />
+                <div className="h-4 rounded w-5/6" style={{ backgroundColor: 'var(--border-default)' }} />
+              </div>
             </div>
           ) : (
-            <StudentGrid students={filteredStudents} onStudentClick={(id) => navigate(`/student/${id}`)} getBatchName={getBatchName} />
+            <StudentListTable
+              students={filteredStudents}
+              coaches={coachUsers}
+              onStudentClick={(id) => navigate(`/student/${id}`)}
+              getBatchName={getBatchName}
+            />
           )}
 
           <EnrollStudentModal

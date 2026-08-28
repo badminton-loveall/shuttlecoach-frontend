@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CenterSwitcher from './CenterSwitcher';
 import logoImg from '../assets/logo.png';
@@ -10,6 +10,22 @@ import './TopNav.css';
  * Role-aware navigation with dropdown menus, profile avatar dropdown,
  * and mobile drawer. Uses pure CSS with design tokens and BEM methodology.
  */
+
+// Routes reached by drilling into a specific record rather than a primary
+// list/dashboard destination — on mobile these show a back button instead of
+// the logo (there's no room for both, and "back" is more useful there).
+const SUBPAGE_PATTERNS = [
+  '/student/:id',
+  '/coach/:coachId',
+  '/training-log/:studentId',
+  '/curriculum/student/:studentId',
+  '/batch-schedule',
+  '/change-password',
+  '/profile',
+];
+
+const isSubpage = (pathname: string): boolean =>
+  SUBPAGE_PATTERNS.some((pattern) => matchPath(pattern, pathname) !== null);
 
 // --- Types ---
 
@@ -33,12 +49,19 @@ function isDropdown(entry: NavEntry): entry is NavDropdown {
 
 const COACH_NAV: NavEntry[] = [
   { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Batches', path: '/batches' },
   {
     label: 'Users',
     items: [
       { label: 'Students', path: '/students' },
       { label: 'Coaches', path: '/coaches' },
+    ],
+  },
+  {
+    label: 'Training',
+    items: [
+      { label: 'Batch timings', path: '/batch-timings' },
+      { label: 'Curriculum', path: '/courses' },
+      { label: 'Drills', path: '/drills' },
     ],
   },
   {
@@ -70,6 +93,7 @@ export const TopNav: React.FC = () => {
   const role = activeRole;
   const location = useLocation();
   const navigate = useNavigate();
+  const showBack = isSubpage(location.pathname);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -84,6 +108,13 @@ export const TopNav: React.FC = () => {
     setIsProfileOpen(false);
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Lock background scroll while the mobile drawer is open — otherwise the
+  // page behind it can still be scrolled by touch, which reads as a bug.
+  useEffect(() => {
+    document.body.classList.toggle('body-scroll-locked', isMobileMenuOpen);
+    return () => document.body.classList.remove('body-scroll-locked');
+  }, [isMobileMenuOpen]);
 
   // Click-outside listener for dropdowns and profile
   useEffect(() => {
@@ -190,10 +221,24 @@ export const TopNav: React.FC = () => {
   return (
     <nav className="topnav">
       <div className="topnav__container">
-        {/* Logo / Brand */}
-        <Link to="/" className="topnav__logo">
+        {/* Logo / Brand — hidden on mobile in favor of a back button on subpages */}
+        <Link to="/" className={`topnav__logo${showBack ? ' topnav__logo--hidden-mobile' : ''}`}>
           <img src={logoImg} alt="LoveAll Badminton Zone" className="topnav__logo-img" />
         </Link>
+
+        {showBack && (
+          <button
+            type="button"
+            className="topnav__back-btn"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+            Back
+          </button>
+        )}
 
         {/* Navigation Links - Desktop */}
         <div className="topnav__links-desktop">
@@ -359,19 +404,33 @@ export const TopNav: React.FC = () => {
               </Link>
             ))}
 
-            {/* Settings link in drawer for coaches */}
+            {/* Profile / Settings / Help — the drawer is the only nav on mobile
+                (the profile avatar dropdown is hidden there), so it needs to
+                carry everything that dropdown offers on desktop. */}
+            <div className="topnav__drawer-divider" />
+            <Link
+              to="/profile"
+              className={`topnav__drawer-link ${isPathActive('/profile') ? 'topnav__drawer-link--active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              My Profile
+            </Link>
             {(role === 'HEAD_COACH' || role === 'ASSISTANT_COACH') && (
-              <>
-                <div className="topnav__drawer-divider" />
-                <Link
-                  to="/master-data"
-                  className={`topnav__drawer-link ${isPathActive('/master-data') ? 'topnav__drawer-link--active' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Settings
-                </Link>
-              </>
+              <Link
+                to="/master-data"
+                className={`topnav__drawer-link ${isPathActive('/master-data') ? 'topnav__drawer-link--active' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Settings
+              </Link>
             )}
+            <Link
+              to="/help"
+              className={`topnav__drawer-link ${isPathActive('/help') ? 'topnav__drawer-link--active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Help
+            </Link>
 
             {/* Sign out */}
             <button className="topnav__drawer-link topnav__drawer-signout" onClick={handleSignOut}>

@@ -283,7 +283,7 @@ export interface Drill {
  * WeekPlan - Training plan for a specific week within an 8-week cycle
  */
 export interface WeekPlan {
-  weekNumber: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  weekNumber: number;
   focusArea: string;
   drills: Drill[];
   objective: string;
@@ -335,6 +335,61 @@ export interface Batch {
   assignedCoachId?: string;
   studentCount: number;
   createdAt: Date;
+}
+
+/* ============================================================================
+   STUDENT ENROLLMENT TYPES
+   ============================================================================ */
+
+/**
+ * A student's own assignment of {batch time template, curriculum, coach, start date, fee}.
+ * A student can have many of these over time (re-enrollment, coach/curriculum change) but at
+ * most one with status 'active' — history is preserved, never overwritten.
+ */
+export interface StudentEnrollment {
+  id: string;
+  studentId: string;
+  batchTimeTemplateId?: string;
+  curriculumId?: string;
+  coachId?: string;
+  startDate: string; // YYYY-MM-DD
+  projectedEndDate?: string; // YYYY-MM-DD, auto-computed from curriculum length + start date
+  monthlyFee?: number;
+  status: 'active' | 'ended';
+  isBackfilled: boolean;
+  createdAt: string;
+  updatedAt: string;
+  templateName?: string;
+  curriculumName?: string;
+  coachName?: string;
+}
+
+/**
+ * A single drill's durable training-ledger entry for a student, scoped to one enrollment.
+ * Never rewritten when the student's enrollment changes, so the full history of drills
+ * assigned/trained survives batch-timing, curriculum, and coach switches.
+ */
+export interface StudentDrillRecord {
+  id: string;
+  studentId: string;
+  enrollmentId: string;
+  curriculumId?: string;
+  curriculumName?: string;
+  drillId: string;
+  drillName?: string;
+  drillCategory?: string;
+  weekNumber: number;
+  scheduledStart?: string;
+  scheduledEnd?: string;
+  status: 'scheduled' | 'trained' | 'skipped';
+  level?: number; // 0-4
+  coachNotes?: string;
+  trainedAt?: string;
+  assessedBy?: string;
+  coachId?: string;
+  coachName?: string;
+  enrollmentStatus?: 'active' | 'ended';
+  enrollmentStartDate?: string;
 }
 
 /* ============================================================================

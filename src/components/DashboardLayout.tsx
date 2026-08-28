@@ -1,5 +1,6 @@
 import React from 'react';
 import TopNav from './TopNav';
+import BottomNav from './BottomNav';
 import { useAuth } from '../contexts/AuthContext';
 import './DashboardLayout.css';
 
@@ -24,6 +25,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, clas
     <div className="dashboard-layout">
       <TopNav />
       <main key={activeCenterId || 'no-center'} className={`dashboard-content ${className}`}>{children}</main>
+      <BottomNav />
     </div>
   );
 };

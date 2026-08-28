@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Gender, SkillLevel } from '../types';
+import { useCourses } from '../hooks/useCourses';
+import apiClient from '../utils/apiClient';
 import './EnrollStudentModal.css';
 
 interface EnrollStudentModalProps {
@@ -24,13 +26,19 @@ export interface EnrollStudentFormData {
   skillLevel: SkillLevel;
   assignedCoachId: string;
   monthlyFee?: number;
+  batchTimeTemplateId?: string;
+  curriculumId?: string;
+  startDate?: string;
 }
+
+const todayIso = (): string => new Date().toISOString().slice(0, 10);
 
 export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
   batches,
+  coaches,
   error,
 }) => {
   const [formData, setFormData] = useState<EnrollStudentFormData>({
@@ -45,11 +53,26 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
     batchId: '',
     skillLevel: 'Beginner',
     assignedCoachId: '',
+    batchTimeTemplateId: '',
+    curriculumId: '',
+    startDate: todayIso(),
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'academy'>('basic');
+  const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'enrollment'>('basic');
+
+  const { courses } = useCourses();
+  const [templates, setTemplates] = useState<Array<{ id: string; name: string }>>([]);
+  useEffect(() => {
+    apiClient
+      .get('/batch-time-templates')
+      .then((r) => {
+        const data = r.data;
+        setTemplates(Array.isArray(data) ? data : data.templates || []);
+      })
+      .catch(() => setTemplates([]));
+  }, []);
 
   // Calculate age from date of birth
   const calculateAge = (dob: Date): number => {
@@ -145,6 +168,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
         batchId: '',
         skillLevel: 'Beginner',
         assignedCoachId: '',
+        batchTimeTemplateId: '',
+        curriculumId: '',
+        startDate: todayIso(),
       });
       setErrors({});
     } catch (error: unknown) {
@@ -167,7 +193,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
         } else if (errorFields.some(f => f === 'guardianName' || f === 'guardianPhone')) {
           setActiveSection('guardian');
         } else if (errorFields.some(f => f === 'batchId' || f === 'assignedCoachId' || f === 'skillLevel')) {
-          setActiveSection('academy');
+          setActiveSection('enrollment');
         }
       } else {
         const message = apiError?.response?.data?.error || 'Failed to enroll student. Please try again.';
@@ -218,8 +244,8 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       hasError: !!(errors.guardianName || errors.guardianPhone),
     },
     {
-      id: 'academy' as const,
-      label: 'Academy',
+      id: 'enrollment' as const,
+      label: 'Enrollment',
       hasError: !!(errors.batchId),
     },
   ];
@@ -405,7 +431,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                 </>
               )}
 
-              {activeSection === 'academy' && (
+              {activeSection === 'enrollment' && (
                 <>
                   <div className="form-group">
                     <label htmlFor="batchId" className="form-label">Batch *</label>
@@ -423,6 +449,67 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                     </select>
                     {errors.batchId && <span className="form-error-text">{errors.batchId}</span>}
                   </div>
+
+                  <div className="form-group">
+                    <label htmlFor="batchTimeTemplateId" className="form-label">Batch Timing <span className="form-optional">(optional)</span></label>
+                    <select
+                      id="batchTimeTemplateId"
+                      value={formData.batchTimeTemplateId || ''}
+                      onChange={(e) => setFormData({ ...formData, batchTimeTemplateId: e.target.value })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">No timing template</option>
+                      {templates.map((t) => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="curriculumId" className="form-label">Curriculum <span className="form-optional">(optional)</span></label>
+                    <select
+                      id="curriculumId"
+                      value={formData.curriculumId || ''}
+                      onChange={(e) => setFormData({ ...formData, curriculumId: e.target.value })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">No curriculum</option>
+                      {courses.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name} ({c.weeks.length}w)</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="assignedCoachId" className="form-label">Coach <span className="form-optional">(optional)</span></label>
+                    <select
+                      id="assignedCoachId"
+                      value={formData.assignedCoachId}
+                      onChange={(e) => setFormData({ ...formData, assignedCoachId: e.target.value })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">No coach</option>
+                      {coaches.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="startDate" className="form-label">Joining Date *</label>
+                    <input
+                      id="startDate"
+                      type="date"
+                      value={formData.startDate || todayIso()}
+                      onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+
                   <div className="form-group">
                     <label htmlFor="monthlyFee" className="form-label">Monthly Fee (₹)</label>
                     <input

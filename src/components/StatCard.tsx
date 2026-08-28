@@ -14,6 +14,7 @@ interface StatCardProps {
   icon?: React.ReactNode;
   variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info';
   className?: string;
+  onClick?: () => void;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -23,9 +24,27 @@ export const StatCard: React.FC<StatCardProps> = ({
   icon,
   variant = 'primary',
   className = '',
+  onClick,
 }) => {
+  const clickableClass = onClick ? 'stat-card--clickable' : '';
+
   return (
-    <div className={`stat-card stat-card--${variant} ${className}`}>
+    <div
+      className={`stat-card stat-card--${variant} ${clickableClass} ${className}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+    >
       {icon && <div className="stat-card__icon">{icon}</div>}
       <div className="stat-card__content">
         <h3 className="stat-card__title">{title}</h3>

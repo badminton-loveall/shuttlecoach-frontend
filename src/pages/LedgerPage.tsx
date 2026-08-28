@@ -378,7 +378,7 @@ export const LedgerPage: React.FC = () => {
           {!loading && (
             <div className="hc-overview">
               <div className="card" style={{ overflow: 'auto' }}>
-                <table className="table-styled" style={{ width: '100%' }}>
+                <table className="table-styled table-responsive-cards" style={{ width: '100%' }}>
                   <thead>
                     <tr>
                       <th>Date</th>
@@ -398,8 +398,8 @@ export const LedgerPage: React.FC = () => {
                     ) : (
                       entries.map((entry) => (
                         <tr key={entry.id}>
-                          <td>{formatDate(entry.transactionDate)}</td>
-                          <td>
+                          <td data-label="Date">{formatDate(entry.transactionDate)}</td>
+                          <td data-label="Description">
                             <div>{entry.description}</div>
                             {entry.personName && (
                               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
@@ -407,19 +407,19 @@ export const LedgerPage: React.FC = () => {
                               </span>
                             )}
                           </td>
-                          <td>
+                          <td data-label="Type">
                             <span
                               className={`badge ${entry.entryType === 'CREDIT' ? 'badge--success' : 'badge--danger'}`}
                             >
                               {entry.entryType}
                             </span>
                           </td>
-                          <td style={{ textAlign: 'right', fontWeight: 500 }}>
+                          <td data-label="Amount" style={{ textAlign: 'right', fontWeight: 500 }}>
                             <span style={{ color: entry.entryType === 'CREDIT' ? 'var(--color-success)' : 'var(--color-danger)' }}>
                               {entry.entryType === 'CREDIT' ? '+' : '−'}{formatINR(entry.amount)}
                             </span>
                           </td>
-                          <td style={{ textAlign: 'right' }}>
+                          <td data-label="Running Balance" style={{ textAlign: 'right' }}>
                             {formatINR(entry.runningBalance)}
                           </td>
                         </tr>

@@ -12,6 +12,7 @@ import { StudentFeeTab } from '../components/StudentFeeTab';
 import { SkillProgressionTracker } from '../components/SkillProgressionTracker';
 import { SkillTrendChart } from '../components/SkillTrendChart';
 import { EditStudentModal } from '../components/EditStudentModal';
+import { EnrollmentSection } from '../components/EnrollmentSection';
 import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -334,7 +335,12 @@ export const StudentProfilePage: React.FC = () => {
  * Profile Tab - displays comprehensive personal information form
  */
 const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
-  <PersonalInfoForm student={student} />
+  <>
+    <PersonalInfoForm student={student} />
+    <div style={{ marginTop: 'var(--space-2xl)', paddingTop: 'var(--space-xl)', borderTop: '1px solid var(--border-default)' }}>
+      <EnrollmentSection student={student} />
+    </div>
+  </>
 );
 
 /**

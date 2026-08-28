@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -16,6 +16,7 @@ import StudentProfilePage from './pages/StudentProfilePage';
 import MyProgressPage from './pages/MyProgressPage';
 import MyFeesPage from './pages/MyFeesPage';
 import BatchListPage from './pages/BatchListPage';
+import BatchTimingsPage from './pages/BatchTimingsPage';
 import DrillsPage from './pages/DrillsPage';
 import CourseManagementPage from './pages/CourseManagementPage';
 import MasterDataPage from './pages/MasterDataPage';
@@ -41,9 +42,6 @@ import CenterDetailPage from './pages/admin/CenterDetailPage';
 import SlugChangeRequestsPage from './pages/admin/SlugChangeRequestsPage';
 import AdminDrillCatalogPage from './pages/admin/AdminDrillCatalogPage';
 import './App.css';
-
-// Lazy-loaded pages
-const BatchWizardPage = React.lazy(() => import('./pages/BatchWizardPage'));
 
 /**
  * RoleDashboard Component
@@ -146,34 +144,25 @@ function App() {
             }
           />
 
-          {/* Batch Wizard (Head Coach only) */}
-          <Route
-            path="/batches/new"
-            element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
-                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
-                  <BatchWizardPage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/batches/:id/edit"
-            element={
-              <ProtectedRoute allowedRoles={['HEAD_COACH']}>
-                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
-                  <BatchWizardPage />
-                </Suspense>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Batches (Coach - under Training menu) */}
+          {/* Batch creation wizard retired — template/curriculum/coach/start-date now
+              assigned per student from the student edit page. Batches route stays
+              (hidden from nav, code preserved) since batch data/attendance/fees still
+              reference it until the follow-up contraction migration. */}
           <Route
             path="/batches"
             element={
               <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
                 <BatchListPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Batch timings (Coach - promoted from Settings > Templates to a top-level page) */}
+          <Route
+            path="/batch-timings"
+            element={
+              <ProtectedRoute allowedRoles={['HEAD_COACH', 'ASSISTANT_COACH']}>
+                <BatchTimingsPage />
               </ProtectedRoute>
             }
           />

@@ -47,7 +47,7 @@ const BatchSchedulePage: React.FC = () => {
           {/* Batch Selector */}
           <div className="card">
             <div className="form-group-inline">
-              <label className="text-label">Select Batch</label>
+              <label className="form-field-label">Select Batch</label>
               <select
                 value={selectedBatchId}
                 onChange={(e) => setSelectedBatchId(e.target.value)}

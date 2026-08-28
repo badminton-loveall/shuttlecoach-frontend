@@ -117,7 +117,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full table-responsive-cards">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -158,7 +158,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                     isSelected ? 'bg-primary/10 dark:bg-primary/20' : ''
                   } ${onCoachSelect ? 'cursor-pointer' : ''}`}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap" data-label="Coach">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
                         {coach.profilePhoto ? (
@@ -185,7 +185,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap" data-label="Role">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         coach.role === 'HEAD_COACH'
@@ -196,16 +196,16 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       {formatRoleLabel(coach.role)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Specialization">
                     {coach.specialization || '—'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" data-label="Batches">
                     <span className="font-medium">{stats.batchCount}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" data-label="Students">
                     <span className="font-medium">{stats.studentCount}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-6 py-4 whitespace-nowrap" data-label="Fee Access" onClick={(e) => e.stopPropagation()}>
                     <FeeAccessToggle
                       coachId={coach.id}
                       coachRole={coach.role}
@@ -213,10 +213,10 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       onToggle={onFeeAccessToggle ?? (() => {})}
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Last Active">
                     {formatLastActive(coach.lastActive)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2" data-label="">
                     <button
                       onClick={(e) => { e.stopPropagation(); onEditCoach?.(coach); }}
                       className="text-action text-action--primary"

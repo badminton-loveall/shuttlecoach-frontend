@@ -8,6 +8,7 @@
   background-color: var(--surface-card);
   border-bottom: 1px solid var(--border-default);
   padding: 0;
+  padding-top: var(--safe-top, 0px);
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
@@ -51,6 +52,37 @@
   letter-spacing: -0.02em;
 }
 
+/* Back button — replaces the logo on mobile for subpages (a detail/edit
+   screen reached by drilling into a record). Hidden by default; only shown
+   at mobile widths, and only ever rendered at all when TopNav decides the
+   current route is a subpage. Desktop keeps the logo everywhere — there's
+   room for both there. */
+.topnav__back-btn {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  padding: var(--space-xs) var(--space-xs) var(--space-xs) 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.topnav__back-btn svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .topnav__back-btn {
+    color: var(--text-dark-primary);
+  }
+}
+
 /* ============================================================================
    Desktop Navigation Links
    ============================================================================ */
@@ -65,7 +97,7 @@
 .topnav__link {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-medium);
   padding: 10px 20px;
   border-radius: var(--radius-pill);
@@ -332,7 +364,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  height: 100vh;
+  height: 100dvh;
   width: 280px;
   max-width: 85vw;
   background-color: var(--surface-card);
@@ -342,7 +374,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  padding: var(--space-md) 0;
+  padding: max(var(--space-md), var(--safe-top, 0px)) 0 max(var(--space-md), var(--safe-bottom, 0px));
+  padding-right: var(--safe-right, 0px);
   animation: topnav-slide-in var(--transition-smooth);
   box-shadow: var(--shadow-overlay);
 }
@@ -454,7 +487,6 @@
 
   .topnav__link {
     padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-label);
   }
 }
 
@@ -477,13 +509,29 @@
     width: 280px;
     max-width: 85vw;
   }
+
+  /* Back button takes the logo's place on subpages; the profile avatar is
+     dropped in favor of the hamburger drawer, which now carries everything
+     that dropdown offered (My Profile, Settings, Help, Sign Out). */
+  .topnav__logo--hidden-mobile {
+    display: none;
+  }
+
+  .topnav__back-btn {
+    display: flex;
+  }
+
+  .topnav__profile {
+    display: none;
+  }
 }
 
 /* Mobile */
 @media (max-width: 480px) {
   .topnav__container {
-    padding: var(--space-xs) var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
     gap: var(--space-sm);
+    min-height: 56px;
   }
 
   .topnav__logo-text {
@@ -501,8 +549,8 @@
   }
 
   .topnav__icon {
-    width: 16px;
-    height: 16px;
+    width: 22px;
+    height: 22px;
   }
 
   .topnav__drawer {
@@ -513,8 +561,7 @@
   }
 
   .topnav__drawer-link {
-    padding: var(--space-xs) var(--space-md);
-    font-size: var(--font-label);
+    padding: var(--space-sm) var(--space-md);
     margin: 0 var(--space-xs);
   }
 

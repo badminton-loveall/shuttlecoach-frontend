@@ -26,30 +26,22 @@
   }
 }
 
+/* No padding here — every page's own top-level wrapper (.page-container,
+   .hc-dashboard, etc.) already applies its own responsive padding. Padding
+   on both this element and the one it wraps was doubling the margin around
+   every page on every breakpoint, most noticeably on phones where screen
+   width is already tight. */
 .dashboard-content {
   flex: 1;
-  padding: 24px 20px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Responsive padding */
-@media (max-width: 1024px) {
-  .dashboard-content {
-    padding: 20px 16px;
-  }
-}
-
+/* Room for the fixed bottom nav bar so it doesn't sit on top of content */
 @media (max-width: 768px) {
   .dashboard-content {
-    padding: 16px 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .dashboard-content {
-    padding: 12px 12px;
+    padding-bottom: calc(56px + var(--safe-bottom, 0px));
   }
 }

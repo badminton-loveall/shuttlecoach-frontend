@@ -276,9 +276,12 @@
 }
 
 @media (max-width: 640px) {
+  /* 2x2 instead of 4 stacked full-width rows — halves the height this
+     section takes on a phone, so actionable content (today's attendance)
+     isn't pushed below the fold by summary numbers. */
   .hc-stats-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
   }
 }
 
@@ -969,6 +972,125 @@
   .table-styled td {
     padding: var(--space-sm) var(--space-md);
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Auto table layout sizes each column to its content first, which lets a
+     wide table (many columns, or a long header label) push past its card and
+     force a horizontal scroll even when the card itself fits the screen.
+     Fixed layout instead divides the card's actual width across columns and
+     wraps text to fit it — no more silent overflow on phones. */
+  .table-styled {
+    table-layout: fixed;
+  }
+
+  .table-styled th,
+  .table-styled td {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 11px;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE TABLE → CARDS
+   Opt-in via className="table-responsive-cards" (alongside any existing table
+   classes — .table-styled or a plain Tailwind-styled table). On phones, rows
+   stop being table rows and become individual bordered cards: the first cell
+   (identity — avatar, name) becomes the card's header with no label, every
+   other cell becomes a "label: value" row using its data-label attribute.
+   This is the pattern behind the Students/Coaches/Ledger tables — a data
+   table with many columns simply doesn't fit a phone width, and a scrolling
+   table reads as "a website", not "an app".
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .table-responsive-cards thead {
+    display: none;
+  }
+
+  .table-responsive-cards,
+  .table-responsive-cards tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .table-responsive-cards tr {
+    display: block;
+    width: 100%;
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    box-sizing: border-box;
+  }
+
+  .table-responsive-cards td {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    width: 100%;
+    padding: var(--space-xs) 0 !important;
+    text-align: right;
+    border: none !important;
+    font-size: var(--font-sm) !important;
+    white-space: normal !important;
+    /* Flex items size to their content's unbroken width by default, so a
+       long value with no natural break point (a batch name using
+       underscores instead of spaces, for example) can push past the card
+       edge instead of wrapping. overflow-wrap on the flex container is
+       honored by the automatic-minimum-size calculation in current browser
+       engines, which lets it actually shrink and wrap instead of overflow. */
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  .table-responsive-cards td > * {
+    min-width: 0;
+  }
+
+  .table-responsive-cards td::before {
+    content: attr(data-label);
+    font-size: var(--font-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--text-secondary);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  /* Identity cell (name/avatar, first column) reads as the card's header —
+     no label prefix, left-aligned, full width, separated from the details
+     below it. */
+  .table-responsive-cards td:first-child {
+    display: block !important;
+    text-align: left;
+    padding-bottom: var(--space-sm) !important;
+    margin-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-default) !important;
+  }
+
+  .table-responsive-cards td:first-child::before {
+    content: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .table-responsive-cards tr {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+
+  .table-responsive-cards td::before {
+    color: var(--text-dark-secondary);
+  }
+
+  .table-responsive-cards td:first-child {
+    border-bottom-color: var(--border-dark);
   }
 }
 
@@ -1784,6 +1906,372 @@
   }
 }
 
+/* Course list panel (Curriculum page master list) */
+.course-list-panel {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.course-list-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.course-list-panel__title {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.course-list-panel__new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary-dark);
+  font-size: var(--font-xs, 0.75rem);
+  font-weight: var(--weight-medium);
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.course-list-panel__new-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--color-primary);
+}
+
+.course-list-panel__items {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.course-list-panel__empty {
+  color: var(--text-tertiary);
+  padding: var(--space-sm);
+  text-align: center;
+}
+
+.course-list-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.course-list-card:hover {
+  background: var(--surface-hover);
+}
+
+.course-list-card--active {
+  background: var(--surface-hover);
+  border-color: var(--color-primary);
+}
+
+.course-list-card__main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.course-list-card__name {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-list-card__weeks {
+  flex-shrink: 0;
+}
+
+.course-list-card__delete {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: var(--font-sm);
+  padding: 2px 4px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.course-list-card__delete:hover {
+  color: var(--color-danger);
+}
+
+/* Course editor header (name input + dirty indicator) */
+.course-editor-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.course-editor-header__name-input {
+  font-size: var(--font-md, 1rem);
+  font-weight: var(--weight-medium);
+  background-color: var(--surface-card);
+}
+
+.course-editor-header__dirty {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-xs, 0.75rem);
+  color: var(--color-warning, #f59e0b);
+  white-space: nowrap;
+  padding-top: var(--space-xs);
+}
+
+.course-editor-header__dirty-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warning, #f59e0b);
+  display: inline-block;
+}
+
+.course-editor-footer {
+  margin-top: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+@media (prefers-color-scheme: dark) {
+  .course-list-panel {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+
+  .course-list-panel__header {
+    border-bottom-color: var(--border-dark);
+  }
+
+  .course-list-panel__title {
+    color: var(--text-dark-primary);
+  }
+
+  .course-list-panel__new-btn {
+    border-color: var(--border-dark);
+  }
+
+  .course-list-panel__new-btn:hover {
+    background: var(--surface-dark-hover);
+  }
+
+  .course-list-card__name {
+    color: var(--text-dark-primary);
+  }
+
+  .course-list-card--active,
+  .course-list-card:hover {
+    background: var(--surface-dark-hover);
+  }
+
+}
+
+/* Enrollment section (Student edit page) */
+.enrollment-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  /* A plain inline style="gridTemplateColumns" would win over any media
+     query here (inline styles always beat stylesheet rules, breakpoints
+     included), so this collapse has to live in the class itself. */
+  .enrollment-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.enrollment-summary-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 480px;
+}
+
+.enrollment-summary-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.enrollment-summary-card__label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.enrollment-summary-card__value {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.enrollment-calendar-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-hover);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.enrollment-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.enrollment-history-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  .enrollment-summary-card,
+  .enrollment-history-row {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+
+  .enrollment-summary-card__value {
+    color: var(--text-dark-primary);
+  }
+
+  .enrollment-calendar-preview {
+    background: var(--surface-dark-hover);
+  }
+}
+
+/* Drill training record (Training Log page) */
+.drill-record-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.drill-record-row {
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.drill-record-row__main {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.drill-record-row__name {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+}
+
+.drill-record-row__category {
+  font-size: var(--font-xs, 0.75rem);
+  color: var(--text-tertiary);
+}
+
+.drill-record-row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.drill-record-row__edit {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-default);
+}
+
+.enrollment-period-group {
+  background: var(--surface-hover);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.enrollment-period-group__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.enrollment-period-group__title {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .drill-record-row {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+
+  .drill-record-row__name {
+    color: var(--text-dark-primary);
+  }
+
+  .drill-record-row__edit {
+    border-top-color: var(--border-dark);
+  }
+
+  .enrollment-period-group {
+    background: var(--surface-dark-hover);
+  }
+
+  .enrollment-period-group__title {
+    color: var(--text-dark-primary);
+  }
+}
+
 /* ============================================================================
    STUDENT PROFILE PAGE
    ============================================================================ */
@@ -1802,6 +2290,16 @@
 /* Back button — align left */
 .sp-back-btn {
   align-self: flex-start;
+}
+
+/* The header itself shows a back button on mobile (replacing the logo) once
+   a route is registered as a subpage, so this in-page one would be
+   redundant there. Desktop keeps it — the header there always shows the
+   logo instead of a back control. */
+@media (max-width: 768px) {
+  .sp-back-btn {
+    display: none !important;
+  }
 }
 
 /* ── Header card ── */
@@ -1875,6 +2373,15 @@
 .sp-tab-nav {
   display: flex;
   border-bottom: 1px solid var(--border-default);
+  overflow-x: auto;
+  max-width: 100%;
+  /* Scrollable, but shouldn't look like a scrollable data area — matches the
+     enrollment modal's tab row, which has no visible scrollbar either. */
+  scrollbar-width: none;
+}
+
+.sp-tab-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .sp-tab {
@@ -1907,9 +2414,15 @@
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .sp-header { gap: var(--space-md); }
-  .sp-header-actions { width: 100%; }
-  .sp-header-actions .btn { flex: 1; justify-content: center; }
-  .sp-tab { padding: var(--space-sm) var(--space-md); font-size: var(--font-xs); }
+  .sp-header-actions { width: 100%; flex-wrap: wrap; }
+  .sp-header-actions .btn { flex: 1 1 calc(50% - var(--space-sm)); justify-content: center; }
+  .sp-tab { padding: var(--space-sm) var(--space-md); }
+}
+
+@media (max-width: 480px) {
+  .sp-student-name { font-size: var(--font-md); }
+  .sp-header-meta { max-width: 100%; }
+  .sp-header-meta .text-small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 }
 
 @media (prefers-color-scheme: dark) {

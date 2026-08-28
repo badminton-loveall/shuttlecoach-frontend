@@ -15,13 +15,20 @@
    ============================================================================ */
 
 .center-switcher--single .center-switcher__name {
-  font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
-  color: var(--text-secondary);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  font-family: var(--font-display);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 280px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .center-switcher--single .center-switcher__name {
+    color: var(--text-dark-primary);
+  }
 }
 
 /* ============================================================================
@@ -31,19 +38,19 @@
 .center-switcher__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: var(--space-xs) var(--space-sm);
+  gap: 6px;
+  padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-pill);
   background: none;
   border: 1px solid var(--border-default);
-  color: var(--text-secondary);
-  font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
-  font-family: inherit;
+  color: var(--text-primary);
+  font-size: var(--font-lg);
+  font-weight: var(--weight-bold);
+  font-family: var(--font-display);
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
-  max-width: 200px;
+  max-width: 320px;
 }
 
 .center-switcher__trigger:hover {
@@ -55,7 +62,7 @@
 .center-switcher__trigger .center-switcher__name {
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 160px;
+  max-width: 260px;
 }
 
 /* ============================================================================
@@ -167,19 +174,20 @@
    ============================================================================ */
 
 @media (max-width: 768px) {
+  /* Still the most prominent thing in the header on a phone — shrink the
+     surrounding chrome (padding, dropdown width) but keep the name itself
+     large; this is the one piece of the header meant to draw attention. */
   .center-switcher__trigger {
-    padding: var(--space-xs);
-    max-width: 140px;
-    font-size: var(--font-xs);
+    padding: var(--space-xs) var(--space-sm);
+    max-width: 220px;
   }
 
   .center-switcher__trigger .center-switcher__name {
-    max-width: 100px;
+    max-width: 180px;
   }
 
   .center-switcher--single .center-switcher__name {
-    max-width: 120px;
-    font-size: var(--font-xs);
+    max-width: 200px;
   }
 
   .center-switcher__dropdown {
@@ -189,14 +197,15 @@
 
 @media (max-width: 480px) {
   .center-switcher__trigger {
-    max-width: 120px;
+    max-width: 170px;
   }
 
   .center-switcher__trigger .center-switcher__name {
-    max-width: 80px;
+    max-width: 140px;
   }
 
   .center-switcher--single .center-switcher__name {
-    max-width: 90px;
+    max-width: 150px;
+    font-size: var(--font-base);
   }
 }

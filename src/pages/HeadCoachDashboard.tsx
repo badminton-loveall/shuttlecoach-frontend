@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import StatCard from '../components/StatCard';
-import StudentGrid from '../components/StudentGrid';
 import FeeAlerts from '../components/FeeAlerts';
 import CoachWorkload from '../components/CoachWorkload';
 import RecentActivity from '../components/RecentActivity';
@@ -150,11 +149,6 @@ const HeadCoachDashboardContent: React.FC<{
   // Calculate dashboard statistics
   const stats = useMemo(() => calculateDashboardStats(students), [students]);
 
-  // Handle student card click
-  const handleStudentClick = (studentId: string) => {
-    navigate(`/student/${studentId}`);
-  };
-
   return (
     <DashboardLayout>
       <div className="hc-dashboard">
@@ -183,6 +177,7 @@ const HeadCoachDashboardContent: React.FC<{
               label="Active students"
               icon={<StudentIconSvg />}
               variant="info"
+              onClick={() => navigate('/students')}
             />
             <StatCard
               title="BAID Registered"
@@ -190,6 +185,7 @@ const HeadCoachDashboardContent: React.FC<{
               label={`${stats.baidPercentage}% registered`}
               icon={<BaidIconSvg />}
               variant="success"
+              onClick={() => navigate('/students')}
             />
             <StatCard
               title="Batches"
@@ -197,6 +193,7 @@ const HeadCoachDashboardContent: React.FC<{
               label="Active batches"
               icon={<BatchIconSvg />}
               variant="warning"
+              onClick={() => navigate('/batches')}
             />
             <StatCard
               title="Due for Review"
@@ -204,6 +201,7 @@ const HeadCoachDashboardContent: React.FC<{
               label={`${studentsDueForReview.length} student${studentsDueForReview.length !== 1 ? 's' : ''} need assessment`}
               icon={<ReviewIconSvg />}
               variant={studentsDueForReview.length > 0 ? 'danger' : 'success'}
+              onClick={() => navigate('/students')}
             />
           </div>
 
@@ -212,27 +210,6 @@ const HeadCoachDashboardContent: React.FC<{
             calendarEntries={calendarEntries}
             calendarLoading={calendarLoading}
           />
-
-          {/* Students Due for Review Section */}
-          {studentsDueForReview.length > 0 && (
-            <>
-              <div className="hc-review-section-header">
-                <h2 className="hc-review-title">
-                  Students Due for Review ({studentsDueForReview.length})
-                </h2>
-                <p className="hc-review-subtitle">
-                  Students who need bi-monthly skill assessment (60+ days since last assessment)
-                </p>
-              </div>
-
-              <StudentGrid
-                students={studentsDueForReview}
-                onStudentClick={handleStudentClick}
-                studentReviewStatus={studentReviewStatus}
-                getBatchName={getBatchName}
-              />
-            </>
-          )}
 
           {/* Progressive Dashboard Features - Phase 6 */}
           <div className="hc-overview">

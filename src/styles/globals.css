@@ -910,6 +910,78 @@ body.dark ::-webkit-scrollbar-thumb:hover {
   --sidebar-ring: oklch(0.58 0.031 107.3);
 }
 
+/* ============================================================================
+   MOBILE APP EXPERIENCE
+   Shared, app-wide rules that make touch interaction feel native rather than
+   "a website on a phone" — touch target sizing, tactile press feedback, no
+   accidental iOS zoom on form focus, no stuck hover states after a tap, and
+   safe-area support for notched devices.
+
+   Breakpoint scale (matches the card-padding/form-section scale above):
+     1024px — small desktop / large tablet
+      768px — tablet
+      480px — phone
+   ============================================================================ */
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* Remove the gray tap-flash and the ~300ms tap delay that read as "web page"
+   rather than "app" on touch devices. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a, button, [role="button"], input, select, textarea, summary {
+  touch-action: manipulation;
+}
+
+/* Stop the page rubber-banding into the browser chrome on overscroll */
+html, body {
+  overscroll-behavior-y: none;
+}
+
+/* Toggled on <body> while a drawer/sheet is open (see TopNav mobile drawer) so
+   the page behind it can't be scrolled — expected behavior in any native app. */
+body.body-scroll-locked {
+  overflow: hidden;
+}
+
+/* Tactile press feedback — buttons should feel like they were actually
+   pressed, not just change color under the cursor. */
+@media (prefers-reduced-motion: no-preference) {
+  .btn:active,
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+@media (max-width: 480px) {
+  /* Apple HIG / Material minimum touch target is 44x44pt / 48x48dp. Below
+     this, taps miss and the UI feels like a shrunk desktop site. */
+  .btn,
+  button:not([class*="drill-item"]):not(.day-cell),
+  .sp-tab,
+  .curriculum-week-tab,
+  .topnav__link,
+  .topnav__drawer-link {
+    min-height: 44px;
+  }
+
+  /* iOS Safari auto-zooms the viewport when a focused input's computed
+     font-size is under 16px — the single most common "this isn't an app"
+     tell on mobile web forms. !important guards against the many per-page
+     .input/.form-input font-size overrides loaded after this file. */
+  input, select, textarea,
+  .input, .form-input, .form-textarea {
+    font-size: 16px !important;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -8,6 +8,7 @@ import {
 } from './calendarUtils';
 import MonthNavigator from './MonthNavigator';
 import CalendarGrid from './CalendarGrid';
+import DetailPanel from './DetailPanel';
 import './StudentScheduleCalendar.css';
 import type { SkillLevel } from '../../types';
 
@@ -103,6 +104,8 @@ export default function StudentScheduleCalendar({
   // Check if there are any highlighted days this month
   const hasSessionsThisMonth = entries.length > 0;
 
+  const selectedEntries = selectedDate ? entriesByDate.get(selectedDate) ?? [] : [];
+
   return (
     <div className="student-schedule-calendar">
       <MonthNavigator
@@ -112,20 +115,34 @@ export default function StudentScheduleCalendar({
         onNext={handleNext}
       />
 
-      <CalendarGrid
-        days={gridDays}
-        entriesByDate={entriesByDate}
-        selectedDate={selectedDate}
-        today={today}
-        onDayClick={handleDayClick}
-        skillLevel={skillLevel}
-      />
+      <div className="student-schedule-calendar__body">
+        <div className="student-schedule-calendar__grid-col">
+          <CalendarGrid
+            days={gridDays}
+            entriesByDate={entriesByDate}
+            selectedDate={selectedDate}
+            today={today}
+            onDayClick={handleDayClick}
+            skillLevel={skillLevel}
+          />
 
-      {!hasSessionsThisMonth && (
-        <p className="student-schedule-calendar__no-sessions">
-          No sessions scheduled this month
-        </p>
-      )}
+          {!hasSessionsThisMonth && (
+            <p className="student-schedule-calendar__no-sessions">
+              No sessions scheduled this month
+            </p>
+          )}
+        </div>
+
+        {selectedDate && selectedEntries.length > 0 && (
+          <div className="student-schedule-calendar__panel-col">
+            <DetailPanel
+              entries={selectedEntries}
+              date={selectedDate}
+              onClose={() => setSelectedDate(null)}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

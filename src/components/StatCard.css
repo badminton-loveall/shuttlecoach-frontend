@@ -26,6 +26,28 @@
   border-color: var(--border-strong);
 }
 
+.stat-card--clickable {
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .stat-card--clickable:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-card-hover, 0 4px 12px rgba(0, 0, 0, 0.08));
+    transform: translateY(-2px);
+  }
+}
+
+.stat-card--clickable:active {
+  transform: translateY(0);
+}
+
+.stat-card--clickable:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
 /* ============================================================================
    Icon Section (Element)
    ============================================================================ */

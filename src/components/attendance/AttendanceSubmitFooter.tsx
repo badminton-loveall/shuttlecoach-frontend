@@ -37,10 +37,11 @@ export const AttendanceSubmitFooter: React.FC<AttendanceSubmitFooterProps> = ({
       )}
       <button
         type="button"
+        className="btn btn-secondary"
         onClick={onSubmit}
         disabled={isDisabled}
         aria-disabled={isDisabled}
-        style={isDisabled ? disabledButtonStyle : activeButtonStyle}
+        style={buttonStyle}
       >
         {getButtonText()}
       </button>
@@ -56,15 +57,15 @@ const footerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '0.75rem 1rem',
-  borderTop: '1px solid hsl(var(--border))',
-  backgroundColor: 'hsl(var(--card))',
-  gap: '0.75rem',
+  padding: 'var(--space-sm) var(--space-md)',
+  borderTop: '1px solid var(--border-default)',
+  backgroundColor: 'var(--surface-card)',
+  gap: 'var(--space-sm)',
 };
 
 const errorStyle: React.CSSProperties = {
-  color: 'hsl(var(--destructive))',
-  fontSize: '0.8rem',
+  color: 'var(--color-danger)',
+  fontSize: 'var(--font-small)',
   fontWeight: 500,
   flex: 1,
   minWidth: 0,
@@ -73,29 +74,8 @@ const errorStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
-const baseButtonStyle: React.CSSProperties = {
-  padding: '0.5rem 1rem',
-  borderRadius: 'var(--radius)',
-  border: 'none',
-  fontWeight: 600,
-  fontSize: '0.875rem',
+const buttonStyle: React.CSSProperties = {
   whiteSpace: 'nowrap',
-  transition: 'opacity 0.15s ease',
-};
-
-const activeButtonStyle: React.CSSProperties = {
-  ...baseButtonStyle,
-  backgroundColor: 'hsl(var(--primary))',
-  color: 'hsl(var(--primary-foreground))',
-  cursor: 'pointer',
-};
-
-const disabledButtonStyle: React.CSSProperties = {
-  ...baseButtonStyle,
-  backgroundColor: 'hsl(var(--muted))',
-  color: 'hsl(var(--muted-foreground))',
-  cursor: 'not-allowed',
-  opacity: 0.7,
 };
 
 export default AttendanceSubmitFooter;
