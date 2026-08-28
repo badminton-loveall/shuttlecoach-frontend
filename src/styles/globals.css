@@ -117,7 +117,11 @@ body {
   color: #1B2B4E;
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
-  overflow-x: hidden;
+  /* Horizontal-clip lives on <html> only (above). Declaring it here too
+     turns body into a second, nested scroll container that never actually
+     scrolls internally (html already owns the real scroll), which silently
+     breaks position:sticky for every descendant (e.g. TopNav) — sticky
+     then anchors to body's static box instead of the real viewport. */
 }
 
 body.dark {

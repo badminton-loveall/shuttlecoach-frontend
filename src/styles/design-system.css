@@ -1045,8 +1045,13 @@ body,
   background-color: #E8E6DF !important;
   color: #1B2B4E !important;
   max-width: 100vw;
-  overflow-x: hidden;
 }
+
+/* Horizontal-scroll-bleed prevention belongs only on the true root scrollers
+   (html/body, see globals.css) — putting it on #root as well makes #root its
+   own scroll container, which silently breaks position:sticky (e.g. TopNav)
+   for every descendant, since sticky then anchors to #root's own box instead
+   of the real viewport. */
 
 /* Override any dark mode media queries */
 @media (prefers-color-scheme: dark) {
