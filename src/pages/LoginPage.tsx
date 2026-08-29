@@ -276,7 +276,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '24px',
+    padding: 'var(--space-lg)',
     marginRight: '6vw',
     width: '100%',
     maxWidth: '480px',
@@ -284,7 +284,7 @@ const styles: Record<string, React.CSSProperties> = {
   modal: {
     backgroundColor: '#ffffff',
     borderRadius: '20px',
-    padding: '48px 44px',
+    padding: 'var(--space-2xl) var(--space-xl)',
     width: '100%',
     boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.4)',
   },
@@ -293,13 +293,13 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column' as const,
     alignItems: 'center',
     textAlign: 'center' as const,
-    marginBottom: '36px',
+    marginBottom: 'var(--space-xl)',
   },
   brandLogo: {
     width: '160px',
     height: '160px',
     objectFit: 'contain' as const,
-    marginBottom: '12px',
+    marginBottom: 'var(--space-sm)',
     display: 'block',
   },
   brandTagline: {
@@ -310,12 +310,12 @@ const styles: Record<string, React.CSSProperties> = {
   form: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '22px',
+    gap: 'var(--space-lg)',
   },
   formGroup: {
     display: 'flex',
     flexDirection: 'column' as const,
-    gap: '8px',
+    gap: 'var(--space-sm)',
   },
   label: {
     fontSize: '14px',
@@ -324,7 +324,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   input: {
     width: '100%',
-    padding: '14px 16px',
+    padding: 'var(--space-md)',
     fontSize: '15px',
     border: '1.5px solid #e5e7eb',
     borderRadius: '10px',
@@ -343,7 +343,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
   },
   errorBanner: {
-    padding: '12px 16px',
+    padding: 'var(--space-sm) var(--space-md)',
     backgroundColor: '#fef2f2',
     border: '1px solid #fecaca',
     borderRadius: '10px',
@@ -353,7 +353,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   submitBtn: {
     width: '100%',
-    padding: '14px',
+    padding: 'var(--space-md)',
     fontSize: '15px',
     fontWeight: 600,
     color: '#1a1a1a',
@@ -362,7 +362,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '10px',
     cursor: 'pointer',
     transition: 'background-color 0.2s, transform 0.1s',
-    marginTop: '8px',
+    marginTop: 'var(--space-sm)',
     boxShadow: '0 4px 12px rgba(184, 225, 53, 0.35)',
   },
   submitBtnDisabled: {
@@ -371,7 +371,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   forgotLink: {
     textAlign: 'center' as const,
-    marginTop: '4px',
+    marginTop: 'var(--space-xs)',
   },
   link: {
     fontSize: '13px',
@@ -381,8 +381,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   footer: {
     textAlign: 'center' as const,
-    marginTop: '32px',
-    paddingTop: '20px',
+    marginTop: 'var(--space-xl)',
+    paddingTop: 'var(--space-md)',
     borderTop: '1px solid #e5e7eb',
   },
   footerText: {
