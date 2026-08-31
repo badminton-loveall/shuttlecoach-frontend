@@ -205,11 +205,12 @@ export const CoachesPage: React.FC = () => {
   const { students, loading: studentsLoading, refetch: refetchStudents } = useStudents();
 
   const [batches, setBatches] = useState<Batch[]>([]);
-  useEffect(() => {
-    apiClient.get<Batch[]>('/batches')
+  const refetchBatches = useCallback(() => {
+    return apiClient.get<Batch[]>('/batches')
       .then((r) => setBatches(r.data.map((b) => ({ ...b, createdAt: new Date(b.createdAt) }))))
       .catch(() => setBatches([]));
   }, []);
+  useEffect(() => { void refetchBatches(); }, [refetchBatches]);
 
   const [feeAccessOverrides, setFeeAccessOverrides] = useState<Record<string, boolean>>({});
   const coaches = rawCoaches.map((c) => ({ ...c, canAccessFees: feeAccessOverrides[c.id] ?? c.canAccessFees }));
@@ -241,7 +242,7 @@ export const CoachesPage: React.FC = () => {
 
   const handleDeleteCoachConfirm = async (coachId: string) => {
     await apiClient.delete(`/coaches/${coachId}`);
-    await Promise.all([refetchCoaches(), refetchStudents()]);
+    await Promise.all([refetchCoaches(), refetchStudents(), refetchBatches()]);
     if (selectedCoach?.id === coachId) setSelectedCoach(null);
     setIsDeleteCoachOpen(false);
     setCoachToDelete(null);
@@ -253,7 +254,7 @@ export const CoachesPage: React.FC = () => {
   });
 
   const handleAssignmentChange = async (_s: Student[], _b: Batch[]) => {
-    await Promise.all([refetchCoaches(), refetchStudents()]);
+    await Promise.all([refetchCoaches(), refetchStudents(), refetchBatches()]);
   };
 
   return (

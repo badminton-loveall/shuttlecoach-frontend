@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { User, Student, Batch } from '../types';
+import apiClient from '../utils/apiClient';
 import './AssignmentPanel.css';
 
 /**
@@ -30,6 +31,8 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
   const [selectedBatchId, setSelectedBatchId] = useState<string>('');
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [selectedBatchFilterId, setSelectedBatchFilterId] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [assignError, setAssignError] = useState<string | null>(null);
 
   if (!selectedCoach) {
     return (
@@ -56,53 +59,40 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
   const unassignedBatches = batches.filter((batch) => !batch.assignedCoachId);
   const unassignedStudents = students.filter((student) => !student.assignedCoachId);
 
-  // Handlers
+  // Handlers — each persists via PATCH /coaches/:id/assign, then hands the (unchanged)
+  // students/batches back to the parent purely to trigger its refetch from the server.
+  const runAssignment = async (body: { studentIds?: string[]; batchId?: string; action: 'ASSIGN' | 'UNASSIGN' }) => {
+    setIsSaving(true);
+    setAssignError(null);
+    try {
+      await apiClient.patch(`/coaches/${selectedCoach.id}/assign`, body);
+      onAssignmentChange(students, batches);
+    } catch (err) {
+      console.error('Failed to update coach assignment:', err);
+      setAssignError('Failed to save assignment. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleAssignBatch = () => {
     if (!selectedBatchId) return;
-    const batch = batches.find((b) => b.id === selectedBatchId);
-    if (!batch) return;
-
-    const updatedBatches = batches.map((b) =>
-      b.id === selectedBatchId ? { ...b, assignedCoachId: selectedCoach.id } : b
-    );
-    const updatedStudents = students.map((student) =>
-      student.batchId === selectedBatchId
-        ? { ...student, assignedCoachId: selectedCoach.id }
-        : student
-    );
-
-    onAssignmentChange(updatedStudents, updatedBatches);
+    void runAssignment({ batchId: selectedBatchId, action: 'ASSIGN' });
     setSelectedBatchId('');
   };
 
   const handleAssignStudent = () => {
     if (!selectedStudentId) return;
-    const updatedStudents = students.map((student) =>
-      student.id === selectedStudentId
-        ? { ...student, assignedCoachId: selectedCoach.id }
-        : student
-    );
-    onAssignmentChange(updatedStudents, batches);
+    void runAssignment({ studentIds: [selectedStudentId], action: 'ASSIGN' });
     setSelectedStudentId('');
   };
 
   const handleUnassignBatch = (batchId: string) => {
-    const updatedBatches = batches.map((b) =>
-      b.id === batchId ? { ...b, assignedCoachId: undefined } : b
-    );
-    const updatedStudents = students.map((student) =>
-      student.batchId === batchId && student.assignedCoachId === selectedCoach.id
-        ? { ...student, assignedCoachId: undefined }
-        : student
-    );
-    onAssignmentChange(updatedStudents, updatedBatches);
+    void runAssignment({ batchId, action: 'UNASSIGN' });
   };
 
   const handleUnassignStudent = (studentId: string) => {
-    const updatedStudents = students.map((student) =>
-      student.id === studentId ? { ...student, assignedCoachId: undefined } : student
-    );
-    onAssignmentChange(updatedStudents, batches);
+    void runAssignment({ studentIds: [studentId], action: 'UNASSIGN' });
   };
 
   // Filter students based on selected batch
@@ -131,6 +121,12 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
         </div>
       </div>
 
+      {assignError && (
+        <div className="p-md" style={{ backgroundColor: 'var(--feedback-danger-light)', border: '1px solid var(--color-danger-light)', borderRadius: 'var(--radius-md)' }}>
+          <p className="text-small" style={{ color: 'var(--color-danger-text)' }}>{assignError}</p>
+        </div>
+      )}
+
       {/* Assignment Form Card - Only for assistant coaches */}
       {!isHeadCoach && (
       <div className="assignment-form-section">
@@ -155,7 +151,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
             </select>
             <button
               onClick={handleAssignBatch}
-              disabled={!selectedBatchId}
+              disabled={!selectedBatchId || isSaving}
               className="btn-assign"
             >
               Assign
@@ -184,7 +180,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
             </select>
             <button
               onClick={handleAssignStudent}
-              disabled={!selectedStudentId}
+              disabled={!selectedStudentId || isSaving}
               className="btn-assign"
             >
               Assign
@@ -220,6 +216,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                         e.stopPropagation();
                         handleUnassignBatch(batch.id);
                       }}
+                      disabled={isSaving}
                       className="btn-action btn-action--danger"
                       title="Delete"
                       style={isHeadCoach ? { display: 'none' } : undefined}
@@ -255,6 +252,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                   </div>
                   <button
                     onClick={() => handleUnassignStudent(student.id)}
+                    disabled={isSaving}
                     className="btn-action btn-action--danger"
                     title="Delete"
                     style={isHeadCoach ? { display: 'none' } : undefined}
