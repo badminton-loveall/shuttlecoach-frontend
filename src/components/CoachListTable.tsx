@@ -188,9 +188,6 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {coach.name}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {coach.email || 'No email'}
-                        </div>
                       </div>
                     </div>
                   </td>

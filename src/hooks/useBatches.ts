@@ -24,13 +24,17 @@ export interface UseBatchesReturn {
 const FALLBACK_NAME = 'Unknown batch';
 
 /**
- * Parse a batch record from API response, ensuring Date fields are proper Date objects.
+ * Parse a batch record from API response (snake_case) into the camelCase Batch shape.
  */
 function parseBatchDates(raw: Record<string, unknown>): Batch {
   return {
-    ...raw,
-    createdAt: new Date(raw.createdAt as string),
-  } as Batch;
+    id: raw.id as string,
+    name: raw.name as string,
+    schedule: raw.schedule as string,
+    assignedCoachId: (raw.assigned_coach_id as string) || undefined,
+    studentCount: (raw.student_count as number) ?? 0,
+    createdAt: new Date(raw.created_at as string),
+  };
 }
 
 /**

@@ -222,13 +222,13 @@ describe('CoachListTable', () => {
     expect(coachRow?.textContent).toContain('0');
   });
 
-  it('should display coach email', () => {
+  it('should not display coach email', () => {
     renderWithProviders(
       <CoachListTable coaches={mockCoaches} students={mockStudents} batches={mockBatches} />
     );
 
-    expect(screen.getByText('priya@test.com')).toBeInTheDocument();
-    expect(screen.getByText('vikram@test.com')).toBeInTheDocument();
+    expect(screen.queryByText('priya@test.com')).not.toBeInTheDocument();
+    expect(screen.queryByText('vikram@test.com')).not.toBeInTheDocument();
   });
 
   it('should show "Always on" label for HEAD_COACH fee toggle', () => {

@@ -203,7 +203,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                 <div key={student.id} className="assignment-item student-item">
                   <div className="item-content">
                     <p className="item-name">{student.fullName}</p>
-                    <p className="item-meta">{student.skillLevel} • {student.batchId || 'N/A'}</p>
+                    <p className="item-meta">{student.skillLevel} • {student.batchId ? getBatchName(student.batchId) : 'N/A'}</p>
                   </div>
                   <button
                     onClick={() => handleUnassignStudent(student.id)}
