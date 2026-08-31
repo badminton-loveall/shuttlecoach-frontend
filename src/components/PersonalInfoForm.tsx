@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Student, Gender, Batch } from '../types';
+import React, { useState, useMemo, useCallback } from 'react';
+import type { Student, Gender } from '../types';
 import { calculateAge, calculateBMI } from '../utils/studentUtils';
-import apiClient from '../utils/apiClient';
+import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import './PersonalInfoForm.css';
 
 /**
@@ -31,7 +31,6 @@ interface FormData {
   guardianName: string;
   guardianPhone: string;
   baidNumber: string;
-  batchId: string;
   height: string;
   weight: string;
   bloodGroup: string;
@@ -88,7 +87,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     guardianName: student.guardianName || '',
     guardianPhone: student.guardianPhone || '',
     baidNumber: student.baidNumber || '',
-    batchId: student.batchId || '',
     height: student.height ? String(student.height) : '',
     weight: student.weight ? String(student.weight) : '',
     bloodGroup: student.bloodGroup || '',
@@ -98,30 +96,10 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Fetch batches for dropdown and name resolution
-  const [batches, setBatches] = useState<Batch[]>([]);
-  const [batchesLoading, setBatchesLoading] = useState(true);
-  useEffect(() => {
-    const loadBatches = async () => {
-      try {
-        const response = await apiClient.get('/batches');
-        const batchData = response.data.batches || response.data;
-        setBatches(Array.isArray(batchData) ? batchData : []);
-      } catch {
-        setBatches([]);
-      } finally {
-        setBatchesLoading(false);
-      }
-    };
-    void loadBatches();
-  }, []);
-
-  // Helper to resolve batch ID to name
-  const getBatchName = useCallback((batchId: string | undefined) => {
-    if (!batchId) return '';
-    const batch = batches.find(b => b.id === batchId);
-    return batch ? batch.name : batchId;
-  }, [batches]);
+  // Active enrollment summary (batch timing, curriculum, coach, start date, fee) for the
+  // read-only Enrollment Details card — the enrollment flow itself is managed further down
+  // the Profile tab, in EnrollmentSection.
+  const { activeEnrollment } = useStudentEnrollments(student.id);
 
   // Compute age from DOB
   const computedAge = useMemo(() => {
@@ -218,7 +196,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         guardianName: formData.guardianName.trim() || undefined,
         guardianPhone: formData.guardianPhone.trim() || undefined,
         baidNumber: formData.baidNumber.trim() || undefined,
-        batchId: formData.batchId.trim() || undefined,
         height: formData.height ? parseFloat(formData.height) : undefined,
         weight: formData.weight ? parseFloat(formData.weight) : undefined,
         bloodGroup: formData.bloodGroup || undefined,
@@ -261,6 +238,13 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                 <span className="field-label">Gender</span>
                 <span className="field-value">{student.gender}</span>
               </div>
+
+              {student.baidNumber && (
+                <div className="form-field">
+                  <span className="field-label">BAID Number</span>
+                  <span className="field-value">{student.baidNumber}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -311,22 +295,39 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             </div>
           )}
 
-          {/* Academy Information Card */}
-          {(student.baidNumber || student.batchId) && (
+          {/* Enrollment Details Card — full management (edit/history) lives in the
+              Enrollment section below; this is a quick-glance summary alongside the
+              other read-only cards. */}
+          {activeEnrollment && (
             <div className="form-group">
-              <h3 className="form-group-title">Academy Information</h3>
+              <h3 className="form-group-title">Enrollment Details</h3>
               <div className="form-grid">
-                {student.baidNumber && (
-                  <div className="form-field">
-                    <span className="field-label">BAID Number</span>
-                    <span className="field-value">{student.baidNumber}</span>
-                  </div>
-                )}
+                <div className="form-field">
+                  <span className="field-label">Batch Timing</span>
+                  <span className="field-value">{activeEnrollment.templateName || '—'}</span>
+                </div>
 
-                {student.batchId && (
+                <div className="form-field">
+                  <span className="field-label">Curriculum</span>
+                  <span className="field-value">{activeEnrollment.curriculumName || '—'}</span>
+                </div>
+
+                <div className="form-field">
+                  <span className="field-label">Coach</span>
+                  <span className="field-value">{activeEnrollment.coachName || '—'}</span>
+                </div>
+
+                <div className="form-field">
+                  <span className="field-label">Start Date</span>
+                  <span className="field-value">
+                    {new Date(`${activeEnrollment.startDate}T00:00:00`).toLocaleDateString()}
+                  </span>
+                </div>
+
+                {activeEnrollment.monthlyFee != null && (
                   <div className="form-field">
-                    <span className="field-label">Batch</span>
-                    <span className="field-value">{getBatchName(student.batchId)}</span>
+                    <span className="field-label">Monthly Fee</span>
+                    <span className="field-value">₹{activeEnrollment.monthlyFee}</span>
                   </div>
                 )}
               </div>
@@ -594,35 +595,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               onChange={(e) => handleChange('baidNumber', e.target.value)}
               placeholder="Enter BAID registration number"
             />
-          </div>
-
-          <div className="form-field">
-            <label className="field-label" htmlFor="batchId">
-              Batch
-            </label>
-            <select
-              id="batchId"
-              className="field-input field-select"
-              value={formData.batchId}
-              onChange={(e) => handleChange('batchId', e.target.value)}
-              disabled={batchesLoading}
-            >
-              {batchesLoading ? (
-                // Keep the current batch selected (even before the full list has loaded)
-                // instead of falling back to the "Select a batch" placeholder, which would
-                // otherwise render as the selected option and look like the assignment was lost.
-                <option value={formData.batchId}>
-                  {formData.batchId ? 'Loading…' : 'Select a batch'}
-                </option>
-              ) : (
-                <>
-                  <option value="">Select a batch</option>
-                  {batches.map((batch) => (
-                    <option key={batch.id} value={batch.id}>{batch.name}</option>
-                  ))}
-                </>
-              )}
-            </select>
           </div>
 
           <div className="form-field">
