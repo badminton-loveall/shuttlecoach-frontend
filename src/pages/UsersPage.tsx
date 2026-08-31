@@ -255,10 +255,15 @@ export const CoachesPage: React.FC = () => {
     setCoachToDelete(null);
   };
 
-  const getDeleteStats = (c: User | null) => ({
-    batchCount: batches.filter((b) => b.assignedCoachId === c?.id).length,
-    studentCount: students.filter((s) => s.assignedCoachId === c?.id).length,
-  });
+  const getDeleteStats = (c: User | null) => {
+    const batchIds = new Set<string>();
+    batches.forEach((b) => { if (b.assignedCoachId === c?.id) batchIds.add(b.id); });
+    students.forEach((s) => { if (s.assignedCoachId === c?.id && s.batchId) batchIds.add(s.batchId); });
+    return {
+      batchCount: batchIds.size,
+      studentCount: students.filter((s) => s.assignedCoachId === c?.id).length,
+    };
+  };
 
   const handleAssignmentChange = async (_s: Student[], _b: Batch[]) => {
     await Promise.all([refetchCoaches(), refetchStudents(), refetchBatches()]);

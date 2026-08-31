@@ -46,14 +46,23 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
         (student) => student.assignedCoachId === coachId
       ).length;
 
-      // Count assigned batches
-      const assignedBatchCount = batches.filter(
-        (batch) => batch.assignedCoachId === coachId
-      ).length;
+      // A batch counts as "assigned" either because it was explicitly assigned to this
+      // coach, or because at least one of the coach's individually-assigned students
+      // belongs to it — a student's own coach assignment should be reflected here too,
+      // not just the separate manual batch-level assignment.
+      const assignedBatchIds = new Set<string>();
+      batches.forEach((batch) => {
+        if (batch.assignedCoachId === coachId) assignedBatchIds.add(batch.id);
+      });
+      students.forEach((student) => {
+        if (student.assignedCoachId === coachId && student.batchId) {
+          assignedBatchIds.add(student.batchId);
+        }
+      });
 
       return {
         studentCount: assignedStudentCount,
-        batchCount: assignedBatchCount,
+        batchCount: assignedBatchIds.size,
       };
     };
   }, [students, batches]);
