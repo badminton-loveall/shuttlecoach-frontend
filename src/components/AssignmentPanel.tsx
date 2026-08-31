@@ -47,15 +47,23 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
 
   // Data preparation
   const isHeadCoach = selectedCoach.role === 'HEAD_COACH';
-  
+
   // Head coach sees ALL batches and students in the center (readonly overview)
   // Assistant coaches only see their directly assigned ones
-  const assignedBatches = isHeadCoach
-    ? batches
-    : batches.filter((batch) => batch.assignedCoachId === selectedCoach.id);
   const assignedStudents = isHeadCoach
     ? students
     : students.filter((student) => student.assignedCoachId === selectedCoach.id);
+
+  // A batch counts as assigned to the coach either because it was explicitly assigned
+  // (the manual "Assign to Batch" action below) or because one of the coach's
+  // individually-assigned students belongs to it — matches the same derivation used
+  // for the "Assigned Batches" count on the coaches list.
+  const assignedBatches = isHeadCoach
+    ? batches
+    : batches.filter((batch) =>
+        batch.assignedCoachId === selectedCoach.id ||
+        assignedStudents.some((student) => student.batchId === batch.id)
+      );
   const unassignedBatches = batches.filter((batch) => !batch.assignedCoachId);
   const unassignedStudents = students.filter((student) => !student.assignedCoachId);
 
