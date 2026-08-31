@@ -34,6 +34,7 @@ export interface SessionCalendarFilters {
   startDate: string;
   endDate: string;
   batchId?: string;
+  studentId?: string;
 }
 
 export interface SessionNoteFilters {
@@ -237,7 +238,7 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
       return;
     }
 
-    const cacheKey = `sc_session_calendar_${filters.startDate}_${filters.endDate}_${filters.batchId || ''}`;
+    const cacheKey = `sc_session_calendar_${filters.startDate}_${filters.endDate}_${filters.batchId || ''}_${filters.studentId || ''}`;
 
     // Try cache first (unless bypassing)
     if (!bypassCache) {
@@ -264,6 +265,7 @@ export function useSessionCalendar(filters?: SessionCalendarFilters) {
       params.append('startDate', filters.startDate);
       params.append('endDate', filters.endDate);
       if (filters.batchId) params.append('batchId', filters.batchId);
+      if (filters.studentId) params.append('studentId', filters.studentId);
 
       const response = await apiClient.get<SessionCalendarResponse>(
         `/session-calendar?${params.toString()}`

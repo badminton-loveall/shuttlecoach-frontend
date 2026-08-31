@@ -15,11 +15,13 @@ import type { SkillLevel } from '../../types';
 interface StudentScheduleCalendarProps {
   batchId: string; // empty string means no batch assigned
   skillLevel?: SkillLevel;
+  studentId?: string; // when provided, drills come from this student's own curriculum plan
 }
 
 export default function StudentScheduleCalendar({
   batchId,
   skillLevel,
+  studentId,
 }: StudentScheduleCalendarProps) {
   const now = new Date();
   const [viewedYear, setViewedYear] = useState(now.getFullYear());
@@ -32,8 +34,11 @@ export default function StudentScheduleCalendar({
     [viewedYear, viewedMonth]
   );
 
-  // Fetch calendar entries via hook
-  const { entries, loading } = useSessionCalendar({ startDate, endDate, batchId });
+  // Fetch calendar entries via hook — pass studentId (not batchId) when known, so the backend
+  // resolves drills from this student's own curriculum plan rather than the legacy batch one.
+  const { entries, loading } = useSessionCalendar(
+    studentId ? { startDate, endDate, studentId } : { startDate, endDate, batchId }
+  );
 
   // Computed values
   const gridDays = useMemo(

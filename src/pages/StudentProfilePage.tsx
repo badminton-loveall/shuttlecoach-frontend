@@ -296,7 +296,7 @@ export const StudentProfilePage: React.FC = () => {
             aria-labelledby={`tab-${validTab}`}
           >
             {validTab === 'profile' && <ProfileTabContent student={student} />}
-            {validTab === 'schedule' && <ScheduleTabContent student={student} refetchStudent={refetch} />}
+            {validTab === 'schedule' && <ScheduleTabContent student={student} />}
             {validTab === 'training' && <TrainingTabContent student={student} />}
             {validTab === 'progress' && <ProgressTabContent student={student} />}
             {validTab === 'fees' && <FeesTabContent student={student} />}
@@ -344,86 +344,16 @@ const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
 );
 
 /**
- * Schedule Tab — prominent batch assignment + training calendar
- * Shows the student's current batch with a dropdown to change it,
- * and displays the upcoming training sessions based on the batch's schedule.
+ * Schedule Tab — training calendar for the student's current batch.
+ * Batch assignment itself is managed via the enrollment flow (Profile tab), not here.
  */
-const ScheduleTabContent: React.FC<{ student: Student; refetchStudent: () => void }> = ({ student, refetchStudent }) => {
-  const [selectedBatchId, setSelectedBatchId] = useState(student.batchId || '');
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState('');
-  const { batches } = useBatches();
-
-  const handleBatchChange = async () => {
-    if (selectedBatchId === (student.batchId || '')) return;
-
-    setIsSaving(true);
-    setSaveMessage('');
-    try {
-      await apiClient.patch(`/students/${student.id}`, { batchId: selectedBatchId || null });
-      setSaveMessage('Batch updated successfully');
-      refetchStudent();
-      setTimeout(() => setSaveMessage(''), 3000);
-    } catch {
-      setSaveMessage('Error updating batch. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
+const ScheduleTabContent: React.FC<{ student: Student }> = ({ student }) => {
   return (
     <div>
       <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Batch & Training Schedule</h2>
 
-      {/* Batch Assignment */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)', flexWrap: 'wrap' }}>
-        <div style={{ marginBottom: 0, flex: '1 1 280px' }}>
-          <label htmlFor="student-batch" style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', color: 'hsl(var(--foreground))', marginBottom: '6px' }}>Assigned Batch</label>
-          <select
-            id="student-batch"
-            value={selectedBatchId}
-            onChange={(e) => setSelectedBatchId(e.target.value)}
-            disabled={isSaving}
-            style={{
-              width: '100%',
-              padding: '10px 14px',
-              fontSize: '0.875rem',
-              fontWeight: 500,
-              border: '1px solid #d1d5db',
-              borderRadius: 'var(--radius)',
-              backgroundColor: 'transparent',
-              color: 'hsl(var(--foreground))',
-              appearance: 'none',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-              paddingRight: '36px',
-              cursor: isSaving ? 'not-allowed' : 'pointer',
-              opacity: isSaving ? 0.6 : 1,
-            }}
-          >
-            <option value="">No batch assigned</option>
-            {batches.map((batch) => (
-              <option key={batch.id} value={batch.id}>{batch.name}</option>
-            ))}
-          </select>
-        </div>
-        <button
-          onClick={handleBatchChange}
-          disabled={isSaving || selectedBatchId === (student.batchId || '')}
-          className="btn btn-primary"
-        >
-          {isSaving ? 'Saving...' : 'Update Batch'}
-        </button>
-        {saveMessage && (
-          <span className="text-small" style={{ color: saveMessage.includes('Error') ? 'var(--color-danger, #dc2626)' : 'var(--color-success, #16a34a)' }}>
-            {saveMessage}
-          </span>
-        )}
-      </div>
-
       {/* Calendar component */}
-      <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} />
+      <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} studentId={student.id} />
     </div>
   );
 };
