@@ -36,35 +36,36 @@ function getCorrelationLabel(coefficient: number): { text: string; color: string
   if (abs >= 0.7) {
     return {
       text: coefficient > 0 ? 'Strong positive' : 'Strong negative',
-      color: coefficient > 0 ? 'text-green-600' : 'text-red-600',
+      color: coefficient > 0 ? 'var(--color-success)' : 'var(--color-danger)',
     };
   }
   if (abs >= 0.4) {
     return {
       text: coefficient > 0 ? 'Moderate positive' : 'Moderate negative',
-      color: coefficient > 0 ? 'text-green-500' : 'text-orange-500',
+      color: coefficient > 0 ? 'var(--color-success)' : 'var(--color-warning)',
     };
   }
   if (abs >= 0.2) {
     return {
       text: coefficient > 0 ? 'Weak positive' : 'Weak negative',
-      color: 'text-yellow-600',
+      color: 'var(--color-warning)',
     };
   }
-  return { text: 'No correlation', color: 'text-gray-500' };
+  return { text: 'No correlation', color: 'var(--text-tertiary)' };
 }
 
 export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, className = '' }) => {
   if (!report || report.dataPoints.length === 0) {
     return (
       <div
-        className={`rounded-lg border border-[#E4E9EC] bg-[var(--surface-card)] p-6 ${className}`}
+        className={`card ${className}`}
+        style={{ border: '1px solid var(--border-default)' }}
         data-testid="skill-trend-chart"
       >
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">
+        <h3 style={{ marginBottom: 'var(--space-md)', marginTop: 0, fontSize: 'var(--font-base)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
           Attendance vs Skill Trend
         </h3>
-        <p className="text-sm text-gray-500">
+        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
           No trend data available yet. Data will appear after completing at least one training cycle.
         </p>
       </div>
@@ -86,28 +87,29 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
 
   return (
     <div
-      className={`rounded-lg border border-[#E4E9EC] bg-[var(--surface-card)] p-6 ${className}`}
+      className={`card ${className}`}
+      style={{ border: '1px solid var(--border-default)' }}
       data-testid="skill-trend-chart"
     >
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between" style={{ marginBottom: 'var(--space-md)' }}>
+        <h3 style={{ margin: 0, fontSize: 'var(--font-base)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
           Attendance vs Skill Trend
         </h3>
 
         {correlationInfo && correlationCoefficient !== undefined && (
-          <div className="flex items-center gap-2 text-sm" data-testid="correlation-display">
-            <span className="text-gray-500">Correlation:</span>
-            <span className={`font-medium ${correlationInfo.color}`}>
+          <div className="flex items-center gap-2" style={{ fontSize: 'var(--font-sm)' }} data-testid="correlation-display">
+            <span style={{ color: 'var(--text-secondary)' }}>Correlation:</span>
+            <span style={{ fontWeight: 'var(--weight-medium)', color: correlationInfo.color }}>
               {correlationCoefficient.toFixed(2)}
             </span>
-            <span className={`text-xs ${correlationInfo.color}`}>
+            <span style={{ fontSize: 'var(--font-xs)', color: correlationInfo.color }}>
               ({correlationInfo.text})
             </span>
           </div>
         )}
 
         {correlationCoefficient === undefined && dataPoints.length < 3 && (
-          <p className="text-xs text-gray-500" data-testid="insufficient-cycles-notice">
+          <p style={{ fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)' }} data-testid="insufficient-cycles-notice">
             Correlation requires 3+ cycles of data
           </p>
         )}
@@ -119,12 +121,12 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
             data={dataPoints}
             margin={{ top: 8, right: 16, left: 8, bottom: 8 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#E4E9EC" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" />
             <XAxis
               dataKey="cycleKey"
-              tick={{ fill: '#6B7885', fontSize: 11 }}
-              axisLine={{ stroke: '#D1D9DE' }}
-              tickLine={{ stroke: '#D1D9DE' }}
+              tick={{ fill: 'var(--text-tertiary)', fontSize: 11 }}
+              axisLine={{ stroke: 'var(--border-strong)' }}
+              tickLine={{ stroke: 'var(--border-strong)' }}
             />
             {/* Left Y-axis: Attendance Percentage (0-100%) */}
             <YAxis
@@ -132,15 +134,15 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
               orientation="left"
               domain={[0, maxAttendance]}
               tickCount={6}
-              tick={{ fill: '#34d399', fontSize: 11 }}
-              axisLine={{ stroke: '#34d399' }}
-              tickLine={{ stroke: '#34d399' }}
+              tick={{ fill: 'var(--color-success)', fontSize: 11 }}
+              axisLine={{ stroke: 'var(--color-success)' }}
+              tickLine={{ stroke: 'var(--color-success)' }}
               label={{
                 value: 'Attendance %',
                 angle: -90,
                 position: 'insideLeft',
                 offset: -4,
-                style: { fill: '#34d399', fontSize: 11 },
+                style: { fill: 'var(--color-success)', fontSize: 11 },
               }}
             />
             {/* Right Y-axis: Skill Score (0-max) */}
@@ -149,24 +151,24 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
               orientation="right"
               domain={[0, Math.ceil(maxSkillScore)]}
               tickCount={5}
-              tick={{ fill: '#60a5fa', fontSize: 11 }}
-              axisLine={{ stroke: '#60a5fa' }}
-              tickLine={{ stroke: '#60a5fa' }}
+              tick={{ fill: 'var(--color-info)', fontSize: 11 }}
+              axisLine={{ stroke: 'var(--color-info)' }}
+              tickLine={{ stroke: 'var(--color-info)' }}
               label={{
                 value: 'Skill Score',
                 angle: 90,
                 position: 'insideRight',
                 offset: -4,
-                style: { fill: '#60a5fa', fontSize: 11 },
+                style: { fill: 'var(--color-info)', fontSize: 11 },
               }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: '#F8FAFB',
-                border: '1px solid #E4E9EC',
-                borderRadius: '8px',
+                backgroundColor: 'var(--surface-card)',
+                border: '1px solid var(--border-default)',
+                borderRadius: 'var(--radius-sm)',
               }}
-              labelStyle={{ color: '#0A0D11' }}
+              labelStyle={{ color: 'var(--text-primary)' }}
               formatter={(value: any, name: any) => {
                 const v = Number(value);
                 if (name === 'Attendance %') return [`${v.toFixed(1)}%`, name];
@@ -179,9 +181,9 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
               type="monotone"
               dataKey="attendancePercentage"
               name="Attendance %"
-              stroke="#34d399"
+              stroke="var(--color-success)"
               strokeWidth={2}
-              dot={{ r: 4, fill: '#34d399' }}
+              dot={{ r: 4, fill: 'var(--color-success)' }}
               activeDot={{ r: 6 }}
             />
             <Line
@@ -189,9 +191,9 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
               type="monotone"
               dataKey="avgSkillScore"
               name="Skill Score"
-              stroke="#60a5fa"
+              stroke="var(--color-info)"
               strokeWidth={2}
-              dot={{ r: 4, fill: '#60a5fa' }}
+              dot={{ r: 4, fill: 'var(--color-info)' }}
               activeDot={{ r: 6 }}
             />
           </LineChart>
@@ -199,19 +201,22 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({ report, classN
       </div>
 
       {/* Data summary footer */}
-      <div className="mt-4 flex flex-wrap gap-4 border-t border-[#E4E9EC] pt-3 text-xs text-gray-500">
+      <div
+        className="flex flex-wrap gap-4"
+        style={{ marginTop: 'var(--space-md)', borderTop: '1px solid var(--border-default)', paddingTop: 'var(--space-sm)', fontSize: 'var(--font-xs)', color: 'var(--text-secondary)' }}
+      >
         <span>
-          Cycles: <span className="font-medium text-gray-800">{dataPoints.length}</span>
+          Cycles: <span style={{ fontWeight: 'var(--weight-medium)', color: 'var(--text-primary)' }}>{dataPoints.length}</span>
         </span>
         <span>
           Avg Attendance:{' '}
-          <span className="font-medium text-green-600">
+          <span style={{ fontWeight: 'var(--weight-medium)', color: 'var(--color-success)' }}>
             {(dataPoints.reduce((sum: number, d: TrendDataPoint) => sum + d.attendancePercentage, 0) / dataPoints.length).toFixed(1)}%
           </span>
         </span>
         <span>
           Avg Skill Score:{' '}
-          <span className="font-medium text-blue-600">
+          <span style={{ fontWeight: 'var(--weight-medium)', color: 'var(--color-info)' }}>
             {(dataPoints.reduce((sum: number, d: TrendDataPoint) => sum + d.avgSkillScore, 0) / dataPoints.length).toFixed(2)}
           </span>
         </span>

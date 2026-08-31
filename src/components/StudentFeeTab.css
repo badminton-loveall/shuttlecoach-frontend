@@ -117,7 +117,7 @@
 }
 
 .fee-tab-title {
-  font-size: var(--font-lg);
+  font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   margin: 0 0 var(--space-xs) 0;

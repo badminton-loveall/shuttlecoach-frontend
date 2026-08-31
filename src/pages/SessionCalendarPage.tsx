@@ -421,7 +421,10 @@ const SessionDetailPanel: React.FC<SessionDetailPanelProps> = ({
           <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
             Batch
           </p>
-          <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-sm font-medium text-blue-800">
+          <span
+            className="inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium"
+            style={{ backgroundColor: 'var(--feedback-info-light)', color: 'var(--color-info-text)' }}
+          >
             {entry.batchName}
           </span>
         </div>
@@ -444,7 +447,10 @@ const SessionDetailPanel: React.FC<SessionDetailPanelProps> = ({
             <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
               Curriculum Week
             </p>
-            <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-sm font-medium text-purple-800">
+            <span
+              className="inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium"
+              style={{ backgroundColor: 'rgba(184, 225, 53, 0.15)', color: 'var(--color-primary-dark)' }}
+            >
               Week {entry.weekNumber}
             </span>
           </div>
@@ -463,7 +469,7 @@ const SessionDetailPanel: React.FC<SessionDetailPanelProps> = ({
                   className="flex items-center gap-2 text-sm"
                   style={{ color: 'var(--text-secondary)' }}
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" aria-hidden="true" />
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)' }} aria-hidden="true" />
                   {drill}
                 </li>
               ))}
@@ -507,13 +513,13 @@ const SessionDetailPanel: React.FC<SessionDetailPanelProps> = ({
             Attendance Status
           </p>
           {entry.attendanceRecorded ? (
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700">
-              <span className="w-2 h-2 rounded-full bg-green-500" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: 'var(--color-success-dark)' }}>
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} aria-hidden="true" />
               Recorded
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>
-              <span className="w-2 h-2 rounded-full bg-gray-300" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--color-slate-300)' }} aria-hidden="true" />
               Not recorded
             </span>
           )}
@@ -532,7 +538,7 @@ const SessionDetailPanel: React.FC<SessionDetailPanelProps> = ({
           <button
             type="button"
             onClick={onMarkAttendance}
-            className="w-full flex items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50"
+            className="btn btn-info w-full flex items-center justify-center gap-2"
             disabled={entry.attendanceRecorded}
           >
             {/* Checkmark icon */}

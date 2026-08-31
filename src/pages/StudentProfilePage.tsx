@@ -295,6 +295,9 @@ export const StudentProfilePage: React.FC = () => {
             id={`tabpanel-${validTab}`}
             aria-labelledby={`tab-${validTab}`}
           >
+            <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>
+              {TABS.find((tab) => tab.id === validTab)?.label}
+            </h2>
             {validTab === 'profile' && <ProfileTabContent student={student} />}
             {validTab === 'schedule' && <ScheduleTabContent student={student} />}
             {validTab === 'training' && <TrainingTabContent student={student} />}
@@ -347,12 +350,7 @@ const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
  */
 const ScheduleTabContent: React.FC<{ student: Student }> = ({ student }) => {
   return (
-    <div>
-      <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Batch & Training Schedule</h2>
-
-      {/* Calendar component */}
-      <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} studentId={student.id} />
-    </div>
+    <StudentScheduleCalendar batchId={student.batchId || ''} skillLevel={student.skillLevel} studentId={student.id} />
   );
 };
 
@@ -458,7 +456,6 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
         <>
           <SkillProgressionTracker studentId={student.id} />
           <hr className="my-8" style={{ borderColor: 'var(--border-default)' }} />
-          <h2 className="text-h3" style={{ marginBottom: 'var(--space-lg)', marginTop: 0 }}>Progress & Assessments</h2>
           <p className="progress-subtitle">
             Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
           </p>
@@ -623,10 +620,19 @@ const SkillAnalyticsTabContent: React.FC<{ student: Student }> = ({ student }) =
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-blue-200 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Loading skill analytics...</p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-2xl) 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-sm)' }}>
+          <div
+            className="animate-spin"
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              border: '4px solid var(--border-default)',
+              borderTopColor: 'var(--color-primary)',
+            }}
+          />
+          <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>Loading skill analytics…</p>
         </div>
       </div>
     );
@@ -634,20 +640,17 @@ const SkillAnalyticsTabContent: React.FC<{ student: Student }> = ({ student }) =
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-xl)' }}>
+        <p style={{ fontSize: 'var(--font-sm)', color: 'var(--color-danger)' }}>{error}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-100 mb-4">Skill Improvement Analytics</h2>
-      <p className="text-sm text-gray-400 mb-6">
+      <p className="text-small" style={{ marginBottom: 'var(--space-lg)' }}>
         Tracks the relationship between attendance consistency and skill progression for{' '}
-        <span className="text-gray-200 font-medium">{student.fullName}</span> across training cycles.
+        <span style={{ color: 'var(--text-primary)', fontWeight: 'var(--weight-medium)' }}>{student.fullName}</span> across training cycles.
       </p>
       <SkillTrendChart report={trendReport} />
     </div>

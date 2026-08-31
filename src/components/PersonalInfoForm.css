@@ -12,7 +12,7 @@
 
 .form-section-title {
   margin: 0;
-  font-size: var(--font-lg);
+  font-size: var(--font-base);
   font-weight: var(--weight-bold);
   color: var(--text-primary);
   font-family: var(--font-display);
@@ -46,7 +46,7 @@
 }
 
 .form-group-title {
-  font-size: var(--font-base);
+  font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   padding: var(--space-md) var(--space-lg) var(--space-sm);

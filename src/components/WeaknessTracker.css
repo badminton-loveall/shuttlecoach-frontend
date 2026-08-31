@@ -6,10 +6,10 @@
 }
 
 .skill-assessment__title {
-  font-size: var(--font-lg, 1.125rem);
+  font-size: var(--font-base, 1rem);
   font-weight: var(--weight-semibold, 600);
   margin-bottom: var(--space-md, 1rem);
-  color: #111827;
+  color: var(--text-primary, #111827);
 }
 
 .skill-assessment__grid {

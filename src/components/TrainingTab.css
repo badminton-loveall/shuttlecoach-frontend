@@ -21,7 +21,7 @@
 /* === 2. Section Headings === */
 
 .training-tab-heading {
-  font-size: var(--font-lg);
+  font-size: var(--font-base);
   font-weight: var(--weight-semibold);
   color: var(--text-primary);
   line-height: var(--line-snug);

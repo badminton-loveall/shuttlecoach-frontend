@@ -75,8 +75,8 @@ function SessionEntry({
 
   return (
     <div
-      className={`rounded-lg p-4 bg-[var(--surface-card)] transition-all duration-200${isClickable ? ' cursor-pointer hover:shadow-md hover:border-blue-300' : ''}${isExpanded ? ' border-blue-500 shadow-sm' : ''}`}
-      style={{ border: `1px solid ${isExpanded ? 'var(--color-blue-500, #3b82f6)' : 'var(--border-default)'}` }}
+      className={`rounded-lg p-4 bg-[var(--surface-card)] transition-all duration-200${isClickable ? ' cursor-pointer hover:shadow-md hover:border-[var(--color-info-light)]' : ''}${isExpanded ? ' shadow-sm' : ''}`}
+      style={{ border: `1px solid ${isExpanded ? 'var(--color-info)' : 'var(--border-default)'}` }}
       onClick={isClickable ? () => onClick(entry) : undefined}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
@@ -87,7 +87,8 @@ function SessionEntry({
         <div className="flex items-center gap-2">
           {/* Clock icon */}
           <svg
-            className="w-4 h-4 text-blue-500"
+            className="w-4 h-4"
+            style={{ color: 'var(--color-info)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -100,18 +101,22 @@ function SessionEntry({
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
             {formatTime(entry.startTime)} - {formatTime(entry.endTime)}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+          <span
+            className="text-xs font-medium px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: 'var(--feedback-info-light)', color: 'var(--color-info-text)' }}
+          >
             {entry.batchName}
           </span>
           {/* Chevron indicator — rotates when expanded */}
           {isClickable && (
             <svg
-              className={`w-4 h-4 text-gray-500 transition-transform duration-200${isExpanded ? ' rotate-90' : ''}`}
+              className={`w-4 h-4 transition-transform duration-200${isExpanded ? ' rotate-90' : ''}`}
+              style={{ color: 'var(--text-tertiary)' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -132,7 +137,8 @@ function SessionEntry({
       {showDate && (
         <div className="flex items-center gap-1.5 mb-3">
           <svg
-            className="w-3.5 h-3.5 text-orange-500"
+            className="w-3.5 h-3.5"
+            style={{ color: 'var(--color-warning)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -145,7 +151,7 @@ function SessionEntry({
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <span className="text-xs font-medium text-orange-600">
+          <span className="text-xs font-medium" style={{ color: 'var(--color-warning-dark)' }}>
             {formatDate(entry.date)}
           </span>
         </div>
@@ -154,10 +160,10 @@ function SessionEntry({
       {/* Focus Area */}
       {entry.focusArea && (
         <div className="mb-3">
-          <p className="text-xs uppercase tracking-wide font-medium text-gray-500 mb-1">
+          <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
             Focus Area
           </p>
-          <p className="text-sm font-medium text-gray-800">
+          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
             {entry.focusArea}
           </p>
         </div>
@@ -166,16 +172,17 @@ function SessionEntry({
       {/* Planned Drills */}
       {entry.drills && entry.drills.length > 0 && (
         <div className="mb-3">
-          <p className="text-xs uppercase tracking-wide font-medium text-gray-500 mb-1.5">
+          <p className="text-xs uppercase tracking-wide font-medium mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
             Planned Drills
           </p>
           <ul className="space-y-1">
             {entry.drills.map((drill, idx) => (
               <li
                 key={idx}
-                className="flex items-center gap-2 text-sm text-gray-700"
+                className="flex items-center gap-2 text-sm"
+                style={{ color: 'var(--text-secondary)' }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)' }} />
                 {drill}
               </li>
             ))}
@@ -186,10 +193,10 @@ function SessionEntry({
       {/* Coach Note */}
       {entry.coachNote && (
         <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border-default)' }}>
-          <p className="text-xs uppercase tracking-wide font-medium text-gray-500 mb-1">
+          <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
             Coach Note
           </p>
-          <p className="text-sm text-gray-700 italic">
+          <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
             {entry.coachNote}
           </p>
         </div>
@@ -257,8 +264,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
     return (
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
-          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading session info...</p>
+          <div className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-info)', borderTopColor: 'transparent' }} />
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading session info...</p>
         </div>
       </div>
     );
@@ -268,7 +275,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
   if (error) {
     return (
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>
       </div>
     );
   }
@@ -279,7 +286,8 @@ export const SessionCard: React.FC<SessionCardProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-5 h-5"
+            style={{ color: 'var(--text-tertiary)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -292,7 +300,7 @@ export const SessionCard: React.FC<SessionCardProps> = ({
               d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
             No upcoming sessions scheduled
           </p>
         </div>
@@ -304,12 +312,15 @@ export const SessionCard: React.FC<SessionCardProps> = ({
     <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
       {/* Card Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-gray-900">
+        <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
           {isFutureDate ? 'Next Session' : "Today's Session"}
           {variant === 'coach' && sessionsToShow.length > 1 && 's'}
         </h3>
         {isFutureDate && sessionsToShow.length > 0 && (
-          <span className="text-xs font-medium bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+          <span
+            className="text-xs font-medium px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: 'var(--feedback-warning-light)', color: 'var(--color-warning-text)' }}
+          >
             Upcoming
           </span>
         )}

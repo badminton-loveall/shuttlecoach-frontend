@@ -128,6 +128,10 @@ export interface Student {
   archivedAt?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Enrichment fields populated by GET /students/:id (joined from batches/users)
+  batchName?: string;
+  assignedCoachName?: string;
+  assignedCoachPhoto?: string;
 }
 
 /* ============================================================================
