@@ -138,16 +138,15 @@ export default function StudentScheduleCalendar({
           )}
         </div>
 
-        {selectedDate && selectedEntries.length > 0 && (
-          <div className="student-schedule-calendar__panel-col">
-            <DetailPanel
-              entries={selectedEntries}
-              date={selectedDate}
-              onClose={() => setSelectedDate(null)}
-            />
-          </div>
-        )}
       </div>
+
+      {selectedDate && selectedEntries.length > 0 && (
+        <DetailPanel
+          entries={selectedEntries}
+          date={selectedDate}
+          onClose={() => setSelectedDate(null)}
+        />
+      )}
     </div>
   );
 }

@@ -13,40 +13,19 @@
   width: 100%;
 }
 
-/* 1b. Calendar + detail panel row — side-by-side on desktop, stacked on mobile */
+/* 1b. Calendar row. The day-detail panel is a fixed slide-over overlay
+   (StudentDrillDrawer's classes, see DetailPanel.tsx), not part of this
+   layout, so the grid only ever needs to occupy the full row. */
 .student-schedule-calendar__body {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-lg);
   width: 100%;
 }
 
 .student-schedule-calendar__grid-col {
-  flex: 1 1 480px;
+  flex: 1 1 auto;
   min-width: 0;
-}
-
-.student-schedule-calendar__panel-col {
-  flex: 0 0 320px;
-  min-width: 0;
-}
-
-@media (max-width: 900px) {
-  .student-schedule-calendar__body {
-    flex-direction: column;
-    /* align-items sets cross-axis alignment, and the cross axis rotates from
-       vertical to horizontal when flex-direction switches to column here —
-       the flex-start inherited from the row layout above (there, correctly
-       preventing vertical stretch) instead stops the calendar from
-       stretching to full width, shrinking it to its content width. */
-    align-items: stretch;
-  }
-
-  .student-schedule-calendar__grid-col,
-  .student-schedule-calendar__panel-col {
-    flex-basis: auto;
-    width: 100%;
-  }
+  width: 100%;
 }
 
 /* 2. Month navigator — prev/next + centered label */
@@ -218,164 +197,8 @@
   }
 }
 
-/* 10. Detail panel — right-side panel on desktop, stacked below the calendar on mobile */
-.detail-panel {
-  background-color: var(--surface-card);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-card);
-  position: sticky;
-  top: var(--space-md);
-}
-
-@media (max-width: 900px) {
-  .detail-panel {
-    position: static;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
-
-/* 11. Detail panel header — date + close button */
-.detail-panel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-md);
-}
-
-.detail-panel__date {
-  font-size: var(--font-base);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__date {
-    color: var(--text-dark-primary);
-  }
-}
-
-.detail-panel__close-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background-color: transparent;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-size: var(--font-base);
-}
-
-.detail-panel__close-btn:hover {
-  background-color: var(--surface-hover);
-  color: var(--text-primary);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__close-btn {
-    color: var(--text-dark-tertiary);
-  }
-
-  .detail-panel__close-btn:hover {
-    background-color: var(--surface-dark-hover);
-    color: var(--text-dark-primary);
-  }
-}
-
-/* 12. Single session block */
-.detail-panel__session {
-  padding: var(--space-md);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  background-color: var(--surface-hover);
-}
-
-.detail-panel__session + .detail-panel__session {
-  margin-top: var(--space-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__session {
-    border-color: var(--border-dark);
-    background-color: var(--surface-dark-hover);
-  }
-}
-
-.detail-panel__session-time {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-medium);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__session-time {
-    color: var(--text-dark-secondary);
-  }
-}
-
-.detail-panel__session-focus {
-  font-size: var(--font-sm);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  margin-bottom: var(--space-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__session-focus {
-    color: var(--text-dark-primary);
-  }
-}
-
-/* 13. Drill list within a session */
-.detail-panel__drills {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-/* 14. Individual drill badge */
-.detail-panel__drill-item {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-xs) var(--space-sm);
-  font-size: var(--font-xs);
-  font-weight: var(--weight-medium);
-  color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.12);
-  border-radius: var(--radius-sm);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__drill-item {
-    color: var(--color-primary-light);
-    background-color: rgba(184, 225, 53, 0.1);
-  }
-}
-
-/* 15. Empty drills muted text */
-.detail-panel__drills--empty {
-  font-size: var(--font-xs);
-  font-style: italic;
-  color: var(--text-tertiary);
-}
-
-@media (prefers-color-scheme: dark) {
-  .detail-panel__drills--empty {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* Day-detail panel is now the slide-over drawer defined in StudentDrillDrawer.css
+   (see DetailPanel.tsx), so no calendar-specific panel styles are needed here. */
 
 /* ============================================================================
    RESPONSIVE — viewport < 600px
@@ -398,14 +221,6 @@
 
   .month-navigator__label {
     font-size: var(--font-base);
-  }
-
-  .detail-panel {
-    padding: var(--space-md);
-  }
-
-  .detail-panel__session {
-    padding: var(--space-sm);
   }
 }
 

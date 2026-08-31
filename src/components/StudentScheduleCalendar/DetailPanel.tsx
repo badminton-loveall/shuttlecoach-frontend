@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
 import type { CalendarEntry } from '../../types';
+import '../StudentDrillDrawer.css';
 
 interface DetailPanelProps {
   entries: CalendarEntry[];
@@ -29,60 +29,60 @@ function formatTimeRange(startTime: string, endTime: string): string {
   return `${startTime} – ${endTime}`;
 }
 
+/**
+ * Slide-over drawer showing a day's session(s) and drills — reuses the same
+ * visual pattern (and CSS classes) as the dashboard's StudentDrillDrawer so a
+ * click on any calendar cell feels consistent with the dashboard's drill panel.
+ */
 export default function DetailPanel({ entries, date, onClose }: DetailPanelProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  // Close panel when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
-
   return (
-    <div className="detail-panel" ref={panelRef}>
-      <div className="detail-panel__header">
-        <span className="detail-panel__date">{formatDateLabel(date)}</span>
-        <button
-          className="detail-panel__close-btn"
-          onClick={onClose}
-          aria-label="Close detail panel"
-          type="button"
-        >
-          ✕
-        </button>
-      </div>
+    <>
+      <div className="student-drill-drawer__backdrop" onClick={onClose} aria-hidden="true" />
 
-      {entries.map((entry, index) => (
-        <div className="detail-panel__session" key={index}>
-          <div className="detail-panel__session-time">
-            {formatTimeRange(entry.startTime, entry.endTime)}
+      <aside
+        className="student-drill-drawer"
+        role="dialog"
+        aria-label={`Schedule for ${formatDateLabel(date)}`}
+        aria-modal="true"
+      >
+        <div className="student-drill-drawer__header">
+          <div className="student-drill-drawer__student-info">
+            <h2 className="student-drill-drawer__name">{formatDateLabel(date)}</h2>
           </div>
-
-          {entry.focusArea && (
-            <div className="detail-panel__session-focus">{entry.focusArea}</div>
-          )}
-
-          <div className="detail-panel__drills">
-            {entry.drills.length > 0 ? (
-              entry.drills.map((drill, drillIndex) => (
-                <span className="detail-panel__drill-item" key={drillIndex}>
-                  {drill}
-                </span>
-              ))
-            ) : (
-              <span className="detail-panel__drills--empty">No drills assigned</span>
-            )}
-          </div>
+          <button
+            type="button"
+            className="student-drill-drawer__close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      ))}
-    </div>
+
+        <div className="student-drill-drawer__body">
+          {entries.map((entry, index) => (
+            <div className="student-drill-drawer__focus-group" key={index}>
+              <h3 className="student-drill-drawer__focus-label">
+                {formatTimeRange(entry.startTime, entry.endTime)}
+                {entry.focusArea ? ` · ${entry.focusArea}` : ''}
+              </h3>
+              {entry.drills.length > 0 ? (
+                <ul className="student-drill-drawer__drill-list">
+                  {entry.drills.map((drill, drillIndex) => (
+                    <li className="student-drill-drawer__drill-item" key={drillIndex}>
+                      {drill}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="student-drill-drawer__empty-text">No drills assigned</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </aside>
+    </>
   );
 }
