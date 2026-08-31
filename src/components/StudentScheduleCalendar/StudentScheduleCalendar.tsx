@@ -80,8 +80,18 @@ export default function StudentScheduleCalendar({
 
   // Fetch calendar entries via hook — pass studentId (not batchId) when known, so the backend
   // resolves drills from this student's own curriculum plan rather than the legacy batch one.
-  const { entries, loading } = useSessionCalendar(
+  const { entries: rawEntries, loading } = useSessionCalendar(
     studentId ? { startDate, endDate, studentId } : { startDate, endDate, batchId }
+  );
+
+  // The API returns an entry for every date matching the batch template's weekday, even
+  // before the student's own enrollment has started (weekNumber 0 = no curriculum coverage
+  // yet). Only highlight/allow interaction with days that actually fall within this
+  // student's real coverage — otherwise the whole month lights up regardless of when their
+  // training actually begins.
+  const entries = useMemo(
+    () => (studentId ? rawEntries.filter((e) => e.weekNumber > 0) : rawEntries),
+    [rawEntries, studentId]
   );
 
   // Computed values
