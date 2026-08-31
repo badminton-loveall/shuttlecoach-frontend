@@ -189,12 +189,10 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
         </div>
       )}
 
-      {/* Header with Create button */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[var(--text-primary)]">
-          Batch Timing Templates ({templates.length})
-        </h2>
-        {!readOnly && (
+      {/* Create button — page-level heading already covers the "Batch Timing
+          Templates" title, so this row exists only to place the action. */}
+      {!readOnly && (
+        <div className="flex items-center justify-end">
           <button
             onClick={handleCreateClick}
             className="btn btn-primary"
@@ -202,8 +200,8 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
           >
             Create Template
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Template table */}
       {templates.length === 0 ? (
