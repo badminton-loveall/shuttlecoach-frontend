@@ -66,7 +66,9 @@ export const StudentsPage: React.FC = () => {
 
   const batchOptions = useMemo(() => batches.map((b) => ({ value: b.id, label: b.name })), [batches]);
   const coachOptions = useMemo(() =>
-    coachUsers.filter((u) => u.role === 'ASSISTANT_COACH').map((u) => ({ value: u.id, label: u.name || 'Unknown' })),
+    coachUsers
+      .filter((u) => u.role === 'ASSISTANT_COACH' || u.role === 'HEAD_COACH')
+      .map((u) => ({ value: u.id, label: u.name || 'Unknown' })),
   [coachUsers]);
 
   const filteredStudents = useMemo(() =>
