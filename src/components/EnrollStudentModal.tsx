@@ -8,9 +8,11 @@ interface EnrollStudentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (studentData: EnrollStudentFormData) => void | Promise<void>;
-  batches: Array<{ id: string; name: string }>;
   coaches: Array<{ id: string; name: string }>;
   error?: string | null;
+  /** 'edit' pre-fills from initialData, and swaps the title/button copy accordingly. */
+  mode?: 'create' | 'edit';
+  initialData?: Partial<EnrollStudentFormData>;
 }
 
 export interface EnrollStudentFormData {
@@ -22,7 +24,6 @@ export interface EnrollStudentFormData {
   guardianName?: string;
   guardianPhone?: string;
   baidNumber?: string;
-  batchId: string;
   skillLevel: SkillLevel;
   assignedCoachId: string;
   monthlyFee?: number;
@@ -33,34 +34,53 @@ export interface EnrollStudentFormData {
 
 const todayIso = (): string => new Date().toISOString().slice(0, 10);
 
+const emptyFormData = (): EnrollStudentFormData => ({
+  fullName: '',
+  dateOfBirth: new Date(),
+  gender: 'Male',
+  contactPhone: '',
+  email: '',
+  guardianName: '',
+  guardianPhone: '',
+  baidNumber: '',
+  skillLevel: 'Beginner',
+  assignedCoachId: '',
+  batchTimeTemplateId: '',
+  curriculumId: '',
+  startDate: todayIso(),
+});
+
 export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  batches,
   coaches,
   error,
+  mode = 'create',
+  initialData,
 }) => {
   const [formData, setFormData] = useState<EnrollStudentFormData>({
-    fullName: '',
-    dateOfBirth: new Date(),
-    gender: 'Male',
-    contactPhone: '',
-    email: '',
-    guardianName: '',
-    guardianPhone: '',
-    baidNumber: '',
-    batchId: '',
-    skillLevel: 'Beginner',
-    assignedCoachId: '',
-    batchTimeTemplateId: '',
-    curriculumId: '',
-    startDate: todayIso(),
+    ...emptyFormData(),
+    ...initialData,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'enrollment'>('basic');
+
+  // Re-fill from initialData every time the modal transitions closed -> open, so a stale edit
+  // from a previous open (or the create-mode defaults) never leaks into the next one. Adjusting
+  // state during render (React's supported pattern for "reset on prop change") rather than in an
+  // effect, since the parent keeps this component mounted the whole time and just toggles isOpen.
+  const [wasOpen, setWasOpen] = useState(isOpen);
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen);
+    if (isOpen) {
+      setFormData({ ...emptyFormData(), ...initialData });
+      setErrors({});
+      setActiveSection('basic');
+    }
+  }
 
   const { courses } = useCourses();
   const [templates, setTemplates] = useState<Array<{ id: string; name: string }>>([]);
@@ -134,8 +154,8 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       }
     }
 
-    if (!formData.batchId) {
-      newErrors.batchId = 'Please select a batch';
+    if (!formData.startDate) {
+      newErrors.startDate = 'Start date is required';
     }
 
     setErrors(newErrors);
@@ -156,22 +176,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       await onSubmit(formData);
 
       // Reset form only on success
-      setFormData({
-        fullName: '',
-        dateOfBirth: new Date(),
-        gender: 'Male',
-        contactPhone: '',
-        email: '',
-        guardianName: '',
-        guardianPhone: '',
-        baidNumber: '',
-        batchId: '',
-        skillLevel: 'Beginner',
-        assignedCoachId: '',
-        batchTimeTemplateId: '',
-        curriculumId: '',
-        startDate: todayIso(),
-      });
+      setFormData(emptyFormData());
       setErrors({});
     } catch (error: unknown) {
       // Parse field-level validation errors from API response
@@ -192,7 +197,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
           setActiveSection('contact');
         } else if (errorFields.some(f => f === 'guardianName' || f === 'guardianPhone')) {
           setActiveSection('guardian');
-        } else if (errorFields.some(f => f === 'batchId' || f === 'assignedCoachId' || f === 'skillLevel')) {
+        } else if (errorFields.some(f => f === 'batchTimeTemplateId' || f === 'assignedCoachId' || f === 'skillLevel' || f === 'startDate')) {
           setActiveSection('enrollment');
         }
       } else {
@@ -206,19 +211,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
 
   // Handle close
   const handleClose = () => {
-    setFormData({
-      fullName: '',
-      dateOfBirth: new Date(),
-      gender: 'Male',
-      contactPhone: '',
-      email: '',
-      guardianName: '',
-      guardianPhone: '',
-      baidNumber: '',
-      batchId: '',
-      skillLevel: 'Beginner',
-      assignedCoachId: '',
-    });
+    setFormData(emptyFormData());
     setErrors({});
     setActiveSection('basic');
     onClose();
@@ -246,7 +239,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
     {
       id: 'enrollment' as const,
       label: 'Enrollment',
-      hasError: !!(errors.batchId),
+      hasError: !!(errors.startDate),
     },
   ];
 
@@ -256,8 +249,12 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
         {/* Modal Header */}
         <div className="modal-header">
           <div>
-            <h2 className="modal-title">Enroll New Student</h2>
-            <p className="modal-subtitle">Add a new student to the academy and assign them to a coach</p>
+            <h2 className="modal-title">{mode === 'edit' ? 'Edit Student' : 'Enroll New Student'}</h2>
+            <p className="modal-subtitle">
+              {mode === 'edit'
+                ? `Update ${formData.fullName || 'this student'}'s information and enrollment`
+                : 'Add a new student to the academy and assign them to a coach'}
+            </p>
           </div>
           <button
             type="button"
@@ -434,24 +431,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
               {activeSection === 'enrollment' && (
                 <>
                   <div className="form-group">
-                    <label htmlFor="batchId" className="form-label">Batch *</label>
-                    <select
-                      id="batchId"
-                      value={formData.batchId}
-                      onChange={(e) => setFormData({ ...formData, batchId: e.target.value })}
-                      className={`form-input ${errors.batchId ? 'form-input-error' : ''}`}
-                      disabled={isSubmitting}
-                    >
-                      <option value="">Select a batch</option>
-                      {batches.map((batch) => (
-                        <option key={batch.id} value={batch.id}>{batch.name}</option>
-                      ))}
-                    </select>
-                    {errors.batchId && <span className="form-error-text">{errors.batchId}</span>}
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="batchTimeTemplateId" className="form-label">Batch Timing <span className="form-optional">(optional)</span></label>
+                    <label htmlFor="batchTimeTemplateId" className="form-label">Batch <span className="form-optional">(optional)</span></label>
                     <select
                       id="batchTimeTemplateId"
                       value={formData.batchTimeTemplateId || ''}
@@ -505,9 +485,10 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                       type="date"
                       value={formData.startDate || todayIso()}
                       onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                      className="form-input"
+                      className={`form-input ${errors.startDate ? 'form-input-error' : ''}`}
                       disabled={isSubmitting}
                     />
+                    {errors.startDate && <span className="form-error-text">{errors.startDate}</span>}
                   </div>
 
                   <div className="form-group">
@@ -544,7 +525,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
               className="btn btn-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Enrolling...' : 'Enroll Student'}
+              {mode === 'edit'
+                ? (isSubmitting ? 'Saving...' : 'Save Changes')
+                : (isSubmitting ? 'Enrolling...' : 'Enroll Student')}
             </button>
           </div>
         </form>

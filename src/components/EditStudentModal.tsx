@@ -1,17 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import type { Student } from '../types';
-import { PersonalInfoForm } from './PersonalInfoForm';
+import { EnrollStudentModal, type EnrollStudentFormData } from './EnrollStudentModal';
+import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
+import { useCoaches } from '../hooks/useCoaches';
 import { getChangedFields, classifyError } from '../utils/studentProfileUtils';
 import apiClient from '../utils/apiClient';
 
 /**
  * EditStudentModal Component
- * Modal dialog for editing student personal information.
- *
- * Follows the EditCoachModal pattern: modal-overlay > modal-content > modal-header + form structure.
- * Wraps PersonalInfoForm in editing mode and handles PATCH API submission.
- *
- * Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7
+ * Reuses EnrollStudentModal (the same tabbed form used to enroll a new student) in edit mode,
+ * pre-filled from the student's personal info and active enrollment — so personal details and
+ * enrollment (batch timing, curriculum, coach, start date, fee) are edited in one place instead
+ * of two separate flows.
  */
 
 export interface EditStudentModalProps {
@@ -30,90 +30,98 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSave = useCallback(async (updatedFields: Partial<Student>) => {
+  const { coaches } = useCoaches();
+  const { activeEnrollment } = useStudentEnrollments(student.id);
+
+  const initialData: Partial<EnrollStudentFormData> = useMemo(() => ({
+    fullName: student.fullName,
+    dateOfBirth: student.dateOfBirth,
+    gender: student.gender,
+    contactPhone: student.contactPhone,
+    email: student.email || '',
+    guardianName: student.guardianName || '',
+    guardianPhone: student.guardianPhone || '',
+    baidNumber: student.baidNumber || '',
+    skillLevel: student.skillLevel,
+    assignedCoachId: activeEnrollment?.coachId || student.assignedCoachId || '',
+    batchTimeTemplateId: activeEnrollment?.batchTimeTemplateId || '',
+    curriculumId: activeEnrollment?.curriculumId || '',
+    // No active enrollment yet ("Set up enrollment" case) — default to today, matching
+    // EnrollStudentModal's own create-mode default, so the field's displayed value and its
+    // underlying state agree (an empty string here would look like today but fail validation).
+    startDate: activeEnrollment?.startDate || new Date().toISOString().slice(0, 10),
+    monthlyFee: activeEnrollment?.monthlyFee ?? undefined,
+  }), [student, activeEnrollment]);
+
+  const handleSubmit = useCallback(async (data: EnrollStudentFormData) => {
     setError(null);
 
-    // Compute only the fields that actually changed
+    const updatedFields: Partial<Student> = {
+      fullName: data.fullName,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+      contactPhone: data.contactPhone,
+      email: data.email || undefined,
+      guardianName: data.guardianName || undefined,
+      guardianPhone: data.guardianPhone || undefined,
+      baidNumber: data.baidNumber || undefined,
+      skillLevel: data.skillLevel,
+    };
     const changedFields = getChangedFields(student, updatedFields);
 
-    // If nothing changed, just close
-    if (Object.keys(changedFields).length === 0) {
-      onClose();
-      return;
-    }
+    // Enrollment tab changed from the current active enrollment? Saving a new enrollment ends
+    // the old one and starts a fresh one (same semantics as EnrollmentSection's "Change
+    // enrollment"), so only do it when something in that tab actually moved.
+    const enrollmentChanged =
+      (data.batchTimeTemplateId || '') !== (activeEnrollment?.batchTimeTemplateId || '') ||
+      (data.curriculumId || '') !== (activeEnrollment?.curriculumId || '') ||
+      (data.assignedCoachId || '') !== (activeEnrollment?.coachId || '') ||
+      (data.startDate || '') !== (activeEnrollment?.startDate || '') ||
+      (data.monthlyFee ?? null) !== (activeEnrollment?.monthlyFee ?? null);
 
     setIsSubmitting(true);
-
     try {
-      await apiClient.patch(`/students/${student.id}`, changedFields);
+      if (Object.keys(changedFields).length > 0) {
+        await apiClient.patch(`/students/${student.id}`, changedFields);
+      }
+
+      if (data.startDate && enrollmentChanged) {
+        await apiClient.post(`/students/${student.id}/enrollments`, {
+          batchTimeTemplateId: data.batchTimeTemplateId || null,
+          curriculumId: data.curriculumId || null,
+          coachId: data.assignedCoachId || null,
+          startDate: data.startDate,
+          monthlyFee: data.monthlyFee ?? null,
+        });
+      }
+
       setIsSubmitting(false);
       onSuccess();
     } catch (err: unknown) {
       const classified = classifyError(err);
       setError(classified.message);
       setIsSubmitting(false);
+      throw err;
     }
-  }, [student, onClose, onSuccess]);
+  }, [student, activeEnrollment, onSuccess]);
 
-  const handleCancel = useCallback(() => {
+  const handleClose = useCallback(() => {
     if (!isSubmitting) {
       setError(null);
       onClose();
     }
   }, [isSubmitting, onClose]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="modal-overlay" data-testid="edit-student-modal">
-      <div
-        className="modal-content"
-      >
-        <div className="modal-header">
-          <div>
-            <h2 className="modal-title">Edit Student</h2>
-            <p className="modal-subtitle">Update information for {student.fullName}</p>
-          </div>
-          <button
-            type="button"
-            className="modal-close-btn"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-            aria-label="Close modal"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div className="modal-form">
-          <div className="modal-form-body">
-            {error && (
-              <div className="form-error-banner" role="alert">
-                {error}
-              </div>
-            )}
-
-            {isSubmitting && (
-              <div className="flex items-center justify-center py-4">
-                <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-                <span className="ml-2 text-sm text-gray-500">Saving changes...</span>
-              </div>
-            )}
-
-            <div className={isSubmitting ? 'pointer-events-none opacity-50' : ''}>
-              <PersonalInfoForm
-                student={student}
-                isEditing={true}
-                onSave={handleSave}
-                onCancel={handleCancel}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <EnrollStudentModal
+      isOpen={isOpen}
+      mode="edit"
+      initialData={initialData}
+      onClose={handleClose}
+      onSubmit={handleSubmit}
+      coaches={coaches}
+      error={error}
+    />
   );
 };
 

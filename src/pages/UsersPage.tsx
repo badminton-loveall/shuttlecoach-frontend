@@ -83,7 +83,7 @@ export const StudentsPage: React.FC = () => {
       gender: data.gender, contactPhone: data.contactPhone,
       email: data.email, guardianName: data.guardianName,
       guardianPhone: data.guardianPhone, baidNumber: data.baidNumber,
-      batchId: data.batchId, skillLevel: data.skillLevel,
+      skillLevel: data.skillLevel,
       assignedCoachId: data.assignedCoachId || undefined,
       strengths: [], weaknesses: [],
     });
@@ -188,7 +188,6 @@ export const StudentsPage: React.FC = () => {
             isOpen={isEnrollModalOpen}
             onClose={() => setIsEnrollModalOpen(false)}
             onSubmit={handleEnrollSubmit}
-            batches={batchOptions.map((b) => ({ id: b.value, name: b.label }))}
             coaches={coachOptions.map((c) => ({ id: c.value, name: c.label }))}
           />
         </div>

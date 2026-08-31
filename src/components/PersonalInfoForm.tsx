@@ -303,7 +303,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               <h3 className="form-group-title">Enrollment Details</h3>
               <div className="form-grid">
                 <div className="form-field">
-                  <span className="field-label">Batch Timing</span>
+                  <span className="field-label">Batch</span>
                   <span className="field-value">{activeEnrollment.templateName || '—'}</span>
                 </div>
 

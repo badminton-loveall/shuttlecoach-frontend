@@ -337,9 +337,7 @@ export const StudentProfilePage: React.FC = () => {
 const ProfileTabContent: React.FC<{ student: Student }> = ({ student }) => (
   <>
     <PersonalInfoForm student={student} />
-    <div style={{ marginTop: 'var(--space-2xl)', paddingTop: 'var(--space-xl)', borderTop: '1px solid var(--border-default)' }}>
-      <EnrollmentSection student={student} />
-    </div>
+    <EnrollmentSection student={student} />
   </>
 );
 
