@@ -100,6 +100,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
   // Fetch batches for dropdown and name resolution
   const [batches, setBatches] = useState<Batch[]>([]);
+  const [batchesLoading, setBatchesLoading] = useState(true);
   useEffect(() => {
     const loadBatches = async () => {
       try {
@@ -108,6 +109,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         setBatches(Array.isArray(batchData) ? batchData : []);
       } catch {
         setBatches([]);
+      } finally {
+        setBatchesLoading(false);
       }
     };
     void loadBatches();
@@ -602,11 +605,23 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
               className="field-input field-select"
               value={formData.batchId}
               onChange={(e) => handleChange('batchId', e.target.value)}
+              disabled={batchesLoading}
             >
-              <option value="">Select a batch</option>
-              {batches.map((batch) => (
-                <option key={batch.id} value={batch.id}>{batch.name}</option>
-              ))}
+              {batchesLoading ? (
+                // Keep the current batch selected (even before the full list has loaded)
+                // instead of falling back to the "Select a batch" placeholder, which would
+                // otherwise render as the selected option and look like the assignment was lost.
+                <option value={formData.batchId}>
+                  {formData.batchId ? 'Loading…' : 'Select a batch'}
+                </option>
+              ) : (
+                <>
+                  <option value="">Select a batch</option>
+                  {batches.map((batch) => (
+                    <option key={batch.id} value={batch.id}>{batch.name}</option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
 
