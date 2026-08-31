@@ -66,7 +66,16 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
 
   // ─── Hooks ──────────────────────────────────────────────────────────────────
   const selectedSession = todaySessions[selectedSessionIndex] ?? null;
-  const { students, loading: studentsLoading } = useBatchStudents(selectedSession?.batchId);
+
+  // Today's date for drill drawer and attendance lookup. Local components, not
+  // toISOString() (UTC) — for a UTC+5:30 timezone this is the actual calendar date; the UTC
+  // one lags a day behind from midnight until 5:30am local.
+  const todayDateStr = useMemo(() => formatDateString(new Date()), []);
+
+  // asOfDate excludes students whose active enrollment hasn't actually started yet — a
+  // student assigned to a batch whose training begins later shouldn't appear in today's
+  // attendance just because the batch has a session slot on today's weekday.
+  const { students, loading: studentsLoading } = useBatchStudents(selectedSession?.batchId, todayDateStr);
   const { markAttendance, loading: submitting } = useMarkAttendance();
 
   // ─── Session drill-down state (for student drill drawer) ─────────────────────
@@ -76,9 +85,6 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
     handleStudentClick,
     closeDrawer,
   } = useSessionDrillDown();
-
-  // Today's date for drill drawer and attendance lookup
-  const todayDateStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   // Fetch existing attendance records for today's batch to pre-fill the map
   const { records: existingRecords } = useAttendanceRecords({
