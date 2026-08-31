@@ -27,45 +27,47 @@ export const ArchiveConfirmDialog: React.FC<ArchiveConfirmDialogProps> = ({
   }
 
   return (
-    <div className="modal-overlay">
-      <div
-        className="modal-content max-w-md"
-      >
-        <div className="modal-header">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Archive Student
-          </h2>
-        </div>
+    <>
+      <div className="dialog-overlay" />
 
-        <div className="p-6">
-          <div className="flex items-start gap-3 mb-4">
-            <span className="text-2xl" aria-hidden="true">⚠️</span>
-            <p className="text-sm text-gray-700">
+      <div className="fixed inset-0 flex items-center justify-center" style={{ padding: 'var(--space-md)', zIndex: 1001 }}>
+        <div className="dialog-content">
+          <div style={{ paddingBottom: 'var(--space-md)', borderBottom: '1px solid var(--border-default)' }}>
+            <h2 className="dialog-title" style={{ textAlign: 'left', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+              <svg style={{ height: '24px', width: '24px', color: 'var(--color-warning)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4v2m0 4v2M6.228 6.228a9 9 0 1012.544 0M6.228 6.228L3.5 3.5" />
+              </svg>
+              Archive Student
+            </h2>
+          </div>
+
+          <div className="dialog-warning">
+            <p>
               Are you sure you want to archive <strong>{studentName}</strong>? This action will remove the student from active views.
             </p>
           </div>
-        </div>
 
-        <div className="flex justify-end gap-3 px-6 pb-6">
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onConfirm}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Archiving...' : 'Confirm Archive'}
-          </button>
+          <div className="dialog-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={onConfirm}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Archiving...' : 'Confirm Archive'}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
