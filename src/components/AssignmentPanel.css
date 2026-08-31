@@ -54,10 +54,10 @@
   .assignment-subtitle { color: var(--text-dark-secondary); }
 }
 
-/* ── Form Section: two-column grid ── */
+/* ── Form Section: single "Assign Individual" card ── */
 .assignment-form-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--space-md);
   background: var(--surface-hover);
   border: 1px solid var(--border-default);
@@ -70,10 +70,6 @@
     background: var(--surface-dark-hover);
     border-color: var(--border-dark);
   }
-}
-
-@media (max-width: 1024px) {
-  .assignment-form-section { grid-template-columns: 1fr; }
 }
 
 /* ── Individual form card ── */

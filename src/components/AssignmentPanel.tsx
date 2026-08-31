@@ -28,7 +28,6 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
   batches,
   onAssignmentChange,
 }) => {
-  const [selectedBatchId, setSelectedBatchId] = useState<string>('');
   const [selectedStudentId, setSelectedStudentId] = useState<string>('');
   const [selectedBatchFilterId, setSelectedBatchFilterId] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
@@ -64,7 +63,6 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
         batch.assignedCoachId === selectedCoach.id ||
         assignedStudents.some((student) => student.batchId === batch.id)
       );
-  const unassignedBatches = batches.filter((batch) => !batch.assignedCoachId);
   const unassignedStudents = students.filter((student) => !student.assignedCoachId);
 
   // Handlers — each persists via PATCH /coaches/:id/assign, then hands the (unchanged)
@@ -83,20 +81,10 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
     }
   };
 
-  const handleAssignBatch = () => {
-    if (!selectedBatchId) return;
-    void runAssignment({ batchId: selectedBatchId, action: 'ASSIGN' });
-    setSelectedBatchId('');
-  };
-
   const handleAssignStudent = () => {
     if (!selectedStudentId) return;
     void runAssignment({ studentIds: [selectedStudentId], action: 'ASSIGN' });
     setSelectedStudentId('');
-  };
-
-  const handleUnassignBatch = (batchId: string) => {
-    void runAssignment({ batchId, action: 'UNASSIGN' });
   };
 
   const handleUnassignStudent = (studentId: string) => {
@@ -124,7 +112,7 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
           <p className="assignment-subtitle">
             {isHeadCoach
               ? 'All batches and students in your center'
-              : 'Manage batch and student assignments for this coach'}
+              : 'Batches follow this coach\'s assigned students — manage individual student assignments below'}
           </p>
         </div>
       </div>
@@ -138,35 +126,6 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
       {/* Assignment Form Card - Only for assistant coaches */}
       {!isHeadCoach && (
       <div className="assignment-form-section">
-        <div className="assignment-form-card">
-          <div className="form-card-header">
-            <h3 className="form-card-title">Assign to Batch</h3>
-            <span className="form-card-badge">{unassignedBatches.length} available</span>
-          </div>
-          <div className="form-card-body">
-            <select
-              value={selectedBatchId}
-              onChange={(e) => setSelectedBatchId(e.target.value)}
-              className="form-select"
-              disabled={unassignedBatches.length === 0}
-            >
-              <option value="">Select a batch...</option>
-              {unassignedBatches.map((batch) => (
-                <option key={batch.id} value={batch.id}>
-                  {batch.name} ({batch.schedule})
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleAssignBatch}
-              disabled={!selectedBatchId || isSaving}
-              className="btn-assign"
-            >
-              Assign
-            </button>
-          </div>
-        </div>
-
         <div className="assignment-form-card">
           <div className="form-card-header">
             <h3 className="form-card-title">Assign Individual</h3>
@@ -219,18 +178,6 @@ export const AssignmentPanel: React.FC<AssignmentPanelProps> = ({
                       <p className="item-name">{batch.name}</p>
                       <p className="item-meta">{batch.schedule} • {studentsInBatch.length} students</p>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleUnassignBatch(batch.id);
-                      }}
-                      disabled={isSaving}
-                      className="btn-action btn-action--danger"
-                      title="Delete"
-                      style={isHeadCoach ? { display: 'none' } : undefined}
-                    >
-                      Delete
-                    </button>
                   </div>
                 );
               })}
