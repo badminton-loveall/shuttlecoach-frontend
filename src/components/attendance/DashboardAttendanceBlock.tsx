@@ -256,13 +256,15 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
         </>
       )}
 
-      {/* Student drill drawer — opens when clicking a student name */}
-      {selectedStudent && selectedSession && (
+      {/* Student drill drawer — opens when clicking a student name. Uses the student's own
+          batch, not the currently selected session tab's batch — a student can belong to a
+          different batch than whichever session happens to be selected. */}
+      {selectedStudent && (
         <StudentDrillDrawer
           isOpen={drawerOpen}
           onClose={closeDrawer}
           student={selectedStudent}
-          batchId={selectedSession.batchId}
+          batchId={selectedStudent.batchId || ''}
           sessionDate={todayDateStr}
         />
       )}
