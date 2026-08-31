@@ -206,8 +206,15 @@ export const CoachesPage: React.FC = () => {
 
   const [batches, setBatches] = useState<Batch[]>([]);
   const refetchBatches = useCallback(() => {
-    return apiClient.get<Batch[]>('/batches')
-      .then((r) => setBatches(r.data.map((b) => ({ ...b, createdAt: new Date(b.createdAt) }))))
+    return apiClient.get<{ batches: Record<string, unknown>[] }>('/batches')
+      .then((r) => setBatches(r.data.batches.map((b) => ({
+        id: b.id as string,
+        name: b.name as string,
+        schedule: b.schedule as string,
+        assignedCoachId: (b.assigned_coach_id as string) || undefined,
+        studentCount: (b.student_count as number) ?? 0,
+        createdAt: new Date(b.created_at as string),
+      }))))
       .catch(() => setBatches([]));
   }, []);
   useEffect(() => { void refetchBatches(); }, [refetchBatches]);
