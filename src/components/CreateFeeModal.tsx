@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { Student, FeeRecord } from '../types';
+import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import './CreateFeeModal.css';
 
 interface CreateFeeModalProps {
@@ -35,6 +36,29 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [amountTouched, setAmountTouched] = useState(false);
+
+  // Single-student context (e.g. opened from that student's own Fees tab) — pick them
+  // automatically instead of making the coach select the only option in the dropdown.
+  useEffect(() => {
+    if (isOpen && students.length === 1 && !formData.studentId) {
+      setFormData((prev) => ({ ...prev, studentId: students[0].id }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, students]);
+
+  // Auto-populate the amount from the selected student's active enrollment's monthly fee —
+  // only while the coach hasn't typed their own amount, so switching students doesn't clobber
+  // a deliberate override.
+  const { activeEnrollment } = useStudentEnrollments(formData.studentId || undefined);
+  useEffect(() => {
+    // monthlyFee comes back as a string (NUMERIC column, serialized to avoid float
+    // precision loss) — must be parsed, not just type-asserted.
+    const fee = activeEnrollment?.monthlyFee != null ? Number(activeEnrollment.monthlyFee) : null;
+    if (!amountTouched && fee != null && !isNaN(fee) && fee > 0) {
+      setFormData((prev) => ({ ...prev, amount: fee }));
+    }
+  }, [activeEnrollment, amountTouched]);
 
   // Check if fee already exists for selected student and month
   const feeExists = useMemo(() => {
@@ -121,6 +145,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
         dueDate: getDefaultDueDate(getCurrentMonthYear()),
         notes: '',
       });
+      setAmountTouched(false);
       setErrors({});
     } catch (error) {
       setErrors({ submit: 'Failed to create fee. Please try again.' });
@@ -132,6 +157,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
   // Handle student change
   const handleStudentChange = (studentId: string) => {
     setFormData({ ...formData, studentId });
+    setAmountTouched(false); // let the new student's own monthly fee auto-populate again
     if (errors.studentId) {
       setErrors({ ...errors, studentId: '' });
     }
@@ -141,6 +167,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
   const handleAmountChange = (amount: string) => {
     const numAmount = amount === '' ? 0 : parseFloat(amount);
     setFormData({ ...formData, amount: isNaN(numAmount) ? 0 : numAmount });
+    setAmountTouched(true);
     if (errors.amount) {
       setErrors({ ...errors, amount: '' });
     }
@@ -184,6 +211,7 @@ export const CreateFeeModal: React.FC<CreateFeeModalProps> = ({
       dueDate: getDefaultDueDate(getCurrentMonthYear()),
       notes: '',
     });
+    setAmountTouched(false);
     setErrors({});
     onClose();
   };
