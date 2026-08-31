@@ -123,9 +123,6 @@ export const StudentListTable: React.FC<StudentListTableProps> = ({
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {student.fullName}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {student.baidNumber || student.email || 'No BAID'}
-                      </div>
                     </div>
                   </div>
                 </td>
