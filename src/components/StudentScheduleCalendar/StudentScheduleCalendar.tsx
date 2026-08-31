@@ -1,16 +1,21 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSessionCalendar } from '../../hooks/useSessionSchedule';
 import {
   buildGridDays,
   buildEntriesMap,
   getMonthDateRange,
   getToday,
+  formatDate,
 } from './calendarUtils';
 import MonthNavigator from './MonthNavigator';
 import CalendarGrid from './CalendarGrid';
 import DetailPanel from './DetailPanel';
+import apiClient from '../../utils/apiClient';
 import './StudentScheduleCalendar.css';
 import type { SkillLevel } from '../../types';
+
+/** How far ahead to look for the student's first curriculum-covered session. */
+const AUTO_NAVIGATE_PROBE_DAYS = 90;
 
 interface StudentScheduleCalendarProps {
   batchId: string; // empty string means no batch assigned
@@ -27,6 +32,45 @@ export default function StudentScheduleCalendar({
   const [viewedYear, setViewedYear] = useState(now.getFullYear());
   const [viewedMonth, setViewedMonth] = useState(now.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  // If today's month has no curriculum-covered sessions but a nearby future month does,
+  // open the calendar there instead — otherwise a newly enrolled student's schedule looks
+  // completely empty until the coach happens to click "next month". Tracked per-studentId
+  // (rather than a plain boolean) so switching to a different student without a full
+  // remount still re-probes instead of silently reusing the previous student's result.
+  const autoNavigatedForStudent = useRef<string | null>(null);
+  const userNavigated = useRef(false);
+  useEffect(() => {
+    if (!studentId || autoNavigatedForStudent.current === studentId) return;
+    autoNavigatedForStudent.current = studentId;
+    userNavigated.current = false;
+
+    const probeStart = new Date();
+    const probeEnd = new Date();
+    probeEnd.setDate(probeEnd.getDate() + AUTO_NAVIGATE_PROBE_DAYS);
+
+    apiClient
+      .get<{ sessions?: Array<{ date: string; weekNumber?: number }> }>('/session-calendar', {
+        params: {
+          studentId,
+          startDate: formatDate(probeStart),
+          endDate: formatDate(probeEnd),
+        },
+      })
+      .then((res) => {
+        if (userNavigated.current) return;
+        const firstCovered = (res.data.sessions || []).find((s) => (s.weekNumber ?? 0) > 0);
+        if (!firstCovered) return;
+
+        const [y, m] = firstCovered.date.split('-').map(Number);
+        if (y !== now.getFullYear() || m - 1 !== now.getMonth()) {
+          setViewedYear(y);
+          setViewedMonth(m - 1);
+        }
+      })
+      .catch(() => { /* ignore — keep the default (today's) month */ });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [studentId]);
 
   // Compute date range for the viewed month
   const { startDate, endDate } = useMemo(
@@ -52,6 +96,7 @@ export default function StudentScheduleCalendar({
 
   // Month navigation handlers
   const handlePrev = useCallback(() => {
+    userNavigated.current = true;
     setViewedMonth((prev) => {
       if (prev === 0) {
         setViewedYear((y) => y - 1);
@@ -63,6 +108,7 @@ export default function StudentScheduleCalendar({
   }, []);
 
   const handleNext = useCallback(() => {
+    userNavigated.current = true;
     setViewedMonth((prev) => {
       if (prev === 11) {
         setViewedYear((y) => y + 1);
