@@ -77,7 +77,7 @@ const DayCell: React.FC<DayCellProps> = ({
           {entries.map((entry, idx) => (
             <div key={idx} className="day-cell__tooltip-entry">
               <div className="day-cell__tooltip-time">🕐 {entry.startTime} – {entry.endTime}</div>
-              {entry.weekNumber != null && (
+              {entry.weekNumber > 0 && (
                 <div className="day-cell__tooltip-week">Week {entry.weekNumber} · {entry.batchName}</div>
               )}
               {entry.focusArea && <div className="day-cell__tooltip-focus">📌 {entry.focusArea}</div>}
