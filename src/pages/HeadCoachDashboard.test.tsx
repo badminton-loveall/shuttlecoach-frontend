@@ -160,9 +160,4 @@ describe('HeadCoachDashboard - Review Reminder', () => {
     expect(studentGrids.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('displays section title "Dashboard Overview"', () => {
-    renderDashboard();
-    
-    expect(screen.getByText('Dashboard Overview')).toBeInTheDocument();
-  });
 });

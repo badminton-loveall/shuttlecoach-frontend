@@ -311,7 +311,6 @@ export const AssistantCoachDashboard: React.FC = () => {
 
             {/* Progressive Dashboard Features - Phase 6 (Scoped to Assigned Students) */}
             <div className="ac-overview">
-              <h2 className="ac-overview-title">Dashboard Overview</h2>
               <div className="ac-overview-grid">
                 <FeeAlerts overdueFees={overdueFees} onViewDetails={() => navigate('/fees')} />
                 <RecentActivity activities={recentActivities} />

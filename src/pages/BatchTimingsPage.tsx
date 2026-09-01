@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import TemplatesTab from '../components/TemplatesTab';
+import type { TemplatesTabHandle } from '../components/TemplatesTab';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
@@ -14,6 +15,7 @@ import '../styles/pages.css';
 const BatchTimingsPage: React.FC = () => {
   const { role } = useAuth();
   const isReadOnly = role !== 'HEAD_COACH';
+  const templatesTabRef = useRef<TemplatesTabHandle>(null);
 
   return (
     <DashboardLayout>
@@ -24,9 +26,21 @@ const BatchTimingsPage: React.FC = () => {
               <h1 className="page-header-title">Batch timings</h1>
               <p className="page-header-subtitle">Manage reusable day/time session templates</p>
             </div>
+            {!isReadOnly && (
+              <div className="page-header-actions">
+                <button
+                  onClick={() => templatesTabRef.current?.openCreateModal()}
+                  className="btn-create-fee"
+                  aria-label="Create Batch"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+                  Create Batch
+                </button>
+              </div>
+            )}
           </div>
 
-          <TemplatesTab readOnly={isReadOnly} />
+          <TemplatesTab ref={templatesTabRef} readOnly={isReadOnly} />
         </div>
       </div>
     </DashboardLayout>

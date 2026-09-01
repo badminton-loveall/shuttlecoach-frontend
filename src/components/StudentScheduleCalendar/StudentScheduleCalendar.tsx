@@ -188,7 +188,7 @@ export default function StudentScheduleCalendar({
           />
 
           {!hasSessionsThisMonth && (
-            <p className="student-schedule-calendar__no-sessions">
+            <p className="pt-2 student-schedule-calendar__no-sessions mt-4">
               No sessions scheduled this month
             </p>
           )}

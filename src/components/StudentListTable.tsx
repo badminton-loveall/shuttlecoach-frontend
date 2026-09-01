@@ -70,7 +70,7 @@ export const StudentListTable: React.FC<StudentListTableProps> = ({
     name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div className="table-card-wrapper bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full table-responsive-cards">
           <thead className="bg-gray-50 dark:bg-gray-700">

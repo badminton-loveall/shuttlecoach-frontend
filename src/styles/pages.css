@@ -281,7 +281,7 @@
      isn't pushed below the fold by summary numbers. */
   .hc-stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm);
+    gap: var(--space-md);
   }
 }
 
@@ -321,25 +321,10 @@
   flex-direction: column;
 }
 
-.hc-overview-title {
-  font-size: var(--font-lg);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  line-height: var(--line-snug);
-  margin: 0 0 var(--space-md) 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .hc-overview-title {
-    color: var(--text-dark-primary);
-  }
-}
-
 .hc-overview-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-lg);
-  margin-top: var(--space-md);
 }
 
 @media (min-width: 1024px) {
@@ -369,8 +354,7 @@
     font-size: var(--font-small);
   }
 
-  .hc-review-title,
-  .hc-overview-title {
+  .hc-review-title {
     font-size: var(--font-h3);
   }
 
@@ -381,7 +365,7 @@
 
 @media (max-width: 480px) {
   .hc-dashboard {
-    padding: var(--space-lg) var(--space-sm);
+    padding: var(--space-lg) var(--space-md);
   }
 
   .hc-dashboard-content {
@@ -512,25 +496,10 @@
   margin-top: var(--space-xl);
 }
 
-.ac-overview-title {
-  font-size: var(--font-lg);
-  font-weight: var(--weight-semibold);
-  color: var(--text-primary);
-  line-height: var(--line-snug);
-  margin: 0 0 var(--space-md) 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  .ac-overview-title {
-    color: var(--text-dark-primary);
-  }
-}
-
 .ac-overview-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-xl);
-  margin-top: var(--space-lg);
 }
 
 @media (min-width: 1024px) {
@@ -564,8 +533,7 @@
     margin-bottom: var(--space-2xl);
   }
 
-  .ac-section-title,
-  .ac-overview-title {
+  .ac-section-title {
     font-size: var(--font-h3);
   }
 
@@ -1008,6 +976,27 @@
    ============================================================================ */
 
 @media (max-width: 640px) {
+  /* The desktop table sits inside a white, rounded, shadowed wrapper, and the
+     <tbody> itself also carries its own bg-white + divide-y (row-separator
+     border) utility classes. Once rows become standalone cards with their own
+     background/border and a gap between them, that wrapper AND tbody white
+     fill both show through those gaps as a mismatched "halo" behind each card
+     — so on phones both go bare and the divider borders are dropped (each
+     card already has its own full border). */
+  .table-card-wrapper {
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .table-responsive-cards tbody {
+    background: transparent !important;
+  }
+
+  .table-responsive-cards tbody > * + * {
+    border-top-width: 0 !important;
+  }
+
   .table-responsive-cards thead {
     display: none;
   }

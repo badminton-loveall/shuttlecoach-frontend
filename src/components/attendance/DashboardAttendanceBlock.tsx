@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { getTodaySessions, getCurrentSession } from '../../utils/attendanceBlockUtils';
 import { useBatchStudents } from '../../hooks/useBatchStudents';
 import { useMarkAttendance, useAttendanceRecords } from '../../hooks/useAttendance';
 import { useSessionDrillDown } from '../../hooks/useSessionDrillDown';
+import { useToast } from '../../contexts/ToastContext';
 import { SessionTabBar } from './SessionTabBar';
 import { StudentAttendanceList } from './StudentAttendanceList';
-import { AttendanceSubmitFooter } from './AttendanceSubmitFooter';
 import { StudentDrillDrawer } from '../StudentDrillDrawer';
 import type { CalendarEntry, AttendanceStatus } from '../../types';
-import type { MarkAttendanceData } from '../../hooks/useAttendance';
 
 /* ============================================================================
    Types
@@ -19,7 +18,7 @@ export interface DashboardAttendanceBlockProps {
   calendarLoading: boolean;
 }
 
-type WidgetState = 'loading' | 'no-sessions' | 'idle' | 'submitting' | 'success' | 'all-complete';
+type WidgetState = 'loading' | 'no-sessions' | 'idle' | 'all-complete';
 
 type AttendanceMap = Record<string, AttendanceStatus>;
 
@@ -61,8 +60,8 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
   const [selectedSessionIndex, setSelectedSessionIndex] = useState<number>(-1);
   const [attendanceMap, setAttendanceMap] = useState<AttendanceMap>({});
   const [widgetState, setWidgetState] = useState<WidgetState>('loading');
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
+  const { showToast } = useToast();
 
   // ─── Hooks ──────────────────────────────────────────────────────────────────
   const selectedSession = todaySessions[selectedSessionIndex] ?? null;
@@ -76,7 +75,7 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
   // student assigned to a batch whose training begins later shouldn't appear in today's
   // attendance just because the batch has a session slot on today's weekday.
   const { students, loading: studentsLoading } = useBatchStudents(selectedSession?.batchId, todayDateStr);
-  const { markAttendance, loading: submitting } = useMarkAttendance();
+  const { markAttendance } = useMarkAttendance();
 
   // ─── Session drill-down state (for student drill drawer) ─────────────────────
   const {
@@ -132,68 +131,51 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
     }
   }, [calendarLoading, todaySessions]);
 
-  // ─── Clean up success timer on unmount ──────────────────────────────────────
-  useEffect(() => {
-    return () => {
-      if (successTimerRef.current) {
-        clearTimeout(successTimerRef.current);
-      }
-    };
-  }, []);
-
   // ─── Handlers ───────────────────────────────────────────────────────────────
 
   const handleSessionSelect = useCallback((index: number) => {
     setSelectedSessionIndex(index);
     setAttendanceMap({});
-    setSubmitError(null);
     setWidgetState('idle');
   }, []);
 
-  const handleToggle = useCallback((studentId: string, status: AttendanceStatus | undefined) => {
-    setAttendanceMap((prev) => {
-      if (status === undefined) {
-        // Toggle off — remove from map
-        const next = { ...prev };
-        delete next[studentId];
-        return next;
-      }
-      return { ...prev, [studentId]: status };
-    });
-  }, []);
-
-  const handleSubmit = useCallback(async () => {
+  /**
+   * Tapping P or A saves that student's attendance immediately — no separate
+   * "submit" step. Optimistically updates the button, then rolls back with a
+   * toast if the save fails.
+   */
+  const handleToggle = useCallback((studentId: string, status: AttendanceStatus) => {
     if (!selectedSession) return;
 
-    setSubmitError(null);
-    setWidgetState('submitting');
+    const previousStatus = attendanceMap[studentId];
+    setAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
+    setSavingIds((prev) => new Set(prev).add(studentId));
 
-    const payload: MarkAttendanceData = {
+    markAttendance({
       batchId: selectedSession.batchId,
       sessionDate: formatDateString(new Date()),
-      records: Object.entries(attendanceMap).map(([studentId, status]) => ({
-        studentId,
-        status,
-      })),
-    };
-
-    try {
-      await markAttendance(payload);
-      setWidgetState('success');
-      // Keep attendanceMap intact so P/A buttons stay filled after submission
-
-      // Reset to idle after 3 seconds (buttons remain filled showing recorded status)
-      successTimerRef.current = setTimeout(() => {
-        setWidgetState('idle');
-      }, 3000);
-    } catch {
-      setSubmitError('Failed to submit attendance. Please try again.');
-      setWidgetState('idle');
-    }
-  }, [selectedSession, attendanceMap, markAttendance]);
-
-  // ─── Derived values ─────────────────────────────────────────────────────────
-  const allMarked = students.length > 0 && students.every((s) => attendanceMap[s.id] !== undefined);
+      records: [{ studentId, status }],
+    })
+      .catch(() => {
+        setAttendanceMap((prev) => {
+          const next = { ...prev };
+          if (previousStatus === undefined) {
+            delete next[studentId];
+          } else {
+            next[studentId] = previousStatus;
+          }
+          return next;
+        });
+        showToast({ message: 'Failed to save attendance. Please try again.', type: 'error' });
+      })
+      .finally(() => {
+        setSavingIds((prev) => {
+          const next = new Set(prev);
+          next.delete(studentId);
+          return next;
+        });
+      });
+  }, [selectedSession, attendanceMap, markAttendance, showToast]);
 
   // ─── Render ─────────────────────────────────────────────────────────────────
 
@@ -221,16 +203,8 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
         </div>
       )}
 
-      {/* Success confirmation */}
-      {widgetState === 'success' && (
-        <div style={successStateStyle}>
-          <span style={successIconStyle}>✓</span>
-          <p style={successTextStyle}>Attendance submitted</p>
-        </div>
-      )}
-
-      {/* Normal idle / submitting state */}
-      {(widgetState === 'idle' || widgetState === 'submitting') && (
+      {/* Normal idle state — tapping P/A saves immediately, no separate submit step */}
+      {widgetState === 'idle' && (
         <>
           {/* Session tab bar (show if multiple sessions) */}
           {todaySessions.length > 1 && (
@@ -243,21 +217,14 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
             </div>
           )}
 
-          {/* Unified student list — click name for drills, P/A to toggle attendance */}
+          {/* Unified student list — click name for drills, tap P/A to save attendance */}
           <StudentAttendanceList
             students={students}
             attendanceMap={attendanceMap}
             onToggle={handleToggle}
             loading={studentsLoading}
             onNameClick={handleStudentClick}
-          />
-
-          {/* Submit footer */}
-          <AttendanceSubmitFooter
-            allMarked={allMarked}
-            submitting={submitting || widgetState === 'submitting'}
-            error={submitError}
-            onSubmit={handleSubmit}
+            savingIds={savingIds}
           />
         </>
       )}
@@ -300,7 +267,7 @@ const wrapperStyle: React.CSSProperties = {
   backgroundColor: 'var(--surface-card)',
   border: '1px solid var(--border-default)',
   borderRadius: 'var(--radius-md)',
-  padding: 'var(--space-lg)',
+  padding: 'var(--space-md)',
   display: 'flex',
   flexDirection: 'column',
   gap: 'var(--space-md)',
@@ -362,30 +329,6 @@ const completeTextStyle: React.CSSProperties = {
   fontSize: 'var(--font-sm)',
   color: 'var(--text-secondary)',
   fontWeight: 500,
-};
-
-// ─── Success state ────────────────────────────────────────────────────────────
-
-const successStateStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '2rem 1rem',
-  gap: '0.5rem',
-};
-
-const successIconStyle: React.CSSProperties = {
-  fontSize: '1.75rem',
-  color: 'var(--color-primary)',
-  fontWeight: 700,
-};
-
-const successTextStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 'var(--font-sm)',
-  color: 'var(--text-primary)',
-  fontWeight: 600,
 };
 
 // ─── Loading skeleton ─────────────────────────────────────────────────────────

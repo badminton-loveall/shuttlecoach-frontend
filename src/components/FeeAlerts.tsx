@@ -22,22 +22,9 @@ export const FeeAlerts: React.FC<FeeAlertsProps> = ({ overdueFees, onViewDetails
     0
   );
 
+  // Only shown when there's something to act on — no reassurance card when fees are current.
   if (overdueFees.length === 0) {
-    return (
-      <div className="fee-alerts fee-alerts--success">
-        <div className="fee-alerts__container">
-          <div className="fee-alerts__icon-wrapper fee-alerts__icon-wrapper--success">
-            <svg className="fee-alerts__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div className="fee-alerts__content">
-            <h3 className="fee-alerts__title fee-alerts__title--success">Fee Alerts</h3>
-            <p className="fee-alerts__subtitle fee-alerts__subtitle--success">All fees up to date</p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -5,9 +5,11 @@ import type { Student, AttendanceStatus } from '../../types';
 export interface StudentAttendanceListProps {
   students: Student[];
   attendanceMap: Record<string, AttendanceStatus>;
-  onToggle: (studentId: string, status: AttendanceStatus | undefined) => void;
+  onToggle: (studentId: string, status: AttendanceStatus) => void;
   loading: boolean;
   onNameClick?: (student: Student) => void;
+  /** Student ids currently being saved to the server. */
+  savingIds?: Set<string>;
 }
 
 /**
@@ -24,6 +26,7 @@ export const StudentAttendanceList: React.FC<StudentAttendanceListProps> = ({
   onToggle,
   loading,
   onNameClick,
+  savingIds,
 }) => {
   if (loading) {
     return (
@@ -55,6 +58,7 @@ export const StudentAttendanceList: React.FC<StudentAttendanceListProps> = ({
           status={attendanceMap[student.id]}
           onToggle={onToggle}
           onNameClick={onNameClick}
+          saving={savingIds?.has(student.id)}
         />
       ))}
     </div>

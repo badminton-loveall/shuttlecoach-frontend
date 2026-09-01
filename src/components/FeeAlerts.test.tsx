@@ -33,10 +33,9 @@ describe('FeeAlerts', () => {
     updatedAt: new Date('2025-10-20'),
   };
 
-  it('should render success state when no overdue fees', () => {
-    render(<FeeAlerts overdueFees={[]} />);
-    expect(screen.getByText('Fee Alerts')).toBeInTheDocument();
-    expect(screen.getByText(/all fees up to date/i)).toBeInTheDocument();
+  it('should render nothing when there are no overdue fees', () => {
+    const { container } = render(<FeeAlerts overdueFees={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('should render alert state when there are overdue fees', () => {

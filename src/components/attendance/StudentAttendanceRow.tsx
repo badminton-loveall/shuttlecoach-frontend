@@ -4,24 +4,27 @@ import type { Student, AttendanceStatus } from '../../types';
 export interface StudentAttendanceRowProps {
   student: Student;
   status: AttendanceStatus | undefined;
-  onToggle: (studentId: string, status: AttendanceStatus | undefined) => void;
+  onToggle: (studentId: string, status: AttendanceStatus) => void;
   onNameClick?: (student: Student) => void;
+  /** True while this student's tap is being saved to the server. */
+  saving?: boolean;
 }
 
 /**
  * StudentAttendanceRow Component
  * Renders a single student row with clickable name and Present/Absent toggle buttons.
  * Clicking the name opens the drill detail panel.
- * P/A toggles apply immediate visual confirmation (optimistic UI).
+ * Tapping P or A saves that student's attendance immediately (no separate submit step).
  */
 export const StudentAttendanceRow: React.FC<StudentAttendanceRowProps> = ({
   student,
   status,
   onToggle,
   onNameClick,
+  saving = false,
 }) => {
   return (
-    <div style={rowStyle}>
+    <div style={{ ...rowStyle, opacity: saving ? 0.6 : 1 }}>
       <span
         style={{ ...nameStyle, ...(onNameClick ? clickableNameStyle : {}) }}
         onClick={onNameClick ? () => onNameClick(student) : undefined}
@@ -34,7 +37,8 @@ export const StudentAttendanceRow: React.FC<StudentAttendanceRowProps> = ({
       <div style={toggleGroupStyle}>
         <button
           type="button"
-          onClick={() => onToggle(student.id, status === 'PRESENT' ? undefined : 'PRESENT')}
+          onClick={() => onToggle(student.id, 'PRESENT')}
+          disabled={saving}
           style={getButtonStyle(status === 'PRESENT', 'PRESENT')}
           aria-label={`Mark ${student.fullName} present`}
           aria-pressed={status === 'PRESENT'}
@@ -43,7 +47,8 @@ export const StudentAttendanceRow: React.FC<StudentAttendanceRowProps> = ({
         </button>
         <button
           type="button"
-          onClick={() => onToggle(student.id, status === 'ABSENT' ? undefined : 'ABSENT')}
+          onClick={() => onToggle(student.id, 'ABSENT')}
+          disabled={saving}
           style={getButtonStyle(status === 'ABSENT', 'ABSENT')}
           aria-label={`Mark ${student.fullName} absent`}
           aria-pressed={status === 'ABSENT'}
@@ -84,7 +89,7 @@ const clickableNameStyle: React.CSSProperties = {
 
 const toggleGroupStyle: React.CSSProperties = {
   display: 'flex',
-  gap: 'var(--space-xs)',
+  gap: 'var(--space-sm)',
   flexShrink: 0,
 };
 

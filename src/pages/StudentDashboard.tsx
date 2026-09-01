@@ -21,7 +21,7 @@ import { formatCurrency, formatDate, formatMonthYear } from '../utils/formatters
  * fee history, and skill progress — everything sourced live from the API.
  */
 
-// Section heading style — matches the coach dashboard's .hc-overview-title (var(--font-lg))
+// Section heading style — matches the coach dashboard's section headings (var(--font-lg))
 const sectionHeadingStyle: React.CSSProperties = {
   fontSize: 'var(--font-lg)',
   fontWeight: 'var(--weight-semibold)',

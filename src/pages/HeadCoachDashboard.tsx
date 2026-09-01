@@ -193,7 +193,7 @@ const HeadCoachDashboardContent: React.FC<{
               label="Active batches"
               icon={<BatchIconSvg />}
               variant="warning"
-              onClick={() => navigate('/batches')}
+              onClick={() => navigate('/batch-timings')}
             />
             <StatCard
               title="Due for Review"
@@ -213,7 +213,6 @@ const HeadCoachDashboardContent: React.FC<{
 
           {/* Progressive Dashboard Features - Phase 6 */}
           <div className="hc-overview">
-            <h2 className="hc-overview-title">Dashboard Overview</h2>
             <div className="hc-overview-grid">
               <FeeAlerts overdueFees={overdueFees} onViewDetails={() => navigate('/fees')} />
               <CoachWorkload workloads={coachWorkloads} />

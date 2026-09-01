@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import apiClient from '../utils/apiClient';
 import TemplateFormModal from './TemplateFormModal';
 import '../styles/pages.css';
@@ -7,6 +7,10 @@ import '../styles/pages.css';
  * TemplatesTab Component
  * Manages batch time templates for the Master Data (Settings) page.
  * Props: { readOnly: boolean }
+ *
+ * The "create" action is triggered from the parent page's header (see
+ * BatchTimingsPage) rather than from a button inside this component, so the
+ * create-modal trigger is exposed via a ref.
  *
  * Requirements: 1.1, 6.1, 6.2, 6.3, 6.4
  */
@@ -24,7 +28,11 @@ interface TemplatesTabProps {
   readOnly: boolean;
 }
 
-const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
+export interface TemplatesTabHandle {
+  openCreateModal: () => void;
+}
+
+const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOnly }, ref) => {
   const [templates, setTemplates] = useState<TemplateRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +86,8 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
     setEditingTemplateWithSlots(null);
     setShowForm(true);
   };
+
+  useImperativeHandle(ref, () => ({ openCreateModal: handleCreateClick }));
 
   const handleEditClick = async (template: TemplateRecord) => {
     try {
@@ -189,20 +199,6 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
         </div>
       )}
 
-      {/* Create button — page-level heading already covers the "Batch Timing
-          Templates" title, so this row exists only to place the action. */}
-      {!readOnly && (
-        <div className="flex items-center justify-end">
-          <button
-            onClick={handleCreateClick}
-            className="btn btn-primary"
-            aria-label="Create Template"
-          >
-            Create Template
-          </button>
-        </div>
-      )}
-
       {/* Template table */}
       {templates.length === 0 ? (
         <div className="table-filter-section">
@@ -303,6 +299,8 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ readOnly }) => {
       )}
     </div>
   );
-};
+});
+
+TemplatesTab.displayName = 'TemplatesTab';
 
 export default TemplatesTab;
