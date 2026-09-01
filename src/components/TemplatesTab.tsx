@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import apiClient from '../utils/apiClient';
 import TemplateFormModal from './TemplateFormModal';
 import '../styles/pages.css';

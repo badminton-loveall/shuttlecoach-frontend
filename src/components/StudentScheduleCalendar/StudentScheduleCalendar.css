@@ -21,6 +21,11 @@
   align-items: flex-start;
   width: 100%;
 }
+.student-schedule-calendar__body {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
 
 .student-schedule-calendar__grid-col {
   flex: 1 1 auto;
