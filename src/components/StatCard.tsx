@@ -15,6 +15,8 @@ interface StatCardProps {
   variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info';
   className?: string;
   onClick?: () => void;
+  /** Use a smaller value size — for text values (names, dates) rather than short numbers/stats. */
+  compact?: boolean;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -25,12 +27,14 @@ export const StatCard: React.FC<StatCardProps> = ({
   variant = 'primary',
   className = '',
   onClick,
+  compact = false,
 }) => {
   const clickableClass = onClick ? 'stat-card--clickable' : '';
+  const compactClass = compact ? 'stat-card--compact-value' : '';
 
   return (
     <div
-      className={`stat-card stat-card--${variant} ${clickableClass} ${className}`}
+      className={`stat-card stat-card--${variant} ${clickableClass} ${compactClass} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

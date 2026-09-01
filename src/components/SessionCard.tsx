@@ -82,41 +82,14 @@ function SessionEntry({
       tabIndex={isClickable ? 0 : undefined}
       onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(entry); } } : undefined}
     >
-      {/* Header: Time and Batch */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {/* Clock icon */}
-          <svg
-            className="w-4 h-4"
-            style={{ color: 'var(--color-info)' }}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-            {formatTime(entry.startTime)} - {formatTime(entry.endTime)}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className="text-xs font-medium px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: 'var(--feedback-info-light)', color: 'var(--color-info-text)' }}
-          >
-            {entry.batchName}
-          </span>
-          {/* Chevron indicator — rotates when expanded */}
-          {isClickable && (
+      {/* Header: Time, Date and Batch — grouped together so it stays compact
+          instead of stretching across a wide card with the pill stranded far right. */}
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-center flex-wrap" style={{ rowGap: 'var(--space-xs)', columnGap: 'var(--space-md)' }}>
+          <div className="flex items-center gap-2">
             <svg
-              className={`w-4 h-4 transition-transform duration-200${isExpanded ? ' rotate-90' : ''}`}
-              style={{ color: 'var(--text-tertiary)' }}
+              className="w-4 h-4 flex-shrink-0"
+              style={{ color: 'var(--color-info)' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -126,19 +99,50 @@ function SessionEntry({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M9 5l7 7-7 7"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-          )}
-        </div>
-      </div>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              {formatTime(entry.startTime)} - {formatTime(entry.endTime)}
+            </span>
+          </div>
 
-      {/* Date indicator (shown for future sessions) */}
-      {showDate && (
-        <div className="flex items-center gap-1.5 mb-3">
+          {showDate && (
+            <div className="flex items-center gap-1.5">
+              <svg
+                className="w-3.5 h-3.5 flex-shrink-0"
+                style={{ color: 'var(--color-warning)' }}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span className="text-xs font-medium" style={{ color: 'var(--color-warning-dark)' }}>
+                {formatDate(entry.date)}
+              </span>
+            </div>
+          )}
+
+          <span
+            className="text-xs font-medium px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: 'var(--feedback-info-light)', color: 'var(--color-info-text)' }}
+          >
+            {entry.batchName}
+          </span>
+        </div>
+
+        {/* Chevron indicator — rotates when expanded */}
+        {isClickable && (
           <svg
-            className="w-3.5 h-3.5"
-            style={{ color: 'var(--color-warning)' }}
+            className={`w-4 h-4 flex-shrink-0 transition-transform duration-200${isExpanded ? ' rotate-90' : ''}`}
+            style={{ color: 'var(--text-tertiary)' }}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -148,45 +152,45 @@ function SessionEntry({
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              d="M9 5l7 7-7 7"
             />
           </svg>
-          <span className="text-xs font-medium" style={{ color: 'var(--color-warning-dark)' }}>
-            {formatDate(entry.date)}
-          </span>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Focus Area */}
-      {entry.focusArea && (
-        <div className="mb-3">
-          <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
-            Focus Area
-          </p>
-          <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-            {entry.focusArea}
-          </p>
-        </div>
-      )}
+      {/* Focus Area + Planned Drills — side by side once there's room for both */}
+      {(entry.focusArea || (entry.drills && entry.drills.length > 0)) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
+          {entry.focusArea && (
+            <div>
+              <p className="text-xs uppercase tracking-wide font-medium mb-1" style={{ color: 'var(--text-tertiary)' }}>
+                Focus Area
+              </p>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                {entry.focusArea}
+              </p>
+            </div>
+          )}
 
-      {/* Planned Drills */}
-      {entry.drills && entry.drills.length > 0 && (
-        <div className="mb-3">
-          <p className="text-xs uppercase tracking-wide font-medium mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
-            Planned Drills
-          </p>
-          <ul className="space-y-1">
-            {entry.drills.map((drill, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-2 text-sm"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)' }} />
-                {drill}
-              </li>
-            ))}
-          </ul>
+          {entry.drills && entry.drills.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-wide font-medium mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
+                Planned Drills
+              </p>
+              <ul className="space-y-1">
+                {entry.drills.map((drill, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-center gap-2 text-sm"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'var(--color-success)' }} />
+                    {drill}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

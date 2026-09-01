@@ -169,18 +169,18 @@ export const StudentDashboard: React.FC = () => {
         <div className="section-stack">
           {/* Welcome Banner with Name and Photo */}
           <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 shadow-md border-l-4 border-primary" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
-            <div className="flex items-center" style={{ gap: 'var(--space-lg)' }}>
+            <div className="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left" style={{ gap: 'var(--space-md)' }}>
               <div className="flex-shrink-0">
                 {student.profilePhoto ? (
                   <img
                     src={student.profilePhoto}
                     alt={student.fullName}
-                    className="w-24 h-24 rounded-full object-cover shadow-lg"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg"
                     style={{ border: '4px solid var(--surface-elevated)', borderColor: 'var(--surface-elevated)' }}
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center shadow-lg" style={{ border: '4px solid var(--surface-elevated)' }}>
-                    <span className="text-3xl font-bold text-primary">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center shadow-lg" style={{ border: '4px solid var(--surface-elevated)' }}>
+                    <span className="text-xl sm:text-2xl font-bold text-primary">
                       {student.fullName.charAt(0)}
                     </span>
                   </div>
@@ -223,6 +223,7 @@ export const StudentDashboard: React.FC = () => {
               title="Skill Level"
               value={student.skillLevel}
               variant="primary"
+              compact
               icon={
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -234,6 +235,7 @@ export const StudentDashboard: React.FC = () => {
               title="Next Assessment"
               value={assessmentsLoading ? '...' : nextAssessmentDue ? formatDate(nextAssessmentDue) : 'Not scheduled'}
               variant="info"
+              compact
               icon={
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -246,6 +248,7 @@ export const StudentDashboard: React.FC = () => {
               value={feesLoading ? '...' : formatCurrency(outstandingBalance)}
               label={!feesLoading && outstandingBalance > 0 ? 'Payment due' : undefined}
               variant="warning"
+              compact
               icon={
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -258,6 +261,7 @@ export const StudentDashboard: React.FC = () => {
               value={student.batchName || 'No batch assigned'}
               label={`Coach: ${student.assignedCoachName || 'Not assigned'}`}
               variant="success"
+              compact
               icon={
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -270,6 +274,7 @@ export const StudentDashboard: React.FC = () => {
               value={attendanceLoading ? '...' : personalAttendancePercentage !== null ? `${personalAttendancePercentage}%` : 'N/A'}
               label={personalAttendancePercentage !== null && personalAttendancePercentage < 75 ? 'Below 75% target' : undefined}
               variant={personalAttendancePercentage !== null && personalAttendancePercentage < 75 ? 'danger' : 'info'}
+              compact
               icon={
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -323,14 +328,7 @@ export const StudentDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowLeaveForm((prev) => !prev)}
-                  className={`text-sm font-medium transition-all ${showLeaveForm ? '' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
-                  style={{
-                    borderRadius: 'var(--radius-md)',
-                    padding: 'var(--space-sm) var(--space-md)',
-                    ...(showLeaveForm
-                      ? { border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)', color: 'var(--text-primary)' }
-                      : {}),
-                  }}
+                  className={`btn ${showLeaveForm ? 'btn-secondary' : 'btn-primary'}`}
                 >
                   {showLeaveForm ? 'Cancel' : 'Request Leave'}
                 </button>

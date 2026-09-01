@@ -98,6 +98,13 @@
   font-family: var(--font-display);
 }
 
+/* Compact variant — for text values (names, dates) that would otherwise wrap
+   awkwardly at the default "big stat number" size. */
+.stat-card--compact-value .stat-card__value {
+  font-size: var(--font-lg);
+  font-family: var(--font-body);
+}
+
 @media (prefers-color-scheme: dark) {
   .stat-card__value {
     color: var(--text-dark-primary);
