@@ -101,6 +101,7 @@ export const CenterDetailPage: React.FC = () => {
       logoUrl: center.logoUrl || '',
       planType: center.planType || 'basic',
       sport: center.sport || '',
+      marketplaceEnabled: center.marketplaceEnabled ?? true,
     });
     setEditError(null);
     setIsEditing(true);
@@ -134,6 +135,7 @@ export const CenterDetailPage: React.FC = () => {
         logoUrl: editForm.logoUrl?.trim() || undefined,
         planType: editForm.planType || undefined,
         sport: editForm.sport ? (editForm.sport as Sport) : null,
+        marketplaceEnabled: editForm.marketplaceEnabled,
       };
 
       await apiClient.patch(`/admin/centers/${id}`, payload);
@@ -433,6 +435,17 @@ export const CenterDetailPage: React.FC = () => {
                 ))}
               </select>
             </div>
+            <div className="center-detail-page__field">
+              <label className="center-detail-page__label" htmlFor="edit-marketplace-enabled">
+                <input
+                  id="edit-marketplace-enabled"
+                  type="checkbox"
+                  checked={editForm.marketplaceEnabled ?? true}
+                  onChange={(e) => setEditForm((f) => ({ ...f, marketplaceEnabled: e.target.checked }))}
+                />{' '}
+                Marketplace enabled
+              </label>
+            </div>
             <div className="center-detail-page__edit-actions">
               <button
                 className="center-detail-page__cancel-btn"
@@ -480,6 +493,12 @@ export const CenterDetailPage: React.FC = () => {
               <span className="center-detail-page__info-label">Sport</span>
               <span className="center-detail-page__info-value center-detail-page__info-value--capitalize">
                 {center.sport ? SPORT_LABELS[center.sport as Sport] : 'None'}
+              </span>
+            </div>
+            <div className="center-detail-page__info-item">
+              <span className="center-detail-page__info-label">Marketplace</span>
+              <span className="center-detail-page__info-value">
+                {center.marketplaceEnabled === false ? 'Disabled' : 'Enabled'}
               </span>
             </div>
           </div>

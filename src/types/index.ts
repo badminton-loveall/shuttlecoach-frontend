@@ -87,6 +87,7 @@ export interface Center {
   headCoachEmail?: string;
   planType?: string;
   sport?: string | null;
+  marketplaceEnabled?: boolean;
   subscriptionExpiresAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -281,6 +282,51 @@ export interface Drill {
   name: string;
   description: string;
   category: string; // e.g., "Footwork", "Stroke Practice", "Service", "Net Play"
+}
+
+/**
+ * SetStatus - lifecycle of a coach-authored Drill Set
+ */
+export type SetStatus = 'draft' | 'pending_review' | 'published' | 'rejected';
+
+/**
+ * DrillSetCategory - a named sub-group of drills within a Drill Set.
+ */
+export interface DrillSetCategory {
+  id: string;
+  setId: string;
+  name: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+  drills?: Drill[];
+}
+
+/**
+ * DrillSet - a coach-owned, named bundle containing Categories, each holding
+ * existing center drills. Private to its creator until submitted for admin
+ * review; once published, other centers can adopt it via the Marketplace.
+ */
+export interface DrillSet {
+  id: string;
+  name: string;
+  description: string | null;
+  sport: string | null;
+  centerId: string;
+  createdBy: string;
+  status: SetStatus;
+  submittedAt: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  rejectionReason: string | null;
+  sourceSetId: string | null;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+  drillCount?: number;
+  categories?: DrillSetCategory[];
+  centerName?: string;
+  coachName?: string;
 }
 
 /**
