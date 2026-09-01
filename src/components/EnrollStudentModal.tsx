@@ -201,7 +201,8 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
           setActiveSection('enrollment');
         }
       } else {
-        const message = apiError?.response?.data?.error || 'Failed to enroll student. Please try again.';
+        const message = apiError?.response?.data?.error
+          || (mode === 'edit' ? 'Failed to save changes. Please try again.' : 'Failed to enroll student. Please try again.');
         setErrors({ submit: message });
       }
     } finally {

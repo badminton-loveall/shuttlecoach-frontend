@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import type { Student } from '../types';
 import { EnrollStudentModal, type EnrollStudentFormData } from './EnrollStudentModal';
 import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import { useCoaches } from '../hooks/useCoaches';
-import { getChangedFields, classifyError } from '../utils/studentProfileUtils';
+import { getChangedFields } from '../utils/studentProfileUtils';
 import apiClient from '../utils/apiClient';
 
 /**
@@ -27,9 +27,6 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const { coaches } = useCoaches();
   const { activeEnrollment } = useStudentEnrollments(student.id);
 
@@ -54,8 +51,6 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
   }), [student, activeEnrollment]);
 
   const handleSubmit = useCallback(async (data: EnrollStudentFormData) => {
-    setError(null);
-
     const updatedFields: Partial<Student> = {
       fullName: data.fullName,
       dateOfBirth: data.dateOfBirth,
@@ -79,48 +74,34 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
       (data.startDate || '') !== (activeEnrollment?.startDate || '') ||
       (data.monthlyFee ?? null) !== (activeEnrollment?.monthlyFee ?? null);
 
-    setIsSubmitting(true);
-    try {
-      if (Object.keys(changedFields).length > 0) {
-        await apiClient.patch(`/students/${student.id}`, changedFields);
-      }
-
-      if (data.startDate && enrollmentChanged) {
-        await apiClient.post(`/students/${student.id}/enrollments`, {
-          batchTimeTemplateId: data.batchTimeTemplateId || null,
-          curriculumId: data.curriculumId || null,
-          coachId: data.assignedCoachId || null,
-          startDate: data.startDate,
-          monthlyFee: data.monthlyFee ?? null,
-        });
-      }
-
-      setIsSubmitting(false);
-      onSuccess();
-    } catch (err: unknown) {
-      const classified = classifyError(err);
-      setError(classified.message);
-      setIsSubmitting(false);
-      throw err;
+    // Let EnrollStudentModal's own submit handler catch and display any failure — it already
+    // classifies API errors into a field-level or general message (errors.submit), so tracking
+    // a second error state here would just show the same message in a duplicate banner.
+    if (Object.keys(changedFields).length > 0) {
+      await apiClient.patch(`/students/${student.id}`, changedFields);
     }
+
+    if (data.startDate && enrollmentChanged) {
+      await apiClient.post(`/students/${student.id}/enrollments`, {
+        batchTimeTemplateId: data.batchTimeTemplateId || null,
+        curriculumId: data.curriculumId || null,
+        coachId: data.assignedCoachId || null,
+        startDate: data.startDate,
+        monthlyFee: data.monthlyFee ?? null,
+      });
+    }
+
+    onSuccess();
   }, [student, activeEnrollment, onSuccess]);
-
-  const handleClose = useCallback(() => {
-    if (!isSubmitting) {
-      setError(null);
-      onClose();
-    }
-  }, [isSubmitting, onClose]);
 
   return (
     <EnrollStudentModal
       isOpen={isOpen}
       mode="edit"
       initialData={initialData}
-      onClose={handleClose}
+      onClose={onClose}
       onSubmit={handleSubmit}
       coaches={coaches}
-      error={error}
     />
   );
 };

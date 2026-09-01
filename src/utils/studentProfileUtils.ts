@@ -55,6 +55,20 @@ export function computeAge(dateOfBirth: string | Date): number {
 }
 
 /**
+ * Normalizes a value for change comparison: null and undefined are treated as the same
+ * "no value" (the API returns unset optional fields as null, while a cleared form field
+ * often comes through as undefined — without this they'd register as a spurious diff), and
+ * Date objects compare by their time value rather than object identity (a freshly-parsed
+ * Date is never === another Date, so a field the user never touched would otherwise still
+ * look "changed").
+ */
+function normalizeForComparison(value: unknown): unknown {
+  if (value === null || value === undefined) return null;
+  if (value instanceof Date) return value.getTime();
+  return value;
+}
+
+/**
  * Compute the diff between original student data and updated form data.
  * Returns only the fields that have actually changed.
  *
@@ -67,7 +81,8 @@ export function computeAge(dateOfBirth: string | Date): number {
 export function getChangedFields(original: Student, updated: Partial<Student>): Partial<Student> {
   const changes: Partial<Student> = {};
   for (const [key, value] of Object.entries(updated)) {
-    if (original[key as keyof Student] !== value) {
+    const originalValue = original[key as keyof Student];
+    if (normalizeForComparison(originalValue) !== normalizeForComparison(value)) {
       (changes as any)[key] = value;
     }
   }
