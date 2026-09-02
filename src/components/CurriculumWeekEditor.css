@@ -157,3 +157,27 @@
 .curriculum-step__drill-item--assigned:hover .curriculum-step__drill-remove-hint {
   color: var(--color-danger);
 }
+
+/* A drill whose pack is currently disabled: stays listed, but not selectable */
+.curriculum-step__drill-item--unavailable {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.curriculum-step__drill-item--unavailable:hover {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+.curriculum-step__drill-used-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
+  background: var(--surface-hover);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  flex-shrink: 0;
+}

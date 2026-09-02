@@ -282,6 +282,10 @@ export interface Drill {
   name: string;
   description: string;
   category: string; // e.g., "Footwork", "Stroke Practice", "Service", "Net Play"
+  /** Only present when fetched with annotatePackStatus — false means the drill's
+   *  pack is currently disabled for this center; it should be shown but not
+   *  selectable for new assignments. */
+  isAssignable?: boolean;
 }
 
 /**
@@ -321,6 +325,8 @@ export interface DrillSet {
   rejectionReason: string | null;
   sourceSetId: string | null;
   isArchived: boolean;
+  isEnabled: boolean;
+  isOfficial: boolean;
   createdAt: string;
   updatedAt: string;
   drillCount?: number;

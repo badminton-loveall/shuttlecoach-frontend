@@ -99,8 +99,8 @@ export const SlugChangeRequestsPage: React.FC = () => {
       {/* Page Header */}
       <div className="slug-requests-page__header">
         <div>
-          <h1 className="slug-requests-page__title">Slug Change Requests</h1>
-          <p className="slug-requests-page__subtitle">
+          <h1 className="admin-page-title">Slug Change Requests</h1>
+          <p className="admin-page-subtitle">
             Review and manage pending slug change requests from center admins
           </p>
         </div>

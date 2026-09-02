@@ -139,8 +139,8 @@ export const AdminDrillCatalog: React.FC = () => {
       {/* Header */}
       <div className="admin-drill-catalog__header">
         <div>
-          <h1 className="admin-drill-catalog__title">Drill Catalog</h1>
-          <p className="admin-drill-catalog__subtitle">
+          <h1 className="admin-page-title">Drill Catalog</h1>
+          <p className="admin-page-subtitle">
             Manage global drills available in the marketplace
           </p>
         </div>

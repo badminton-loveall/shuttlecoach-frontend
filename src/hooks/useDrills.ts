@@ -16,6 +16,10 @@ export interface UseDrillsOptions {
   search?: string;
   /** Change this value to trigger a refetch */
   refreshTrigger?: number;
+  /** When true, each drill is annotated with isAssignable based on whether
+   *  its pack (if any) is currently enabled for this center. Used only by
+   *  assignment pickers — does not filter which drills are returned. */
+  annotatePackStatus?: boolean;
 }
 
 export interface UseDrillsReturn {
@@ -42,6 +46,7 @@ export function useDrills(options?: UseDrillsOptions): UseDrillsReturn {
       const params: Record<string, string> = {};
       if (options?.category) params.category = options.category;
       if (options?.search) params.search = options.search;
+      if (options?.annotatePackStatus) params.annotatePackStatus = 'true';
 
       const response = await apiClient.get('/drills', { params });
       setDrills(response.data.drills);
@@ -50,7 +55,7 @@ export function useDrills(options?: UseDrillsOptions): UseDrillsReturn {
     } finally {
       setLoading(false);
     }
-  }, [options?.category, options?.search]);
+  }, [options?.category, options?.search, options?.annotatePackStatus]);
 
   useEffect(() => {
     void fetchDrills();

@@ -5,6 +5,80 @@
    ============================================================================ */
 
 /* ============================================================================
+   MARKETPLACE / ADMIN CARD GRIDS
+   Deliberately not named grid-cols-*: this app's own components.css defines
+   unprefixed .grid-cols-1/2/3 rules that win the cascade over Tailwind's
+   sm:/lg: responsive variants (equal specificity, later source order), which
+   silently forces single-column layouts wherever that Tailwind pattern is
+   used. Use this class instead of grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3.
+   ============================================================================ */
+
+.marketplace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md, 16px);
+}
+
+/* Same collision as above: these two rows need flex-col-by-default /
+   flex-row-at-desktop, which the colliding unprefixed .flex-col wins over
+   Tailwind's sm:flex-row every time. Dedicated classes sidestep it. */
+.marketplace-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md, 16px);
+  text-align: left;
+}
+
+.marketplace-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md, 16px);
+  flex-wrap: wrap;
+}
+
+.marketplace-toolbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.marketplace-toolbar__search {
+  min-width: 260px;
+}
+
+@media (max-width: 640px) {
+  .marketplace-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .marketplace-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .marketplace-toolbar__search {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .marketplace-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .marketplace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
    LOGIN PAGE
    ============================================================================ */
 

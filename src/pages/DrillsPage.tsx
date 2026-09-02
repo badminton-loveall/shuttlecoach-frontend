@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import { DrillsTab } from '../components/DrillsTab';
-import { MarketplacePanel } from '../components/MarketplacePanel';
+import { MarketplaceGallery } from '../components/MarketplaceGallery';
 import { useAuth } from '../contexts/AuthContext';
 import { useCenter } from '../hooks/useCenter';
 
@@ -46,7 +46,7 @@ const DrillsPage: React.FC = () => {
         )}
         <div className="section-stack">
           {activeTab === 'my-drills' && <DrillsTab readOnly={isReadOnly} />}
-          {activeTab === 'marketplace' && marketplaceVisible && <MarketplacePanel />}
+          {activeTab === 'marketplace' && marketplaceVisible && <MarketplaceGallery />}
         </div>
       </div>
     </DashboardLayout>

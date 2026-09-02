@@ -8,12 +8,8 @@
   gap: var(--space-lg);
 }
 
-.slug-requests-page__title {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin: 0;
-}
+/* Title/subtitle styling now lives in the shared .admin-page-title /
+   .admin-page-subtitle classes (AdminLayout.css) */
 
 .slug-requests-page__loading {
   text-align: center;

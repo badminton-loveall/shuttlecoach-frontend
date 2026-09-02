@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import CenterSettingsTab from '../components/CenterSettingsTab';
-import { MarketplaceTab } from '../components/MarketplaceTab';
+import { MarketplaceGallery } from '../components/MarketplaceGallery';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
@@ -34,7 +34,7 @@ export const MasterDataPage: React.FC = () => {
           </nav>
 
           {activeTab === 'center' && <CenterSettingsTab />}
-          {activeTab === 'marketplace' && isHeadCoach && <MarketplaceTab />}
+          {activeTab === 'marketplace' && isHeadCoach && <MarketplaceGallery />}
         </div>
       </div>
     </DashboardLayout>

@@ -34,6 +34,7 @@ export interface UseDrillSetsReturn {
   addDrillToSetCategory: (setId: string, categoryId: string, drillId: string) => Promise<void>;
   removeDrillFromSetCategory: (setId: string, categoryId: string, drillId: string) => Promise<void>;
   submitSet: (id: string) => Promise<DrillSet>;
+  toggleEnabled: (id: string, enabled: boolean) => Promise<DrillSet>;
 }
 
 export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn {
@@ -109,6 +110,12 @@ export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn 
     return response.data;
   }, [fetchSets]);
 
+  const toggleEnabled = useCallback(async (id: string, enabled: boolean): Promise<DrillSet> => {
+    const response = await apiClient.patch(`/drill-sets/${id}/enabled`, { enabled });
+    await fetchSets();
+    return response.data;
+  }, [fetchSets]);
+
   return {
     sets,
     loading,
@@ -124,5 +131,6 @@ export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn 
     addDrillToSetCategory,
     removeDrillFromSetCategory,
     submitSet,
+    toggleEnabled,
   };
 }

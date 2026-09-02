@@ -51,8 +51,8 @@ export const CentersListPage: React.FC = () => {
       {/* Page Header */}
       <div className="centers-list-page__header">
         <div>
-          <h1 className="centers-list-page__title">Centers</h1>
-          <p className="centers-list-page__subtitle">
+          <h1 className="admin-page-title">Centers</h1>
+          <p className="admin-page-subtitle">
             Manage all coaching centers across the platform
           </p>
         </div>
@@ -123,7 +123,7 @@ export const CentersListPage: React.FC = () => {
         </div>
       )}
 
-      {/* Centers Table */}
+      {/* Centers Table — desktop/tablet */}
       {!loading && !error && centers.length > 0 && (
         <div className="centers-list-page__table-wrapper">
           <table className="centers-list-page__table">
@@ -182,6 +182,45 @@ export const CentersListPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Centers Cards — mobile only (see CentersListPage.css breakpoint) */}
+      {!loading && !error && centers.length > 0 && (
+        <div className="centers-list-page__cards">
+          {centers.map((center) => (
+            <button
+              key={center.id}
+              className="centers-list-page__card"
+              onClick={() => handleCenterClick(center.id)}
+              type="button"
+              aria-label={`View details for ${center.name}`}
+            >
+              <div className="centers-list-page__card-header">
+                <span className="centers-list-page__card-name">{center.name}</span>
+                <svg className="centers-list-page__card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+              <div className="centers-list-page__card-location">{center.location || '—'}</div>
+              <div className="centers-list-page__card-footer">
+                <span
+                  className={`centers-list-page__badge ${
+                    center.isActive
+                      ? 'centers-list-page__badge--active'
+                      : 'centers-list-page__badge--inactive'
+                  }`}
+                >
+                  {center.isActive ? 'Active' : 'Inactive'}
+                </span>
+                {center.headCoachId ? (
+                  <span className="centers-list-page__coach-assigned">Assigned</span>
+                ) : (
+                  <span className="centers-list-page__coach-unassigned">Unassigned</span>
+                )}
+              </div>
+            </button>
+          ))}
         </div>
       )}
     </div>

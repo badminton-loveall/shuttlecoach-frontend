@@ -21,18 +21,8 @@
   gap: var(--space-md);
 }
 
-.admin-drill-catalog__title {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.admin-drill-catalog__subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-  margin: var(--space-xs) 0 0 0;
-}
+/* Title/subtitle styling now lives in the shared .admin-page-title /
+   .admin-page-subtitle classes (AdminLayout.css) */
 
 .admin-drill-catalog__create-btn {
   padding: var(--space-sm) var(--space-lg);

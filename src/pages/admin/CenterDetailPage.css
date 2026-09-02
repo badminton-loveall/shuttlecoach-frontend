@@ -54,44 +54,44 @@
 
 .center-detail-page__header {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-md);
-}
-
-.center-detail-page__header-left {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: nowrap;
 }
 
 .center-detail-page__back-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: var(--font-sm);
   cursor: pointer;
   padding: 0;
-  transition: color var(--transition-base);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
 }
 
 .center-detail-page__back-link:hover {
   color: var(--color-primary);
+  background-color: var(--surface-muted);
 }
 
-.center-detail-page__title {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin: 0;
+/* Title styling now lives in the shared .admin-page-title class (AdminLayout.css) */
+.center-detail-page__header-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .center-detail-page__badge {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   padding: 2px 10px;
   border-radius: var(--radius-pill);
   font-size: var(--font-xs);
@@ -110,26 +110,26 @@
   color: #ef4444;
 }
 
-.center-detail-page__header-actions {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.center-detail-page__edit-btn {
-  padding: var(--space-sm) var(--space-md);
+.center-detail-page__edit-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
   background-color: transparent;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-base);
 }
 
-.center-detail-page__edit-btn:hover {
+.center-detail-page__edit-icon-btn:hover {
   background-color: var(--surface-muted);
   border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .center-detail-page__back-btn {
@@ -620,16 +620,20 @@
 
 @media (max-width: 768px) {
   .center-detail-page__stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+
+  .center-detail-page__stat-card {
+    padding: var(--space-md);
+  }
+
+  .center-detail-page__stat-value {
+    font-size: var(--font-lg);
   }
 
   .center-detail-page__info-grid {
     grid-template-columns: 1fr;
-  }
-
-  .center-detail-page__header {
-    flex-direction: column;
-    gap: var(--space-sm);
   }
 
   .center-detail-page__coach-assigned {

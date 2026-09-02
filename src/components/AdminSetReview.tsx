@@ -119,9 +119,9 @@ export const AdminSetReview: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-semibold text-[var(--text-primary)]">Set Reviews</h1>
-        <p className="text-sm text-[var(--text-secondary)]">
+      <div className="admin-page-header">
+        <h1 className="admin-page-title">Set Reviews</h1>
+        <p className="admin-page-subtitle">
           Review coach-submitted drill sets before they go live in the marketplace.
         </p>
       </div>
@@ -159,44 +159,42 @@ export const AdminSetReview: React.FC = () => {
           <div className="table-empty">No sets with this status</div>
         </div>
       ) : (
-        <div className="table-filter-section">
-          <div className="table-container">
-            <table className="table-styled">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Coach</th>
-                  <th>Center</th>
-                  <th>Drills</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sets.map((set) => (
-                  <tr key={set.id}>
-                    <td className="text-bold">{set.name}</td>
-                    <td>{set.coachName || '—'}</td>
-                    <td>{set.centerName || '—'}</td>
-                    <td>{set.drillCount ?? 0}</td>
-                    <td>
-                      <span className={`table-badge ${STATUS_BADGE_CLASS[set.status]}`}>
-                        {STATUS_LABEL[set.status]}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => handleOpenReview(set)}
-                        className="table-action-link table-action-link--info"
-                      >
-                        Review
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="marketplace-grid">
+          {sets.map((set) => (
+            <div
+              key={set.id}
+              className="card-base card-hover flex flex-col gap-2"
+              onClick={() => handleOpenReview(set)}
+              role="button"
+              tabIndex={0}
+              style={{ cursor: 'pointer' }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleOpenReview(set); } }}
+            >
+              <div className="card-header" style={{ marginBottom: 'var(--space-sm)' }}>
+                <span className={`table-badge ${STATUS_BADGE_CLASS[set.status]}`} style={{ marginBottom: 'var(--space-xs)', display: 'inline-block' }}>
+                  {STATUS_LABEL[set.status]}
+                </span>
+                <h3 className="card-title">{set.name}</h3>
+                <p className="card-description" style={{ marginTop: '-4px' }}>
+                  by {set.coachName || 'a coach'} · {set.centerName || 'a center'}
+                </p>
+              </div>
+              <p className="card-description" style={{ flex: 1 }}>
+                {set.description || 'No description provided.'}
+              </p>
+              <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                {(set.drillCount ?? 0)} drill{(set.drillCount ?? 0) === 1 ? '' : 's'}
+              </div>
+              <div className="card-footer" style={{ marginTop: 'var(--space-sm)' }}>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleOpenReview(set); }}
+                  className="btn btn-secondary text-sm w-full"
+                >
+                  Review
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

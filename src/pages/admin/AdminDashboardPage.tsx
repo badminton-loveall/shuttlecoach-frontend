@@ -16,6 +16,8 @@ interface DashboardTotals {
   totalStudents: number;
   totalCoaches: number;
   totalRevenue: number;
+  marketplacePacks: number;
+  pendingReviews: number;
 }
 
 interface CenterSummary {
@@ -72,9 +74,9 @@ export const AdminDashboardPage: React.FC = () => {
   if (loading) {
     return (
       <div className="admin-dashboard">
-        <div className="admin-dashboard__header">
-          <h1 className="admin-dashboard__title">Dashboard</h1>
-          <p className="admin-dashboard__subtitle">Platform overview and center statistics</p>
+        <div className="admin-dashboard__header admin-page-header">
+          <h1 className="admin-page-title">Dashboard</h1>
+          <p className="admin-page-subtitle">Platform overview and center statistics</p>
         </div>
         <div className="admin-dashboard__loading">
           <div className="admin-dashboard__loading-spinner" />
@@ -88,9 +90,9 @@ export const AdminDashboardPage: React.FC = () => {
   if (error) {
     return (
       <div className="admin-dashboard">
-        <div className="admin-dashboard__header">
-          <h1 className="admin-dashboard__title">Dashboard</h1>
-          <p className="admin-dashboard__subtitle">Platform overview and center statistics</p>
+        <div className="admin-dashboard__header admin-page-header">
+          <h1 className="admin-page-title">Dashboard</h1>
+          <p className="admin-page-subtitle">Platform overview and center statistics</p>
         </div>
         <div className="admin-dashboard__error">
           <svg className="admin-dashboard__error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -115,9 +117,9 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="admin-dashboard">
       {/* Page header */}
-      <div className="admin-dashboard__header">
-        <h1 className="admin-dashboard__title">Dashboard</h1>
-        <p className="admin-dashboard__subtitle">Platform overview and center statistics</p>
+      <div className="admin-dashboard__header admin-page-header">
+        <h1 className="admin-page-title">Dashboard</h1>
+        <p className="admin-page-subtitle">Platform overview and center statistics</p>
       </div>
 
       {/* Aggregate stat cards */}
@@ -175,6 +177,31 @@ export const AdminDashboardPage: React.FC = () => {
             <span className="admin-dashboard__stat-label">Total Revenue</span>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => navigate('/admin/marketplace')}
+          className="admin-dashboard__stat-card admin-dashboard__stat-card--marketplace admin-dashboard__stat-card--clickable"
+          aria-label="Open Marketplace"
+        >
+          {data.totals.pendingReviews > 0 && (
+            <span className="admin-dashboard__stat-pending-badge">{data.totals.pendingReviews}</span>
+          )}
+          <div className="admin-dashboard__stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+          </div>
+          <div className="admin-dashboard__stat-content">
+            <span className="admin-dashboard__stat-value">{data.totals.marketplacePacks}</span>
+            <span className="admin-dashboard__stat-label">
+              Marketplace Packs
+              {data.totals.pendingReviews > 0 ? ` · ${data.totals.pendingReviews} pending` : ''}
+            </span>
+          </div>
+        </button>
       </div>
 
       {/* Per-center summary */}

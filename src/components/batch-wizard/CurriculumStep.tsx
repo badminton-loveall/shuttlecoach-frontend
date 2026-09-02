@@ -16,7 +16,7 @@ const createEmptyWeek = (weekNumber: number): CourseWeek => ({
 export const CurriculumStep: React.FC = () => {
   const { state, updateCurriculum } = useWizard();
   const { courses, loading, error, createCourse, updateCourse, getCourseById, refetch } = useCourses();
-  const { drills: allDrills } = useDrills({});
+  const { drills: allDrills } = useDrills({ annotatePackStatus: true });
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newCourseName, setNewCourseName] = useState('');
@@ -353,21 +353,29 @@ export const CurriculumStep: React.FC = () => {
                     <React.Fragment key={group.category}>
                       {/* Category label divider */}
                       <div className="curriculum-step__drill-category-label">{group.category}</div>
-                      {group.drills.map((drill) => (
-                        <div
-                          key={drill.id}
-                          className="curriculum-step__drill-item curriculum-step__drill-item--clickable"
-                          onClick={() => handleAddDrill(drill)}
-                          role="option"
-                          aria-selected={false}
-                          tabIndex={0}
-                          title="Click to add to week"
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleAddDrill(drill); } }}
-                        >
-                          <span>{drill.name}</span>
-                          <span className="curriculum-step__drill-add-hint">→</span>
-                        </div>
-                      ))}
+                      {group.drills.map((drill) => {
+                        const unavailable = drill.isAssignable === false;
+                        return (
+                          <div
+                            key={drill.id}
+                            className={`curriculum-step__drill-item ${unavailable ? 'curriculum-step__drill-item--unavailable' : 'curriculum-step__drill-item--clickable'}`}
+                            onClick={() => !unavailable && handleAddDrill(drill)}
+                            role="option"
+                            aria-selected={false}
+                            aria-disabled={unavailable}
+                            tabIndex={0}
+                            title={unavailable ? "This drill's pack is currently disabled" : 'Click to add to week'}
+                            onKeyDown={(e) => { if (!unavailable && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); handleAddDrill(drill); } }}
+                          >
+                            <span>{drill.name}</span>
+                            {unavailable ? (
+                              <span className="curriculum-step__drill-used-badge">Used</span>
+                            ) : (
+                              <span className="curriculum-step__drill-add-hint">→</span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </React.Fragment>
                   ))
                 )}

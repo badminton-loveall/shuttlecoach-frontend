@@ -67,10 +67,16 @@ export const CenterDetailPage: React.FC = () => {
 
       // Fetch center stats
       try {
-        const statsResponse = await apiClient.get<CenterStats>(
-          `/admin/centers/${id}/stats`
-        );
-        setStats(statsResponse.data);
+        const statsResponse = await apiClient.get<{
+          studentCount: number;
+          coachCount: number;
+          totalRevenue: number;
+        }>(`/admin/centers/${id}/stats`);
+        setStats({
+          studentCount: statsResponse.data.studentCount,
+          coachCount: statsResponse.data.coachCount,
+          revenue: statsResponse.data.totalRevenue,
+        });
       } catch {
         // Stats may fail if endpoint not ready; show center info anyway
         setStats({ studentCount: 0, coachCount: 0, revenue: 0 });
@@ -274,38 +280,40 @@ export const CenterDetailPage: React.FC = () => {
     <div className="center-detail-page">
       {/* Header */}
       <div className="center-detail-page__header">
-        <div className="center-detail-page__header-left">
+        <button
+          className="center-detail-page__back-link"
+          onClick={() => navigate('/admin/centers')}
+          aria-label="Back to centers list"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <h1 className="admin-page-title center-detail-page__header-title" style={{ marginBottom: 0 }}>
+          {center.name}
+        </h1>
+        <span
+          className={`center-detail-page__badge ${
+            center.isActive
+              ? 'center-detail-page__badge--active'
+              : 'center-detail-page__badge--inactive'
+          }`}
+        >
+          {center.isActive ? 'Active' : 'Inactive'}
+        </span>
+        {!isEditing && (
           <button
-            className="center-detail-page__back-link"
-            onClick={() => navigate('/admin/centers')}
-            aria-label="Back to centers list"
+            className="center-detail-page__edit-icon-btn"
+            onClick={handleEditStart}
+            aria-label="Edit center"
+            title="Edit center"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15 18 9 12 15 6" />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
             </svg>
-            Centers
           </button>
-          <h1 className="center-detail-page__title">{center.name}</h1>
-          <span
-            className={`center-detail-page__badge ${
-              center.isActive
-                ? 'center-detail-page__badge--active'
-                : 'center-detail-page__badge--inactive'
-            }`}
-          >
-            {center.isActive ? 'Active' : 'Inactive'}
-          </span>
-        </div>
-        <div className="center-detail-page__header-actions">
-          {!isEditing && (
-            <button
-              className="center-detail-page__edit-btn"
-              onClick={handleEditStart}
-            >
-              Edit
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Stats Section */}

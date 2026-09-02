@@ -26,6 +26,7 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   flex-shrink: 0;
 }
 
@@ -40,6 +41,12 @@
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-lg);
   margin-bottom: var(--space-lg);
+}
+
+.admin-layout__sidebar--collapsed .admin-layout__brand {
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
 }
 
 .admin-layout__brand-logo {
@@ -79,7 +86,7 @@
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--font-sm);
+  font-size: 15px;
   font-weight: var(--weight-medium);
   transition: all var(--transition-base);
   white-space: nowrap;
@@ -106,8 +113,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -233,40 +240,69 @@
   color: var(--text-primary);
 }
 
-/* Logout button */
-.admin-layout__logout-btn {
+/* Sign out — pinned to the bottom of the sidebar, just above the collapse toggle */
+.admin-layout__sidebar-footer {
+  padding: var(--space-sm) var(--space-sm) 0;
+  margin-top: var(--space-sm);
+  border-top: 1px solid var(--border-default);
+}
+
+.admin-layout__signout-link {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
-  border: 1px solid var(--border-default);
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-secondary);
-  font-size: var(--font-sm);
+  font-size: 15px;
+  font-family: inherit;
   font-weight: var(--weight-medium);
   cursor: pointer;
+  text-align: left;
   transition: all var(--transition-base);
 }
 
-.admin-layout__logout-btn:hover {
+.admin-layout__signout-link:hover {
   color: var(--color-error, #ef4444);
-  border-color: var(--color-error, #ef4444);
-  background-color: rgba(239, 68, 68, 0.05);
+  background-color: rgba(239, 68, 68, 0.08);
 }
 
-.admin-layout__logout-btn svg {
-  width: 16px;
-  height: 16px;
+.admin-layout__signout-link svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* Content */
 .admin-layout__content {
   flex: 1;
   padding: var(--space-xl) var(--space-lg);
-  max-width: 1400px;
-  margin: 0 auto;
   width: 100%;
+}
+
+/* ============================================================================
+   Shared page header — one font size/weight/spacing for every admin page's
+   title + subtitle, so they all match the Dashboard's heading style instead
+   of each page defining its own slightly-different BEM title class.
+   ============================================================================ */
+
+.admin-page-header {
+  margin-bottom: var(--space-sm);
+}
+
+.admin-page-title {
+  font-size: var(--font-2xl, 1.5rem);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.admin-page-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 /* ============================================================================
@@ -297,7 +333,7 @@
     border-color: var(--border-dark, #2a2d33);
   }
 
-  .admin-layout__logout-btn {
+  .admin-layout__sidebar-footer {
     border-color: var(--border-dark, #2a2d33);
   }
 }
@@ -312,44 +348,90 @@
   }
 }
 
+/* Hamburger toggle — hidden on desktop, shown only under the mobile breakpoint */
+.admin-layout__hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: var(--space-sm);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.admin-layout__hamburger-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.admin-layout__hamburger-btn:hover {
+  background-color: var(--surface-hover, rgba(0, 0, 0, 0.05));
+}
+
+/* Backdrop behind the mobile drawer, closes it on tap */
+.admin-layout__backdrop {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .admin-layout__hamburger-btn {
+    display: flex;
+  }
+
+  /* On mobile the sidebar is an off-canvas drawer: always full width when
+     open, regardless of the desktop collapsed state, and driven by its own
+     --mobile-open modifier rather than --collapsed (which stays a
+     desktop-only, icon-width concept). */
   .admin-layout__sidebar {
     position: fixed;
     z-index: var(--z-modal, 1000);
     left: 0;
     top: 0;
+    width: 260px;
     transform: translateX(-100%);
     transition: transform var(--transition-base);
     box-shadow: var(--shadow-lg);
   }
 
-  .admin-layout__sidebar:not(.admin-layout__sidebar--collapsed) {
+  .admin-layout__sidebar--collapsed {
+    width: 260px;
+  }
+
+  .admin-layout__sidebar--mobile-open {
     transform: translateX(0);
   }
 
-  .admin-layout__sidebar--collapsed {
-    transform: translateX(-100%);
-  }
-
-  .admin-layout__content {
-    padding: var(--space-md) var(--space-sm);
-  }
-
-  .admin-layout__header-title {
-    font-size: var(--font-md);
-  }
-
-  .admin-layout__user-name {
+  .admin-layout__sidebar .admin-layout__collapse-btn {
     display: none;
   }
 
-  .admin-layout__logout-text {
+  .admin-layout__backdrop--visible {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: calc(var(--z-modal, 1000) - 1);
+  }
+
+  .admin-layout__content {
+    padding: var(--space-md);
+  }
+
+  .admin-layout__header-title {
+    font-size: 18px;
+  }
+
+  .admin-layout__user-name {
     display: none;
   }
 }
 
 @media (max-width: 480px) {
   .admin-layout__content {
-    padding: var(--space-sm);
+    padding: var(--space-md);
   }
 }

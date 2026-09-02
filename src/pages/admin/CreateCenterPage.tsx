@@ -121,8 +121,8 @@ export const CreateCenterPage: React.FC = () => {
   return (
     <div className="create-center-page">
       <div className="create-center-page__header">
-        <h1 className="create-center-page__title">Create Center</h1>
-        <p className="create-center-page__subtitle">
+        <h1 className="admin-page-title">Create Center</h1>
+        <p className="admin-page-subtitle">
           Add a new coaching center to the platform
         </p>
       </div>

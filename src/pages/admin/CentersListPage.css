@@ -20,18 +20,8 @@
   gap: var(--space-md);
 }
 
-.centers-list-page__title {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.centers-list-page__subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-  margin: var(--space-xs) 0 0;
-}
+/* Title/subtitle styling now lives in the shared .admin-page-title /
+   .admin-page-subtitle classes (AdminLayout.css) */
 
 .centers-list-page__create-btn {
   display: inline-flex;
@@ -239,6 +229,69 @@
 }
 
 /* ============================================================================
+   Cards — mobile-only alternative to the table (shown/hidden via the
+   breakpoint below; same click-through behavior as a table row)
+   ============================================================================ */
+
+.centers-list-page__cards {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.centers-list-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  transition: all var(--transition-base);
+}
+
+.centers-list-page__card:hover,
+.centers-list-page__card:focus-visible {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm, 0 1px 4px rgba(0, 0, 0, 0.08));
+}
+
+.centers-list-page__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.centers-list-page__card-name {
+  font-size: var(--font-md, 16px);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.centers-list-page__card-arrow {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.centers-list-page__card-location {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.centers-list-page__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: var(--font-sm);
+}
+
+/* ============================================================================
    Responsive
    ============================================================================ */
 
@@ -249,17 +302,10 @@
   }
 
   .centers-list-page__table-wrapper {
-    overflow-x: auto;
+    display: none;
   }
 
-  .centers-list-page__table {
-    min-width: 500px;
-  }
-}
-
-@media (max-width: 480px) {
-  .centers-list-page__table th,
-  .centers-list-page__table td {
-    padding: var(--space-sm);
+  .centers-list-page__cards {
+    display: flex;
   }
 }

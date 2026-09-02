@@ -42,6 +42,7 @@ import CenterDetailPage from './pages/admin/CenterDetailPage';
 import SlugChangeRequestsPage from './pages/admin/SlugChangeRequestsPage';
 import AdminDrillCatalogPage from './pages/admin/AdminDrillCatalogPage';
 import AdminSetReviewPage from './pages/admin/AdminSetReviewPage';
+import AdminMarketplacePage from './pages/admin/AdminMarketplacePage';
 import './App.css';
 
 /**
@@ -318,6 +319,7 @@ function App() {
             <Route path="slug-requests" element={<SlugChangeRequestsPage />} />
             <Route path="drill-catalog" element={<AdminDrillCatalogPage />} />
             <Route path="set-reviews" element={<AdminSetReviewPage />} />
+            <Route path="marketplace" element={<AdminMarketplacePage />} />
           </Route>
 
           {/* Password Management - Public Routes */}
