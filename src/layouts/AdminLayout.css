@@ -34,39 +34,28 @@
   width: 72px;
 }
 
-/* Brand */
+/* Brand — logo/badge on the left, collapse toggle pinned to the right,
+   in both the expanded and collapsed sidebar states */
 .admin-layout__brand {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-lg);
   margin-bottom: var(--space-lg);
 }
 
 .admin-layout__sidebar--collapsed .admin-layout__brand {
-  padding-left: 0;
-  padding-right: 0;
-  justify-content: center;
+  padding-left: var(--space-sm);
+  padding-right: var(--space-sm);
 }
 
 .admin-layout__brand-logo {
-  font-size: var(--font-xl);
-  font-weight: var(--weight-bold);
-  color: var(--color-primary);
-  font-family: var(--font-display);
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-.admin-layout__brand-badge {
-  font-size: var(--font-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--text-secondary);
-  background-color: var(--surface-muted);
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  height: 36px;
+  width: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
 }
 
 /* Navigation */
@@ -145,14 +134,14 @@
   line-height: 1;
 }
 
-/* Collapse toggle */
+/* Collapse toggle — sits inline in the brand row, right of the logo */
 .admin-layout__collapse-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin: var(--space-md) auto 0;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--surface-card);
@@ -324,10 +313,6 @@
     border-bottom-color: var(--border-dark, #2a2d33);
   }
 
-  .admin-layout__brand-badge {
-    background-color: var(--surface-dark-hover, #2a2d33);
-  }
-
   .admin-layout__collapse-btn {
     background: var(--surface-dark-card, #1a1d23);
     border-color: var(--border-dark, #2a2d33);
@@ -392,6 +377,13 @@
     left: 0;
     top: 0;
     width: 260px;
+    /* 100dvh (with 100vh as the fallback for older browsers) tracks the
+       space actually visible once the mobile browser's address bar has
+       settled, instead of the taller "100vh" that historically includes
+       area the chrome can cover — the mismatch was pushing Sign Out below
+       the visible fold on mobile. */
+    height: 100vh;
+    height: 100dvh;
     transform: translateX(-100%);
     transition: transform var(--transition-base);
     box-shadow: var(--shadow-lg);
@@ -407,6 +399,13 @@
 
   .admin-layout__sidebar .admin-layout__collapse-btn {
     display: none;
+  }
+
+  /* Don't let the nav list stretch to fill the drawer via flex-grow on
+     mobile — that's what was pushing Sign Out out of view. Let it (and
+     everything after it) sit at its natural height instead. */
+  .admin-layout__nav {
+    flex: none;
   }
 
   .admin-layout__backdrop--visible {

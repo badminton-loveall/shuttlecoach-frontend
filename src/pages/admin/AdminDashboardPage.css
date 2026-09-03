@@ -327,7 +327,7 @@
 
 @media (max-width: 768px) {
   .admin-dashboard__stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .admin-dashboard__centers-grid {
@@ -335,7 +335,7 @@
   }
 
   .admin-dashboard__center-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-xs);
   }
 }

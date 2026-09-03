@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/apiClient';
+import logoImg from '../assets/logo.png';
 import './AdminLayout.css';
 
 /**
@@ -112,8 +113,23 @@ export const AdminLayout: React.FC = () => {
       >
         {/* Brand */}
         <div className="admin-layout__brand">
-          <span className="admin-layout__brand-logo">{showLabels ? 'LoveAll' : 'L'}</span>
-          {showLabels && <span className="admin-layout__brand-badge">Admin</span>}
+          <img src={logoImg} alt="LoveAll logo" className="admin-layout__brand-logo" />
+
+          {/* Collapse toggle — desktop only, hidden on mobile via CSS */}
+          <button
+            className="admin-layout__collapse-btn"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              {isSidebarCollapsed ? (
+                <polyline points="9 18 15 12 9 6" />
+              ) : (
+                <polyline points="15 18 9 12 15 6" />
+              )}
+            </svg>
+          </button>
         </div>
 
         {/* Navigation */}
@@ -154,22 +170,6 @@ export const AdminLayout: React.FC = () => {
             {showLabels && <span className="admin-layout__nav-label">Sign Out</span>}
           </button>
         </div>
-
-        {/* Collapse toggle — desktop only, hidden on mobile via CSS */}
-        <button
-          className="admin-layout__collapse-btn"
-          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {isSidebarCollapsed ? (
-              <polyline points="9 18 15 12 9 6" />
-            ) : (
-              <polyline points="15 18 9 12 15 6" />
-            )}
-          </svg>
-        </button>
       </aside>
 
       {/* Main area */}
