@@ -145,7 +145,29 @@ export const LoginPage: React.FC = () => {
   const brandLogoUrl = centerInfo?.logoUrl ?? null;
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="login-page-container">
+      {/* Below --space-md-and-up breakpoints (640px) the right-anchored desktop
+          layout has no room to show background art on both sides, so the card
+          is centered instead with the app's standard side padding (--space-md),
+          matching the forgot/reset/change-password pages. Uses !important to
+          win over the inline desktop styles, which take precedence by default. */}
+      <style>{`
+        @media (max-width: 640px) {
+          .login-page-container {
+            justify-content: center !important;
+          }
+          .login-modal-wrapper {
+            margin-right: 0 !important;
+            padding-left: var(--space-md) !important;
+            padding-right: var(--space-md) !important;
+          }
+          .login-modal-card {
+            padding-left: var(--space-md) !important;
+            padding-right: var(--space-md) !important;
+          }
+        }
+      `}</style>
+
       {/* Static background image from public folder (optimized WebP) */}
       <div
         style={{
@@ -159,8 +181,8 @@ export const LoginPage: React.FC = () => {
       <div style={styles.overlay} />
 
       {/* Centered login card */}
-      <div style={styles.modalWrapper}>
-        <div style={styles.modal}>
+      <div style={styles.modalWrapper} className="login-modal-wrapper">
+        <div style={styles.modal} className="login-modal-card">
           {/* Brand */}
           <div style={styles.brandSection}>
             <img
@@ -168,7 +190,6 @@ export const LoginPage: React.FC = () => {
               alt={`${brandName} logo`}
               style={styles.brandLogo}
             />
-            <p style={styles.brandTagline}>Badminton Training Management</p>
           </div>
 
           {/* Form */}
@@ -301,11 +322,6 @@ const styles: Record<string, React.CSSProperties> = {
     objectFit: 'contain' as const,
     marginBottom: 'var(--space-sm)',
     display: 'block',
-  },
-  brandTagline: {
-    fontSize: '15px',
-    color: '#6b7280',
-    margin: 0,
   },
   form: {
     display: 'flex',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import type { Drill, DrillSet, DrillSetCategory } from '../types';
+import type { Drill, DrillSet, DrillSetCategory, MarketplaceItem, CenterSubscription } from '../types';
 import { useDrillSets } from '../hooks/useDrillSets';
 import { useSetMarketplace } from '../hooks/useSetMarketplace';
 import { useDrills } from '../hooks/useDrills';
@@ -7,6 +7,7 @@ import { SearchInput } from './SearchInput';
 import { PackEnabledToggle } from './PackEnabledToggle';
 import { SPORT_LABELS, SUPPORTED_SPORTS } from '../constants/sports';
 import apiClient from '../utils/apiClient';
+import { getTrialInfo, formatTrialLabel } from '../utils/subscriptionUtils';
 import '../styles/pages.css';
 
 /**
@@ -117,6 +118,74 @@ export const MarketplaceGallery: React.FC = () => {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [adoptingId, setAdoptingId] = useState<string | null>(null);
 
+  // Demonstration clips — resolved per set, keyed by drillId. Empty unless the
+  // center holds an active Video-Enhanced subscription for this set (and, for
+  // a STUDENT viewer, the center has also turned student access on).
+  const [videoUrls, setVideoUrls] = useState<Record<string, string>>({});
+  const [viewingVideo, setViewingVideo] = useState<{ name: string; url: string } | null>(null);
+
+  const loadVideoUrls = async (setId: string) => {
+    try {
+      const response = await apiClient.get<Record<string, string>>(`/marketplace/drill-sets/${setId}/video-urls`);
+      setVideoUrls(response.data || {});
+    } catch {
+      setVideoUrls({});
+    }
+  };
+
+  // Drill packs are a one-time purchase, priced by admin — fetched once so
+  // any set's card/preview can show "Free" / a price / Owned / Requested.
+  const [drillPackCatalog, setDrillPackCatalog] = useState<MarketplaceItem[]>([]);
+  const [myDrillPacks, setMyDrillPacks] = useState<CenterSubscription[]>([]);
+  const [myDrillPackRequests, setMyDrillPackRequests] = useState<CenterSubscription[]>([]);
+  const [buyingItemId, setBuyingItemId] = useState<string | null>(null);
+
+  const loadDrillPackPricing = useCallback(async () => {
+    try {
+      const [catalogRes, subsRes, requestsRes] = await Promise.all([
+        apiClient.get<MarketplaceItem[]>('/marketplace/items'),
+        apiClient.get<CenterSubscription[]>('/marketplace/my-subscriptions'),
+        apiClient.get<CenterSubscription[]>('/marketplace/my-requests'),
+      ]);
+      setDrillPackCatalog(catalogRes.data.filter((item) => item.category === 'DRILL_PACK'));
+      setMyDrillPacks(subsRes.data.filter((sub) => sub.itemCategory === 'DRILL_PACK'));
+      setMyDrillPackRequests(requestsRes.data.filter((req) => req.itemCategory === 'DRILL_PACK'));
+    } catch {
+      // Pricing is a bonus on top of the free adopt flow — fail quietly.
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadDrillPackPricing();
+  }, [loadDrillPackPricing]);
+
+  const formatDrillPackPrice = (price: number): string =>
+    price === 0
+      ? 'Free'
+      : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(
+          price
+        );
+
+  const handleBuyDrillPack = async (item: MarketplaceItem) => {
+    setBuyingItemId(item.id);
+    setErrorMessage(null);
+    try {
+      const response = await apiClient.post<{ autoActivated: boolean }>('/marketplace/subscribe', {
+        marketplaceItemId: item.id,
+      });
+      setSuccessMessage(
+        response.data.autoActivated
+          ? `"${item.name}" is yours now.`
+          : `Request sent for "${item.name}" — your admin will review it.`
+      );
+      await loadDrillPackPricing();
+    } catch (err) {
+      setErrorMessage(extractError(err, 'Failed to buy this pack.'));
+    } finally {
+      setBuyingItemId(null);
+    }
+  };
+
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => setSuccessMessage(null), 4000);
@@ -137,6 +206,16 @@ export const MarketplaceGallery: React.FC = () => {
       return axiosErr.response?.data?.error || fallback;
     }
     return fallback;
+  };
+
+  // Converts a plain YouTube/Vimeo watch URL into its embeddable form so the
+  // clip plays inline; anything else falls back to a direct link.
+  const getEmbedUrl = (url: string): string | null => {
+    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+    if (youtubeMatch) return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    return null;
   };
 
   // --- Build the unified item list ---
@@ -291,13 +370,15 @@ export const MarketplaceGallery: React.FC = () => {
     setOpenSet(set);
     setNewCategoryName('');
     setAddDrillSelections({});
-    await loadOpenDetail(set);
+    setVideoUrls({});
+    await Promise.all([loadOpenDetail(set), loadVideoUrls(set.id)]);
   };
 
   const handleCloseBuilder = async () => {
     setOpenSet(null);
     setOpenCategories([]);
     setOpenError(null);
+    setVideoUrls({});
     await refetchMine();
   };
 
@@ -367,9 +448,11 @@ export const MarketplaceGallery: React.FC = () => {
   const handleOpenPreview = async (set: DrillSet) => {
     setPreviewSet(set);
     setPreviewLoading(true);
+    setVideoUrls({});
     try {
       const response = await apiClient.get(`/drill-sets/marketplace/${set.id}`);
       setPreviewSet(response.data);
+      await loadVideoUrls(set.id);
     } catch {
       setErrorMessage('Failed to load set preview.');
     } finally {
@@ -719,7 +802,33 @@ export const MarketplaceGallery: React.FC = () => {
                           <ul className="space-y-1">
                             {category.drills.map((drill) => (
                               <li key={drill.id} className="flex items-center justify-between text-sm py-1">
-                                <span>{drill.name}</span>
+                                <span className="flex items-center gap-2">
+                                  {drill.name}
+                                  {videoUrls[drill.id] && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
+                                      aria-label={`Watch demonstration: ${drill.name}`}
+                                      title="Watch demonstration"
+                                      style={{
+                                        width: 20,
+                                        height: 20,
+                                        borderRadius: '50%',
+                                        border: 'none',
+                                        background: 'var(--color-primary, #16a34a)',
+                                        color: '#fff',
+                                        fontSize: 9,
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        cursor: 'pointer',
+                                        flexShrink: 0,
+                                      }}
+                                    >
+                                      ▶
+                                    </button>
+                                  )}
+                                </span>
                                 {editable && (
                                   <button
                                     onClick={() => handleRemoveDrill(category.id, drill.id)}
@@ -769,6 +878,74 @@ export const MarketplaceGallery: React.FC = () => {
               <p className="text-sm text-[var(--text-secondary)] mb-3">
                 {previewSet.description || 'No description provided.'}
               </p>
+
+              {drillPackCatalog.filter((item) => item.drillSetId === previewSet.id).length > 0 && (
+                <div className="space-y-2 mb-4">
+                  {drillPackCatalog
+                    .filter((item) => item.drillSetId === previewSet.id)
+                    .map((item) => {
+                      const ownedSub = myDrillPacks.find((s) => s.marketplaceItemId === item.id);
+                      const requested = myDrillPackRequests.some((r) => r.marketplaceItemId === item.id);
+                      const trial = ownedSub ? getTrialInfo(ownedSub) : null;
+                      // A paid sibling tier of a set the center is only trialing for
+                      // free reads as an upgrade, not a fresh purchase.
+                      const isUpgradeFromTrial =
+                        item.price > 0 &&
+                        drillPackCatalog
+                          .filter((sibling) => sibling.drillSetId === item.drillSetId && sibling.id !== item.id)
+                          .some((sibling) => {
+                            const siblingSub = myDrillPacks.find((s) => s.marketplaceItemId === sibling.id);
+                            return siblingSub && getTrialInfo(siblingSub) !== null;
+                          });
+                      return (
+                        <div
+                          key={item.id}
+                          className="card-base flex items-center justify-between"
+                          style={{ padding: 'var(--space-sm) var(--space-md)' }}
+                        >
+                          <div>
+                            <span className="text-bold">
+                              {item.tier === 'VIDEO_ENHANCED' ? 'With Video Tutorials' : 'Standard'}
+                            </span>
+                            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                              {formatDrillPackPrice(item.price)}
+                              {item.price > 0 ? ' · one-time' : ''}
+                            </div>
+                            {trial && (
+                              <div
+                                className={`text-xs ${trial.expired ? 'font-semibold' : ''}`}
+                                style={{ color: trial.expired ? 'var(--color-danger)' : 'var(--color-warning)' }}
+                              >
+                                {formatTrialLabel(trial)}
+                              </div>
+                            )}
+                          </div>
+                          {ownedSub ? (
+                            <span className="badge-base badge-primary">Owned</span>
+                          ) : requested ? (
+                            <span className="badge-base badge-secondary">Requested</span>
+                          ) : (
+                            <button
+                              className="btn btn-primary text-sm"
+                              style={{ width: 'auto' }}
+                              onClick={() => handleBuyDrillPack(item)}
+                              disabled={buyingItemId === item.id}
+                            >
+                              {buyingItemId === item.id
+                                ? 'Working...'
+                                : item.price === 0
+                                  ? 'Get Free'
+                                  : isUpgradeFromTrial
+                                    ? 'Upgrade to Paid'
+                                    : 'Buy'}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+
               {previewLoading ? (
                 <p className="text-sm text-[var(--text-secondary)]">Loading categories and drills...</p>
               ) : previewSet.categories && previewSet.categories.length > 0 ? (
@@ -779,7 +956,33 @@ export const MarketplaceGallery: React.FC = () => {
                       {category.drills && category.drills.length > 0 ? (
                         <ul className="text-sm text-[var(--text-secondary)] space-y-1 pl-3">
                           {category.drills.map((drill) => (
-                            <li key={drill.id}>{drill.name}</li>
+                            <li key={drill.id} className="flex items-center gap-2">
+                              {drill.name}
+                              {videoUrls[drill.id] && (
+                                <button
+                                  type="button"
+                                  onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
+                                  aria-label={`Watch demonstration: ${drill.name}`}
+                                  title="Watch demonstration"
+                                  style={{
+                                    width: 20,
+                                    height: 20,
+                                    borderRadius: '50%',
+                                    border: 'none',
+                                    background: 'var(--color-primary, #16a34a)',
+                                    color: '#fff',
+                                    fontSize: 9,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  ▶
+                                </button>
+                              )}
+                            </li>
                           ))}
                         </ul>
                       ) : (
@@ -801,6 +1004,36 @@ export const MarketplaceGallery: React.FC = () => {
               >
                 {adoptingId === previewSet.id ? 'Adopting...' : `Adopt ${previewSet.drillCount ?? 0} Drills`}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Demonstration clip modal */}
+      {viewingVideo && (
+        <div className="modal-overlay" onClick={() => setViewingVideo(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+            <div className="modal-header">
+              <h2 className="modal-title">{viewingVideo.name}</h2>
+              <button className="modal-close-btn" onClick={() => setViewingVideo(null)}>✕</button>
+            </div>
+            <div className="modal-body">
+              {getEmbedUrl(viewingVideo.url) ? (
+                <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                  <iframe
+                    src={getEmbedUrl(viewingVideo.url)!}
+                    title={viewingVideo.name}
+                    allow="autoplay; fullscreen"
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm">
+                  <a href={viewingVideo.url} target="_blank" rel="noreferrer">
+                    Open demonstration video
+                  </a>
+                </p>
+              )}
             </div>
           </div>
         </div>

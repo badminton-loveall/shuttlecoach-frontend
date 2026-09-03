@@ -5,11 +5,10 @@ import './OnboardingChecklist.css';
 
 /**
  * OnboardingChecklist Component
- * Renders a card-based onboarding checklist widget at the top of the
- * head coach dashboard. Shows progress, checklist items with navigation
- * links, and a dismiss button.
- *
- * Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 4.1, 4.2, 4.4, 4.5
+ * Renders a 4-card grid at the top of the head coach dashboard — one card
+ * per setup step (Add Coach, Batch, Curriculum, Student) — with a dismiss
+ * button. Cards render in whatever order/count the backend sends, so this
+ * stays correct even if the step list changes again later.
  */
 
 interface OnboardingChecklistProps {
@@ -19,9 +18,6 @@ interface OnboardingChecklistProps {
   error: string | null;
 }
 
-/**
- * Count items where completed === true.
- */
 function computeProgressCount(checklist: OnboardingChecklistResponse): number {
   return checklist.items.filter((item) => item.completed).length;
 }
@@ -49,44 +45,12 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
       aria-label="Onboarding checklist"
     >
       <div className="onboarding-checklist__header">
-        <h2 className="onboarding-checklist__title">Set up your center</h2>
-        <p className="onboarding-checklist__progress">
-          {completedCount} of 6 completed
-        </p>
-      </div>
-
-      <ul className="onboarding-checklist__items" role="list">
-        {checklist.items.map((item) => (
-          <li
-            key={item.key}
-            className={`onboarding-checklist__item ${
-              item.completed ? 'onboarding-checklist__item--complete' : ''
-            }`}
-            role="listitem"
-          >
-            <span
-              className={`onboarding-checklist__icon ${
-                item.completed
-                  ? 'onboarding-checklist__icon--complete'
-                  : 'onboarding-checklist__icon--incomplete'
-              }`}
-              aria-hidden="true"
-            >
-              {item.completed ? '✓' : '○'}
-            </span>
-            <span className="onboarding-checklist__label">{item.label}</span>
-            <Link
-              to={item.link}
-              className="onboarding-checklist__link"
-              aria-label={`Go to ${item.label}`}
-            >
-              {item.completed ? 'View' : 'Start'}
-            </Link>
-          </li>
-        ))}
-      </ul>
-
-      <div className="onboarding-checklist__footer">
+        <div>
+          <h2 className="onboarding-checklist__title">Set up your center</h2>
+          <p className="onboarding-checklist__progress">
+            {completedCount} of {checklist.items.length} completed
+          </p>
+        </div>
         <button
           className="onboarding-checklist__dismiss-btn"
           onClick={handleDismiss}
@@ -96,12 +60,41 @@ const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
         >
           {dismissing ? 'Dismissing…' : 'Got it'}
         </button>
-        {error && (
-          <p className="onboarding-checklist__error" role="alert">
-            {error}
-          </p>
-        )}
       </div>
+
+      {error && (
+        <p className="onboarding-checklist__error" role="alert">
+          {error}
+        </p>
+      )}
+
+      <ul className="onboarding-checklist__grid" role="list">
+        {checklist.items.map((item) => (
+          <li key={item.key} role="listitem">
+            <Link
+              to={item.link}
+              className={`onboarding-checklist__card ${
+                item.completed ? 'onboarding-checklist__card--complete' : ''
+              }`}
+            >
+              <span
+                className={`onboarding-checklist__icon ${
+                  item.completed
+                    ? 'onboarding-checklist__icon--complete'
+                    : 'onboarding-checklist__icon--incomplete'
+                }`}
+                aria-hidden="true"
+              >
+                {item.completed ? '✓' : '○'}
+              </span>
+              <span className="onboarding-checklist__label">{item.label}</span>
+              <span className="onboarding-checklist__link">
+                {item.completed ? 'View' : 'Start'}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 };

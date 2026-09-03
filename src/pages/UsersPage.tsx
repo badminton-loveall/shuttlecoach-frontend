@@ -11,6 +11,8 @@ import DeleteCoachConfirmDialog from '../components/DeleteCoachConfirmDialog';
 import AssignmentPanel from '../components/AssignmentPanel';
 import { useStudents } from '../hooks/useStudents';
 import { useCoaches } from '../hooks/useCoaches';
+import { useCapacityStatus } from '../hooks/useCapacityStatus';
+import CapacityIndicator from '../components/CapacityIndicator';
 import type { User, Student, Batch } from '../types';
 import apiClient from '../utils/apiClient';
 import _USERS_DATA from '../data/users.json';
@@ -36,6 +38,8 @@ export const StudentsPage: React.FC = () => {
     coach: filters.coach || undefined,
     search: searchTerm || undefined,
   });
+
+  const { status: capacity, refetch: refetchCapacity } = useCapacityStatus();
 
   const { batches: batchList, getBatchName } = useBatches();
 
@@ -106,6 +110,7 @@ export const StudentsPage: React.FC = () => {
 
     setIsEnrollModalOpen(false);
     await refetch();
+    refetchCapacity();
   };
 
   return (
@@ -115,7 +120,21 @@ export const StudentsPage: React.FC = () => {
           <div className="page-header">
             <div>
               <h1 className="page-header-title">Students</h1>
-              <p className="page-header-subtitle">Manage and enroll students in the academy</p>
+              <p className="page-header-subtitle">
+                Manage and enroll students in the academy
+                {capacity && !(capacity.studentCount >= capacity.studentLimit) && (
+                  <>
+                    {' · '}
+                    <CapacityIndicator
+                      category="STUDENT_CAPACITY"
+                      count={capacity.studentCount}
+                      limit={capacity.studentLimit}
+                      label="Students"
+                      onUpgraded={refetchCapacity}
+                    />
+                  </>
+                )}
+              </p>
             </div>
             <div className="page-header-actions">
               <CollapsibleFilterPanel
@@ -154,12 +173,31 @@ export const StudentsPage: React.FC = () => {
                   </div>
                 </div>
               </CollapsibleFilterPanel>
-              <button onClick={() => setIsEnrollModalOpen(true)} className="btn-create-fee">
+              <button
+                onClick={() => setIsEnrollModalOpen(true)}
+                className="btn-create-fee"
+                disabled={!!capacity && capacity.studentCount >= capacity.studentLimit}
+                title={
+                  capacity && capacity.studentCount >= capacity.studentLimit
+                    ? `Student limit reached (${capacity.studentLimit}). Upgrade your Student Capacity plan to add more.`
+                    : undefined
+                }
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
                 Enroll Student
               </button>
             </div>
           </div>
+
+          {capacity && capacity.studentCount >= capacity.studentLimit && (
+            <CapacityIndicator
+              category="STUDENT_CAPACITY"
+              count={capacity.studentCount}
+              limit={capacity.studentLimit}
+              label="Students"
+              onUpgraded={refetchCapacity}
+            />
+          )}
 
           {error && (
             <div className="p-md" style={{ backgroundColor: 'var(--feedback-danger-light)', border: '1px solid var(--color-danger-light)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-md)' }}>
@@ -202,6 +240,7 @@ export const StudentsPage: React.FC = () => {
 export const CoachesPage: React.FC = () => {
   const { coaches: rawCoaches, loading: coachesLoading, error: coachesError, createCoach, refetch: refetchCoaches } = useCoaches();
   const { students, loading: studentsLoading, refetch: refetchStudents } = useStudents();
+  const { status: capacity, refetch: refetchCapacity } = useCapacityStatus();
 
   const [batches, setBatches] = useState<Batch[]>([]);
   const refetchBatches = useCallback(() => {
@@ -236,6 +275,7 @@ export const CoachesPage: React.FC = () => {
   const handleAddCoach = async (data: CoachFormData) => {
     await createCoach({ username: data.username, password: data.password, name: data.name, email: data.email, profilePhoto: data.profilePhoto, specialization: data.specialization, seniorCoachId: data.seniorCoachId });
     setIsAddCoachOpen(false);
+    refetchCapacity();
   };
 
   const handleEditCoachSubmit = async (coachId: string, data: EditCoachFormData) => {
@@ -275,13 +315,46 @@ export const CoachesPage: React.FC = () => {
           <div className="page-header">
             <div>
               <h1 className="page-header-title">Coaches</h1>
-              <p className="page-header-subtitle">Manage assistant coaches and their assignments</p>
+              <p className="page-header-subtitle">
+                Manage assistant coaches and their assignments
+                {capacity && !(capacity.coachCount >= capacity.coachLimit) && (
+                  <>
+                    {' · '}
+                    <CapacityIndicator
+                      category="COACH_CAPACITY"
+                      count={capacity.coachCount}
+                      limit={capacity.coachLimit}
+                      label="Coaches"
+                      onUpgraded={refetchCapacity}
+                    />
+                  </>
+                )}
+              </p>
             </div>
-            <button onClick={() => setIsAddCoachOpen(true)} className="btn-create-fee">
+            <button
+              onClick={() => setIsAddCoachOpen(true)}
+              className="btn-create-fee"
+              disabled={!!capacity && capacity.coachCount >= capacity.coachLimit}
+              title={
+                capacity && capacity.coachCount >= capacity.coachLimit
+                  ? `Coach limit reached (${capacity.coachLimit}). Upgrade your Coach Capacity plan to add more.`
+                  : undefined
+              }
+            >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
               Add Coach
             </button>
           </div>
+
+          {capacity && capacity.coachCount >= capacity.coachLimit && (
+            <CapacityIndicator
+              category="COACH_CAPACITY"
+              count={capacity.coachCount}
+              limit={capacity.coachLimit}
+              label="Coaches"
+              onUpgraded={refetchCapacity}
+            />
+          )}
 
           {error && (
             <div className="p-md" style={{ backgroundColor: 'var(--feedback-danger-light)', border: '1px solid var(--color-danger-light)', borderRadius: 'var(--radius-md)' }}>

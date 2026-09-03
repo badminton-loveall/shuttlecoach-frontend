@@ -105,7 +105,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
       });
       setShowForm(true);
     } catch {
-      setError('Failed to load template details.');
+      setError('Failed to load batch details.');
     }
   };
 
@@ -119,12 +119,12 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
     setDeleteLoading(true);
     try {
       await apiClient.delete(`/batch-time-templates/${deletingTemplate.id}`);
-      setSuccessMessage('Template deleted successfully');
+      setSuccessMessage('Batch deleted successfully');
       setDeletingTemplate(null);
       await fetchTemplates();
     } catch (err: any) {
       const serverError =
-        err?.response?.data?.error || 'Failed to delete template.';
+        err?.response?.data?.error || 'Failed to delete batch.';
       setError(serverError);
       setDeletingTemplate(null);
     } finally {
@@ -147,7 +147,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
     setEditingTemplate(null);
     setEditingTemplateWithSlots(null);
     setSuccessMessage(
-      editingTemplate ? 'Template updated successfully' : 'Template created successfully'
+      editingTemplate ? 'Batch updated successfully' : 'Batch created successfully'
     );
     fetchTemplates();
   };
@@ -157,7 +157,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
     return (
       <div className="card p-6">
         <div className="flex items-center justify-center py-8">
-          <p className="text-[var(--text-secondary)]">Loading templates...</p>
+          <p className="text-[var(--text-secondary)]">Loading batches...</p>
         </div>
       </div>
     );
@@ -202,7 +202,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
       {/* Template table */}
       {templates.length === 0 ? (
         <div className="table-filter-section">
-          <div className="table-empty">No templates found.</div>
+          <div className="table-empty">No batches found.</div>
         </div>
       ) : (
         <div className="table-filter-section">
@@ -266,7 +266,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
             className="modal-content modal-content--small"
           >
             <div className="modal-header">
-              <h2 className="modal-title">Delete Template?</h2>
+              <h2 className="modal-title">Delete Batch?</h2>
               <button className="modal-close-btn" onClick={handleDeleteCancel}>
                 ✕
               </button>
@@ -275,7 +275,7 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
               <p className="text-sm text-[var(--text-secondary)]">
                 Are you sure you want to delete{' '}
                 <strong>{deletingTemplate.name}</strong>? This action will
-                archive the template.
+                archive the batch.
               </p>
             </div>
             <div className="modal-footer">

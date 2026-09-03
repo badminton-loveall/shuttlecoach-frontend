@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import type { Drill, DrillSet, DrillSetCategory, SetStatus } from '../types';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import type { Drill, DrillSet, DrillSetCategory, SetStatus, MarketplaceItem, DrillPackTier } from '../types';
 import { useAdminDrills } from '../hooks/useAdminDrills';
 import { SearchInput } from './SearchInput';
 import { SPORT_LABELS } from '../constants/sports';
@@ -16,10 +16,325 @@ import '../styles/pages.css';
  * center); clicking any other pack opens a detail view — including
  * approve/reject when it's pending review, since this is the only
  * catalog-browsing page in the admin nav.
+ *
+ * Once a set is published, both modals also show its Packages — the priced,
+ * one-time-purchase tiers (Standard / With Video) a center actually buys.
+ * Pricing for recurring app plans (finance access, capacity) lives on the
+ * separate Subscriptions page instead; this page owns everything about a
+ * drill set's own lifecycle, content and commerce alike.
  */
 
 type StatusFilter = SetStatus | 'all';
 type OwnerFilter = 'all' | 'official';
+
+const TIER_LABEL: Record<DrillPackTier, string> = {
+  STANDARD: 'Standard',
+  VIDEO_ENHANCED: 'With Video',
+};
+
+const ALL_TIERS: DrillPackTier[] = ['STANDARD', 'VIDEO_ENHANCED'];
+
+const formatPackagePrice = (price: number): string =>
+  price === 0
+    ? 'Free'
+    : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
+
+function extractErrorMessage(err: unknown, fallback: string): string {
+  const message =
+    err && typeof err === 'object' && 'response' in err
+      ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      : undefined;
+  return message || fallback;
+}
+
+interface PackageFormState {
+  name: string;
+  description: string;
+  price: string;
+  durationDays: string;
+}
+
+/**
+ * The priced-tier commerce panel for one drill set — lists its existing
+ * marketplace_items packages and lets the admin add, edit, or
+ * publish/unpublish them. Kept as its own component (rather than more state
+ * on the parent) since it needs its own add/edit form state and is rendered
+ * from two different parent modals.
+ */
+const PackagesSection: React.FC<{
+  set: DrillSet;
+  items: MarketplaceItem[];
+  onChange: () => void;
+}> = ({ set, items, onChange }) => {
+  const [addingTier, setAddingTier] = useState<DrillPackTier | null>(null);
+  const [addForm, setAddForm] = useState<PackageFormState>({ name: '', description: '', price: '0', durationDays: '' });
+  const [addError, setAddError] = useState<string | null>(null);
+  const [isSavingAdd, setIsSavingAdd] = useState(false);
+
+  const [editing, setEditing] = useState<MarketplaceItem | null>(null);
+  const [editForm, setEditForm] = useState<PackageFormState | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+
+  const usedTiers = new Set(items.map((item) => item.tier).filter(Boolean) as DrillPackTier[]);
+  const availableTiers = ALL_TIERS.filter((tier) => !usedTiers.has(tier));
+
+  const openAdd = (tier: DrillPackTier) => {
+    setAddForm({ name: `${set.name} (${TIER_LABEL[tier]})`, description: '', price: '0', durationDays: '' });
+    setAddError(null);
+    setAddingTier(tier);
+  };
+
+  const handleAdd = async () => {
+    if (!addingTier) return;
+    if (!addForm.name.trim()) {
+      setAddError('Name is required.');
+      return;
+    }
+    const price = Number(addForm.price);
+    if (Number.isNaN(price) || price < 0) {
+      setAddError('Price must be zero or a positive number.');
+      return;
+    }
+    setIsSavingAdd(true);
+    setAddError(null);
+    try {
+      await apiClient.post('/admin/marketplace-items', {
+        name: addForm.name.trim(),
+        description: addForm.description.trim() || undefined,
+        category: 'DRILL_PACK',
+        drillSetId: set.id,
+        tier: addingTier,
+        price,
+        durationDays: addForm.durationDays ? Number(addForm.durationDays) : undefined,
+      });
+      setAddingTier(null);
+      onChange();
+    } catch (err: unknown) {
+      setAddError(extractErrorMessage(err, 'Failed to add package.'));
+    } finally {
+      setIsSavingAdd(false);
+    }
+  };
+
+  const openEdit = (item: MarketplaceItem) => {
+    setEditing(item);
+    setEditForm({
+      name: item.name,
+      description: item.description || '',
+      price: String(item.price),
+      durationDays: item.durationDays ? String(item.durationDays) : '',
+    });
+    setEditError(null);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editing || !editForm) return;
+    const price = Number(editForm.price);
+    if (Number.isNaN(price) || price < 0) {
+      setEditError('Price must be zero or a positive number.');
+      return;
+    }
+    setIsSavingEdit(true);
+    setEditError(null);
+    try {
+      await apiClient.patch(`/admin/marketplace-items/${editing.id}`, {
+        name: editForm.name.trim(),
+        description: editForm.description.trim() || null,
+        price,
+        durationDays: editForm.durationDays ? Number(editForm.durationDays) : null,
+      });
+      setEditing(null);
+      setEditForm(null);
+      onChange();
+    } catch (err: unknown) {
+      setEditError(extractErrorMessage(err, 'Failed to update package.'));
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
+  const handleToggle = async (item: MarketplaceItem) => {
+    setTogglingId(item.id);
+    setToggleError(null);
+    try {
+      await apiClient.patch(`/admin/marketplace-items/${item.id}`, { isEnabled: !item.isEnabled });
+      onChange();
+    } catch {
+      setToggleError(`Failed to ${item.isEnabled ? 'unpublish' : 'publish'} "${item.name}".`);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  return (
+    <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--border-default)' }}>
+      <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-2">Packages</h4>
+      {toggleError && <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{toggleError}</p>}
+
+      {items.length === 0 ? (
+        <p className="text-xs text-[var(--text-secondary)] mb-2">Not packaged for sale yet.</p>
+      ) : (
+        <ul className="space-y-2 mb-2">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center justify-between text-sm">
+              <div>
+                <span className="text-bold">{item.tier ? TIER_LABEL[item.tier] : item.name}</span>{' '}
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  {formatPackagePrice(item.price)} · {item.durationDays ? `${item.durationDays} days` : 'Lifetime'}
+                </span>
+                <span
+                  className={`table-badge ${item.isEnabled ? 'table-badge--success' : 'table-badge--overdue'}`}
+                  style={{ marginLeft: 8 }}
+                >
+                  {item.isEnabled ? 'Published' : 'Unpublished'}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <button className="table-action-link text-xs" onClick={() => openEdit(item)}>
+                  Edit
+                </button>
+                <button
+                  className={`table-action-link text-xs ${item.isEnabled ? 'table-action-link--danger' : ''}`}
+                  onClick={() => handleToggle(item)}
+                  disabled={togglingId === item.id}
+                >
+                  {item.isEnabled ? 'Unpublish' : 'Publish'}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {set.status === 'published' && availableTiers.length > 0 && (
+        <div className="flex gap-2 flex-wrap">
+          {availableTiers.map((tier) => (
+            <button key={tier} className="btn btn-secondary text-xs" onClick={() => openAdd(tier)}>
+              + Add {TIER_LABEL[tier]} Package
+            </button>
+          ))}
+        </div>
+      )}
+
+      {addingTier && (
+        <div className="card-base p-3 mt-2 space-y-2">
+          {addError && <p className="text-xs" style={{ color: 'var(--color-danger)' }}>{addError}</p>}
+          <div className="form-group">
+            <label className="form-label">Name</label>
+            <input
+              className="form-input text-sm"
+              value={addForm.name}
+              onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+              maxLength={150}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <textarea
+              className="form-input text-sm"
+              rows={2}
+              value={addForm.description}
+              onChange={(e) => setAddForm((f) => ({ ...f, description: e.target.value }))}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Price (₹, one-time)</label>
+            <input
+              className="form-input text-sm"
+              type="number"
+              min={0}
+              value={addForm.price}
+              onChange={(e) => setAddForm((f) => ({ ...f, price: e.target.value }))}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Auto-expires after (days, optional)</label>
+            <input
+              className="form-input text-sm"
+              type="number"
+              min={1}
+              value={addForm.durationDays}
+              onChange={(e) => setAddForm((f) => ({ ...f, durationDays: e.target.value }))}
+              placeholder="Leave blank for lifetime access"
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button className="btn btn-secondary text-xs" onClick={() => setAddingTier(null)} disabled={isSavingAdd}>
+              Cancel
+            </button>
+            <button className="btn btn-primary text-xs" onClick={handleAdd} disabled={isSavingAdd}>
+              {isSavingAdd ? 'Adding...' : 'Add Package'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {editing && editForm && (
+        <div className="card-base p-3 mt-2 space-y-2">
+          {editError && <p className="text-xs" style={{ color: 'var(--color-danger)' }}>{editError}</p>}
+          <div className="form-group">
+            <label className="form-label">Name</label>
+            <input
+              className="form-input text-sm"
+              value={editForm.name}
+              onChange={(e) => setEditForm((f) => (f ? { ...f, name: e.target.value } : f))}
+              maxLength={150}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Description</label>
+            <textarea
+              className="form-input text-sm"
+              rows={2}
+              value={editForm.description}
+              onChange={(e) => setEditForm((f) => (f ? { ...f, description: e.target.value } : f))}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Price (₹, one-time)</label>
+            <input
+              className="form-input text-sm"
+              type="number"
+              min={0}
+              value={editForm.price}
+              onChange={(e) => setEditForm((f) => (f ? { ...f, price: e.target.value } : f))}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Auto-expires after (days, optional)</label>
+            <input
+              className="form-input text-sm"
+              type="number"
+              min={1}
+              value={editForm.durationDays}
+              onChange={(e) => setEditForm((f) => (f ? { ...f, durationDays: e.target.value } : f))}
+              placeholder="Leave blank for lifetime access"
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              className="btn btn-secondary text-xs"
+              onClick={() => {
+                setEditing(null);
+                setEditForm(null);
+              }}
+              disabled={isSavingEdit}
+            >
+              Cancel
+            </button>
+            <button className="btn btn-primary text-xs" onClick={handleSaveEdit} disabled={isSavingEdit}>
+              {isSavingEdit ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const STATUS_BADGE_CLASS: Record<SetStatus, string> = {
   draft: 'table-badge--waived',
@@ -45,6 +360,9 @@ export const AdminMarketplace: React.FC = () => {
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Priced packages (marketplace_items, category=DRILL_PACK), keyed by drillSetId
+  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
+
   // Detail modal (non-official packs) — includes approve/reject when pending
   const [viewing, setViewing] = useState<DrillSet | null>(null);
   const [viewCategories, setViewCategories] = useState<DrillSetCategory[]>([]);
@@ -52,6 +370,7 @@ export const AdminMarketplace: React.FC = () => {
   const [showRejectForm, setShowRejectForm] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [reviewActionLoading, setReviewActionLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   // Official pack builder modal
   const [building, setBuilding] = useState<DrillSet | null>(null);
@@ -78,9 +397,24 @@ export const AdminMarketplace: React.FC = () => {
     }
   }, [statusFilter]);
 
+  const fetchMarketplaceItems = useCallback(async () => {
+    try {
+      const response = await apiClient.get<MarketplaceItem[]>('/admin/marketplace-items', {
+        params: { category: 'DRILL_PACK' },
+      });
+      setMarketplaceItems(response.data);
+    } catch {
+      // Non-fatal — the pack catalog still loads; packages just won't show.
+    }
+  }, []);
+
   useEffect(() => {
     fetchSets();
   }, [fetchSets]);
+
+  useEffect(() => {
+    fetchMarketplaceItems();
+  }, [fetchMarketplaceItems]);
 
   useEffect(() => {
     if (successMessage) {
@@ -96,6 +430,17 @@ export const AdminMarketplace: React.FC = () => {
   });
 
   const officialCount = sets.filter((s) => s.isOfficial).length;
+
+  const itemsBySetId = useMemo(() => {
+    const map = new Map<string, MarketplaceItem[]>();
+    for (const item of marketplaceItems) {
+      if (!item.drillSetId) continue;
+      const list = map.get(item.drillSetId) || [];
+      list.push(item);
+      map.set(item.drillSetId, list);
+    }
+    return map;
+  }, [marketplaceItems]);
 
   // --- Detail view (non-official) ---
   const handleOpenView = async (set: DrillSet) => {
@@ -149,6 +494,29 @@ export const AdminMarketplace: React.FC = () => {
       setError('Failed to reject set.');
     } finally {
       setReviewActionLoading(false);
+    }
+  };
+
+  const handleResetToDraft = async () => {
+    if (!viewing) return;
+    if (
+      !window.confirm(
+        `Reset "${viewing.name}" to draft? It will be pulled from the marketplace and any packages will be unpublished.`
+      )
+    ) {
+      return;
+    }
+    setResetLoading(true);
+    try {
+      await apiClient.post(`/admin/drill-sets/${viewing.id}/reset-to-draft`);
+      setSuccessMessage(`"${viewing.name}" reset to draft.`);
+      handleCloseView();
+      await fetchSets();
+      await fetchMarketplaceItems();
+    } catch {
+      setError('Failed to reset set to draft.');
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -405,6 +773,14 @@ export const AdminMarketplace: React.FC = () => {
                 <p className="text-sm text-[var(--text-secondary)]">No categories found in this set.</p>
               )}
 
+              {!viewLoading && (
+                <PackagesSection
+                  set={viewing}
+                  items={itemsBySetId.get(viewing.id) || []}
+                  onChange={fetchMarketplaceItems}
+                />
+              )}
+
               {showRejectForm && (
                 <div className="form-group mt-3">
                   <label htmlFor="admin-reject-reason" className="form-label">Rejection reason (optional)</label>
@@ -421,6 +797,11 @@ export const AdminMarketplace: React.FC = () => {
             </div>
             <div className="modal-footer">
               <button onClick={handleCloseView} className="btn btn-secondary">Close</button>
+              {(viewing.status === 'published' || viewing.status === 'rejected') && !showRejectForm && (
+                <button onClick={handleResetToDraft} disabled={resetLoading} className="btn btn-secondary">
+                  {resetLoading ? 'Resetting...' : 'Reset to Draft'}
+                </button>
+              )}
               {viewing.status === 'pending_review' && !showRejectForm && (
                 <>
                   <button onClick={() => setShowRejectForm(true)} className="btn btn-danger">
@@ -534,6 +915,14 @@ export const AdminMarketplace: React.FC = () => {
                     );
                   })}
                 </div>
+              )}
+
+              {!buildLoading && (
+                <PackagesSection
+                  set={building}
+                  items={itemsBySetId.get(building.id) || []}
+                  onChange={fetchMarketplaceItems}
+                />
               )}
             </div>
             <div className="modal-footer">

@@ -23,8 +23,8 @@ const BatchTimingsPage: React.FC = () => {
         <div className="section-stack">
           <div className="page-header">
             <div>
-              <h1 className="page-header-title">Batch timings</h1>
-              <p className="page-header-subtitle">Manage reusable day/time session templates</p>
+              <h1 className="page-header-title">Batch</h1>
+              <p className="page-header-subtitle">Manage reusable day/time session slots</p>
             </div>
             {!isReadOnly && (
               <div className="page-header-actions">

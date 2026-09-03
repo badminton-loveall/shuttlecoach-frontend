@@ -3,6 +3,8 @@ import DashboardLayout from '../components/DashboardLayout';
 import StatCard from '../components/StatCard';
 import { useLedger } from '../hooks/useLedger';
 import type { CreateLedgerEntryData } from '../hooks/useLedger';
+import { useAccountingAccess } from '../hooks/useAccountingAccess';
+import AccountingTrialBanner from '../components/AccountingTrialBanner';
 
 /**
  * LedgerPage
@@ -234,6 +236,9 @@ export const LedgerPage: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
+  const { hasAccess: hasAccountingAccess, subscription: accountingSub, refetch: refetchAccountingAccess } =
+    useAccountingAccess();
+
   const { entries, summary, loading, error, createEntry } = useLedger(selectedMonth);
 
   // Quick filter helpers
@@ -259,19 +264,34 @@ export const LedgerPage: React.FC = () => {
               <h1 className="page-header-title">Accounts</h1>
               <p className="page-header-subtitle">Financial ledger — track income and expenses</p>
             </div>
-            <div className="page-header-actions">
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="btn-base btn-primary"
-                title="Add a manual ledger entry"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                Add Entry
-              </button>
-            </div>
+            {hasAccountingAccess && (
+              <div className="page-header-actions">
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="btn-base btn-primary"
+                  title="Add a manual ledger entry"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add Entry
+                </button>
+              </div>
+            )}
           </div>
+
+          {!hasAccountingAccess ? (
+            <div className="card p-6 text-center text-[var(--text-secondary)]">
+              <p className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Accounting Section not active
+              </p>
+              <p className="text-sm">
+                Ask your platform admin to activate the Accounting Section subscription for your center.
+              </p>
+            </div>
+          ) : (
+          <>
+          <AccountingTrialBanner subscription={accountingSub} onUpgraded={refetchAccountingAccess} />
 
           {/* Filter Bar */}
           <div className="card" style={{ padding: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
@@ -437,6 +457,8 @@ export const LedgerPage: React.FC = () => {
             onClose={() => setIsAddModalOpen(false)}
             onSubmit={createEntry}
           />
+          </>
+          )}
         </div>
       </div>
     </DashboardLayout>

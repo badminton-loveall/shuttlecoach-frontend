@@ -809,3 +809,78 @@ export interface CalendarEntry {
   attendanceRecorded: boolean;
   coachNote?: string;
 }
+
+// ============================================================================
+// Center Marketplace Types (billable subscriptions — distinct from the
+// coach drill-set Marketplace above)
+// ============================================================================
+
+export type MarketplaceItemCategory =
+  | 'DRILL_PACK'
+  | 'ACCOUNTING'
+  | 'STUDENT_CAPACITY'
+  | 'COACH_CAPACITY';
+
+export type DrillPackTier = 'STANDARD' | 'VIDEO_ENHANCED';
+
+export type SubscriptionStatus = 'ACTIVE' | 'EXPIRED' | 'CANCELLED' | 'PENDING' | 'REJECTED';
+
+export interface MarketplaceItem {
+  id: string;
+  name: string;
+  description: string | null;
+  category: MarketplaceItemCategory;
+  drillSetId: string | null;
+  tier: DrillPackTier | null;
+  capacityLimit: number | null;
+  price: number;
+  billingPeriod: string;
+  durationDays: number | null;
+  isEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CenterSubscription {
+  id: string;
+  centerId: string;
+  marketplaceItemId: string;
+  status: SubscriptionStatus;
+  startedAt: string;
+  expiresAt: string | null;
+  activatedBy: string;
+  pricePaid: number;
+  studentVideoAccessEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+  itemName?: string;
+  itemCategory?: MarketplaceItemCategory;
+  itemPrice?: number;
+  centerName?: string;
+}
+
+export interface ItemRevenue {
+  itemId: string;
+  itemName: string;
+  category: MarketplaceItemCategory;
+  price: number;
+  activeCount: number;
+  totalRevenue: number;
+}
+
+export interface CenterLedgerSummary {
+  centerId: string;
+  centerName: string;
+  totalCredits: number;
+  totalDebits: number;
+  netBalance: number;
+}
+
+export interface PlatformLedgerSummary {
+  centers: CenterLedgerSummary[];
+  totals: {
+    totalCredits: number;
+    totalDebits: number;
+    netBalance: number;
+  };
+}

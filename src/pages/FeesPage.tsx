@@ -11,6 +11,8 @@ import CollapsibleFilterPanel from '../components/CollapsibleFilterPanel';
 import { computeAllFeeStatuses } from '../utils/feeUtils';
 import { useFees } from '../hooks/useFees';
 import { useStudents } from '../hooks/useStudents';
+import { useAccountingAccess } from '../hooks/useAccountingAccess';
+import AccountingTrialBanner from '../components/AccountingTrialBanner';
 import apiClient from '../utils/apiClient';
 import type { FeeStatus } from '../types';
 
@@ -24,6 +26,8 @@ import type { FeeStatus } from '../types';
 export const FeesPage: React.FC = () => {
   const { fees: rawFees, loading: feesLoading, error: feesError, createFee, markFeeAsPaid, waiveFee, refetch: refetchFees } = useFees();
   const { students, loading: studentsLoading } = useStudents();
+  const { hasAccess: hasAccountingAccess, subscription: accountingSub, refetch: refetchAccountingAccess } =
+    useAccountingAccess();
 
   const [selectedStatuses, setSelectedStatuses] = useState<FeeStatus[]>(['PAID', 'PENDING', 'OVERDUE', 'WAIVED']);
   const [searchQuery, setSearchQuery] = useState('');
@@ -234,51 +238,66 @@ export const FeesPage: React.FC = () => {
               <h1 className="page-header-title">Fee Management</h1>
               <p className="page-header-subtitle">Track and manage student fee payments</p>
             </div>
-            <div className="page-header-actions">
-              <CollapsibleFilterPanel activeFilterCount={selectedStatuses.length - 4 + (selectedMonth ? 1 : 0) + (selectedBatch ? 1 : 0) + (searchQuery ? 1 : 0)}>
-                <div className="filter-panel-inner">
-                  <div className="filter-panel-search">
-                    <input type="text" placeholder="Search by name, student ID, or batch..." className="filter-search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+            {hasAccountingAccess && (
+              <div className="page-header-actions">
+                <CollapsibleFilterPanel activeFilterCount={selectedStatuses.length - 4 + (selectedMonth ? 1 : 0) + (selectedBatch ? 1 : 0) + (searchQuery ? 1 : 0)}>
+                  <div className="filter-panel-inner">
+                    <div className="filter-panel-search">
+                      <input type="text" placeholder="Search by name, student ID, or batch..." className="filter-search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                    </div>
+
+                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="filter-dropdown" title="Filter by month">
+                      <option value="">All Months</option>
+                      {uniqueMonths.map((month) => (<option key={month} value={month}>{month}</option>))}
+                    </select>
+
+                    <select value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)} className="filter-dropdown" title="Filter by batch">
+                      <option value="">All Batches</option>
+                      {uniqueBatches.map((batch) => (<option key={batch.id} value={batch.id}>{batch.name}</option>))}
+                    </select>
+
+                    <div className="filter-section-divider">
+                      <h4 className="filter-section-title">Status</h4>
+                    </div>
+
+                    <div className="filter-status-row">
+                      <button onClick={() => handleStatusToggle('PAID')} className={`filter-status-badge filter-badge--paid ${selectedStatuses.includes('PAID') ? 'active' : ''}`} title="Paid fees">Paid</button>
+                      <button onClick={() => handleStatusToggle('PENDING')} className={`filter-status-badge filter-badge--pending ${selectedStatuses.includes('PENDING') ? 'active' : ''}`} title="Pending fees">Pending</button>
+                      <button onClick={() => handleStatusToggle('OVERDUE')} className={`filter-status-badge filter-badge--overdue ${selectedStatuses.includes('OVERDUE') ? 'active' : ''}`} title="Overdue fees">Overdue</button>
+                      <button onClick={() => handleStatusToggle('WAIVED')} className={`filter-status-badge filter-badge--waived ${selectedStatuses.includes('WAIVED') ? 'active' : ''}`} title="Waived fees">Waived</button>
+                    </div>
+
+                    <div className="filter-results">
+                      <span className="filter-count">{filteredAndSortedFees.length} of {fees.length} records</span>
+                    </div>
                   </div>
-
-                  <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="filter-dropdown" title="Filter by month">
-                    <option value="">All Months</option>
-                    {uniqueMonths.map((month) => (<option key={month} value={month}>{month}</option>))}
-                  </select>
-
-                  <select value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)} className="filter-dropdown" title="Filter by batch">
-                    <option value="">All Batches</option>
-                    {uniqueBatches.map((batch) => (<option key={batch.id} value={batch.id}>{batch.name}</option>))}
-                  </select>
-
-                  <div className="filter-section-divider">
-                    <h4 className="filter-section-title">Status</h4>
-                  </div>
-
-                  <div className="filter-status-row">
-                    <button onClick={() => handleStatusToggle('PAID')} className={`filter-status-badge filter-badge--paid ${selectedStatuses.includes('PAID') ? 'active' : ''}`} title="Paid fees">Paid</button>
-                    <button onClick={() => handleStatusToggle('PENDING')} className={`filter-status-badge filter-badge--pending ${selectedStatuses.includes('PENDING') ? 'active' : ''}`} title="Pending fees">Pending</button>
-                    <button onClick={() => handleStatusToggle('OVERDUE')} className={`filter-status-badge filter-badge--overdue ${selectedStatuses.includes('OVERDUE') ? 'active' : ''}`} title="Overdue fees">Overdue</button>
-                    <button onClick={() => handleStatusToggle('WAIVED')} className={`filter-status-badge filter-badge--waived ${selectedStatuses.includes('WAIVED') ? 'active' : ''}`} title="Waived fees">Waived</button>
-                  </div>
-
-                  <div className="filter-results">
-                    <span className="filter-count">{filteredAndSortedFees.length} of {fees.length} records</span>
-                  </div>
-                </div>
-              </CollapsibleFilterPanel>
-              <button
-                onClick={() => setIsCreateFeeModalOpen(true)}
-                className="btn-create-fee"
-                title="Create new fee"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                Create Fee
-              </button>
-            </div>
+                </CollapsibleFilterPanel>
+                <button
+                  onClick={() => setIsCreateFeeModalOpen(true)}
+                  className="btn-create-fee"
+                  title="Create new fee"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Create Fee
+                </button>
+              </div>
+            )}
           </div>
+
+          {!hasAccountingAccess ? (
+            <div className="card p-6 text-center text-[var(--text-secondary)]">
+              <p className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Accounting Section not active
+              </p>
+              <p className="text-sm">
+                Ask your platform admin to activate the Accounting Section subscription for your center.
+              </p>
+            </div>
+          ) : (
+          <>
+          <AccountingTrialBanner subscription={accountingSub} onUpgraded={refetchAccountingAccess} />
 
           {/* Loading State */}
           {loading && (
@@ -351,6 +370,8 @@ export const FeesPage: React.FC = () => {
                 />
               </div>
             </div>
+          )}
+          </>
           )}
 
           {/* Mark Paid Modal */}

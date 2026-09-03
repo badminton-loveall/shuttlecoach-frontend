@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/apiClient';
-import type { Center } from '../../types';
+import type { Center, CenterSubscription, MarketplaceItem } from '../../types';
+import AdminCenterAccounting from '../../components/AdminCenterAccounting';
+import { getTrialInfo, formatTrialLabel } from '../../utils/subscriptionUtils';
 import { SUPPORTED_SPORTS, SPORT_LABELS } from '../../constants/sports';
 import type { Sport } from '../../constants/sports';
 import './CenterDetailPage.css';
+import '../../styles/pages.css';
 
 /**
  * CenterDetailPage
@@ -44,8 +47,25 @@ export const CenterDetailPage: React.FC = () => {
   // Activation state
   const [isToggling, setIsToggling] = useState(false);
 
+  // Subscriptions state
+  const [subscriptions, setSubscriptions] = useState<CenterSubscription[]>([]);
+  const [catalog, setCatalog] = useState<MarketplaceItem[]>([]);
+  const [subsError, setSubsError] = useState<string | null>(null);
+  const [isAddingSubscription, setIsAddingSubscription] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState('');
+  const [priceOverride, setPriceOverride] = useState('');
+  const [isActivating, setIsActivating] = useState(false);
+  const [cancellingItemId, setCancellingItemId] = useState<string | null>(null);
 
-
+  const fetchSubscriptions = useCallback(async () => {
+    if (!id) return;
+    try {
+      const response = await apiClient.get<CenterSubscription[]>(`/admin/centers/${id}/subscriptions`);
+      setSubscriptions(response.data);
+    } catch {
+      setSubsError('Failed to load subscriptions.');
+    }
+  }, [id]);
 
   const fetchCenter = useCallback(async () => {
     if (!id) return;
@@ -92,7 +112,12 @@ export const CenterDetailPage: React.FC = () => {
 
   useEffect(() => {
     void fetchCenter();
-  }, [fetchCenter]);
+    void fetchSubscriptions();
+    apiClient
+      .get<MarketplaceItem[]>('/admin/marketplace-items')
+      .then((res) => setCatalog(res.data))
+      .catch(() => setCatalog([]));
+  }, [fetchCenter, fetchSubscriptions]);
 
 
 
@@ -238,6 +263,60 @@ export const CenterDetailPage: React.FC = () => {
       setIsToggling(false);
     }
   };
+
+  // Subscribed items don't reappear in the "add" picker
+  const subscribedItemIds = new Set(subscriptions.map((s) => s.marketplaceItemId));
+  const availableItems = catalog.filter((item) => item.isEnabled && !subscribedItemIds.has(item.id));
+
+  const handleOpenAddSubscription = () => {
+    setSelectedItemId('');
+    setPriceOverride('');
+    setSubsError(null);
+    setIsAddingSubscription(true);
+  };
+
+  const handleActivateSubscription = async () => {
+    if (!id || !selectedItemId) return;
+    setIsActivating(true);
+    setSubsError(null);
+    try {
+      await apiClient.post(`/admin/centers/${id}/subscriptions`, {
+        marketplaceItemId: selectedItemId,
+        priceOverride: priceOverride ? Number(priceOverride) : undefined,
+      });
+      setIsAddingSubscription(false);
+      await fetchSubscriptions();
+    } catch (err: unknown) {
+      const message =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          : undefined;
+      setSubsError(message || 'Failed to activate the subscription.');
+    } finally {
+      setIsActivating(false);
+    }
+  };
+
+  const handleCancelSubscription = async (marketplaceItemId: string) => {
+    if (!id) return;
+    setCancellingItemId(marketplaceItemId);
+    setSubsError(null);
+    try {
+      await apiClient.patch(`/admin/centers/${id}/subscriptions/${marketplaceItemId}/cancel`);
+      await fetchSubscriptions();
+    } catch {
+      setSubsError('Failed to cancel the subscription.');
+    } finally {
+      setCancellingItemId(null);
+    }
+  };
+
+  const formatPrice = (price: number): string =>
+    price === 0
+      ? 'Free'
+      : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(
+          price
+        );
 
   const formatRevenue = (amount: number): string => {
     return new Intl.NumberFormat('en-IN', {
@@ -586,6 +665,160 @@ export const CenterDetailPage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Subscriptions Section */}
+      <div className="center-detail-page__section">
+        <div className="flex items-center justify-between" style={{ marginBottom: 'var(--space-sm)' }}>
+          <h2 className="center-detail-page__section-title" style={{ marginBottom: 0 }}>
+            Subscriptions
+          </h2>
+          <button className="btn btn-secondary text-sm" onClick={handleOpenAddSubscription}>
+            Add Subscription
+          </button>
+        </div>
+
+        {subsError && (
+          <div className="center-detail-page__inline-error">
+            <p>{subsError}</p>
+          </div>
+        )}
+
+        {subscriptions.length === 0 ? (
+          <div className="table-filter-section">
+            <div className="table-empty">No active subscriptions for this center.</div>
+          </div>
+        ) : (
+          <div className="table-filter-section">
+          <div className="table-container">
+            <table className="table-styled">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Price Paid</th>
+                  <th>Started</th>
+                  <th>Expires</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions.map((sub) => {
+                  const trial = getTrialInfo(sub);
+                  return (
+                    <tr key={sub.id}>
+                      <td className="text-bold">{sub.itemName || sub.marketplaceItemId}</td>
+                      <td>{formatPrice(sub.pricePaid)}</td>
+                      <td className="text-muted">{new Date(sub.startedAt).toLocaleDateString()}</td>
+                      <td>
+                        {trial ? (
+                          <span
+                            className={`badge-base ${trial.expired ? 'badge-danger' : 'badge-warning'}`}
+                            title={new Date(trial.expiresAt).toLocaleString()}
+                          >
+                            {formatTrialLabel(trial)}
+                          </span>
+                        ) : (
+                          <span className="text-muted">
+                            {sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString() : 'Lifetime'}
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        <button
+                          className="table-action-link table-action-link--danger"
+                          onClick={() => handleCancelSubscription(sub.marketplaceItemId)}
+                          disabled={cancellingItemId === sub.marketplaceItemId}
+                        >
+                          {cancellingItemId === sub.marketplaceItemId ? 'Cancelling...' : 'Cancel'}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          </div>
+        )}
+      </div>
+
+      {/* Accounting Section (admin oversight — not gated by the center's own Accounting subscription) */}
+      <div className="center-detail-page__section">
+        <h2 className="center-detail-page__section-title">Accounting</h2>
+        {id && <AdminCenterAccounting centerId={id} />}
+      </div>
+
+      {/* Add Subscription modal */}
+      {isAddingSubscription && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2 className="modal-title">Add Subscription</h2>
+              <button className="modal-close-btn" onClick={() => setIsAddingSubscription(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body space-y-3">
+              {subsError && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
+                  {subsError}
+                </div>
+              )}
+              <p className="text-sm text-[var(--text-secondary)]">
+                Only after the center has paid offline — activating here records the payment and unlocks the item
+                immediately.
+              </p>
+              <div className="form-group">
+                <label className="form-label" htmlFor="add-sub-item">
+                  Item
+                </label>
+                <select
+                  id="add-sub-item"
+                  className="form-input"
+                  value={selectedItemId}
+                  onChange={(e) => setSelectedItemId(e.target.value)}
+                >
+                  <option value="">Select an item...</option>
+                  {availableItems.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name} — {formatPrice(item.price)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="add-sub-price">
+                  Price paid (optional override)
+                </label>
+                <input
+                  id="add-sub-price"
+                  className="form-input"
+                  type="number"
+                  min={0}
+                  value={priceOverride}
+                  onChange={(e) => setPriceOverride(e.target.value)}
+                  placeholder="Leave blank to use the catalog price"
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setIsAddingSubscription(false)}
+                disabled={isActivating}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleActivateSubscription}
+                disabled={isActivating || !selectedItemId}
+              >
+                {isActivating ? 'Activating...' : 'Activate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

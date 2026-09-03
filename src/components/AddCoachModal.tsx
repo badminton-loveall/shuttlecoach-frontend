@@ -94,9 +94,10 @@ export const AddCoachModal: React.FC<AddCoachModalProps> = ({
 
       await onSubmit(coachData);
       onClose();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error submitting coach data:', error);
-      setErrors({ submit: 'Failed to add coach. Please try again.' });
+      const apiError = error as { response?: { data?: { error?: string } } };
+      setErrors({ submit: apiError?.response?.data?.error || 'Failed to add coach. Please try again.' });
       setIsSubmitting(false);
     }
   };

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useAccountingAccess } from '../hooks/useAccountingAccess';
 import CenterSwitcher from './CenterSwitcher';
 import logoImg from '../assets/logo.png';
 import './TopNav.css';
@@ -59,7 +60,7 @@ const COACH_NAV: NavEntry[] = [
   {
     label: 'Training',
     items: [
-      { label: 'Batch timings', path: '/batch-timings' },
+      { label: 'Batch', path: '/batch-timings' },
       { label: 'Curriculum', path: '/courses' },
       { label: 'Drills', path: '/drills' },
     ],
@@ -91,6 +92,10 @@ export const TopNav: React.FC = () => {
   const { user, activeRole, canAccessFees, logout } = useAuth();
   // Use activeRole for center-aware navigation visibility (Requirements: 3.2)
   const role = activeRole;
+  // Center-level Accounting Section subscription — gates the entire Finance
+  // menu (Fees, Accounts, and any future Salaries item), not just the ledger.
+  // Only coach roles ever see that menu, so skip the fetch for everyone else.
+  const { hasAccess: hasAccountingAccess } = useAccountingAccess(role === 'HEAD_COACH' || role === 'ASSISTANT_COACH');
   const location = useLocation();
   const navigate = useNavigate();
   const showBack = isSubpage(location.pathname);
@@ -157,6 +162,13 @@ export const TopNav: React.FC = () => {
       }
 
       if (isDropdown(entry) && entry.label === 'Finance') {
+        // The whole Finance menu — Fees, Accounts, and any future Salaries
+        // item — disappears once the center's Accounting Section subscription
+        // lapses, keeping records intact but inaccessible until it renews.
+        if (!hasAccountingAccess) {
+          return null;
+        }
+
         // Filter finance links based on canAccessFees permission
         const items = canAccessFees
           ? entry.items

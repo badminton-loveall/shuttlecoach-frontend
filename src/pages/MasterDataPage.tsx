@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import CenterSettingsTab from '../components/CenterSettingsTab';
 import { MarketplaceGallery } from '../components/MarketplaceGallery';
+import SubscriptionCatalog from '../components/SubscriptionCatalog';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
@@ -9,7 +10,7 @@ export const MasterDataPage: React.FC = () => {
   const { role } = useAuth();
   const isHeadCoach = role === 'HEAD_COACH';
 
-  const [activeTab, setActiveTab] = useState<'center' | 'marketplace'>('center');
+  const [activeTab, setActiveTab] = useState<'center' | 'marketplace' | 'subscriptions'>('center');
 
   return (
     <DashboardLayout>
@@ -31,10 +32,16 @@ export const MasterDataPage: React.FC = () => {
                 Marketplace
               </button>
             )}
+            {isHeadCoach && (
+              <button role="tab" aria-selected={activeTab === 'subscriptions'} className={`sp-tab${activeTab === 'subscriptions' ? ' sp-tab--active' : ''}`} onClick={() => setActiveTab('subscriptions')}>
+                Subscriptions
+              </button>
+            )}
           </nav>
 
           {activeTab === 'center' && <CenterSettingsTab />}
           {activeTab === 'marketplace' && isHeadCoach && <MarketplaceGallery />}
+          {activeTab === 'subscriptions' && isHeadCoach && <SubscriptionCatalog />}
         </div>
       </div>
     </DashboardLayout>
