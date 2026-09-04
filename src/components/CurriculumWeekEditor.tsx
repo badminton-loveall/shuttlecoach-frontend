@@ -35,6 +35,10 @@ interface CurriculumWeekEditorProps {
   onRemoveDrill: (weekNumber: number, drillId: string) => void;
   disabled?: boolean;
   maxWeeks?: number;
+  /** Optional heading + actions (e.g. a title and Save button) rendered as
+   *  the card's own header row, above the week tabs, so callers don't need
+   *  a separate card just to hold a save control. */
+  headerContent?: React.ReactNode;
 }
 
 export const CurriculumWeekEditor: React.FC<CurriculumWeekEditorProps> = ({
@@ -48,6 +52,7 @@ export const CurriculumWeekEditor: React.FC<CurriculumWeekEditorProps> = ({
   onRemoveDrill,
   disabled = false,
   maxWeeks = 52,
+  headerContent,
 }) => {
   const { drills: allDrills } = useDrills({ annotatePackStatus: true });
   const [drillSearch, setDrillSearch] = useState('');
@@ -75,6 +80,10 @@ export const CurriculumWeekEditor: React.FC<CurriculumWeekEditorProps> = ({
 
   return (
     <div className="curriculum-step__editor-wrapper">
+      {headerContent && (
+        <div className="curriculum-step__header">{headerContent}</div>
+      )}
+
       {/* Week tabs */}
       <div className="curriculum-week-tabs" style={{ borderBottom: '1px solid var(--border-default)', padding: '0 var(--space-sm)' }}>
         {weeks.map((week) => (

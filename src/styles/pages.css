@@ -28,6 +28,9 @@
   justify-content: space-between;
   gap: var(--space-md, 16px);
   text-align: left;
+  /* Breathing room below the tab bar above it — shared by every tab that
+     uses this header (My Drills, Marketplace). */
+  margin-top: var(--space-lg);
 }
 
 .marketplace-toolbar {
@@ -47,6 +50,41 @@
 
 .marketplace-toolbar__search {
   min-width: 260px;
+}
+
+/* Generic toolbar row: filters/search grouped on the left (.filter-toolbar__group),
+   the action button pushed to the far right — same Tailwind-collision
+   workaround as .marketplace-toolbar above. */
+.filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.filter-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .filter-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-toolbar__group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-toolbar select,
+  .filter-toolbar input {
+    width: 100% !important;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1991,26 +2029,6 @@
   color: var(--text-primary);
 }
 
-.course-list-panel__new-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  color: var(--color-primary-dark);
-  font-size: var(--font-xs, 0.75rem);
-  font-weight: var(--weight-medium);
-  padding: 4px 8px;
-  cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
-}
-
-.course-list-panel__new-btn:hover {
-  background: var(--surface-hover);
-  border-color: var(--color-primary);
-}
-
 .course-list-panel__items {
   max-height: 320px;
   overflow-y: auto;
@@ -2085,7 +2103,7 @@
 /* Course editor header (name input + dirty indicator) */
 .course-editor-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: var(--space-md);
 }
 
@@ -2113,13 +2131,6 @@
   display: inline-block;
 }
 
-.course-editor-footer {
-  margin-top: var(--space-md);
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
 @media (prefers-color-scheme: dark) {
   .course-list-panel {
     background: var(--surface-dark-card);
@@ -2132,14 +2143,6 @@
 
   .course-list-panel__title {
     color: var(--text-dark-primary);
-  }
-
-  .course-list-panel__new-btn {
-    border-color: var(--border-dark);
-  }
-
-  .course-list-panel__new-btn:hover {
-    background: var(--surface-dark-hover);
   }
 
   .course-list-card__name {
@@ -2350,9 +2353,26 @@
   text-align: center;
 }
 
-/* Back button — align left */
-.sp-back-btn {
-  align-self: flex-start;
+/* Icon-only back button, left of the avatar in the header card */
+.sp-back-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.sp-back-arrow:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
 }
 
 /* The header itself shows a back button on mobile (replacing the logo) once
@@ -2360,7 +2380,7 @@
    redundant there. Desktop keeps it — the header there always shows the
    logo instead of a back control. */
 @media (max-width: 768px) {
-  .sp-back-btn {
+  .sp-back-arrow {
     display: none !important;
   }
 }
@@ -2432,6 +2452,82 @@
   flex-shrink: 0;
 }
 
+/* Enrollment summary band — quiet label/value grid folded into the header
+   card itself (no card wrapper, no section heading), so it reads as part
+   of the student's identity band rather than a separate detail card.
+   flex-basis: 100% forces it onto its own row within .sp-header's
+   flex-wrap: wrap, below the avatar/name/actions row. */
+.sp-header-enrollment {
+  width: 100%;
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  margin-top: var(--space-xs);
+  border-top: 1px solid var(--border-default);
+}
+
+.sp-header-enrollment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sp-header-enrollment-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sp-header-enrollment-value {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Icon-only header action buttons (Edit / Archive) */
+.sp-header-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.sp-header-icon-btn:hover {
+  background-color: var(--surface-muted);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.sp-header-icon-btn--danger {
+  color: var(--color-danger, #ef4444);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.sp-header-icon-btn--danger:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: var(--color-danger, #ef4444);
+  color: var(--color-danger, #ef4444);
+}
+
+@media (max-width: 1024px) {
+  .sp-header-enrollment { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* ── Tab navigation ── */
 .sp-tab-nav {
   display: flex;
@@ -2454,7 +2550,7 @@
   border-radius: 0;
   border-bottom: 2px solid transparent;
   color: var(--text-secondary);
-  font-size: var(--font-sm);
+  font-size: var(--font-base);
   font-weight: var(--weight-medium);
   cursor: pointer;
   transition: color var(--transition-fast), border-color var(--transition-fast);
@@ -2471,7 +2567,21 @@
 
 /* ── Tab content panel ── */
 .sp-tab-content {
+  position: relative;
   min-height: 300px;
+}
+
+/* ── Progress tab ── */
+.progress-tab-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.progress-tab-action-corner {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
 }
 
 /* ── Responsive ── */
@@ -2479,10 +2589,12 @@
   .sp-header { gap: var(--space-md); }
   .sp-header-actions { width: 100%; flex-wrap: wrap; }
   .sp-header-actions .btn { flex: 1 1 calc(50% - var(--space-sm)); justify-content: center; }
+  .sp-header-enrollment { grid-template-columns: repeat(2, 1fr); }
   .sp-tab { padding: var(--space-sm) var(--space-md); }
 }
 
 @media (max-width: 480px) {
+  .sp-header-enrollment { grid-template-columns: 1fr; }
   .sp-student-name { font-size: var(--font-md); }
   .sp-header-meta { max-width: 100%; }
   .sp-header-meta .text-small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
@@ -2493,6 +2605,16 @@
   .sp-tab { color: var(--text-dark-secondary); }
   .sp-tab:hover { color: var(--text-dark-primary); }
   .sp-tab-nav { border-bottom-color: var(--border-dark); }
+  .sp-back-arrow {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+    color: var(--text-dark-secondary);
+  }
+  .sp-back-arrow:hover {
+    background: var(--surface-dark-hover);
+    color: var(--text-dark-primary);
+    border-color: var(--border-dark-strong);
+  }
 }
 
 /* ============================================================================

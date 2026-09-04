@@ -26,7 +26,8 @@
   gap: var(--space-md);
 }
 
-/* Individual info card — white background, light border, no hover lift */
+/* Individual info card — nested inside the tab's outer card, so it reads as
+   a grouped section (outline only) rather than floating with its own shadow. */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -34,14 +35,7 @@
   border: 1px solid var(--border-default);
   background: var(--surface-card);   /* always white */
   overflow: hidden;
-  box-shadow: var(--shadow-card);
-  /* override PersonalInfoForm card hover from global scope */
-  transition: box-shadow var(--transition-base);
-  transform: none;
-}
-
-.form-group:hover {
-  box-shadow: var(--shadow-float);
+  box-shadow: none;
   transform: none;
 }
 

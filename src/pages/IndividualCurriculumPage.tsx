@@ -286,25 +286,6 @@ const IndividualCurriculumPage: React.FC = () => {
       <div className="page-container">
         <div className="section-stack">
 
-          {/* Page Header */}
-          <div>
-            <button
-              onClick={() => navigate('/students')}
-              className="btn btn-secondary btn-sm page-back-btn"
-              style={{ marginBottom: 'var(--space-md)' }}
-            >
-              <span>←</span> Back to Students
-            </button>
-            <h1 className="page-header-title">
-              Curriculum — {student.fullName}
-            </h1>
-            <p className="page-header-subtitle">
-              {activeEnrollment
-                ? `${activeEnrollment.curriculumName || 'No curriculum'} · enrolled since ${activeEnrollment.startDate}`
-                : 'No active enrollment set up for this student yet'}
-            </p>
-          </div>
-
           {/* Warning Banner - Shows if plan was copied from a legacy batch plan */}
           {batchPlan && (
             <div className="alert-base alert-warning">
@@ -317,18 +298,6 @@ const IndividualCurriculumPage: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Save controls */}
-          <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--space-md)' }}>
-            <button onClick={handleSavePlan} disabled={isSaving} className="btn btn-primary">
-              {isSaving ? 'Saving...' : 'Save Curriculum'}
-            </button>
-            {saveMessage && (
-              <span className={saveMessage.includes('Error') ? 'text-small' : 'text-small'} style={{ color: saveMessage.includes('Error') ? 'var(--color-danger)' : 'var(--color-success)' }}>
-                {saveMessage}
-              </span>
-            )}
-          </div>
 
           {/* Diff badge for the active week */}
           {hasWeekChanged(activeWeek) && (
@@ -350,6 +319,39 @@ const IndividualCurriculumPage: React.FC = () => {
             onRemoveWeek={handleRemoveWeek}
             onAddDrill={handleAddDrill}
             onRemoveDrill={handleRemoveDrill}
+            headerContent={
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                  <button
+                    type="button"
+                    className="sp-back-arrow"
+                    onClick={() => navigate(`/student/${student.id}`)}
+                    aria-label="Back to student profile"
+                    title="Back to student profile"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M5 12l7 7M5 12l7-7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                  <h2 className="curriculum-step__header-title">
+                    Weekly Curriculum — {student.fullName}
+                  </h2>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                  {saveMessage && (
+                    <span
+                      className="text-small"
+                      style={{ color: saveMessage.includes('Error') ? 'var(--color-danger)' : 'var(--color-success)' }}
+                    >
+                      {saveMessage}
+                    </span>
+                  )}
+                  <button onClick={handleSavePlan} disabled={isSaving} className="btn btn-primary">
+                    {isSaving ? 'Saving...' : 'Save Curriculum'}
+                  </button>
+                </div>
+              </>
+            }
           />
 
         </div>

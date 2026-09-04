@@ -30,6 +30,17 @@ export interface EnrollStudentFormData {
   batchTimeTemplateId?: string;
   curriculumId?: string;
   startDate?: string;
+  height?: number;
+  weight?: number;
+  bloodGroup?: string;
+  medicalConditions?: string;
+  emergencyContact?: string;
+  profilePhoto?: string;
+  coachFeedback?: string;
+  /** Comma-separated in the UI; callers split into a string[] for the API. */
+  strengths?: string;
+  /** Comma-separated in the UI; callers split into a string[] for the API. */
+  weaknesses?: string;
 }
 
 const todayIso = (): string => new Date().toISOString().slice(0, 10);
@@ -48,7 +59,18 @@ const emptyFormData = (): EnrollStudentFormData => ({
   batchTimeTemplateId: '',
   curriculumId: '',
   startDate: todayIso(),
+  height: undefined,
+  weight: undefined,
+  bloodGroup: '',
+  medicalConditions: '',
+  emergencyContact: '',
+  profilePhoto: '',
+  coachFeedback: '',
+  strengths: '',
+  weaknesses: '',
 });
+
+const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
 export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
   isOpen,
@@ -66,7 +88,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'enrollment'>('basic');
+  const [activeSection, setActiveSection] = useState<'basic' | 'contact' | 'guardian' | 'enrollment' | 'additional'>('basic');
 
   // Re-fill from initialData every time the modal transitions closed -> open, so a stale edit
   // from a previous open (or the create-mode defaults) never leaks into the next one. Adjusting
@@ -242,6 +264,11 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       label: 'Enrollment',
       hasError: !!(errors.startDate),
     },
+    {
+      id: 'additional' as const,
+      label: 'Additional Info',
+      hasError: false,
+    },
   ];
 
   return (
@@ -360,6 +387,21 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                       disabled={isSubmitting}
                     />
                   </div>
+                  <div className="form-group">
+                    <label htmlFor="skillLevel" className="form-label">Skill Level</label>
+                    <select
+                      id="skillLevel"
+                      value={formData.skillLevel}
+                      onChange={(e) => setFormData({ ...formData, skillLevel: e.target.value as SkillLevel })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                      <option value="Professional">Professional</option>
+                    </select>
+                  </div>
                 </>
               )}
 
@@ -390,6 +432,18 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                       disabled={isSubmitting}
                     />
                     {errors.email && <span className="form-error-text">{errors.email}</span>}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="emergencyContact" className="form-label">Emergency Contact <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="emergencyContact"
+                      type="text"
+                      value={formData.emergencyContact || ''}
+                      onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                      className="form-input"
+                      placeholder="Name and phone number"
+                      disabled={isSubmitting}
+                    />
                   </div>
                 </>
               )}
@@ -502,6 +556,114 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                       onChange={(e) => setFormData({ ...formData, monthlyFee: e.target.value ? Number(e.target.value) : undefined })}
                       className="form-input"
                       placeholder="e.g. 3000"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
+
+              {activeSection === 'additional' && (
+                <>
+                  <div className="form-group">
+                    <label htmlFor="height" className="form-label">Height (cm) <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="height"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formData.height ?? ''}
+                      onChange={(e) => setFormData({ ...formData, height: e.target.value ? Number(e.target.value) : undefined })}
+                      className="form-input"
+                      placeholder="e.g. 150"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="weight" className="form-label">Weight (kg) <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="weight"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={formData.weight ?? ''}
+                      onChange={(e) => setFormData({ ...formData, weight: e.target.value ? Number(e.target.value) : undefined })}
+                      className="form-input"
+                      placeholder="e.g. 45"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="bloodGroup" className="form-label">Blood Group <span className="form-optional">(optional)</span></label>
+                    <select
+                      id="bloodGroup"
+                      value={formData.bloodGroup || ''}
+                      onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+                      className="form-input"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">Not specified</option>
+                      {BLOOD_GROUPS.map((bg) => (
+                        <option key={bg} value={bg}>{bg}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="medicalConditions" className="form-label">Medical Conditions <span className="form-optional">(optional)</span></label>
+                    <textarea
+                      id="medicalConditions"
+                      value={formData.medicalConditions || ''}
+                      onChange={(e) => setFormData({ ...formData, medicalConditions: e.target.value })}
+                      className="form-input"
+                      rows={2}
+                      placeholder="Allergies, injuries, or other conditions coaches should know about"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="profilePhoto" className="form-label">Profile Photo URL <span className="form-optional">(optional)</span></label>
+                    <input
+                      id="profilePhoto"
+                      type="text"
+                      value={formData.profilePhoto || ''}
+                      onChange={(e) => setFormData({ ...formData, profilePhoto: e.target.value })}
+                      className="form-input"
+                      placeholder="https://..."
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="strengths" className="form-label">Strengths <span className="form-optional">(optional, comma-separated)</span></label>
+                    <input
+                      id="strengths"
+                      type="text"
+                      value={formData.strengths || ''}
+                      onChange={(e) => setFormData({ ...formData, strengths: e.target.value })}
+                      className="form-input"
+                      placeholder="e.g. Footwork, Smash"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="weaknesses" className="form-label">Areas to Improve <span className="form-optional">(optional, comma-separated)</span></label>
+                    <input
+                      id="weaknesses"
+                      type="text"
+                      value={formData.weaknesses || ''}
+                      onChange={(e) => setFormData({ ...formData, weaknesses: e.target.value })}
+                      className="form-input"
+                      placeholder="e.g. Net play, Backhand"
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="coachFeedback" className="form-label">Coach Feedback <span className="form-optional">(optional)</span></label>
+                    <textarea
+                      id="coachFeedback"
+                      value={formData.coachFeedback || ''}
+                      onChange={(e) => setFormData({ ...formData, coachFeedback: e.target.value })}
+                      className="form-input"
+                      rows={3}
+                      placeholder="General notes on this student's progress"
                       disabled={isSubmitting}
                     />
                   </div>

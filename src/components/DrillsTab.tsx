@@ -13,6 +13,8 @@ import '../styles/pages.css';
 
 interface DrillsTabProps {
   readOnly: boolean;
+  /** Present only when the Marketplace tab is actually reachable from here. */
+  onGoToMarketplace?: () => void;
 }
 
 interface DrillFormData {
@@ -42,7 +44,7 @@ const DRILL_CATEGORIES = [
 
 const emptyFormData: DrillFormData = { name: '', description: '', category: '' };
 
-export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
+export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplace }) => {
   const [drills, setDrills] = useState<Drill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -246,37 +248,49 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
         </div>
       )}
 
-      {/* Toolbar: Filter, Search, Add Button */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        {/* Category Filter */}
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="form-input text-sm"
-          aria-label="Filter by category"
-        >
-          <option value="">All Categories</option>
-          {DRILL_CATEGORIES.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
+      {/* Header — same title/description style as the Marketplace tab */}
+      <div className="marketplace-page-header">
+        <div>
+          <h2 className="card-title" style={{ marginBottom: 0 }}>My Drills</h2>
+          <p className="card-description">Manage your center's own drill library.</p>
+        </div>
+      </div>
 
-        {/* Search */}
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search drills by name..."
-          className="form-input text-sm flex-1"
-          aria-label="Search drills"
-        />
+      {/* Toolbar: Filter + Search grouped left, Create Drill pushed right */}
+      <div className="filter-toolbar">
+        <div className="filter-toolbar__group">
+          {/* Category Filter */}
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="form-input text-sm"
+            style={{ width: 'auto' }}
+            aria-label="Filter by category"
+          >
+            <option value="">All Categories</option>
+            {DRILL_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
 
-        {/* Add Drill Button */}
+          {/* Search */}
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search drills by name..."
+            className="form-input text-sm"
+            style={{ width: 260 }}
+            aria-label="Search drills"
+          />
+        </div>
+
+        {/* Create Drill Button */}
         {!readOnly && (
           <button onClick={handleOpenCreate} className="btn btn-primary text-sm whitespace-nowrap">
-            Add Drill
+            Create Drill
           </button>
         )}
       </div>
@@ -286,7 +300,7 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
         <div className="modal-overlay">
           <div className="modal-content modal-content--small">
             <div className="modal-header">
-              <h2 className="modal-title">{editingDrill ? 'Edit Drill' : 'Add Drill'}</h2>
+              <h2 className="modal-title">{editingDrill ? 'Edit Drill' : 'Create Drill'}</h2>
               <button className="modal-close-btn" onClick={handleCloseForm}>✕</button>
             </div>
             <form onSubmit={handleSubmit} className="modal-form">
@@ -395,7 +409,22 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly }) => {
       {/* Drill Table */}
       {drills.length === 0 ? (
         <div className="table-filter-section">
-          <div className="table-empty">No drills found</div>
+          {onGoToMarketplace ? (
+            <div
+              className="table-empty"
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-sm)' }}
+            >
+              <p style={{ margin: 0 }}>No drills yet — new centers start with a blank slate.</p>
+              <p className="text-sm" style={{ margin: 0, color: 'var(--text-secondary)' }}>
+                Adopt the official Badminton Drills Pack from the Marketplace tab to fill your library instantly.
+              </p>
+              <button className="btn btn-primary text-sm" style={{ width: 'auto' }} onClick={onGoToMarketplace}>
+                Go to Marketplace
+              </button>
+            </div>
+          ) : (
+            <div className="table-empty">No drills found</div>
+          )}
         </div>
       ) : (
         <div className="table-filter-section">

@@ -128,7 +128,7 @@ export const SubscriptionCatalog: React.FC = () => {
       ) : (
         <>
           {subscriptions.length > 0 && (
-            <div className="card-base" style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-md)' }}>
+            <div className="card-base" style={{ marginBottom: 'var(--space-lg)', padding: 'var(--space-md)', boxShadow: 'none' }}>
               <h2 className="card-title" style={{ marginBottom: 'var(--space-sm)' }}>
                 Active Subscriptions
               </h2>
@@ -224,7 +224,7 @@ export const SubscriptionCatalog: React.FC = () => {
                               One-time purchase
                             </div>
                           )}
-                          {item.durationDays && (
+                          {item.price === 0 && item.durationDays && (
                             <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                               {item.durationDays}-day trial
                             </div>

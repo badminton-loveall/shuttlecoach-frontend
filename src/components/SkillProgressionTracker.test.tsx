@@ -28,6 +28,33 @@ vi.mock('../utils/skillUtils', () => ({
   generateCycleKey: vi.fn(() => 'Jan-Feb 2025'),
 }));
 
+// Mock the useCurriculum hook — one week with one assigned drill that maps
+// onto the skill catalog's "BH Short Service" (service category).
+vi.mock('../hooks/useCurriculum', () => ({
+  useCurriculum: vi.fn(() => ({
+    plans: [
+      {
+        id: 'plan-1',
+        cycleKey: 'Jan-Feb 2025',
+        studentId: 'student-123',
+        weeks: [
+          {
+            weekNumber: 1,
+            focusArea: '',
+            objective: '',
+            drills: [{ id: 'd1', name: 'BH Short Service', category: 'Service' }],
+          },
+        ],
+        isArchived: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    loading: false,
+    error: null,
+  })),
+}));
+
 // Import after mocks
 import { useSkillScores } from '../hooks/useSkillScores';
 
@@ -136,6 +163,10 @@ describe('SkillProgressionTracker', () => {
     // Go to recording
     fireEvent.click(screen.getByTestId('record-scores-button'));
 
+    // Score the first skill in the default (Service) tab before saving —
+    // the backend requires at least one entry in `scores`.
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Score 2: Int' })[0]);
+
     // Save
     fireEvent.click(screen.getByTestId('save-scores-button'));
 
@@ -144,13 +175,23 @@ describe('SkillProgressionTracker', () => {
         studentId,
         cycleKey: 'Jan-Feb 2025',
         weekNumber: 1,
-        scores: [],
+        scores: [{ skillId: 'bh-short-service', skillName: 'BH Short Service', category: 'service', score: 2 }],
       });
     });
 
     await waitFor(() => {
       expect(screen.getByTestId('heatmap-view')).toBeInTheDocument();
     });
+  });
+
+  it('shows a validation error when saving with no skills scored', async () => {
+    render(<SkillProgressionTracker studentId={studentId} />);
+
+    fireEvent.click(screen.getByTestId('record-scores-button'));
+    fireEvent.click(screen.getByTestId('save-scores-button'));
+
+    expect(await screen.findByText('Please score at least one skill before saving.')).toBeInTheDocument();
+    expect(mockRecordScores).not.toHaveBeenCalled();
   });
 
   it('passes useSkillScores the selected cycle', () => {

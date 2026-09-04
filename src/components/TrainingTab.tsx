@@ -90,6 +90,15 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
 
   return (
     <div className="training-tab" data-testid="training-tab">
+      {isCoach && onSave && (
+        <div className="training-tab-save-corner">
+          {saveMsg && <span style={{ fontSize: '13px', color: 'var(--color-success)', fontWeight: 500 }}>{saveMsg}</span>}
+          {saveErr && <span style={{ fontSize: '13px', color: 'var(--color-danger)' }}>{saveErr}</span>}
+          <button type="button" className="btn-create-fee" onClick={handleSaveAll} disabled={isSaving}>
+            {isSaving ? 'Saving…' : 'Save'}
+          </button>
+        </div>
+      )}
       <div className="training-tab-sections">
 
         {/* Strengths */}
@@ -172,16 +181,6 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
           )}
         </div>
 
-        {/* Save button */}
-        {isCoach && onSave && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: 'var(--space-md)' }}>
-            <button type="button" className="btn-create-fee" onClick={handleSaveAll} disabled={isSaving}>
-              {isSaving ? 'Saving…' : 'Save'}
-            </button>
-            {saveMsg && <span style={{ fontSize: '13px', color: 'var(--color-success)', fontWeight: 500 }}>{saveMsg}</span>}
-            {saveErr && <span style={{ fontSize: '13px', color: 'var(--color-danger)' }}>{saveErr}</span>}
-          </div>
-        )}
       </div>
     </div>
   );

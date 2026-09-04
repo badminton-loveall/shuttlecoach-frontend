@@ -286,11 +286,11 @@ const CourseManagementPage: React.FC = () => {
                   <span className="course-list-panel__title">Courses ({courses.length})</span>
                   <button
                     onClick={handleNewCourseClick}
-                    className="course-list-panel__new-btn"
+                    className="btn-create-fee"
                     aria-label="New course"
                     title="New course"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
                     New
                   </button>
                 </div>
@@ -329,7 +329,9 @@ const CourseManagementPage: React.FC = () => {
             <div className="curriculum-editor">
               <div className="card course-editor-header" style={{ marginBottom: 'var(--space-md)' }}>
                 <div className="form-group-stack" style={{ flex: 1 }}>
+                  <label htmlFor="course-name" className="form-label">Course Title</label>
                   <input
+                    id="course-name"
                     type="text"
                     value={courseName}
                     onChange={(e) => { setCourseName(e.target.value); setNameError(''); setIsDirty(true); }}
@@ -341,12 +343,22 @@ const CourseManagementPage: React.FC = () => {
                     <span className="text-small" style={{ color: 'var(--color-danger)' }}>{nameError}</span>
                   )}
                 </div>
-                {isDirty && (
-                  <span className="course-editor-header__dirty">
-                    <span className="course-editor-header__dirty-dot" />
-                    Unsaved
-                  </span>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                  {isDirty && (
+                    <span className="course-editor-header__dirty">
+                      <span className="course-editor-header__dirty-dot" />
+                      Unsaved
+                    </span>
+                  )}
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving || !courseName.trim()}
+                    className="btn btn-primary"
+                    style={{ width: 'auto', whiteSpace: 'nowrap' }}
+                  >
+                    {isSaving ? 'Saving...' : selectedCourseId ? 'Update Course' : 'Create Course'}
+                  </button>
+                </div>
               </div>
 
               <CurriculumWeekEditor
@@ -360,22 +372,6 @@ const CourseManagementPage: React.FC = () => {
                 onRemoveDrill={handleRemoveDrill}
                 maxWeeks={MAX_WEEKS}
               />
-
-              {/* Footer: Save */}
-              <div className="card course-editor-footer">
-                <button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="btn btn-primary"
-                >
-                  {isSaving ? 'Saving...' : selectedCourseId ? 'Update Course' : 'Create Course'}
-                </button>
-                {!selectedCourseId && (
-                  <span className="text-small" style={{ color: 'var(--text-tertiary)' }}>
-                    Creating a new course
-                  </span>
-                )}
-              </div>
             </div>
           </div>
 

@@ -1,13 +1,9 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { getTodaySessions, getCurrentSession } from '../../utils/attendanceBlockUtils';
-import { useBatchStudents } from '../../hooks/useBatchStudents';
-import { useMarkAttendance, useAttendanceRecords } from '../../hooks/useAttendance';
+import React, { useMemo } from 'react';
+import { getTodaySessions } from '../../utils/attendanceBlockUtils';
 import { useSessionDrillDown } from '../../hooks/useSessionDrillDown';
-import { useToast } from '../../contexts/ToastContext';
-import { SessionTabBar } from './SessionTabBar';
-import { StudentAttendanceList } from './StudentAttendanceList';
+import { BatchAttendanceSection } from './BatchAttendanceSection';
 import { StudentDrillDrawer } from '../StudentDrillDrawer';
-import type { CalendarEntry, AttendanceStatus } from '../../types';
+import type { CalendarEntry } from '../../types';
 
 /* ============================================================================
    Types
@@ -17,10 +13,6 @@ export interface DashboardAttendanceBlockProps {
   calendarEntries: CalendarEntry[];
   calendarLoading: boolean;
 }
-
-type WidgetState = 'loading' | 'no-sessions' | 'idle' | 'all-complete';
-
-type AttendanceMap = Record<string, AttendanceStatus>;
 
 /* ============================================================================
    Helpers
@@ -43,11 +35,9 @@ function formatDateString(date: Date): string {
 /**
  * DashboardAttendanceBlock
  *
- * Main attendance widget for the coach dashboard.
- * Displays today's sessions, auto-selects the current/relevant session,
- * loads students for the selected batch, and allows single-tap attendance marking.
- *
- * Requirements: 1.1, 1.4, 2.1-2.4, 3.1, 4.4-4.8, 6.3-6.5, 7.1-7.2
+ * Main attendance widget for the coach dashboard. Shows every batch with a session today —
+ * its name and timing — each with its own students grouped into Pending / Present / Absent,
+ * so a coach marking multiple batches doesn't need to tab between them one at a time.
  */
 export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> = ({
   calendarEntries,
@@ -56,26 +46,10 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
   // ─── Derived session data ───────────────────────────────────────────────────
   const todaySessions = useMemo(() => getTodaySessions(calendarEntries), [calendarEntries]);
 
-  // ─── Internal state ─────────────────────────────────────────────────────────
-  const [selectedSessionIndex, setSelectedSessionIndex] = useState<number>(-1);
-  const [attendanceMap, setAttendanceMap] = useState<AttendanceMap>({});
-  const [widgetState, setWidgetState] = useState<WidgetState>('loading');
-  const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
-  const { showToast } = useToast();
-
-  // ─── Hooks ──────────────────────────────────────────────────────────────────
-  const selectedSession = todaySessions[selectedSessionIndex] ?? null;
-
   // Today's date for drill drawer and attendance lookup. Local components, not
   // toISOString() (UTC) — for a UTC+5:30 timezone this is the actual calendar date; the UTC
   // one lags a day behind from midnight until 5:30am local.
   const todayDateStr = useMemo(() => formatDateString(new Date()), []);
-
-  // asOfDate excludes students whose active enrollment hasn't actually started yet — a
-  // student assigned to a batch whose training begins later shouldn't appear in today's
-  // attendance just because the batch has a session slot on today's weekday.
-  const { students, loading: studentsLoading } = useBatchStudents(selectedSession?.batchId, todayDateStr);
-  const { markAttendance } = useMarkAttendance();
 
   // ─── Session drill-down state (for student drill drawer) ─────────────────────
   const {
@@ -85,98 +59,6 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
     closeDrawer,
   } = useSessionDrillDown();
 
-  // Fetch existing attendance records for today's batch to pre-fill the map
-  const { records: existingRecords } = useAttendanceRecords({
-    batchId: selectedSession?.batchId,
-    startDate: todayDateStr,
-    endDate: todayDateStr,
-  });
-
-  // Pre-populate attendanceMap from existing records (retain for the whole day)
-  useEffect(() => {
-    if (existingRecords && existingRecords.length > 0 && Object.keys(attendanceMap).length === 0) {
-      const map: AttendanceMap = {};
-      for (const rec of existingRecords) {
-        if (rec.studentId && rec.status) {
-          map[rec.studentId] = rec.status as AttendanceStatus;
-        }
-      }
-      if (Object.keys(map).length > 0) {
-        setAttendanceMap(map);
-      }
-    }
-  }, [existingRecords]);
-
-  // ─── Auto-select current session on mount / when entries change ─────────────
-  useEffect(() => {
-    if (calendarLoading) {
-      setWidgetState('loading');
-      return;
-    }
-
-    if (todaySessions.length === 0) {
-      setWidgetState('no-sessions');
-      return;
-    }
-
-    const { session, index } = getCurrentSession(todaySessions, new Date());
-
-    if (session === null) {
-      // All sessions recorded
-      setWidgetState('all-complete');
-      setSelectedSessionIndex(-1);
-    } else {
-      setSelectedSessionIndex(index);
-      setWidgetState('idle');
-    }
-  }, [calendarLoading, todaySessions]);
-
-  // ─── Handlers ───────────────────────────────────────────────────────────────
-
-  const handleSessionSelect = useCallback((index: number) => {
-    setSelectedSessionIndex(index);
-    setAttendanceMap({});
-    setWidgetState('idle');
-  }, []);
-
-  /**
-   * Tapping P or A saves that student's attendance immediately — no separate
-   * "submit" step. Optimistically updates the button, then rolls back with a
-   * toast if the save fails.
-   */
-  const handleToggle = useCallback((studentId: string, status: AttendanceStatus) => {
-    if (!selectedSession) return;
-
-    const previousStatus = attendanceMap[studentId];
-    setAttendanceMap((prev) => ({ ...prev, [studentId]: status }));
-    setSavingIds((prev) => new Set(prev).add(studentId));
-
-    markAttendance({
-      batchId: selectedSession.batchId,
-      sessionDate: formatDateString(new Date()),
-      records: [{ studentId, status }],
-    })
-      .catch(() => {
-        setAttendanceMap((prev) => {
-          const next = { ...prev };
-          if (previousStatus === undefined) {
-            delete next[studentId];
-          } else {
-            next[studentId] = previousStatus;
-          }
-          return next;
-        });
-        showToast({ message: 'Failed to save attendance. Please try again.', type: 'error' });
-      })
-      .finally(() => {
-        setSavingIds((prev) => {
-          const next = new Set(prev);
-          next.delete(studentId);
-          return next;
-        });
-      });
-  }, [selectedSession, attendanceMap, markAttendance, showToast]);
-
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -185,53 +67,33 @@ export const DashboardAttendanceBlock: React.FC<DashboardAttendanceBlockProps> =
       <h2 style={titleStyle}>Today&apos;s Attendance</h2>
 
       {/* Loading skeleton */}
-      {widgetState === 'loading' && <LoadingSkeleton />}
+      {calendarLoading && <LoadingSkeleton />}
 
       {/* No sessions today */}
-      {widgetState === 'no-sessions' && (
+      {!calendarLoading && todaySessions.length === 0 && (
         <div style={emptyStateStyle}>
           <span style={emptyIconStyle}>📅</span>
           <p style={emptyTextStyle}>No sessions scheduled today</p>
         </div>
       )}
 
-      {/* All complete */}
-      {widgetState === 'all-complete' && (
-        <div style={completeStateStyle}>
-          <span style={completeIconStyle}>✓</span>
-          <p style={completeTextStyle}>All attendance submitted</p>
+      {/* One card per today's batch — each loads and saves its own students independently */}
+      {!calendarLoading && todaySessions.length > 0 && (
+        <div style={sectionsStyle}>
+          {todaySessions.map((session) => (
+            <BatchAttendanceSection
+              key={`${session.batchId}-${session.date}`}
+              session={session}
+              todayDateStr={todayDateStr}
+              onNameClick={handleStudentClick}
+            />
+          ))}
         </div>
       )}
 
-      {/* Normal idle state — tapping P/A saves immediately, no separate submit step */}
-      {widgetState === 'idle' && (
-        <>
-          {/* Session tab bar (show if multiple sessions) */}
-          {todaySessions.length > 1 && (
-            <div style={tabBarWrapperStyle}>
-              <SessionTabBar
-                sessions={todaySessions}
-                selectedIndex={selectedSessionIndex}
-                onSelect={handleSessionSelect}
-              />
-            </div>
-          )}
-
-          {/* Unified student list — click name for drills, tap P/A to save attendance */}
-          <StudentAttendanceList
-            students={students}
-            attendanceMap={attendanceMap}
-            onToggle={handleToggle}
-            loading={studentsLoading}
-            onNameClick={handleStudentClick}
-            savingIds={savingIds}
-          />
-        </>
-      )}
-
       {/* Student drill drawer — opens when clicking a student name. Uses the student's own
-          batch, not the currently selected session tab's batch — a student can belong to a
-          different batch than whichever session happens to be selected. */}
+          batch, not necessarily the batch card it was clicked from — a student can belong to a
+          different batch than whichever session card happens to list them. */}
       {selectedStudent && (
         <StudentDrillDrawer
           isOpen={drawerOpen}
@@ -281,8 +143,10 @@ const titleStyle: React.CSSProperties = {
   color: 'var(--text-primary)',
 };
 
-const tabBarWrapperStyle: React.CSSProperties = {
-  marginBottom: '0.25rem',
+const sectionsStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--space-md)',
 };
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
@@ -301,30 +165,6 @@ const emptyIconStyle: React.CSSProperties = {
 };
 
 const emptyTextStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 'var(--font-sm)',
-  color: 'var(--text-secondary)',
-  fontWeight: 500,
-};
-
-// ─── All-complete state ───────────────────────────────────────────────────────
-
-const completeStateStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '2rem 1rem',
-  gap: '0.5rem',
-};
-
-const completeIconStyle: React.CSSProperties = {
-  fontSize: '1.75rem',
-  color: 'var(--color-primary)',
-  fontWeight: 700,
-};
-
-const completeTextStyle: React.CSSProperties = {
   margin: 0,
   fontSize: 'var(--font-sm)',
   color: 'var(--text-secondary)',

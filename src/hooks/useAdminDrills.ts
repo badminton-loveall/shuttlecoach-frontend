@@ -23,6 +23,7 @@ export interface CreateDrillPayload {
   description: string;
   category: string;
   sport: Sport;
+  videoUrl?: string;
 }
 
 export type UpdateDrillPayload = Partial<CreateDrillPayload>;

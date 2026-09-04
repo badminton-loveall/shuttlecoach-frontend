@@ -89,7 +89,12 @@ export const StudentsPage: React.FC = () => {
       guardianPhone: data.guardianPhone, baidNumber: data.baidNumber,
       skillLevel: data.skillLevel,
       assignedCoachId: data.assignedCoachId || undefined,
-      strengths: [], weaknesses: [],
+      height: data.height, weight: data.weight,
+      bloodGroup: data.bloodGroup, medicalConditions: data.medicalConditions,
+      emergencyContact: data.emergencyContact, profilePhoto: data.profilePhoto,
+      coachFeedback: data.coachFeedback,
+      strengths: (data.strengths || '').split(',').map((s) => s.trim()).filter(Boolean),
+      weaknesses: (data.weaknesses || '').split(',').map((s) => s.trim()).filter(Boolean),
     });
 
     // Establish the student's own journey — template/curriculum/coach/start date —

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import CenterSettingsTab from '../components/CenterSettingsTab';
 import { MarketplaceGallery } from '../components/MarketplaceGallery';
@@ -6,11 +7,20 @@ import SubscriptionCatalog from '../components/SubscriptionCatalog';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
+type SettingsTab = 'center' | 'marketplace' | 'subscriptions';
+const VALID_TABS: SettingsTab[] = ['center', 'marketplace', 'subscriptions'];
+
 export const MasterDataPage: React.FC = () => {
   const { role } = useAuth();
   const isHeadCoach = role === 'HEAD_COACH';
 
-  const [activeTab, setActiveTab] = useState<'center' | 'marketplace' | 'subscriptions'>('center');
+  // Lets other pages deep-link straight into a tab, e.g. /master-data?tab=marketplace
+  // from the dashboard's Marketplace stat card.
+  const [searchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab') as SettingsTab | null;
+  const [activeTab, setActiveTab] = useState<SettingsTab>(
+    requestedTab && VALID_TABS.includes(requestedTab) ? requestedTab : 'center'
+  );
 
   return (
     <DashboardLayout>

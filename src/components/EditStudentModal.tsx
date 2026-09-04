@@ -48,6 +48,15 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
     // underlying state agree (an empty string here would look like today but fail validation).
     startDate: activeEnrollment?.startDate || new Date().toISOString().slice(0, 10),
     monthlyFee: activeEnrollment?.monthlyFee ?? undefined,
+    height: student.height ?? undefined,
+    weight: student.weight ?? undefined,
+    bloodGroup: student.bloodGroup || '',
+    medicalConditions: student.medicalConditions || '',
+    emergencyContact: student.emergencyContact || '',
+    profilePhoto: student.profilePhoto || '',
+    coachFeedback: student.coachFeedback || '',
+    strengths: (student.strengths || []).join(', '),
+    weaknesses: (student.weaknesses || []).join(', '),
   }), [student, activeEnrollment]);
 
   const handleSubmit = useCallback(async (data: EnrollStudentFormData) => {
@@ -61,6 +70,15 @@ export const EditStudentModal: React.FC<EditStudentModalProps> = ({
       guardianPhone: data.guardianPhone || undefined,
       baidNumber: data.baidNumber || undefined,
       skillLevel: data.skillLevel,
+      height: data.height,
+      weight: data.weight,
+      bloodGroup: data.bloodGroup || undefined,
+      medicalConditions: data.medicalConditions || undefined,
+      emergencyContact: data.emergencyContact || undefined,
+      profilePhoto: data.profilePhoto || undefined,
+      coachFeedback: data.coachFeedback || undefined,
+      strengths: (data.strengths || '').split(',').map((s) => s.trim()).filter(Boolean),
+      weaknesses: (data.weaknesses || '').split(',').map((s) => s.trim()).filter(Boolean),
     };
     const changedFields = getChangedFields(student, updatedFields);
 

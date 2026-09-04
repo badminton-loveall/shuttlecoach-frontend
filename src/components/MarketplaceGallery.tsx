@@ -53,6 +53,21 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: 'Rejected',
 };
 
+const VIDEO_ICON_STYLE: React.CSSProperties = {
+  width: 20,
+  height: 20,
+  borderRadius: '50%',
+  border: 'none',
+  background: 'var(--color-primary, #16a34a)',
+  color: '#fff',
+  fontSize: 9,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  flexShrink: 0,
+};
+
 interface SetFormData {
   name: string;
   description: string;
@@ -622,13 +637,18 @@ export const MarketplaceGallery: React.FC = () => {
                     >
                       Preview
                     </button>
-                    <button
-                      onClick={() => handleAdoptCommunity(item.set)}
-                      disabled={adoptingId === item.set.id}
-                      className="btn btn-primary text-sm flex-1"
-                    >
-                      {adoptingId === item.set.id ? 'Adopting...' : 'Adopt'}
-                    </button>
+                    {/* A priced set is only acquired through its tier's own
+                        Subscribe button in the preview panel — no free
+                        one-click bypass once the admin has put a price on it. */}
+                    {!drillPackCatalog.some((mi) => mi.drillSetId === item.set.id) && (
+                      <button
+                        onClick={() => handleAdoptCommunity(item.set)}
+                        disabled={adoptingId === item.set.id}
+                        className="btn btn-primary text-sm flex-1"
+                      >
+                        {adoptingId === item.set.id ? 'Subscribing...' : 'Subscribe'}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -719,10 +739,10 @@ export const MarketplaceGallery: React.FC = () => {
         </div>
       )}
 
-      {/* Builder / Viewer Modal */}
+      {/* Builder / Viewer Panel */}
       {openSet && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="side-panel-overlay" onClick={handleCloseBuilder}>
+          <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{openSet.name}</h2>
               <button className="modal-close-btn" onClick={handleCloseBuilder}>✕</button>
@@ -760,7 +780,7 @@ export const MarketplaceGallery: React.FC = () => {
                     const categoryDrillIds = new Set((category.drills || []).map((d) => d.id));
                     const eligibleDrills = centerDrills.filter((d: Drill) => !categoryDrillIds.has(d.id));
                     return (
-                      <div key={category.id} className="card-base p-4">
+                      <div key={category.id} className="card-base">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-[var(--text-primary)]">{category.name}</h4>
                           {editable && (
@@ -802,41 +822,28 @@ export const MarketplaceGallery: React.FC = () => {
                           <ul className="space-y-1">
                             {category.drills.map((drill) => (
                               <li key={drill.id} className="flex items-center justify-between text-sm py-1">
+                                <span>{drill.name}</span>
                                 <span className="flex items-center gap-2">
-                                  {drill.name}
                                   {videoUrls[drill.id] && (
                                     <button
                                       type="button"
                                       onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
                                       aria-label={`Watch demonstration: ${drill.name}`}
                                       title="Watch demonstration"
-                                      style={{
-                                        width: 20,
-                                        height: 20,
-                                        borderRadius: '50%',
-                                        border: 'none',
-                                        background: 'var(--color-primary, #16a34a)',
-                                        color: '#fff',
-                                        fontSize: 9,
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        flexShrink: 0,
-                                      }}
+                                      style={VIDEO_ICON_STYLE}
                                     >
                                       ▶
                                     </button>
                                   )}
+                                  {editable && (
+                                    <button
+                                      onClick={() => handleRemoveDrill(category.id, drill.id)}
+                                      className="table-action-link table-action-link--danger text-xs"
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
                                 </span>
-                                {editable && (
-                                  <button
-                                    onClick={() => handleRemoveDrill(category.id, drill.id)}
-                                    className="table-action-link table-action-link--danger text-xs"
-                                  >
-                                    Remove
-                                  </button>
-                                )}
                               </li>
                             ))}
                           </ul>
@@ -866,10 +873,12 @@ export const MarketplaceGallery: React.FC = () => {
         </div>
       )}
 
-      {/* Community Preview Modal */}
+      {/* Community Preview Panel — a drill set's full category/drill list can run
+          long, so this opens as a right-side slide-over instead of a centered
+          dialog that would run out of height. */}
       {previewSet && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="side-panel-overlay" onClick={() => setPreviewSet(null)}>
+          <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{previewSet.name}</h2>
               <button className="modal-close-btn" onClick={() => setPreviewSet(null)}>✕</button>
@@ -937,7 +946,7 @@ export const MarketplaceGallery: React.FC = () => {
                                   ? 'Get Free'
                                   : isUpgradeFromTrial
                                     ? 'Upgrade to Paid'
-                                    : 'Buy'}
+                                    : 'Subscribe'}
                             </button>
                           )}
                         </div>
@@ -956,28 +965,15 @@ export const MarketplaceGallery: React.FC = () => {
                       {category.drills && category.drills.length > 0 ? (
                         <ul className="text-sm text-[var(--text-secondary)] space-y-1 pl-3">
                           {category.drills.map((drill) => (
-                            <li key={drill.id} className="flex items-center gap-2">
-                              {drill.name}
+                            <li key={drill.id} className="flex items-center justify-between">
+                              <span>{drill.name}</span>
                               {videoUrls[drill.id] && (
                                 <button
                                   type="button"
                                   onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
                                   aria-label={`Watch demonstration: ${drill.name}`}
                                   title="Watch demonstration"
-                                  style={{
-                                    width: 20,
-                                    height: 20,
-                                    borderRadius: '50%',
-                                    border: 'none',
-                                    background: 'var(--color-primary, #16a34a)',
-                                    color: '#fff',
-                                    fontSize: 9,
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    flexShrink: 0,
-                                  }}
+                                  style={VIDEO_ICON_STYLE}
                                 >
                                   ▶
                                 </button>
@@ -997,13 +993,17 @@ export const MarketplaceGallery: React.FC = () => {
             </div>
             <div className="modal-footer">
               <button onClick={() => setPreviewSet(null)} className="btn btn-secondary">Close</button>
-              <button
-                onClick={() => handleAdoptCommunity(previewSet)}
-                disabled={adoptingId === previewSet.id}
-                className="btn btn-primary"
-              >
-                {adoptingId === previewSet.id ? 'Adopting...' : `Adopt ${previewSet.drillCount ?? 0} Drills`}
-              </button>
+              {/* Once the admin has priced this set, it's acquired only through
+                  the tier Subscribe buttons above — no free bulk-copy bypass. */}
+              {drillPackCatalog.filter((item) => item.drillSetId === previewSet.id).length === 0 && (
+                <button
+                  onClick={() => handleAdoptCommunity(previewSet)}
+                  disabled={adoptingId === previewSet.id}
+                  className="btn btn-primary"
+                >
+                  {adoptingId === previewSet.id ? 'Subscribing...' : `Subscribe (${previewSet.drillCount ?? 0} Drills)`}
+                </button>
+              )}
             </div>
           </div>
         </div>

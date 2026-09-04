@@ -217,10 +217,12 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
                   backgroundColor: 'var(--color-surface, #1f2937)',
                   border: '1px solid var(--color-border, #374151)',
                   borderRadius: '8px',
+                  fontSize: 12,
                 }}
-                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)' }}
+                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)', fontSize: 12, fontWeight: 600 }}
+                itemStyle={{ fontSize: 12 }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
               {SKILL_CATEGORIES.map((category) => (
                 <Line
                   key={category}
@@ -257,10 +259,12 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
                   backgroundColor: 'var(--color-surface, #1f2937)',
                   border: '1px solid var(--color-border, #374151)',
                   borderRadius: '8px',
+                  fontSize: 12,
                 }}
-                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)' }}
+                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)', fontSize: 12, fontWeight: 600 }}
+                itemStyle={{ fontSize: 12 }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
               {skills.map((skill, idx) => (
                 <Line
                   key={skill.id}

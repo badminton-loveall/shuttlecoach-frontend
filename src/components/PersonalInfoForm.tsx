@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import type { Student, Gender } from '../types';
 import { calculateAge, calculateBMI } from '../utils/studentUtils';
-import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import './PersonalInfoForm.css';
 
 /**
@@ -95,11 +94,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-
-  // Active enrollment summary (batch timing, curriculum, coach, start date, fee) for the
-  // read-only Enrollment Details card — the enrollment flow itself is managed further down
-  // the Profile tab, in EnrollmentSection.
-  const { activeEnrollment } = useStudentEnrollments(student.id);
 
   // Compute age from DOB
   const computedAge = useMemo(() => {
@@ -289,45 +283,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   <div className="form-field">
                     <span className="field-label">Guardian Phone</span>
                     <span className="field-value">{student.guardianPhone}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Enrollment Details Card — full management (edit/history) lives in the
-              Enrollment section below; this is a quick-glance summary alongside the
-              other read-only cards. */}
-          {activeEnrollment && (
-            <div className="form-group">
-              <h3 className="form-group-title">Enrollment Details</h3>
-              <div className="form-grid">
-                <div className="form-field">
-                  <span className="field-label">Batch</span>
-                  <span className="field-value">{activeEnrollment.templateName || '—'}</span>
-                </div>
-
-                <div className="form-field">
-                  <span className="field-label">Curriculum</span>
-                  <span className="field-value">{activeEnrollment.curriculumName || '—'}</span>
-                </div>
-
-                <div className="form-field">
-                  <span className="field-label">Coach</span>
-                  <span className="field-value">{activeEnrollment.coachName || '—'}</span>
-                </div>
-
-                <div className="form-field">
-                  <span className="field-label">Start Date</span>
-                  <span className="field-value">
-                    {new Date(`${activeEnrollment.startDate}T00:00:00`).toLocaleDateString()}
-                  </span>
-                </div>
-
-                {activeEnrollment.monthlyFee != null && (
-                  <div className="form-field">
-                    <span className="field-label">Monthly Fee</span>
-                    <span className="field-value">₹{activeEnrollment.monthlyFee}</span>
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 .student-fee-tab {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: var(--space-lg);
 }
 
 /* ============================================================================
@@ -11,64 +11,31 @@
 .fee-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
+  gap: var(--space-md);
 }
 
 .fee-stat-card {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   background: var(--surface-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  box-shadow: var(--shadow-card);
+  gap: var(--space-sm);
   position: relative;
   overflow: hidden;
-}
-
-.fee-stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--color-primary);
-  opacity: 0;
-}
-
-.fee-stat-card:hover {
-  border-color: var(--border-strong);
-}
-
-.fee-stat-card:hover::before {
-  opacity: 1;
 }
 
 .fee-stat-card--paid {
   border-left: 4px solid var(--color-success);
 }
 
-.fee-stat-card--paid::before {
-  background: var(--color-success);
-}
-
 .fee-stat-card--pending {
   border-left: 4px solid var(--color-warning);
 }
 
-.fee-stat-card--pending::before {
-  background: var(--color-warning);
-}
-
 .fee-stat-card--overdue {
   border-left: 4px solid var(--color-danger);
-}
-
-.fee-stat-card--overdue::before {
-  background: var(--color-danger);
 }
 
 .fee-stat-label {
@@ -103,13 +70,11 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-2xl);
-  margin-top: var(--space-xl);
-  padding: var(--space-lg);
+  gap: var(--space-lg);
+  padding: var(--space-md);
   background: var(--surface-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
 }
 
 .fee-tab-header > div:first-child {
@@ -180,7 +145,6 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   background: var(--surface-card);
-  box-shadow: var(--shadow-card);
 }
 
 .fees-table {
@@ -195,7 +159,7 @@
 }
 
 .fees-table th {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   text-align: left;
   font-weight: var(--weight-semibold);
   color: var(--text-secondary);
@@ -219,7 +183,7 @@
 }
 
 .fees-table td {
-  padding: var(--space-lg);
+  padding: var(--space-md);
   color: var(--text-primary);
   font-weight: var(--weight-medium);
   font-family: var(--font-body);
@@ -350,7 +314,6 @@
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   animation: slideInUp var(--transition-base);
-  box-shadow: var(--shadow-card);
 }
 
 .fees-empty svg {
@@ -393,10 +356,6 @@
   .fee-stat-card {
     background: var(--surface-dark-card);
     border-color: var(--border-dark);
-  }
-
-  .fee-stat-card:hover {
-    border-color: var(--border-dark-strong);
   }
 
   .fee-stat-label {

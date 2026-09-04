@@ -39,6 +39,29 @@ const formatPackagePrice = (price: number): string =>
     ? 'Free'
     : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
 
+const getEmbedUrl = (url: string): string | null => {
+  const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (youtubeMatch) return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+  return null;
+};
+
+const VIDEO_ICON_STYLE: React.CSSProperties = {
+  width: 20,
+  height: 20,
+  borderRadius: '50%',
+  border: 'none',
+  background: 'var(--color-primary, #16a34a)',
+  color: '#fff',
+  fontSize: 9,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  cursor: 'pointer',
+  flexShrink: 0,
+};
+
 function extractErrorMessage(err: unknown, fallback: string): string {
   const message =
     err && typeof err === 'object' && 'response' in err
@@ -171,7 +194,7 @@ const PackagesSection: React.FC<{
   };
 
   return (
-    <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--border-default)' }}>
+    <div className="pt-4" style={{ borderTop: '1px solid var(--border-default)' }}>
       <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-2">Packages</h4>
       {toggleError && <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{toggleError}</p>}
 
@@ -180,7 +203,7 @@ const PackagesSection: React.FC<{
       ) : (
         <ul className="space-y-2 mb-2">
           {items.map((item) => (
-            <li key={item.id} className="flex items-center justify-between text-sm">
+            <li key={item.id} className="flex items-center justify-between text-sm py-1">
               <div>
                 <span className="text-bold">{item.tier ? TIER_LABEL[item.tier] : item.name}</span>{' '}
                 <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
@@ -359,6 +382,10 @@ export const AdminMarketplace: React.FC = () => {
   const [search, setSearch] = useState('');
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Demonstration clip modal — shared by both the pack builder and the
+  // read-only detail view, since both list a set's drills.
+  const [viewingVideo, setViewingVideo] = useState<{ name: string; url: string } | null>(null);
 
   // Priced packages (marketplace_items, category=DRILL_PACK), keyed by drillSetId
   const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
@@ -719,10 +746,10 @@ export const AdminMarketplace: React.FC = () => {
         </div>
       )}
 
-      {/* Detail modal (non-official packs) — approve/reject when pending_review */}
+      {/* Detail panel (non-official packs) — approve/reject when pending_review */}
       {viewing && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="side-panel-overlay" onClick={handleCloseView}>
+          <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{viewing.name}</h2>
               <button className="modal-close-btn" onClick={handleCloseView}>✕</button>
@@ -755,7 +782,22 @@ export const AdminMarketplace: React.FC = () => {
                             <tbody>
                               {category.drills.map((drill) => (
                                 <tr key={drill.id}>
-                                  <td className="text-bold">{drill.name}</td>
+                                  <td className="text-bold">
+                                    <span className="flex items-center justify-between gap-2">
+                                      <span>{drill.name}</span>
+                                      {drill.videoUrl && (
+                                        <button
+                                          type="button"
+                                          onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
+                                          aria-label={`Watch demonstration: ${drill.name}`}
+                                          title="Watch demonstration"
+                                          style={VIDEO_ICON_STYLE}
+                                        >
+                                          ▶
+                                        </button>
+                                      )}
+                                    </span>
+                                  </td>
                                   <td>{drill.category}</td>
                                   <td className="text-muted">{drill.description}</td>
                                 </tr>
@@ -822,10 +864,10 @@ export const AdminMarketplace: React.FC = () => {
         </div>
       )}
 
-      {/* Official pack builder modal */}
+      {/* Official pack builder panel */}
       {building && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="side-panel-overlay" onClick={() => { void handleCloseBuild(); }}>
+          <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{building.name}</h2>
               <button className="modal-close-btn" onClick={handleCloseBuild}>✕</button>
@@ -860,7 +902,7 @@ export const AdminMarketplace: React.FC = () => {
                     const categoryDrillIds = new Set((category.drills || []).map((d) => d.id));
                     const eligibleDrills = globalDrills.filter((d: Drill) => !categoryDrillIds.has(d.id));
                     return (
-                      <div key={category.id} className="card-base p-4">
+                      <div key={category.id} className="card-base">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-[var(--text-primary)]">{category.name}</h4>
                           <button
@@ -899,12 +941,25 @@ export const AdminMarketplace: React.FC = () => {
                             {category.drills.map((drill) => (
                               <li key={drill.id} className="flex items-center justify-between text-sm py-1">
                                 <span>{drill.name}</span>
-                                <button
-                                  onClick={() => handleRemoveDrill(category.id, drill.id)}
-                                  className="table-action-link table-action-link--danger text-xs"
-                                >
-                                  Remove
-                                </button>
+                                <span className="flex items-center gap-2">
+                                  {drill.videoUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
+                                      aria-label={`Watch demonstration: ${drill.name}`}
+                                      title="Watch demonstration"
+                                      style={VIDEO_ICON_STYLE}
+                                    >
+                                      ▶
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleRemoveDrill(category.id, drill.id)}
+                                    className="table-action-link table-action-link--danger text-xs"
+                                  >
+                                    Remove
+                                  </button>
+                                </span>
                               </li>
                             ))}
                           </ul>
@@ -927,6 +982,34 @@ export const AdminMarketplace: React.FC = () => {
             </div>
             <div className="modal-footer">
               <button onClick={handleCloseBuild} className="btn btn-secondary">Done</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Demonstration clip modal */}
+      {viewingVideo && (
+        <div className="modal-overlay" onClick={() => setViewingVideo(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560 }}>
+            <div className="modal-header">
+              <h2 className="modal-title">{viewingVideo.name}</h2>
+              <button className="modal-close-btn" onClick={() => setViewingVideo(null)}>✕</button>
+            </div>
+            <div className="modal-body">
+              {getEmbedUrl(viewingVideo.url) ? (
+                <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                  <iframe
+                    src={getEmbedUrl(viewingVideo.url)!}
+                    title={viewingVideo.name}
+                    allow="autoplay; fullscreen"
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm">
+                  <a href={viewingVideo.url} target="_blank" rel="noreferrer">Open demonstration video</a>
+                </p>
+              )}
             </div>
           </div>
         </div>

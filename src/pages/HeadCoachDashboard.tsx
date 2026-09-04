@@ -16,6 +16,7 @@ import { useAssessments } from '../hooks/useAssessments';
 import { useTrainingLogs } from '../hooks/useTrainingLogs';
 import { useSessionCalendar } from '../hooks/useSessionSchedule';
 import { useOnboardingChecklist } from '../hooks/useOnboardingChecklist';
+import { useMarketplaceSubscriptions } from '../hooks/useMarketplaceSubscriptions';
 import { calculateDashboardStats } from '../utils/dashboardUtils';
 import { isDueForAssessment, daysOverdue, getLastAssessment } from '../utils/reviewUtils';
 import { getOverdueFeesByStudent } from '../utils/feeUtils';
@@ -26,7 +27,7 @@ import '../styles/pages.css';
 /**
  * HeadCoachDashboard Page
  * Displays head coach dashboard with welcome message, stat cards, and student grid
- * Shows: total students, BAID-registered count, batch count, average progress
+ * Shows: total students, active marketplace subscriptions, batch count, average progress
  * Includes search and filter functionality with URL query parameter persistence
  * Pure CSS implementation using design tokens
  */
@@ -98,6 +99,8 @@ const HeadCoachDashboardContent: React.FC<{
     dismiss: dismissChecklist,
     dismissing: checklistDismissing,
   } = useOnboardingChecklist();
+
+  const { subscriptions: marketplaceSubscriptions } = useMarketplaceSubscriptions();
 
   // Attendance stats and records for the widget (Requirements: 5.1, 5.2, 5.3)
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
@@ -180,12 +183,12 @@ const HeadCoachDashboardContent: React.FC<{
               onClick={() => navigate('/students')}
             />
             <StatCard
-              title="BAID Registered"
-              value={`${stats.baidRegistered}/${stats.totalStudents}`}
-              label={`${stats.baidPercentage}% registered`}
-              icon={<BaidIconSvg />}
+              title="Marketplace"
+              value={marketplaceSubscriptions.length}
+              label="Active subscriptions"
+              icon={<MarketplaceIconSvg />}
               variant="success"
-              onClick={() => navigate('/students')}
+              onClick={() => navigate('/master-data?tab=marketplace')}
             />
             <StatCard
               title="Batches"
@@ -238,11 +241,11 @@ const StudentIconSvg: React.FC = () => (
   </svg>
 );
 
-const BaidIconSvg: React.FC = () => (
+const MarketplaceIconSvg: React.FC = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
-    <path d="M10 17l-4-4m4-4l4 4"></path>
-    <path d="M10 9l4 4m-4 4l-4-4"></path>
+    <path d="M3 9l1.5-5h15L21 9"></path>
+    <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"></path>
+    <path d="M9 13a3 3 0 0 0 6 0"></path>
   </svg>
 );
 

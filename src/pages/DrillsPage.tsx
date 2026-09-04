@@ -27,25 +27,34 @@ const DrillsPage: React.FC = () => {
     <DashboardLayout>
       <div className="page-container">
         {isHeadCoach && (
-          <div className="tab-bar">
+          <nav className="sp-tab-nav" role="tablist" aria-label="Drills tabs">
             <button
-              className={`tab-button ${activeTab === 'my-drills' ? 'active' : ''}`}
+              role="tab"
+              aria-selected={activeTab === 'my-drills'}
+              className={`sp-tab${activeTab === 'my-drills' ? ' sp-tab--active' : ''}`}
               onClick={() => setActiveTab('my-drills')}
             >
               My Drills
             </button>
             {marketplaceVisible && (
               <button
-                className={`tab-button ${activeTab === 'marketplace' ? 'active' : ''}`}
+                role="tab"
+                aria-selected={activeTab === 'marketplace'}
+                className={`sp-tab${activeTab === 'marketplace' ? ' sp-tab--active' : ''}`}
                 onClick={() => setActiveTab('marketplace')}
               >
                 Marketplace
               </button>
             )}
-          </div>
+          </nav>
         )}
         <div className="section-stack">
-          {activeTab === 'my-drills' && <DrillsTab readOnly={isReadOnly} />}
+          {activeTab === 'my-drills' && (
+            <DrillsTab
+              readOnly={isReadOnly}
+              onGoToMarketplace={marketplaceVisible ? () => setActiveTab('marketplace') : undefined}
+            />
+          )}
           {activeTab === 'marketplace' && marketplaceVisible && <MarketplaceGallery />}
         </div>
       </div>

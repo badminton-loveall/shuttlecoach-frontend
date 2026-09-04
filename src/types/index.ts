@@ -286,6 +286,8 @@ export interface Drill {
    *  pack is currently disabled for this center; it should be shown but not
    *  selectable for new assignments. */
   isAssignable?: boolean;
+  /** Demonstration clip URL, set on source drills only (see drills.video_url). */
+  videoUrl?: string | null;
 }
 
 /**

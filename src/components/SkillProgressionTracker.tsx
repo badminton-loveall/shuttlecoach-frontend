@@ -9,11 +9,17 @@
  * Requirements: 6.1, 6.7, 7.7
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useSkillScores } from '../hooks/useSkillScores';
 import type { RecordSkillScoresData } from '../hooks/useSkillScores';
+import { useCurriculum } from '../hooks/useCurriculum';
 import { generateCycleKey } from '../utils/skillUtils';
+import { SKILL_CATALOG } from '../constants/skillCatalog';
+import type { SkillCategory, SkillEntry } from '../constants/skillCatalog';
 import { SkillTimeline } from './SkillTimeline';
+import { SkillScoreInput } from './SkillScoreInput';
+
+const CATEGORY_ORDER: SkillCategory[] = ['service', 'serviceReturn', 'forehand', 'roundHead', 'backhand'];
 
 // ─── View State Machine ──────────────────────────────────────────────────────
 
@@ -43,6 +49,46 @@ export function SkillProgressionTracker({ studentId }: SkillProgressionTrackerPr
     cycleKey: selectedCycle,
   });
 
+  // The student's curriculum plan — NOT filtered by selectedCycle, since a
+  // plan's own cycleKey is frozen to whatever cycle the student's enrollment
+  // started in and just keeps accumulating weeks from there; it isn't "the
+  // plan for cycle X" the way skill-score records are. Weeks here are
+  // therefore numbered relative to the whole enrollment, not to selectedCycle.
+  const { plans: curriculumPlans, loading: curriculumLoading } = useCurriculum({ studentId });
+  const activePlan = useMemo(
+    () => curriculumPlans.find((p) => !p.isArchived) ?? curriculumPlans[0],
+    [curriculumPlans]
+  );
+  // The skill-scores API only accepts weekNumber 1-8 (it models one 8-week
+  // cycle) while a curriculum plan can run to 52 weeks across an enrollment's
+  // full lifetime — so only the plan's first 8 weeks are scoreable here today.
+  const weekNumbers = useMemo(
+    () =>
+      activePlan
+        ? [...activePlan.weeks.map((w) => w.weekNumber)].filter((n) => n >= 1 && n <= 8).sort((a, b) => a - b)
+        : [],
+    [activePlan]
+  );
+
+  const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
+  // Default to the most recent week defined in the plan rather than always
+  // week 1, so a coach recording scores mid-program lands somewhere useful.
+  const effectiveWeek = selectedWeek ?? (weekNumbers.length > 0 ? weekNumbers[weekNumbers.length - 1] : 1);
+
+  // Skills scoreable for effectiveWeek, scoped to only what's actually
+  // assigned as a drill that week — never the full 61-skill catalog.
+  const assignedSkillsByCategory = useMemo(() => {
+    const week = activePlan?.weeks.find((w) => w.weekNumber === effectiveWeek);
+    const assignedDrillNames = new Set((week?.drills ?? []).map((d) => d.name.trim().toLowerCase()));
+    const result = {} as Record<SkillCategory, readonly SkillEntry[]>;
+    for (const category of CATEGORY_ORDER) {
+      result[category] = SKILL_CATALOG[category].skills.filter((skill) =>
+        assignedDrillNames.has(skill.name.trim().toLowerCase())
+      );
+    }
+    return result;
+  }, [activePlan, effectiveWeek]);
+
   // ─── Navigation Callbacks ────────────────────────────────────────────────
 
   /** Navigate from timeline back to heatmap */
@@ -52,8 +98,8 @@ export function SkillProgressionTracker({ studentId }: SkillProgressionTrackerPr
 
   /** Navigate to score recording mode */
   const handleRecordScores = useCallback(() => {
-    setView({ mode: 'recording', weekNumber: 1 });
-  }, []);
+    setView({ mode: 'recording', weekNumber: effectiveWeek });
+  }, [effectiveWeek]);
 
   /** Handle score recording save - records scores then returns to heatmap */
   const handleSaveScores = useCallback(
@@ -78,26 +124,45 @@ export function SkillProgressionTracker({ studentId }: SkillProgressionTrackerPr
 
   return (
     <div className="space-y-4" data-testid="skill-progression-tracker">
-      {/* Cycle Filter Bar + Record Scores Button */}
+      {/* Cycle Filter Bar + Week Picker + Record Scores Button */}
       <div className="flex items-center justify-between gap-4" data-testid="tracker-toolbar">
-        {/* CycleFilter placeholder - will be replaced by task 7.5 */}
-        <div data-testid="cycle-filter">
-          <select
-            value={selectedCycle}
-            onChange={(e) => handleCycleChange(e.target.value)}
-            className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
-            aria-label="Select training cycle"
-          >
-            {availableCycles.length > 0 ? (
-              availableCycles.map((cycle) => (
-                <option key={cycle} value={cycle}>
-                  {cycle}
-                </option>
-              ))
-            ) : (
-              <option value={selectedCycle}>{selectedCycle}</option>
-            )}
-          </select>
+        <div className="flex items-center gap-3">
+          {/* CycleFilter placeholder - will be replaced by task 7.5 */}
+          <div data-testid="cycle-filter">
+            <select
+              value={selectedCycle}
+              onChange={(e) => handleCycleChange(e.target.value)}
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              aria-label="Select training cycle"
+            >
+              {availableCycles.length > 0 ? (
+                availableCycles.map((cycle) => (
+                  <option key={cycle} value={cycle}>
+                    {cycle}
+                  </option>
+                ))
+              ) : (
+                <option value={selectedCycle}>{selectedCycle}</option>
+              )}
+            </select>
+          </div>
+
+          {!curriculumLoading && weekNumbers.length > 0 && (
+            <div data-testid="week-filter">
+              <select
+                value={effectiveWeek}
+                onChange={(e) => setSelectedWeek(Number(e.target.value))}
+                className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                aria-label="Select week"
+              >
+                {weekNumbers.map((weekNum) => (
+                  <option key={weekNum} value={weekNum}>
+                    Week {weekNum}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
         <button
@@ -164,38 +229,15 @@ export function SkillProgressionTracker({ studentId }: SkillProgressionTrackerPr
 
           {view.mode === 'recording' && (
             <div data-testid="recording-view">
-              {/* SkillScoreInput placeholder - will be implemented in task 7.4 */}
-              <div
-                data-testid="skill-score-input"
-                data-student-id={studentId}
-                data-cycle={selectedCycle}
-                data-week-number={view.weekNumber}
-              >
-                {/* Placeholder for SkillScoreInput component */}
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void handleSaveScores({
-                      studentId,
-                      cycleKey: selectedCycle,
-                      weekNumber: view.weekNumber as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8,
-                      scores: [],
-                    })}
-                    className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
-                    data-testid="save-scores-button"
-                  >
-                    Save Scores
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCancelRecording}
-                    className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    data-testid="cancel-recording-button"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              <SkillScoreInput
+                studentId={studentId}
+                cycleKey={selectedCycle}
+                weekNumber={view.weekNumber as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8}
+                assignedSkillsByCategory={assignedSkillsByCategory}
+                curriculumLoading={curriculumLoading}
+                onSave={handleSaveScores}
+                onCancel={handleCancelRecording}
+              />
             </div>
           )}
         </div>

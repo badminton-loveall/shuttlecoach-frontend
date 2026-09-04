@@ -553,13 +553,11 @@ body {
   cursor: not-allowed;
 }
 
-/* Button variants */
+/* Button variants — padding/radius come from .btn above so primary and
+   secondary buttons always match in shape; only color differs by variant. */
 .btn-primary {
   background-color: var(--color-primary);
   color: var(--text-primary);
-  border-radius: 6px;
-  padding: 10px 24px;
-  font-size: var(--font-sm);
 }
 
 .btn-primary:hover:not(:disabled) {

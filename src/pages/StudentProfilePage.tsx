@@ -17,12 +17,14 @@ import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useStudent } from '../hooks/useStudent';
+import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import { useBatches } from '../hooks/useBatches';
 import { useAssessments } from '../hooks/useAssessments';
 import { useAttendanceRecords } from '../hooks/useAttendance';
 import { useStudentTrends } from '../hooks/useAnalytics';
 import { StudentScheduleCalendar } from '../components/StudentScheduleCalendar';
 import { deriveProgressState } from '../utils/progressState';
+import { generateCycleKey } from '../utils/skillUtils';
 import { canEditStudent, canArchiveStudent, classifyError } from '../utils/studentProfileUtils';
 import apiClient from '../utils/apiClient';
 import type { Student, AttendanceRecord } from '../types';
@@ -91,6 +93,7 @@ export const StudentProfilePage: React.FC = () => {
 
   // Fetch single student directly by ID
   const { student, loading, error, refetch } = useStudent(id);
+  const { activeEnrollment } = useStudentEnrollments(id);
   const { getBatchName } = useBatches();
   const { showToast } = useToast();
 
@@ -130,7 +133,7 @@ export const StudentProfilePage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate('/dashboard');
+    navigate('/students');
   };
 
   // Loading state
@@ -161,7 +164,7 @@ export const StudentProfilePage: React.FC = () => {
             <div className="sp-empty-state">
               <h2 className="text-h3">Student Not Found</h2>
               <p className="text-small">The student with ID "{id}" could not be found.</p>
-              <button className="btn btn-secondary" onClick={handleBack}>← Back to Dashboard</button>
+              <button className="btn btn-secondary" onClick={handleBack}>← Back to Students</button>
             </div>
           </div>
         </div>
@@ -178,7 +181,7 @@ export const StudentProfilePage: React.FC = () => {
             <div className="sp-empty-state">
               <h2 className="text-h3">Error Loading Student</h2>
               <p className="text-small">{error}</p>
-              <button className="btn btn-secondary" onClick={handleBack}>← Back to Dashboard</button>
+              <button className="btn btn-secondary" onClick={handleBack}>← Back to Students</button>
             </div>
           </div>
         </div>
@@ -203,7 +206,7 @@ export const StudentProfilePage: React.FC = () => {
               <h2 className="text-h3">Access Denied</h2>
               <p className="text-small">You do not have permission to view this student's profile.</p>
               <p className="text-small">This student is not assigned to you. Please contact the Head Coach if you believe this is an error.</p>
-              <button className="btn btn-secondary" onClick={handleBack}>← Back to Dashboard</button>
+              <button className="btn btn-secondary" onClick={handleBack}>← Back to Students</button>
             </div>
           </div>
         </div>
@@ -222,13 +225,19 @@ export const StudentProfilePage: React.FC = () => {
       <div className="page-container">
         <div className="section-stack">
 
-          {/* Back Navigation */}
-          <button className="btn btn-secondary sp-back-btn" onClick={handleBack}>
-            ← Back to Dashboard
-          </button>
-
           {/* Student Header */}
           <div className="sp-header card">
+            <button
+              type="button"
+              className="sp-back-arrow"
+              onClick={handleBack}
+              aria-label="Back to Students"
+              title="Back to Students"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M19 12H5M5 12l7 7M5 12l7-7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
             <div className={`sp-avatar sp-avatar--${skillColor}`}>
               {student.profilePhoto ? (
                 <img src={student.profilePhoto} alt={student.fullName} />
@@ -254,22 +263,65 @@ export const StudentProfilePage: React.FC = () => {
             </div>
             <div className="sp-header-actions">
               {canEdit && (
-                <button className="btn btn-secondary" onClick={() => setIsEditModalOpen(true)}>
-                  Edit
+                <button
+                  className="sp-header-icon-btn"
+                  onClick={() => setIsEditModalOpen(true)}
+                  aria-label="Edit student"
+                  title="Edit student"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
                 </button>
               )}
-              <button className="btn btn-secondary" onClick={() => navigate(`/training-log/${student.id}`)}>
-                Training Log
-              </button>
-              <button className="btn btn-primary" onClick={() => navigate(`/curriculum/student/${student.id}`)}>
-                Manage Curriculum
-              </button>
               {canArchive && (
-                <button className="btn btn-secondary text-red-600 hover:text-red-700 border-red-300 hover:border-red-400" onClick={() => setIsArchiveDialogOpen(true)}>
-                  Archive
+                <button
+                  className="sp-header-icon-btn sp-header-icon-btn--danger"
+                  onClick={() => setIsArchiveDialogOpen(true)}
+                  aria-label="Archive student"
+                  title="Archive student"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="21 8 21 21 3 21 3 8" />
+                    <rect x="1" y="3" width="22" height="5" />
+                    <line x1="10" y1="12" x2="14" y2="12" />
+                  </svg>
                 </button>
               )}
+              <button className="btn btn-primary" onClick={() => navigate(`/curriculum/student/${student.id}`)}>
+                Personalise Curriculum
+              </button>
             </div>
+
+            {activeEnrollment && (
+              <div className="sp-header-enrollment">
+                <div className="sp-header-enrollment-field">
+                  <span className="sp-header-enrollment-label">Batch</span>
+                  <span className="sp-header-enrollment-value">{activeEnrollment.templateName || '—'}</span>
+                </div>
+                <div className="sp-header-enrollment-field">
+                  <span className="sp-header-enrollment-label">Curriculum</span>
+                  <span className="sp-header-enrollment-value">{activeEnrollment.curriculumName || '—'}</span>
+                </div>
+                <div className="sp-header-enrollment-field">
+                  <span className="sp-header-enrollment-label">Coach</span>
+                  <span className="sp-header-enrollment-value">{activeEnrollment.coachName || '—'}</span>
+                </div>
+                <div className="sp-header-enrollment-field">
+                  <span className="sp-header-enrollment-label">Start Date</span>
+                  <span className="sp-header-enrollment-value">
+                    {new Date(`${activeEnrollment.startDate}T00:00:00`).toLocaleDateString()}
+                  </span>
+                </div>
+                {activeEnrollment.monthlyFee != null && (
+                  <div className="sp-header-enrollment-field">
+                    <span className="sp-header-enrollment-label">Monthly Fee</span>
+                    <span className="sp-header-enrollment-value">₹{activeEnrollment.monthlyFee}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Tab Navigation */}
@@ -387,10 +439,15 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
   const historicalAssessments = [...assessments].sort(
     (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
   );
+  // The form must PATCH an assessment that already exists for the active
+  // cycle rather than always POSTing a new one — currentAssessment is just
+  // the most recently recorded assessment overall, which may be from a past
+  // cycle, so it can't be used directly here.
+  const activeCycleAssessment = assessments.find((a) => a.cycleKey === generateCycleKey());
 
   if (loading) {
     return (
-      <div className="progress-tab-content flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
           <p className="text-sm text-gray-500">Loading assessments...</p>
@@ -401,17 +458,16 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
   if (error) {
     return (
-      <div className="progress-tab-content flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-12">
         <p className="text-sm" style={{ color: 'var(--color-danger)' }}>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="progress-tab-content">
-      {/* Header row — Record Assessment button only when form is hidden */}
+    <div className="progress-tab-stack">
       {isCoach && !showForm && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-md)' }}>
+        <div className="progress-tab-action-corner">
           <button
             type="button"
             className="btn-create-fee"
@@ -425,11 +481,12 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
         </div>
       )}
 
-      {/* Inline assessment form */}
+      {/* Card 1: Skill Assessment form (only while recording) */}
       {showForm && isCoach && (
-        <div style={{ marginBottom: 'var(--space-xl)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+        <div className="card-base">
           <SkillAssessmentForm
             studentId={student.id}
+            existingAssessment={activeCycleAssessment}
             onCancel={() => setShowForm(false)}
             onSave={() => {
               setShowForm(false);
@@ -439,35 +496,43 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
         </div>
       )}
 
-      {assessments.length === 0 && !showForm ? (
-        <div className="flex items-center justify-center py-12">
-          <div style={{ textAlign: 'center' }}>
-            <p className="text-sm" style={{ color: 'var(--text-tertiary)', marginBottom: 'var(--space-md)' }}>
-              No assessments recorded yet for {student.fullName}.
-            </p>
-            {isCoach && (
-              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Click "Record Assessment" above to start the first assessment.
-              </p>
-            )}
-          </div>
-        </div>
-      ) : assessments.length > 0 ? (
-        <>
+      {assessments.length === 0 && !showForm && (
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          No assessments recorded yet for {student.fullName}.
+        </p>
+      )}
+
+      {/* Card 2: Weekly Progression */}
+      {assessments.length > 0 && (
+        <div className="card-base">
+          <h3 className="font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
+            Weekly Progression
+          </h3>
           <SkillProgressionTracker studentId={student.id} />
-          <hr className="my-8" style={{ borderColor: 'var(--border-default)' }} />
-          <p className="progress-subtitle">
+        </div>
+      )}
+
+      {/* Card 3: Progress Overview */}
+      {assessments.length > 0 && (
+        <div className="card-base">
+          <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
             Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
           </p>
           <SkillRadarChart scores={currentScores} />
           <TrendLineChart assessments={historicalAssessments} />
+          <SkillHistory assessments={historicalAssessments} />
+        </div>
+      )}
+
+      {/* Card 4: Skill Assessment by Category */}
+      {assessments.length > 0 && (
+        <div className="card-base">
           <WeaknessTracker
             currentAssessment={currentAssessment}
             previousAssessment={previousAssessment}
           />
-          <SkillHistory assessments={historicalAssessments} />
-        </>
-      ) : null}
+        </div>
+      )}
     </div>
   );
 };

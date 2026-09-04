@@ -31,6 +31,7 @@ interface DrillRecord {
   description: string;
   category: string;
   sport: Sport;
+  videoUrl?: string | null;
 }
 
 export const AdminDrillCatalog: React.FC = () => {
@@ -48,12 +49,14 @@ export const AdminDrillCatalog: React.FC = () => {
   const [createDescription, setCreateDescription] = useState('');
   const [createCategory, setCreateCategory] = useState('');
   const [createSport, setCreateSport] = useState<Sport>('badminton');
+  const [createVideoUrl, setCreateVideoUrl] = useState('');
 
   // Edit form state
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [editCategory, setEditCategory] = useState('');
   const [editSport, setEditSport] = useState<Sport>('badminton');
+  const [editVideoUrl, setEditVideoUrl] = useState('');
 
   // Build hook options from filters
   const hookOptions = useMemo(() => ({
@@ -75,6 +78,7 @@ export const AdminDrillCatalog: React.FC = () => {
       description: createDescription.trim(),
       category: createCategory,
       sport: createSport,
+      videoUrl: createVideoUrl.trim() || undefined,
     };
 
     try {
@@ -84,6 +88,7 @@ export const AdminDrillCatalog: React.FC = () => {
       setCreateDescription('');
       setCreateCategory('');
       setCreateSport('badminton');
+      setCreateVideoUrl('');
       setShowCreateForm(false);
     } catch {
       // Error is handled by the hook
@@ -96,6 +101,7 @@ export const AdminDrillCatalog: React.FC = () => {
     setEditDescription(drill.description);
     setEditCategory(drill.category);
     setEditSport(drill.sport);
+    setEditVideoUrl(drill.videoUrl || '');
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -107,6 +113,7 @@ export const AdminDrillCatalog: React.FC = () => {
       description: editDescription.trim(),
       category: editCategory,
       sport: editSport,
+      videoUrl: editVideoUrl.trim(),
     };
 
     try {
@@ -226,6 +233,19 @@ export const AdminDrillCatalog: React.FC = () => {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="admin-drill-catalog__field">
+              <label htmlFor="create-video-url" className="admin-drill-catalog__label">
+                Video URL
+              </label>
+              <input
+                id="create-video-url"
+                type="url"
+                className="admin-drill-catalog__input"
+                value={createVideoUrl}
+                onChange={(e) => setCreateVideoUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=..."
+              />
             </div>
             <div className="admin-drill-catalog__field admin-drill-catalog__field--full">
               <label htmlFor="create-description" className="admin-drill-catalog__label">
@@ -388,6 +408,19 @@ export const AdminDrillCatalog: React.FC = () => {
                                 ))}
                               </select>
                             </div>
+                            <div className="admin-drill-catalog__field">
+                              <label htmlFor={`edit-video-url-${drillRecord.id}`} className="admin-drill-catalog__label">
+                                Video URL
+                              </label>
+                              <input
+                                id={`edit-video-url-${drillRecord.id}`}
+                                type="url"
+                                className="admin-drill-catalog__input"
+                                value={editVideoUrl}
+                                onChange={(e) => setEditVideoUrl(e.target.value)}
+                                placeholder="https://youtube.com/watch?v=..."
+                              />
+                            </div>
                             <div className="admin-drill-catalog__field admin-drill-catalog__field--full">
                               <label htmlFor={`edit-description-${drillRecord.id}`} className="admin-drill-catalog__label">
                                 Description
@@ -422,7 +455,12 @@ export const AdminDrillCatalog: React.FC = () => {
                 return (
                   <tr key={drillRecord.id} className="admin-drill-catalog__row">
                     <td className="admin-drill-catalog__cell-name">
-                      <span className="admin-drill-catalog__drill-name">{drillRecord.name}</span>
+                      <span className="admin-drill-catalog__drill-name">
+                        {drillRecord.name}
+                        {drillRecord.videoUrl && (
+                          <span title="Has a demonstration video" aria-label="Has a demonstration video" style={{ marginLeft: 6 }}>🎬</span>
+                        )}
+                      </span>
                       {drillRecord.description && (
                         <span className="admin-drill-catalog__drill-desc">{drillRecord.description}</span>
                       )}
