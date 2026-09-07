@@ -111,8 +111,16 @@ export const SkillAssessmentForm: React.FC<SkillAssessmentFormProps> = ({
         isLocked: false,
       };
       onSave(assessment);
-    } catch (err: any) {
-      const msg = err?.response?.data?.error ?? 'Failed to save assessment. Please try again.';
+    } catch (err) {
+      // Zod validation errors come back as { error: 'Validation failed', details: [{ field, message }] } —
+      // surface the actual field-level reason instead of the generic top-level message when we have it.
+      const response = (err as {
+        response?: { data?: { error?: string; details?: Array<{ field: string; message: string }> } };
+      })?.response;
+      const details = response?.data?.details;
+      const msg = details?.length
+        ? details.map((d) => d.message).join('; ')
+        : (response?.data?.error ?? 'Failed to save assessment. Please try again.');
       setError(msg);
     } finally {
       setIsSaving(false);

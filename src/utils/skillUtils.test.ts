@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { generateCycleKey, calculateCategoryAverage, isCycleArchived, getAllCyclesFromPlans } from './skillUtils';
+import {
+  generateCycleKey,
+  calculateCategoryAverage,
+  isCycleArchived,
+  getAllCyclesFromPlans,
+  getCycleStartDate,
+  getCalendarWeekInfo,
+} from './skillUtils';
 
 describe('skillUtils', () => {
   describe('generateCycleKey', () => {
@@ -100,6 +107,36 @@ describe('skillUtils', () => {
       // (unless we're at the very beginning of a new cycle)
       const result = isCycleArchived(prevCycle);
       expect(typeof result).toBe('boolean');
+    });
+  });
+
+  describe('getCycleStartDate', () => {
+    it('returns the 1st of the first month in the pair', () => {
+      expect(getCycleStartDate('Sep-Oct 2026')).toEqual(new Date(2026, 8, 1));
+      expect(getCycleStartDate('Jan-Feb 2026')).toEqual(new Date(2026, 0, 1));
+      expect(getCycleStartDate('Nov-Dec 2025')).toEqual(new Date(2025, 10, 1));
+    });
+  });
+
+  describe('getCalendarWeekInfo', () => {
+    it('maps a date to its cycle and 1-indexed week within it', () => {
+      // Sep 1 2026 is the first day of the Sep-Oct 2026 cycle.
+      expect(getCalendarWeekInfo(new Date(2026, 8, 1))).toEqual({ cycleKey: 'Sep-Oct 2026', weekInCycle: 1 });
+      // One week later is week 2.
+      expect(getCalendarWeekInfo(new Date(2026, 8, 8))).toEqual({ cycleKey: 'Sep-Oct 2026', weekInCycle: 2 });
+    });
+
+    it('clamps the week position to 8 even near the end of a longer cycle', () => {
+      // Oct 31 2026 is deep into the tail of a ~8.7-week cycle.
+      const result = getCalendarWeekInfo(new Date(2026, 9, 31));
+      expect(result.cycleKey).toBe('Sep-Oct 2026');
+      expect(result.weekInCycle).toBeLessThanOrEqual(8);
+    });
+
+    it('rolls a date in a later cycle into that cycle, not the first one', () => {
+      const result = getCalendarWeekInfo(new Date(2026, 10, 5)); // Nov 5, 2026
+      expect(result.cycleKey).toBe('Nov-Dec 2026');
+      expect(result.weekInCycle).toBe(1);
     });
   });
 

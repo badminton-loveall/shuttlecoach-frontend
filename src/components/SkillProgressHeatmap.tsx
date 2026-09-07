@@ -1,15 +1,24 @@
 /**
  * SkillProgressHeatmap Component
  *
- * Renders a heatmap grid of all skills across 8 weeks for a selected cycle.
- * Skills are organized in 5 collapsible category groups with color-coded score cells.
+ * Renders a heatmap grid of all skills across weeks for a selected cycle.
+ * Skills are organized in collapsible category groups with color-coded score cells.
  *
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 6.10
  */
 
 import { useState, useCallback } from 'react';
-import type { SkillScoreMatrix, SkillCategory, SkillScore } from '../constants/skillCatalog';
+import type { CSSProperties } from 'react';
+import type { SkillScoreMatrix, SkillScore } from '../constants/skillCatalog';
 import { getScoreColor, getScoreLabel } from '../utils/scoreColors';
+
+/** Keeps the skill-name column visible while scrolling a wide row of weeks. */
+const STICKY_COLUMN_STYLE: CSSProperties = {
+  position: 'sticky',
+  left: 0,
+  zIndex: 1,
+  backgroundColor: 'var(--surface-card)',
+};
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -22,10 +31,10 @@ interface SkillProgressHeatmapProps {
 
 export function SkillProgressHeatmap({ matrix, onSkillClick }: SkillProgressHeatmapProps) {
   // Track collapsed categories - initially all EXPANDED (empty set = none collapsed)
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<SkillCategory>>(new Set());
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   /** Toggle category collapse state */
-  const handleCategoryToggle = useCallback((categoryId: SkillCategory) => {
+  const handleCategoryToggle = useCallback((categoryId: string) => {
     setCollapsedCategories((prev) => {
       const next = new Set(prev);
       if (next.has(categoryId)) {
@@ -38,22 +47,16 @@ export function SkillProgressHeatmap({ matrix, onSkillClick }: SkillProgressHeat
   }, []);
 
   return (
-    <div
-      className="overflow-x-auto lg:overflow-x-visible rounded-lg"
-      data-testid="skill-progress-heatmap"
-    >
-      <table className="w-full min-w-[800px] border-collapse text-sm">
+    <div className="table-container overflow-x-auto" data-testid="skill-progress-heatmap">
+      <table className="table-base" style={{ minWidth: 480 }}>
         {/* Header row */}
         <thead>
-          <tr>
-            <th className="sticky left-0 z-10 bg-white dark:bg-gray-900 px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 min-w-[180px]">
+          <tr className="table-header">
+            <th className="table-cell-header" style={{ minWidth: 180, ...STICKY_COLUMN_STYLE, backgroundColor: 'var(--surface-hover)' }}>
               Skill
             </th>
             {matrix.weeks.map((week, idx) => (
-              <th
-                key={week}
-                className="px-2 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 min-w-[56px]"
-              >
+              <th key={week} className="table-cell-header table-cell-center" style={{ minWidth: 56 }}>
                 Wk{idx + 1}
               </th>
             ))}
@@ -88,11 +91,11 @@ export function SkillProgressHeatmap({ matrix, onSkillClick }: SkillProgressHeat
 // ─── CategoryGroup Sub-Component ─────────────────────────────────────────────
 
 interface CategoryGroupProps {
-  categoryId: SkillCategory;
+  categoryId: string;
   categoryLabel: string;
   skillCount: number;
   isCollapsed: boolean;
-  onToggle: (categoryId: SkillCategory) => void;
+  onToggle: (categoryId: string) => void;
   weeks: string[];
   skills: Array<{
     skillId: string;
@@ -119,7 +122,8 @@ function CategoryGroup({
     <>
       {/* Category header row */}
       <tr
-        className="cursor-pointer select-none bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="table-row"
+        style={{ cursor: 'pointer', backgroundColor: 'var(--surface-hover)' }}
         onClick={() => onToggle(categoryId)}
         data-testid={`category-header-${categoryId}`}
         role="button"
@@ -127,13 +131,16 @@ function CategoryGroup({
         aria-label={`${categoryLabel} - ${skillCount} skills`}
       >
         <td
-          className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-800 px-3 py-2 font-semibold text-gray-700 dark:text-gray-200"
+          className="table-cell"
           colSpan={weeks.length + 1}
+          style={{ fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}
         >
           <span className="inline-flex items-center gap-2">
             <ChevronIcon isCollapsed={isCollapsed} />
             {categoryLabel}
-            <span className="text-xs font-normal text-gray-500">({skillCount})</span>
+            <span className="text-xs" style={{ fontWeight: 'var(--weight-regular)', color: 'var(--text-tertiary)' }}>
+              ({skillCount})
+            </span>
           </span>
         </td>
       </tr>
@@ -175,10 +182,11 @@ function SkillRowComponent({
   onSkillClick,
 }: SkillRowComponentProps) {
   return (
-    <tr className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50/50 dark:hover:bg-gray-800/50" data-testid={`skill-row-${skillId}`}>
+    <tr className="table-row" data-testid={`skill-row-${skillId}`}>
       {/* Skill name cell - clickable */}
       <td
-        className="sticky left-0 z-10 cursor-pointer bg-white dark:bg-gray-900 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 hover:underline"
+        className="table-cell"
+        style={{ cursor: 'pointer', ...STICKY_COLUMN_STYLE }}
         onClick={() => onSkillClick(skillId, skillName)}
         role="button"
         tabIndex={0}
@@ -225,8 +233,8 @@ function ScoreCell({ score, weekNumber, cycleKey, skillId, skillName, onSkillCli
 
   if (score === null) {
     return (
-      <td className="px-1 py-1.5 text-center">
-        <span className="inline-block h-7 w-7 leading-7 text-xs text-gray-400 dark:text-gray-500">-</span>
+      <td className="table-cell table-cell-center">
+        <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>-</span>
       </td>
     );
   }
@@ -237,11 +245,25 @@ function ScoreCell({ score, weekNumber, cycleKey, skillId, skillName, onSkillCli
   const isPro = score === 4;
 
   return (
-    <td className="relative px-1 py-1.5 text-center">
+    <td className="table-cell table-cell-center" style={{ position: 'relative' }}>
       <button
         type="button"
-        className="relative inline-flex h-7 w-7 items-center justify-center rounded text-xs font-medium transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
-        style={{ backgroundColor: bgColor, color: isPro ? '#FFFFFF' : '#1F2937' }}
+        className="transition-transform hover:scale-110 focus:outline-none"
+        style={{
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 28,
+          height: 28,
+          borderRadius: 'var(--radius-sm)',
+          border: 'none',
+          fontSize: 'var(--font-xs)',
+          fontWeight: 'var(--weight-semibold)',
+          backgroundColor: bgColor,
+          color: isPro ? '#FFFFFF' : '#1F2937',
+          cursor: 'pointer',
+        }}
         onClick={() => onSkillClick(skillId, skillName)}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
@@ -250,22 +272,31 @@ function ScoreCell({ score, weekNumber, cycleKey, skillId, skillName, onSkillCli
         aria-label={tooltipText}
         data-testid={`score-cell-${skillId}-wk${weekNumber}`}
       >
-        {isPro ? (
-          <CheckIcon />
-        ) : (
-          score
-        )}
+        {isPro ? <CheckIcon /> : score}
       </button>
 
       {/* Tooltip */}
       {showTooltip && (
         <div
-          className="absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 dark:bg-gray-700 px-2 py-1 text-xs text-white shadow-lg"
           role="tooltip"
           data-testid={`tooltip-${skillId}-wk${weekNumber}`}
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginBottom: 8,
+            zIndex: 20,
+            whiteSpace: 'nowrap',
+            borderRadius: 'var(--radius-sm)',
+            backgroundColor: 'var(--text-primary)',
+            color: 'var(--surface-card)',
+            padding: '4px 8px',
+            fontSize: 'var(--font-xs)',
+            boxShadow: 'var(--shadow-float)',
+          }}
         >
           {tooltipText}
-          <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-800 dark:border-t-gray-700" />
         </div>
       )}
     </td>
@@ -277,7 +308,9 @@ function ScoreCell({ score, weekNumber, cycleKey, skillId, skillName, onSkillCli
 function ChevronIcon({ isCollapsed }: { isCollapsed: boolean }) {
   return (
     <svg
-      className={`h-4 w-4 text-gray-500 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}
+      width="16"
+      height="16"
+      style={{ color: 'var(--text-tertiary)', transition: 'transform var(--transition-fast)', transform: isCollapsed ? 'none' : 'rotate(90deg)' }}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -291,14 +324,7 @@ function ChevronIcon({ isCollapsed }: { isCollapsed: boolean }) {
 
 function CheckIcon() {
   return (
-    <svg
-      className="h-4 w-4"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={3}
-      aria-hidden="true"
-    >
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
     </svg>
   );

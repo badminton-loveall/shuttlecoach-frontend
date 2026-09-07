@@ -2,14 +2,20 @@
 
 .skill-radar-chart {
   width: 100%;
-  padding: 1rem;
+  padding: var(--space-md);
 }
 
 .skill-radar-chart__title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--color-text-primary, #f3f4f6);
+  font-size: var(--font-h4);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-sm);
+  color: var(--text-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .skill-radar-chart__title {
+    color: var(--text-dark-primary);
+  }
 }
 
 .skill-radar-chart__container {

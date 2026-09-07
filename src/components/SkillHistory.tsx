@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { SkillAssessmentForm } from './SkillAssessmentForm';
 import type { SkillAssessment } from '../types';
 import { formatAuditTimestamp } from '../utils/dateUtils';
+import { resolveAttributionName } from '../utils/displayName';
+import { useAuth } from '../contexts/AuthContext';
 import './SkillHistory.css';
 
 /**
@@ -16,6 +18,7 @@ export interface SkillHistoryProps {
 }
 
 export const SkillHistory: React.FC<SkillHistoryProps> = ({ assessments }) => {
+  const { user } = useAuth();
   const [selectedAssessment, setSelectedAssessment] = useState<SkillAssessment | null>(null);
 
   // Sort assessments in reverse chronological order (most recent first)
@@ -61,7 +64,7 @@ export const SkillHistory: React.FC<SkillHistoryProps> = ({ assessments }) => {
           >
             <span className="skill-history__cycle">{assessment.cycleKey}</span>
             <span className="skill-history__audit-info" data-testid="skill-history-audit-info">
-              Last updated by {assessment.recordedBy} on {formatAuditTimestamp(assessment.recordedAt)}
+              Last updated by {resolveAttributionName(assessment.recordedBy, user)} on {formatAuditTimestamp(assessment.recordedAt)}
             </span>
           </button>
         ))}

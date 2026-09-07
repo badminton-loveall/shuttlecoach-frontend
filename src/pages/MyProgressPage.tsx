@@ -6,6 +6,7 @@ import { useStudent } from '../hooks/useStudent';
 import { useAssessments } from '../hooks/useAssessments';
 import { useStudentDrillRecords } from '../hooks/useStudentDrillRecords';
 import { formatDate } from '../utils/formatters';
+import { resolveAttributionName } from '../utils/displayName';
 
 /**
  * MyProgressPage
@@ -105,7 +106,7 @@ export const MyProgressPage: React.FC = () => {
             ) : mostRecentAssessment ? (
               <>
                 <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
-                  {mostRecentAssessment.cycleKey} · Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {mostRecentAssessment.recordedBy}
+                  {mostRecentAssessment.cycleKey} · Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {resolveAttributionName(mostRecentAssessment.recordedBy, user)}
                 </p>
                 <SkillRadarChart scores={mostRecentAssessment.scores} />
               </>
@@ -171,7 +172,7 @@ export const MyProgressPage: React.FC = () => {
                         <tr key={a.id} style={{ borderBottom: '1px solid var(--border-default)' }}>
                           <td className="text-sm font-medium" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-primary)' }}>{a.cycleKey}</td>
                           <td className="text-sm" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-secondary)' }}>{formatDate(a.recordedAt)}</td>
-                          <td className="text-sm" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-secondary)' }}>{a.recordedBy}</td>
+                          <td className="text-sm" style={{ padding: 'var(--space-md) var(--space-lg)', color: 'var(--text-secondary)' }}>{resolveAttributionName(a.recordedBy, user)}</td>
                         </tr>
                       ))}
                     </tbody>

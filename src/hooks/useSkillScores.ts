@@ -9,7 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import type { WeeklySkillScore, SkillCategory, SkillScore } from '../constants/skillCatalog';
+import type { WeeklySkillScore, SkillScore } from '../constants/skillCatalog';
 import apiClient from '../utils/apiClient';
 
 // ─── Interfaces ──────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@ export interface RecordSkillScoresData {
   scores: Array<{
     skillId: string;
     skillName: string;
-    category: SkillCategory;
+    category: string;
     score: SkillScore;
   }>;
 }

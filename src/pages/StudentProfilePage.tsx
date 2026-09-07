@@ -10,7 +10,6 @@ import { SkillHistory } from '../components/SkillHistory';
 import { SkillAssessmentForm } from '../components/SkillAssessmentForm';
 import { StudentFeeTab } from '../components/StudentFeeTab';
 import { SkillProgressionTracker } from '../components/SkillProgressionTracker';
-import { SkillTrendChart } from '../components/SkillTrendChart';
 import { EditStudentModal } from '../components/EditStudentModal';
 import { EnrollmentSection } from '../components/EnrollmentSection';
 import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
@@ -21,8 +20,8 @@ import { useStudentEnrollments } from '../hooks/useStudentEnrollments';
 import { useBatches } from '../hooks/useBatches';
 import { useAssessments } from '../hooks/useAssessments';
 import { useAttendanceRecords } from '../hooks/useAttendance';
-import { useStudentTrends } from '../hooks/useAnalytics';
 import { StudentScheduleCalendar } from '../components/StudentScheduleCalendar';
+import { AttendanceCalendarGrid } from '../components/AttendanceCalendarGrid';
 import { deriveProgressState } from '../utils/progressState';
 import { generateCycleKey } from '../utils/skillUtils';
 import { canEditStudent, canArchiveStudent, classifyError } from '../utils/studentProfileUtils';
@@ -38,7 +37,7 @@ import '../styles/pages.css';
  * Requirements: 5.6 (3-tab layout), 2.5 (navigate from student card), 3.4, 3.5 (access control)
  */
 
-type TabId = 'profile' | 'schedule' | 'training' | 'progress' | 'fees' | 'attendance' | 'skill-analytics';
+type TabId = 'profile' | 'schedule' | 'progress' | 'fees' | 'attendance' | 'skill-analytics';
 
 interface TabConfig {
   id: TabId;
@@ -48,11 +47,10 @@ interface TabConfig {
 const TABS: TabConfig[] = [
   { id: 'profile', label: 'Profile' },
   { id: 'schedule', label: 'Schedule' },
-  { id: 'training', label: 'Training' },
   { id: 'progress', label: 'Progress' },
+  { id: 'skill-analytics', label: 'Skill Analytics' },
   { id: 'fees', label: 'Fees' },
   { id: 'attendance', label: 'Attendance' },
-  { id: 'skill-analytics', label: 'Skill Analytics' },
 ];
 
 const DEFAULT_TAB: TabId = 'profile';
@@ -352,7 +350,6 @@ export const StudentProfilePage: React.FC = () => {
             </h2>
             {validTab === 'profile' && <ProfileTabContent student={student} />}
             {validTab === 'schedule' && <ScheduleTabContent student={student} />}
-            {validTab === 'training' && <TrainingTabContent student={student} />}
             {validTab === 'progress' && <ProgressTabContent student={student} />}
             {validTab === 'fees' && <FeesTabContent student={student} />}
             {validTab === 'attendance' && <AttendanceTabContent student={student} />}
@@ -407,27 +404,8 @@ const ScheduleTabContent: React.FC<{ student: Student }> = ({ student }) => {
 };
 
 /**
- * Training Tab - displays strengths, weaknesses, coach feedback with API persistence
- */
-const TrainingTabContent: React.FC<{ student: Student }> = ({ student }) => {
-  const handleSave = async (updates: {
-    strengths?: string[];
-    weaknesses?: string[];
-    coachFeedback?: string;
-  }) => {
-    await apiClient.patch(`/students/${student.id}`, updates);
-  };
-
-  return (
-    <TrainingTab
-      student={student}
-      onSave={handleSave}
-    />
-  );
-};
-
-/**
- * Progress Tab - skill assessment radar chart and progress tracking
+ * Progress Tab - skill assessment input (scores) plus strengths/weaknesses/
+ * coach feedback. All charts live in the Skill Analytics tab.
  */
 const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
   const { role } = useAuth();
@@ -435,15 +413,19 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
   const { assessments, loading, error, refetch } = useAssessments({ studentId: student.id });
   const [showForm, setShowForm] = useState(false);
 
-  const { currentScores, currentAssessment, previousAssessment } = deriveProgressState(assessments);
-  const historicalAssessments = [...assessments].sort(
-    (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
-  );
   // The form must PATCH an assessment that already exists for the active
   // cycle rather than always POSTing a new one — currentAssessment is just
   // the most recently recorded assessment overall, which may be from a past
   // cycle, so it can't be used directly here.
   const activeCycleAssessment = assessments.find((a) => a.cycleKey === generateCycleKey());
+
+  const handleSaveTrainingNotes = async (updates: {
+    strengths?: string[];
+    weaknesses?: string[];
+    coachFeedback?: string;
+  }) => {
+    await apiClient.patch(`/students/${student.id}`, updates);
+  };
 
   if (loading) {
     return (
@@ -502,37 +484,10 @@ const ProgressTabContent: React.FC<{ student: Student }> = ({ student }) => {
         </p>
       )}
 
-      {/* Card 2: Weekly Progression */}
-      {assessments.length > 0 && (
-        <div className="card-base">
-          <h3 className="font-semibold" style={{ color: 'var(--text-primary)', marginBottom: 'var(--space-md)' }}>
-            Weekly Progression
-          </h3>
-          <SkillProgressionTracker studentId={student.id} />
-        </div>
-      )}
-
-      {/* Card 3: Progress Overview */}
-      {assessments.length > 0 && (
-        <div className="card-base">
-          <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
-            Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
-          </p>
-          <SkillRadarChart scores={currentScores} />
-          <TrendLineChart assessments={historicalAssessments} />
-          <SkillHistory assessments={historicalAssessments} />
-        </div>
-      )}
-
-      {/* Card 4: Skill Assessment by Category */}
-      {assessments.length > 0 && (
-        <div className="card-base">
-          <WeaknessTracker
-            currentAssessment={currentAssessment}
-            previousAssessment={previousAssessment}
-          />
-        </div>
-      )}
+      {/* Card 2: Strengths / weaknesses / coach feedback (merged from the former Training tab) */}
+      <div className="card-base">
+        <TrainingTab student={student} onSave={handleSaveTrainingNotes} />
+      </div>
     </div>
   );
 };
@@ -594,6 +549,9 @@ const AttendanceTabContent: React.FC<{ student: Student }> = ({ student }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+      {/* Calendar heatmap — 6 months of attendance at a glance, tabular detail below */}
+      <AttendanceCalendarGrid records={records} monthsToShow={6} />
+
       {/* Compact summary row — inline stats, not cards */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-lg)', flexWrap: 'wrap', padding: 'var(--space-sm) 0' }}>
         <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
@@ -676,12 +634,18 @@ const AttendanceTabContent: React.FC<{ student: Student }> = ({ student }) => {
 };
 
 /**
- * Skill Analytics Tab - displays training effectiveness trends using SkillTrendChart
- * Uses useStudentTrends hook to fetch attendance vs skill improvement data
- * Requirements: 13.6
+ * Skill Analytics Tab - all skill charts and graphs for this student: weekly
+ * progression, radar/trend charts, assessment history, and category
+ * weaknesses. The Progress tab is input-only; every visualization lives
+ * here instead.
  */
 const SkillAnalyticsTabContent: React.FC<{ student: Student }> = ({ student }) => {
-  const { data: trendReport, loading, error } = useStudentTrends({ studentId: student.id });
+  const { assessments, loading, error } = useAssessments({ studentId: student.id });
+
+  const { currentScores, currentAssessment, previousAssessment } = deriveProgressState(assessments);
+  const historicalAssessments = [...assessments].sort(
+    (a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+  );
 
   if (loading) {
     return (
@@ -712,12 +676,38 @@ const SkillAnalyticsTabContent: React.FC<{ student: Student }> = ({ student }) =
   }
 
   return (
-    <div>
-      <p className="text-small" style={{ marginBottom: 'var(--space-lg)' }}>
-        Tracks the relationship between attendance consistency and skill progression for{' '}
-        <span style={{ color: 'var(--text-primary)', fontWeight: 'var(--weight-medium)' }}>{student.fullName}</span> across training cycles.
-      </p>
-      <SkillTrendChart report={trendReport} />
+    <div className="progress-tab-stack">
+      {assessments.length === 0 ? (
+        <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          No assessments recorded yet for {student.fullName}.
+        </p>
+      ) : (
+        <>
+          {/* Weekly Progression — shows only if this student has weekly drill
+              scores recorded; recording itself happens in the Progress tab,
+              so this component owns its own card/heading and renders nothing
+              when there's nothing here that isn't already covered there. */}
+          <SkillProgressionTracker studentId={student.id} readOnly />
+
+          {/* Progress Overview */}
+          <div className="card-base">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
+              Skill progress for <strong>{student.fullName}</strong> — {student.skillLevel}
+            </p>
+            <SkillRadarChart scores={currentScores} />
+            <TrendLineChart assessments={historicalAssessments} />
+            <SkillHistory assessments={historicalAssessments} />
+          </div>
+
+          {/* Skill Assessment by Category */}
+          <div className="card-base">
+            <WeaknessTracker
+              currentAssessment={currentAssessment}
+              previousAssessment={previousAssessment}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -96,6 +96,48 @@ export function isCycleArchived(cycleKey: string): boolean {
   return cycleEndDate < today;
 }
 
+/** First calendar month (0-11) of each bi-monthly cycle pair. */
+const MONTH_PAIR_TO_START_MONTH: Record<string, number> = {
+  'Jan-Feb': 0,
+  'Mar-Apr': 2,
+  'May-Jun': 4,
+  'Jul-Aug': 6,
+  'Sep-Oct': 8,
+  'Nov-Dec': 10,
+};
+
+/**
+ * Returns the calendar date on which a given cycle key (e.g. "Sep-Oct 2026")
+ * begins — the 1st of the first month in the pair.
+ */
+export function getCycleStartDate(cycleKey: string): Date {
+  const [monthPair, yearStr] = cycleKey.split(' ');
+  const year = parseInt(yearStr, 10);
+  const startMonth = MONTH_PAIR_TO_START_MONTH[monthPair] ?? 0;
+  return new Date(year, startMonth, 1);
+}
+
+/**
+ * Maps an arbitrary calendar date onto the app's bi-monthly cycle system:
+ * which cycle it falls in, and its 1-indexed week position within that
+ * cycle. Since a two-month cycle can run slightly over 8 full weeks
+ * depending on month lengths, the week position is clamped to 8 (the skill
+ * tracker's own weekly-score range) rather than ever producing a 9th slot.
+ *
+ * This is what lets a student's training be tracked indefinitely: a
+ * curriculum's own week numbering just counts up from enrollment day one,
+ * and this function is how any of those weeks — week 4 or week 400 — resolve
+ * to "which real-world cycle, and which week of it" for scoring purposes.
+ */
+export function getCalendarWeekInfo(date: Date): { cycleKey: string; weekInCycle: number } {
+  const cycleKey = generateCycleKey(date);
+  const cycleStart = getCycleStartDate(cycleKey);
+  const diffDays = Math.floor((date.getTime() - cycleStart.getTime()) / (1000 * 60 * 60 * 24));
+  const rawWeek = Math.floor(diffDays / 7) + 1;
+  const weekInCycle = Math.min(Math.max(rawWeek, 1), 8);
+  return { cycleKey, weekInCycle };
+}
+
 /**
  * Gets all unique cycle keys from curriculum plans, sorted in reverse chronological order.
  * Includes the current cycle if not present in plans.

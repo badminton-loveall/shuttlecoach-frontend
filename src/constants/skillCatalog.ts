@@ -17,7 +17,14 @@ export type SkillCategory = 'service' | 'serviceReturn' | 'forehand' | 'roundHea
 
 // ─── Data Model Types ────────────────────────────────────────────────────────
 
-/** A per-week, per-student, per-skill score record */
+/**
+ * A per-week, per-student, per-skill score record.
+ * `skillId`/`skillName`/`category` describe whatever the student was actually
+ * scored against — for scores recorded against a center's own curriculum
+ * drills, that's the drill's own id/name/category, not necessarily one of
+ * SKILL_CATALOG's fixed entries — so `category` is a plain string, not the
+ * SkillCategory enum below (which only covers the official pack's 5 categories).
+ */
 export interface WeeklySkillScore {
   id: string;
   studentId: string;
@@ -25,7 +32,7 @@ export interface WeeklySkillScore {
   cycleKey: string;
   skillId: string;
   skillName: string;
-  category: SkillCategory;
+  category: string;
   score: SkillScore;
   recordedBy: string;
   recordedAt: Date;
@@ -41,7 +48,7 @@ export interface SkillScoreMatrix {
 
 /** A group of skills within a single category */
 export interface SkillCategoryGroup {
-  categoryId: SkillCategory;
+  categoryId: string;
   categoryLabel: string;
   skills: SkillRow[];
 }

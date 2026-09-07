@@ -1,0 +1,185 @@
+/* AttendanceCalendarGrid - month-by-month attendance heatmap */
+
+.attendance-calendar {
+  padding: var(--space-lg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar {
+    border-color: var(--border-dark);
+    background: var(--surface-dark-card);
+  }
+}
+
+.attendance-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.attendance-calendar__range-label {
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  min-width: 220px;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__range-label {
+    color: var(--text-dark-primary);
+  }
+}
+
+.attendance-calendar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--font-small);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.attendance-calendar__nav:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.attendance-calendar__nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__nav {
+    border-color: var(--border-dark);
+    background: var(--surface-dark-card);
+    color: var(--text-dark-secondary);
+  }
+  .attendance-calendar__nav:hover:not(:disabled) {
+    background: var(--surface-dark-hover);
+    color: var(--text-dark-primary);
+  }
+}
+
+.attendance-calendar__months {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-lg);
+}
+
+.attendance-calendar__month-title {
+  font-size: var(--font-small);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__month-title {
+    color: var(--text-dark-primary);
+  }
+}
+
+.attendance-calendar__weekdays,
+.attendance-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.attendance-calendar__weekday {
+  font-size: 10px;
+  text-align: center;
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__weekday {
+    color: var(--text-dark-tertiary);
+  }
+}
+
+.attendance-calendar__cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 3px;
+  background: var(--surface-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__cell {
+    background: var(--surface-dark-hover);
+  }
+}
+
+.attendance-calendar__cell--pad {
+  background: transparent;
+}
+
+.attendance-calendar__cell--present {
+  background: var(--color-success);
+}
+
+.attendance-calendar__cell--late {
+  background: var(--color-warning);
+}
+
+.attendance-calendar__cell--absent {
+  background: var(--color-danger);
+}
+
+.attendance-calendar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-default);
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__legend {
+    border-top-color: var(--border-dark);
+  }
+}
+
+.attendance-calendar__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__legend-item {
+    color: var(--text-dark-secondary);
+  }
+}
+
+.attendance-calendar__swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: var(--surface-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  .attendance-calendar__swatch {
+    background: var(--surface-dark-hover);
+  }
+}

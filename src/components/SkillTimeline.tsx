@@ -35,7 +35,9 @@ const Y_LABELS: { score: SkillScore; label: string }[] = [
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const CHART_HEIGHT = 200; // px height of chart area
+const CHART_HEIGHT = 200; // px height of the plotted score range (0-4)
+const CHART_PADDING_Y = 14; // breathing room so the 0/4 edge dots and their tooltips aren't clipped
+const SVG_HEIGHT = CHART_HEIGHT + CHART_PADDING_Y * 2;
 const DOT_RADIUS = 6;
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -77,8 +79,8 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
       <div className="space-y-4" data-testid="skill-timeline-loading">
         <TimelineHeader skillName={skillName} currentScore={null} onBack={onBack} />
         <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 dark:border-gray-700 border-t-green-600" />
-          <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">Loading timeline...</span>
+          <div className="h-8 w-8 animate-spin rounded-full" style={{ border: '4px solid var(--border-default)', borderTopColor: 'var(--color-primary)' }} />
+          <span className="ml-3 text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading timeline...</span>
         </div>
       </div>
     );
@@ -90,8 +92,8 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
     return (
       <div className="space-y-4" data-testid="skill-timeline-error">
         <TimelineHeader skillName={skillName} currentScore={null} onBack={onBack} />
-        <div className="rounded-md border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-700 dark:text-red-300">
-          <p>{error}</p>
+        <div className="alert-base alert-danger">
+          <p className="alert-base__message">{error}</p>
         </div>
       </div>
     );
@@ -103,7 +105,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
     return (
       <div className="space-y-4" data-testid="skill-timeline-empty">
         <TimelineHeader skillName={skillName} currentScore={null} onBack={onBack} />
-        <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+        <div className="flex flex-col items-center justify-center py-12" style={{ color: 'var(--text-tertiary)' }}>
           <p className="text-sm">No score history available for this skill.</p>
         </div>
       </div>
@@ -118,7 +120,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
   // Calculate positions for each data point
   const pointPositions = points.map((pt, idx) => {
     const x = totalPoints === 1 ? chartWidth / 2 : (idx / (totalPoints - 1)) * (chartWidth - 40) + 20;
-    const y = CHART_HEIGHT - (pt.score / 4) * CHART_HEIGHT;
+    const y = CHART_PADDING_Y + CHART_HEIGHT - (pt.score / 4) * CHART_HEIGHT;
     return { x, y, point: pt };
   });
 
@@ -141,12 +143,20 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
       <TimelineHeader skillName={skillName} currentScore={currentScore} onBack={onBack} />
 
       {/* Chart Container */}
-      <div className="relative overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+      <div
+        className="relative overflow-x-auto p-4"
+        style={{ borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
+      >
         <div className="flex">
           {/* Y-axis labels */}
           <div
-            className="flex flex-col justify-between pr-3 text-xs text-gray-500 dark:text-gray-400"
-            style={{ height: `${CHART_HEIGHT}px` }}
+            className="flex flex-col justify-between pr-3 text-xs"
+            style={{
+              height: `${SVG_HEIGHT}px`,
+              paddingTop: `${CHART_PADDING_Y}px`,
+              paddingBottom: `${CHART_PADDING_Y}px`,
+              color: 'var(--text-tertiary)',
+            }}
             aria-hidden="true"
           >
             {Y_LABELS.map(({ score, label }) => (
@@ -161,13 +171,13 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
             {/* Grid lines */}
             <svg
               width="100%"
-              height={CHART_HEIGHT}
+              height={SVG_HEIGHT}
               className="absolute inset-0"
               aria-hidden="true"
             >
               {/* Horizontal grid lines for each score level */}
               {[0, 1, 2, 3, 4].map((score) => {
-                const y = CHART_HEIGHT - (score / 4) * CHART_HEIGHT;
+                const y = CHART_PADDING_Y + CHART_HEIGHT - (score / 4) * CHART_HEIGHT;
                 return (
                   <line
                     key={score}
@@ -175,7 +185,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
                     y1={y}
                     x2={chartWidth}
                     y2={y}
-                    stroke="#E5E7EB"
+                    stroke="var(--border-default)"
                     strokeWidth={1}
                     strokeDasharray={score === 0 || score === 4 ? undefined : '4,4'}
                   />
@@ -189,8 +199,8 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
                   x1={bx}
                   y1={0}
                   x2={bx}
-                  y2={CHART_HEIGHT}
-                  stroke="#9CA3AF"
+                  y2={SVG_HEIGHT}
+                  stroke="var(--border-strong)"
                   strokeWidth={1}
                   strokeDasharray="6,4"
                   data-testid={`cycle-boundary-${idx}`}
@@ -201,7 +211,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
             {/* Data line and dots */}
             <svg
               width={chartWidth}
-              height={CHART_HEIGHT}
+              height={SVG_HEIGHT}
               className="relative"
               role="img"
               aria-label={`Timeline chart for ${skillName} showing score progression`}
@@ -227,6 +237,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
                     stroke="#374151"
                     strokeWidth={1.5}
                     className="cursor-pointer transition-transform hover:scale-125"
+                    style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
                     onMouseEnter={() => setHoveredIndex(idx)}
                     onMouseLeave={() => setHoveredIndex(null)}
                     data-testid={`timeline-dot-${idx}`}
@@ -253,11 +264,12 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
             {pointPositions.map((pos, idx) => (
               <span
                 key={idx}
-                className="absolute text-xs text-gray-500 dark:text-gray-400"
+                className="absolute text-xs"
                 style={{
                   left: `${pos.x}px`,
                   top: '8px',
                   transform: 'translateX(-50%)',
+                  color: 'var(--text-tertiary)',
                 }}
               >
                 {xLabels[idx]}
@@ -291,13 +303,16 @@ function TimelineHeader({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100"
+          className="sp-back-arrow"
           data-testid="timeline-back-button"
           aria-label="Back to heatmap"
+          title="Back to heatmap"
         >
-          <span aria-hidden="true">&larr;</span> Back
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M5 12l7 7M5 12l7-7" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{skillName}</h3>
+        <h3 className="font-semibold" style={{ color: 'var(--text-primary)', fontSize: 'var(--font-h4)', margin: 0 }}>{skillName}</h3>
       </div>
 
       {currentScore !== null && (
@@ -340,20 +355,28 @@ function TimelineTooltip({
 
   return (
     <div
-      className="absolute z-10 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-xs shadow-lg"
+      className="absolute z-10 px-3 py-2 text-xs"
       style={{
         left: tooltipOnLeft ? `${x - 160}px` : `${x + 12}px`,
         top: `${y - 10}px`,
+        borderRadius: 'var(--radius-md)',
+        border: '1px solid var(--border-default)',
+        backgroundColor: 'var(--surface-card)',
+        boxShadow: 'var(--shadow-float)',
+        // The tooltip sits right next to the dot (and the dot grows on
+        // hover), so without this the cursor can drift onto the tooltip
+        // itself, clearing the dot's hover state and causing a flicker loop.
+        pointerEvents: 'none',
       }}
       data-testid="timeline-tooltip"
       role="tooltip"
     >
       <div className="space-y-1">
-        <p className="font-medium text-gray-900 dark:text-gray-100">
+        <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
           {point.cycleKey} - Week {point.weekNumber}
         </p>
-        <p className="text-gray-600 dark:text-gray-400">Date: {formattedDate}</p>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p style={{ color: 'var(--text-secondary)' }}>Date: {formattedDate}</p>
+        <p style={{ color: 'var(--text-secondary)' }}>
           Score:{' '}
           <span className="font-medium" style={{ color: getScoreColor(point.score) === '#FEE2E2' ? '#B91C1C' : '#16A34A' }}>
             {point.score} - {getScoreLabel(point.score)}
@@ -395,11 +418,12 @@ function renderCycleLabels(
     return (
       <span
         key={`cycle-label-${idx}`}
-        className="absolute text-xs font-medium text-gray-700 dark:text-gray-300"
+        className="absolute text-xs font-medium"
         style={{
           left: `${centerX}px`,
           top: '24px',
           transform: 'translateX(-50%)',
+          color: 'var(--text-secondary)',
         }}
       >
         {group.cycleKey}

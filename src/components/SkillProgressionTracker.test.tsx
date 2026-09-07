@@ -26,6 +26,24 @@ vi.mock('../hooks/useSkillScores', () => ({
 
 vi.mock('../utils/skillUtils', () => ({
   generateCycleKey: vi.fn(() => 'Jan-Feb 2025'),
+  // Deterministic regardless of input date — both "today" and the curriculum
+  // week-1 date resolve into the same current cycle at week 1, matching the
+  // useCurriculum mock's single week-1 plan below.
+  getCalendarWeekInfo: vi.fn(() => ({ cycleKey: 'Jan-Feb 2025', weekInCycle: 1 })),
+}));
+
+// Mock the useStudentEnrollments hook — an active enrollment is required to
+// anchor curriculum weeks to real calendar dates.
+vi.mock('../hooks/useStudentEnrollments', () => ({
+  useStudentEnrollments: vi.fn(() => ({
+    activeEnrollment: { id: 'enr-1', studentId: 'student-123', startDate: '2025-01-01', status: 'active' },
+    enrollments: [],
+    history: [],
+    loading: false,
+    error: null,
+    createEnrollment: vi.fn(),
+    refetch: vi.fn(),
+  })),
 }));
 
 // Mock the useCurriculum hook — one week with one assigned drill that maps
@@ -163,8 +181,8 @@ describe('SkillProgressionTracker', () => {
     // Go to recording
     fireEvent.click(screen.getByTestId('record-scores-button'));
 
-    // Score the first skill in the default (Service) tab before saving —
-    // the backend requires at least one entry in `scores`.
+    // Score the one drill assigned in week 1 (from the useCurriculum mock)
+    // before saving — the backend requires at least one entry in `scores`.
     fireEvent.click(screen.getAllByRole('radio', { name: 'Score 2: Int' })[0]);
 
     // Save
@@ -175,7 +193,7 @@ describe('SkillProgressionTracker', () => {
         studentId,
         cycleKey: 'Jan-Feb 2025',
         weekNumber: 1,
-        scores: [{ skillId: 'bh-short-service', skillName: 'BH Short Service', category: 'service', score: 2 }],
+        scores: [{ skillId: 'd1', skillName: 'BH Short Service', category: 'Service', score: 2 }],
       });
     });
 

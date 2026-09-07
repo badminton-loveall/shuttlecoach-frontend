@@ -12,18 +12,53 @@
   gap: var(--space-sm);
 }
 
-.training-tab-save-corner {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+.training-tab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.training-tab-title {
+  font-size: var(--font-base);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.training-tab-save-actions {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
+.training-tab-save-msg {
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+}
+
+.training-tab-save-msg--ok {
+  color: var(--color-success);
+}
+
+.training-tab-save-msg--err {
+  color: var(--color-danger);
+}
+
 .training-tab-sections {
   display: flex;
   flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* Strengths and Areas to Improve presented side by side; collapses to a
+   single column on narrow screens (see the responsive block below). */
+.training-tab-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
 }
 
@@ -342,13 +377,17 @@
 
 /* Tag Add Buttons */
 .tag-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: var(--space-sm) var(--space-md);
   font-size: var(--font-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-base);
+  white-space: nowrap;
 }
 
 .tag-add-btn:disabled {
@@ -356,22 +395,24 @@
   cursor: not-allowed;
 }
 
+/* Solid fills so these read as real buttons (matching the app's primary
+   action style) instead of the low-contrast tinted labels they were before. */
 .tag-add-btn-strength {
-  background: var(--feedback-success-light);
-  color: var(--color-success-text);
+  background: var(--color-success);
+  color: #FFFFFF;
 }
 
 .tag-add-btn-strength:hover:not(:disabled) {
-  background: var(--color-success-light);
+  background: var(--color-success-dark);
 }
 
 .tag-add-btn-weakness {
-  background: var(--feedback-danger-light);
-  color: var(--color-danger-text);
+  background: var(--color-danger);
+  color: #FFFFFF;
 }
 
 .tag-add-btn-weakness:hover:not(:disabled) {
-  background: var(--color-danger-light);
+  background: var(--color-danger-dark);
 }
 
 /* Tag Remove Button */
@@ -600,6 +641,11 @@
 
 @media (max-width: 768px) {
   .training-tab-sections {
+    gap: var(--space-lg);
+  }
+
+  .training-tab-columns {
+    grid-template-columns: 1fr;
     gap: var(--space-lg);
   }
 

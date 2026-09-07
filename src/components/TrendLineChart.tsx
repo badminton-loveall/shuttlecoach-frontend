@@ -113,9 +113,12 @@ function buildCategoryTrendData(assessments: SkillAssessment[]) {
  * Build chart data for per-skill view within a selected category.
  * Each data point = { cycleKey, skillName1: score, skillName2: score, ... }
  */
-function buildSkillTrendData(assessments: SkillAssessment[], category: SkillCategory) {
+function buildSkillTrendData(
+  assessments: SkillAssessment[],
+  category: SkillCategory,
+  skills: { id: string; name: string }[]
+) {
   const cycleKeys = sortCycleKeys([...new Set(assessments.map((a) => a.cycleKey))]);
-  const skills = SKILL_DEFINITIONS_STRUCTURED[category];
 
   return cycleKeys.map((cycleKey) => {
     const assessment = assessments.find((a) => a.cycleKey === cycleKey);
@@ -149,8 +152,13 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
   }
 
   const categoryData = buildCategoryTrendData(assessments);
-  const skillData = buildSkillTrendData(assessments, selectedCategory);
-  const skills = SKILL_DEFINITIONS_STRUCTURED[selectedCategory];
+  // Only chart skills that have at least one real (>0) score on record — a
+  // skill the coach has never assessed is score 0 in every cycle, which is
+  // indistinguishable from "0 - Not Tested" and just clutters the legend/tooltip.
+  const skills = SKILL_DEFINITIONS_STRUCTURED[selectedCategory].filter((skill) =>
+    assessments.some((a) => (a.scores[selectedCategory][skill.name] ?? 0) > 0)
+  );
+  const skillData = buildSkillTrendData(assessments, selectedCategory, skills);
 
   return (
     <div className="trend-line-chart" data-testid="trend-line-chart">
@@ -193,33 +201,39 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
       </div>
 
       <div className="trend-line-chart__container">
+        {viewMode === 'per-skill' && skills.length === 0 ? (
+          <p className="trend-line-chart__empty">
+            No {CATEGORY_DISPLAY_LABELS[selectedCategory].toLowerCase()} skills have been assessed yet.
+          </p>
+        ) : (
         <ResponsiveContainer width="100%" height={300}>
           {viewMode === 'per-category' ? (
             <LineChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #374151)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E4E9EC" />
               <XAxis
                 dataKey="cycleKey"
-                tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 }}
+                tick={{ fill: '#4A5662', fontSize: 11 }}
               />
               <YAxis
                 domain={[0, 4]}
                 tickCount={5}
-                tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 }}
+                tick={{ fill: '#4A5662', fontSize: 11 }}
                 label={{
                   value: 'Score',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 },
+                  style: { fill: '#4A5662', fontSize: 11 },
                 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'var(--color-surface, #1f2937)',
-                  border: '1px solid var(--color-border, #374151)',
-                  borderRadius: '8px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E4E9EC',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.07)',
                   fontSize: 12,
                 }}
-                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)', fontSize: 12, fontWeight: 600 }}
+                labelStyle={{ color: '#1B2B4E', fontSize: 12, fontWeight: 600 }}
                 itemStyle={{ fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -238,30 +252,31 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
             </LineChart>
           ) : (
             <LineChart data={skillData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border, #374151)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E4E9EC" />
               <XAxis
                 dataKey="cycleKey"
-                tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 }}
+                tick={{ fill: '#4A5662', fontSize: 11 }}
               />
               <YAxis
                 domain={[0, 4]}
                 tickCount={5}
-                tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 }}
+                tick={{ fill: '#4A5662', fontSize: 11 }}
                 label={{
                   value: 'Score',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 11 },
+                  style: { fill: '#4A5662', fontSize: 11 },
                 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'var(--color-surface, #1f2937)',
-                  border: '1px solid var(--color-border, #374151)',
-                  borderRadius: '8px',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E4E9EC',
+                  borderRadius: 'var(--radius-sm, 6px)',
+                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.07)',
                   fontSize: 12,
                 }}
-                labelStyle={{ color: 'var(--color-text-primary, #f3f4f6)', fontSize: 12, fontWeight: 600 }}
+                labelStyle={{ color: '#1B2B4E', fontSize: 12, fontWeight: 600 }}
                 itemStyle={{ fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -280,6 +295,7 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
             </LineChart>
           )}
         </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

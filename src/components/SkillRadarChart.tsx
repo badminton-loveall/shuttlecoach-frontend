@@ -70,16 +70,16 @@ export const SkillRadarChart: React.FC<SkillRadarChartProps> = ({ scores }) => {
       <div className="skill-radar-chart__container">
         <ResponsiveContainer width="100%" height={300}>
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
-            <PolarGrid stroke="var(--color-border, #374151)" />
+            <PolarGrid stroke="#E4E9EC" />
             <PolarAngleAxis
               dataKey="category"
-              tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 12 }}
+              tick={{ fill: '#4A5662', fontSize: 12 }}
             />
             <PolarRadiusAxis
               angle={90}
               domain={[0, 4]}
               tickCount={5}
-              tick={{ fill: 'var(--color-text-secondary, #9ca3af)', fontSize: 10 }}
+              tick={{ fill: '#4A5662', fontSize: 10 }}
             />
             <Radar
               name="Average"

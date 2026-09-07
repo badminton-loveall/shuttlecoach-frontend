@@ -90,80 +90,94 @@ export const TrainingTab: React.FC<TrainingTabProps> = ({
 
   return (
     <div className="training-tab" data-testid="training-tab">
-      {isCoach && onSave && (
-        <div className="training-tab-save-corner">
-          {saveMsg && <span style={{ fontSize: '13px', color: 'var(--color-success)', fontWeight: 500 }}>{saveMsg}</span>}
-          {saveErr && <span style={{ fontSize: '13px', color: 'var(--color-danger)' }}>{saveErr}</span>}
-          <button type="button" className="btn-create-fee" onClick={handleSaveAll} disabled={isSaving}>
-            {isSaving ? 'Saving…' : 'Save'}
-          </button>
-        </div>
-      )}
+      {/* Own header row so this Save button never competes for space with
+          the Progress tab's "Record Assessment" button above it — that one
+          saves skill scores, this one saves strengths/weaknesses/feedback. */}
+      <div className="training-tab-header">
+        <h3 className="training-tab-title">Coach Notes</h3>
+        {isCoach && onSave && (
+          <div className="training-tab-save-actions">
+            {saveMsg && <span className="training-tab-save-msg training-tab-save-msg--ok">{saveMsg}</span>}
+            {saveErr && <span className="training-tab-save-msg training-tab-save-msg--err">{saveErr}</span>}
+            <button type="button" className="btn-create-fee" onClick={handleSaveAll} disabled={isSaving}>
+              {isSaving ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="training-tab-sections">
 
-        {/* Strengths */}
-        <div className="tag-section" data-testid="strengths-section">
-          <h3 className="training-tab-heading">Strengths</h3>
-          <div className="tag-list">
-            {strengths.map((s) => (
-              <span key={s} className="tag-strength" data-testid="strength-tag">
-                {s}
-                {isCoach && (
-                  <button className="tag-remove" onClick={() => handleRemoveStrength(s)} aria-label={`Remove ${s}`} type="button">×</button>
-                )}
-              </span>
-            ))}
-            {strengths.length === 0 && <span className="tag-empty">No strengths added yet</span>}
-          </div>
-          {isCoach && (
-            <div className="tag-input-group" data-testid="add-strength-input">
-              <input
-                type="text"
-                className="tag-input"
-                placeholder="Add a strength..."
-                value={newStrength}
-                onChange={(e) => setNewStrength(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddStrength(); } }}
-                aria-label="New strength"
-              />
-              <button className="tag-add-btn tag-add-btn-strength" onClick={handleAddStrength} type="button" disabled={!newStrength.trim()}>Add</button>
+        {/* Strengths + Areas to Improve side by side */}
+        <div className="training-tab-columns">
+          <div className="tag-section" data-testid="strengths-section">
+            <h4 className="training-tab-heading">Strengths</h4>
+            <div className="tag-list">
+              {strengths.map((s) => (
+                <span key={s} className="tag-strength" data-testid="strength-tag">
+                  {s}
+                  {isCoach && (
+                    <button className="tag-remove" onClick={() => handleRemoveStrength(s)} aria-label={`Remove ${s}`} type="button">×</button>
+                  )}
+                </span>
+              ))}
+              {strengths.length === 0 && <span className="tag-empty">No strengths added yet</span>}
             </div>
-          )}
+            {isCoach && (
+              <div className="tag-input-group" data-testid="add-strength-input">
+                <input
+                  type="text"
+                  className="tag-input"
+                  placeholder="Add a strength..."
+                  value={newStrength}
+                  onChange={(e) => setNewStrength(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddStrength(); } }}
+                  aria-label="New strength"
+                />
+                <button className="tag-add-btn tag-add-btn-strength" onClick={handleAddStrength} type="button" disabled={!newStrength.trim()}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
+                  Add
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="tag-section" data-testid="weaknesses-section">
+            <h4 className="training-tab-heading">Areas to Improve</h4>
+            <div className="tag-list">
+              {weaknesses.map((w) => (
+                <span key={w} className="tag-weakness" data-testid="weakness-tag">
+                  {w}
+                  {isCoach && (
+                    <button className="tag-remove" onClick={() => handleRemoveWeakness(w)} aria-label={`Remove ${w}`} type="button">×</button>
+                  )}
+                </span>
+              ))}
+              {weaknesses.length === 0 && <span className="tag-empty">No weaknesses added yet</span>}
+            </div>
+            {isCoach && (
+              <div className="tag-input-group" data-testid="add-weakness-input">
+                <input
+                  type="text"
+                  className="tag-input"
+                  placeholder="Add a weakness..."
+                  value={newWeakness}
+                  onChange={(e) => setNewWeakness(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddWeakness(); } }}
+                  aria-label="New weakness"
+                />
+                <button className="tag-add-btn tag-add-btn-weakness" onClick={handleAddWeakness} type="button" disabled={!newWeakness.trim()}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14" strokeLinecap="round" /></svg>
+                  Add
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Weaknesses */}
-        <div className="tag-section" data-testid="weaknesses-section">
-          <h3 className="training-tab-heading">Areas to Improve</h3>
-          <div className="tag-list">
-            {weaknesses.map((w) => (
-              <span key={w} className="tag-weakness" data-testid="weakness-tag">
-                {w}
-                {isCoach && (
-                  <button className="tag-remove" onClick={() => handleRemoveWeakness(w)} aria-label={`Remove ${w}`} type="button">×</button>
-                )}
-              </span>
-            ))}
-            {weaknesses.length === 0 && <span className="tag-empty">No weaknesses added yet</span>}
-          </div>
-          {isCoach && (
-            <div className="tag-input-group" data-testid="add-weakness-input">
-              <input
-                type="text"
-                className="tag-input"
-                placeholder="Add a weakness..."
-                value={newWeakness}
-                onChange={(e) => setNewWeakness(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddWeakness(); } }}
-                aria-label="New weakness"
-              />
-              <button className="tag-add-btn tag-add-btn-weakness" onClick={handleAddWeakness} type="button" disabled={!newWeakness.trim()}>Add</button>
-            </div>
-          )}
-        </div>
-
-        {/* Coach Feedback */}
+        {/* Coach Feedback — full width below the two columns */}
         <div className="feedback-section" data-testid="feedback-section">
-          <h3 className="training-tab-heading">Coach Feedback</h3>
+          <h4 className="training-tab-heading">Coach Feedback</h4>
           {isCoach ? (
             <textarea
               className="coach-feedback-textarea"

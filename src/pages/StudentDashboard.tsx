@@ -14,6 +14,7 @@ import type { FeeStatus } from '../types';
 import { computeAllFeeStatuses } from '../utils/feeUtils';
 import { calculateAge } from '../utils/studentUtils';
 import { formatCurrency, formatDate, formatMonthYear } from '../utils/formatters';
+import { resolveAttributionName } from '../utils/displayName';
 
 /**
  * StudentDashboard Page
@@ -351,7 +352,7 @@ export const StudentDashboard: React.FC = () => {
                 Latest Skill Assessment
               </h2>
               <p className="text-sm" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
-                Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {mostRecentAssessment.recordedBy}
+                Recorded on {formatDate(mostRecentAssessment.recordedAt)} by {resolveAttributionName(mostRecentAssessment.recordedBy, user)}
               </p>
               <SkillRadarChart scores={mostRecentAssessment.scores} />
             </div>

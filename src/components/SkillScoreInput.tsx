@@ -1,44 +1,41 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { SkillScoreButton } from './SkillScoreButton';
-import { SKILL_CATALOG } from '../constants/skillCatalog';
-import type { SkillCategory, SkillEntry, SkillScore } from '../constants/skillCatalog';
+import type { SkillScore } from '../constants/skillCatalog';
 import type { RecordSkillScoresData } from '../hooks/useSkillScores';
-
-const CATEGORY_ORDER: SkillCategory[] = ['service', 'serviceReturn', 'forehand', 'roundHead', 'backhand'];
+import type { Drill } from '../types';
 
 export interface SkillScoreInputProps {
   studentId: string;
   cycleKey: string;
   weekNumber: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-  /** Skills scoreable this week, already scoped to what's assigned as a drill — never the full catalog. */
-  assignedSkillsByCategory: Record<SkillCategory, readonly SkillEntry[]>;
+  /** Drills actually assigned this week, grouped by their own category — never a fixed skill catalog. */
+  assignedDrillsByCategory: Record<string, Drill[]>;
   curriculumLoading: boolean;
   onSave: (data: RecordSkillScoresData) => Promise<void>;
   onCancel: () => void;
 }
 
 /**
- * SkillScoreInput — weekly per-skill score entry for the Skill Progression
+ * SkillScoreInput — weekly per-drill score entry for the Skill Progression
  * Tracker's "recording" view. Mirrors SkillAssessmentForm's tab + score-row
- * layout, but only shows categories/skills the student actually has assigned
- * as drills for the given week (via SkillProgressionTracker's curriculum
- * lookup), not the tracker's full 5-category/61-skill catalog.
+ * layout, but scores whatever drills the student was actually assigned that
+ * week (grouped by the drill's own category), not a fixed skill catalog.
  */
 export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
   studentId,
   cycleKey,
   weekNumber,
-  assignedSkillsByCategory,
+  assignedDrillsByCategory,
   curriculumLoading,
   onSave,
   onCancel,
 }) => {
-  const categoriesWithDrills = useMemo(
-    () => CATEGORY_ORDER.filter((category) => assignedSkillsByCategory[category].length > 0),
-    [assignedSkillsByCategory]
+  const categories = useMemo(
+    () => Object.keys(assignedDrillsByCategory).filter((c) => assignedDrillsByCategory[c].length > 0),
+    [assignedDrillsByCategory]
   );
 
-  const [activeTab, setActiveTab] = useState<SkillCategory | null>(categoriesWithDrills[0] ?? null);
+  const [activeTab, setActiveTab] = useState<string | null>(categories[0] ?? null);
   const [scoresById, setScoresById] = useState<Record<string, SkillScore>>({});
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,10 +43,22 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
   // Land on the first category that actually has drills once the curriculum
   // finishes loading (or if the week selection changes which ones qualify).
   useEffect(() => {
-    if ((activeTab === null || !categoriesWithDrills.includes(activeTab)) && categoriesWithDrills.length > 0) {
-      setActiveTab(categoriesWithDrills[0]);
+    if ((activeTab === null || !categories.includes(activeTab)) && categories.length > 0) {
+      setActiveTab(categories[0]);
     }
-  }, [categoriesWithDrills, activeTab]);
+  }, [categories, activeTab]);
+
+  // Flat lookup so handleSave can resolve a touched skillId back to its
+  // drill's name/category without re-scanning every category.
+  const drillById = useMemo(() => {
+    const map = new Map<string, Drill>();
+    for (const category of categories) {
+      for (const drill of assignedDrillsByCategory[category]) {
+        map.set(drill.id, drill);
+      }
+    }
+    return map;
+  }, [assignedDrillsByCategory, categories]);
 
   const handleScoreChange = (skillId: string, score: SkillScore) => {
     setScoresById((prev) => ({ ...prev, [skillId]: score }));
@@ -67,11 +76,8 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
     setError(null);
     try {
       const scores = touchedIds.map((skillId) => {
-        const category = CATEGORY_ORDER.find((cat) =>
-          SKILL_CATALOG[cat].skills.some((s) => s.id === skillId)
-        )!;
-        const skill = SKILL_CATALOG[category].skills.find((s) => s.id === skillId)!;
-        return { skillId, skillName: skill.name, category, score: scoresById[skillId] };
+        const drill = drillById.get(skillId)!;
+        return { skillId, skillName: drill.name, category: drill.category, score: scoresById[skillId] };
       });
       await onSave({ studentId, cycleKey, weekNumber, scores });
     } catch (err: any) {
@@ -94,14 +100,14 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
 
       {curriculumLoading ? (
         <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Loading assigned drills…</p>
-      ) : categoriesWithDrills.length === 0 ? (
+      ) : categories.length === 0 ? (
         <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
           No drills are assigned for Week {weekNumber} yet — assign some in Manage Curriculum first.
         </p>
       ) : (
         <>
-          <nav className="sp-tab-nav" role="tablist" aria-label="Skill categories">
-            {categoriesWithDrills.map((category) => (
+          <nav className="sp-tab-nav" role="tablist" aria-label="Drill categories">
+            {categories.map((category) => (
               <button
                 key={category}
                 type="button"
@@ -111,7 +117,7 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
                 className={`sp-tab${activeTab === category ? ' sp-tab--active' : ''}`}
                 onClick={() => setActiveTab(category)}
               >
-                {SKILL_CATALOG[category].label}
+                {category}
               </button>
             ))}
           </nav>
@@ -120,15 +126,15 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
             <div
               role="tabpanel"
               id={`week-panel-${activeTab}`}
-              aria-label={`${SKILL_CATALOG[activeTab].label} skills`}
+              aria-label={`${activeTab} drills`}
               style={{ marginTop: 'var(--space-md)' }}
             >
-              {assignedSkillsByCategory[activeTab].map((skill) => (
-                <div key={skill.id} className="skill-assessment-skill-row">
-                  <span className="skill-assessment-skill-name">{skill.name}</span>
+              {assignedDrillsByCategory[activeTab].map((drill) => (
+                <div key={drill.id} className="skill-assessment-skill-row">
+                  <span className="skill-assessment-skill-name">{drill.name}</span>
                   <SkillScoreButton
-                    value={scoresById[skill.id] ?? 0}
-                    onChange={(score) => handleScoreChange(skill.id, score)}
+                    value={scoresById[drill.id] ?? 0}
+                    onChange={(score) => handleScoreChange(drill.id, score)}
                   />
                 </div>
               ))}
@@ -154,7 +160,7 @@ export const SkillScoreInput: React.FC<SkillScoreInputProps> = ({
           type="button"
           className="btn-create-fee"
           onClick={handleSave}
-          disabled={isSaving || categoriesWithDrills.length === 0}
+          disabled={isSaving || categories.length === 0}
           data-testid="save-scores-button"
         >
           {isSaving ? 'Saving…' : 'Save Scores'}

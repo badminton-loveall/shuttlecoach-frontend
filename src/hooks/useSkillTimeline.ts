@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import type { SkillScore, SkillCategory } from '../constants/skillCatalog';
+import type { SkillScore } from '../constants/skillCatalog';
 import apiClient from '../utils/apiClient';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ interface UseSkillTimelineOptions {
 interface UseSkillTimelineReturn {
   timeline: SkillTimelinePoint[];
   skillName: string;
-  category: SkillCategory;
+  category: string;
   currentScore: SkillScore | null;
   loading: boolean;
   error: string | null;
@@ -46,7 +46,7 @@ interface ApiTimelineResponse {
   studentId: string;
   skillId: string;
   skillName: string;
-  category: SkillCategory;
+  category: string;
   timeline: ApiTimelinePoint[];
 }
 
@@ -59,7 +59,7 @@ interface ApiTimelineResponse {
 export function useSkillTimeline({ studentId, skillId }: UseSkillTimelineOptions): UseSkillTimelineReturn {
   const [timeline, setTimeline] = useState<SkillTimelinePoint[]>([]);
   const [skillName, setSkillName] = useState<string>('');
-  const [category, setCategory] = useState<SkillCategory>('service');
+  const [category, setCategory] = useState<string>('service');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
