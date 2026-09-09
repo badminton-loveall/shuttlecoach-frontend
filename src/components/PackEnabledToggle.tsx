@@ -27,6 +27,7 @@ export const PackEnabledToggle: React.FC<PackEnabledToggleProps> = ({
         role="switch"
         aria-checked={checked}
         aria-label={label ? `${label} toggle` : 'Toggle pack enabled'}
+        title={checked ? 'Disable' : 'Enable'}
         disabled={disabled}
         onClick={() => !disabled && onChange(!checked)}
         className="pack-enabled-toggle__switch"

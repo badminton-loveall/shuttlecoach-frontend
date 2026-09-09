@@ -3,6 +3,7 @@ import type { Drill, DrillSet, DrillSetCategory, SetStatus, MarketplaceItem, Dri
 import { useAdminDrills } from '../hooks/useAdminDrills';
 import { SearchInput } from './SearchInput';
 import { SPORT_LABELS } from '../constants/sports';
+import { DRILL_CATEGORIES } from '../constants/drillCategories';
 import apiClient from '../utils/apiClient';
 import '../styles/pages.css';
 
@@ -407,7 +408,13 @@ export const AdminMarketplace: React.FC = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addDrillSelections, setAddDrillSelections] = useState<Record<string, string>>({});
 
-  const { drills: globalDrills } = useAdminDrills();
+  // Inline "create a new drill" form, opened per-category from within the builder
+  const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
+  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DRILL_CATEGORIES[0] as string });
+  const [creatingDrillError, setCreatingDrillError] = useState<string | null>(null);
+  const [creatingDrillLoading, setCreatingDrillLoading] = useState(false);
+
+  const { drills: globalDrills, refetch: refetchGlobalDrills } = useAdminDrills();
 
   const fetchSets = useCallback(async () => {
     setLoading(true);
@@ -609,6 +616,47 @@ export const AdminMarketplace: React.FC = () => {
       await loadBuildDetail(building);
     } catch {
       setBuildError('Failed to add drill.');
+    }
+  };
+
+  // --- Inline "create a new drill" (right from the builder, no separate trip to
+  // the Drill Catalog page) — creates the global drill, then immediately links
+  // it into the category being built. ---
+  const handleOpenCreateDrill = (categoryId: string) => {
+    setCreatingDrillForCategory(categoryId);
+    setNewDrillForm({ name: '', description: '', category: DRILL_CATEGORIES[0] });
+    setCreatingDrillError(null);
+  };
+
+  const handleCancelCreateDrill = () => {
+    setCreatingDrillForCategory(null);
+    setCreatingDrillError(null);
+  };
+
+  const handleCreateAndAddDrill = async (categoryId: string) => {
+    if (!building) return;
+    if (!newDrillForm.name.trim() || !newDrillForm.description.trim()) {
+      setCreatingDrillError('Name and description are required.');
+      return;
+    }
+    setCreatingDrillLoading(true);
+    setCreatingDrillError(null);
+    try {
+      const response = await apiClient.post('/admin/drills', {
+        name: newDrillForm.name.trim(),
+        description: newDrillForm.description.trim(),
+        category: newDrillForm.category,
+        sport: building.sport || 'badminton',
+      });
+      const newDrill = response.data;
+      await apiClient.post(`/admin/drill-sets/${building.id}/categories/${categoryId}/drills`, { drillId: newDrill.id });
+      await refetchGlobalDrills();
+      setCreatingDrillForCategory(null);
+      await loadBuildDetail(building);
+    } catch (err) {
+      setCreatingDrillError(err instanceof Error ? err.message : 'Failed to create drill.');
+    } finally {
+      setCreatingDrillLoading(false);
     }
   };
 
@@ -913,28 +961,82 @@ export const AdminMarketplace: React.FC = () => {
                           </button>
                         </div>
 
-                        <div className="flex gap-2 mb-3">
-                          <select
-                            value={addDrillSelections[category.id] || ''}
-                            onChange={(e) =>
-                              setAddDrillSelections((prev) => ({ ...prev, [category.id]: e.target.value }))
-                            }
-                            className="form-input text-sm flex-1"
-                            aria-label={`Select a drill to add to ${category.name}`}
-                          >
-                            <option value="">Select a drill to add...</option>
-                            {eligibleDrills.map((d) => (
-                              <option key={d.id} value={d.id}>{d.name} ({d.category})</option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={() => handleAddDrill(category.id)}
-                            disabled={!addDrillSelections[category.id]}
-                            className="btn btn-secondary text-sm"
-                          >
-                            Add
-                          </button>
-                        </div>
+                        {creatingDrillForCategory !== category.id ? (
+                          <div className="flex gap-2 mb-3">
+                            <select
+                              value={addDrillSelections[category.id] || ''}
+                              onChange={(e) =>
+                                setAddDrillSelections((prev) => ({ ...prev, [category.id]: e.target.value }))
+                              }
+                              className="form-input text-sm flex-1"
+                              aria-label={`Select a drill to add to ${category.name}`}
+                            >
+                              <option value="">Select a drill to add...</option>
+                              {eligibleDrills.map((d) => (
+                                <option key={d.id} value={d.id}>{d.name} ({d.category})</option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => handleAddDrill(category.id)}
+                              disabled={!addDrillSelections[category.id]}
+                              className="btn btn-secondary text-sm"
+                            >
+                              Add
+                            </button>
+                            <button
+                              onClick={() => handleOpenCreateDrill(category.id)}
+                              className="btn btn-secondary text-sm"
+                              title="Create a brand-new global drill and add it here"
+                            >
+                              + New Drill
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="card-base p-3 mb-3" style={{ background: 'var(--surface-muted)' }}>
+                            {creatingDrillError && (
+                              <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{creatingDrillError}</p>
+                            )}
+                            <div className="flex flex-col gap-2">
+                              <input
+                                type="text"
+                                value={newDrillForm.name}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, name: e.target.value }))}
+                                placeholder="Drill name"
+                                className="form-input text-sm"
+                                autoFocus
+                              />
+                              <select
+                                value={newDrillForm.category}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, category: e.target.value }))}
+                                className="form-input text-sm"
+                                aria-label="Drill category"
+                              >
+                                {DRILL_CATEGORIES.map((c) => (
+                                  <option key={c} value={c}>{c}</option>
+                                ))}
+                              </select>
+                              <textarea
+                                value={newDrillForm.description}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, description: e.target.value }))}
+                                placeholder="Description"
+                                className="form-input text-sm"
+                                rows={2}
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <button onClick={handleCancelCreateDrill} className="btn btn-secondary text-sm" disabled={creatingDrillLoading}>
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleCreateAndAddDrill(category.id)}
+                                  className="btn btn-primary text-sm"
+                                  disabled={creatingDrillLoading || !newDrillForm.name.trim() || !newDrillForm.description.trim()}
+                                >
+                                  {creatingDrillLoading ? 'Creating...' : 'Create & Add'}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
                         {category.drills && category.drills.length > 0 ? (
                           <ul className="space-y-1">

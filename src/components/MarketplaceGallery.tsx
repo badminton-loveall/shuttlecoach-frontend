@@ -6,6 +6,8 @@ import { useDrills } from '../hooks/useDrills';
 import { SearchInput } from './SearchInput';
 import { PackEnabledToggle } from './PackEnabledToggle';
 import { SPORT_LABELS, SUPPORTED_SPORTS } from '../constants/sports';
+import { DRILL_CATEGORIES } from '../constants/drillCategories';
+import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/apiClient';
 import { getTrialInfo, formatTrialLabel } from '../utils/subscriptionUtils';
 import '../styles/pages.css';
@@ -91,6 +93,7 @@ export const MarketplaceGallery: React.FC = () => {
     addDrillToSetCategory,
     removeDrillFromSetCategory,
     submitSet,
+    unpublishSet,
     toggleEnabled,
   } = useDrillSets();
 
@@ -101,7 +104,9 @@ export const MarketplaceGallery: React.FC = () => {
     adoptSet,
   } = useSetMarketplace();
 
-  const { drills: centerDrills } = useDrills();
+  const { drills: centerDrills, refetch: refetchCenterDrills } = useDrills();
+  const { role } = useAuth();
+  const canCreateDrills = role === 'HEAD_COACH';
 
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterKind>('all');
@@ -119,6 +124,10 @@ export const MarketplaceGallery: React.FC = () => {
   const [deletingSet, setDeletingSet] = useState<DrillSet | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  // Unpublish confirmation
+  const [unpublishingSet, setUnpublishingSet] = useState<DrillSet | null>(null);
+  const [unpublishLoading, setUnpublishLoading] = useState(false);
+
   // Builder / viewer modal for a "mine" set
   const [openSet, setOpenSet] = useState<DrillSet | null>(null);
   const [openCategories, setOpenCategories] = useState<DrillSetCategory[]>([]);
@@ -127,6 +136,12 @@ export const MarketplaceGallery: React.FC = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [addDrillSelections, setAddDrillSelections] = useState<Record<string, string>>({});
   const [submitTargetId, setSubmitTargetId] = useState<string | null>(null);
+
+  // Inline "create a new drill" form, opened per-category from within the builder
+  const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
+  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DRILL_CATEGORIES[0] as string });
+  const [creatingDrillError, setCreatingDrillError] = useState<string | null>(null);
+  const [creatingDrillLoading, setCreatingDrillLoading] = useState(false);
 
   // Community preview / adopt
   const [previewSet, setPreviewSet] = useState<DrillSet | null>(null);
@@ -367,6 +382,22 @@ export const MarketplaceGallery: React.FC = () => {
     }
   };
 
+  // --- Unpublish ---
+  const handleConfirmUnpublish = async () => {
+    if (!unpublishingSet) return;
+    setUnpublishLoading(true);
+    try {
+      await unpublishSet(unpublishingSet.id);
+      setSuccessMessage(`"${unpublishingSet.name}" is off the marketplace — it's back in Draft, so you can edit and resubmit it anytime.`);
+      setUnpublishingSet(null);
+    } catch (err) {
+      setErrorMessage(extractError(err, 'Failed to unpublish set.'));
+      setUnpublishingSet(null);
+    } finally {
+      setUnpublishLoading(false);
+    }
+  };
+
   // --- Builder / viewer ---
   const loadOpenDetail = useCallback(async (set: DrillSet) => {
     setOpenLoading(true);
@@ -430,6 +461,47 @@ export const MarketplaceGallery: React.FC = () => {
       await loadOpenDetail(openSet);
     } catch (err) {
       setOpenError(extractError(err, 'Failed to add drill.'));
+    }
+  };
+
+  // --- Inline "create a new drill" (right from the set builder, no separate trip
+  // to the drill library) — creates the center drill, then immediately links it
+  // into the category being built. ---
+  const handleOpenCreateDrill = (categoryId: string, categoryName: string) => {
+    setCreatingDrillForCategory(categoryId);
+    setNewDrillForm({ name: '', description: '', category: categoryName || DRILL_CATEGORIES[0] });
+    setCreatingDrillError(null);
+  };
+
+  const handleCancelCreateDrill = () => {
+    setCreatingDrillForCategory(null);
+    setCreatingDrillError(null);
+  };
+
+  const handleCreateAndAddDrill = async (categoryId: string) => {
+    if (!openSet) return;
+    if (!newDrillForm.name.trim() || !newDrillForm.description.trim()) {
+      setCreatingDrillError('Name and description are required.');
+      return;
+    }
+    setCreatingDrillLoading(true);
+    setCreatingDrillError(null);
+    try {
+      const response = await apiClient.post('/drills', {
+        name: newDrillForm.name.trim(),
+        description: newDrillForm.description.trim(),
+        category: newDrillForm.category,
+        sport: openSet.sport || 'badminton',
+      });
+      const newDrill = response.data;
+      await addDrillToSetCategory(openSet.id, categoryId, newDrill.id);
+      await refetchCenterDrills();
+      setCreatingDrillForCategory(null);
+      await loadOpenDetail(openSet);
+    } catch (err) {
+      setCreatingDrillError(extractError(err, 'Failed to create drill.'));
+    } finally {
+      setCreatingDrillLoading(false);
     }
   };
 
@@ -550,8 +622,17 @@ export const MarketplaceGallery: React.FC = () => {
         <div className="marketplace-grid">
           {visibleItems.map((item) => (
             <div key={item.id} className="card-base card-hover flex flex-col gap-2">
-              <div className="card-header" style={{ marginBottom: 'var(--space-sm)' }}>
-                <div className="flex flex-wrap gap-1" style={{ marginBottom: 'var(--space-xs)' }}>
+              <div className="card-header">
+                <div className="marketplace-card-title-row">
+                  <h3 className="card-title" style={{ marginBottom: 0 }}>{item.title}</h3>
+                  {item.owner === 'mine' && (
+                    <PackEnabledToggle
+                      checked={item.set.isEnabled}
+                      onChange={(next) => handleToggleMineSet(item.set.id, next)}
+                    />
+                  )}
+                </div>
+                <div className="marketplace-card-badges flex flex-wrap gap-1" style={{ marginTop: 'var(--space-sm)' }}>
                   {item.isOfficial ? (
                     <span className="badge-base badge-primary">Official</span>
                   ) : item.owner === 'mine' ? (
@@ -570,9 +651,8 @@ export const MarketplaceGallery: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <h3 className="card-title">{item.title}</h3>
                 {item.owner === 'community' && !item.isOfficial && (
-                  <p className="card-description" style={{ marginTop: '-4px' }}>
+                  <p className="card-description" style={{ marginTop: 'var(--space-xs, 4px)', marginBottom: 0 }}>
                     by {item.coachName || 'a coach'} · {item.centerName || 'another center'}
                   </p>
                 )}
@@ -592,48 +672,45 @@ export const MarketplaceGallery: React.FC = () => {
 
               <div className="card-footer" style={{ marginTop: 'var(--space-sm)' }}>
                 {item.owner === 'mine' && (
-                  <div className="flex flex-col gap-2 w-full">
-                    <div className="flex gap-2 w-full flex-wrap">
+                  <div className="marketplace-card-actions">
+                    {(item.status === 'draft' || item.status === 'rejected' || item.status === 'pending_review') && (
                       <button
-                        onClick={() => handleOpenBuilder(item.set)}
-                        className="btn btn-secondary text-sm flex-1"
+                        onClick={() => setDeletingSet(item.set)}
+                        className="btn btn-danger text-sm"
                       >
-                        {item.status === 'draft' || item.status === 'rejected' ? 'Manage' : 'View'}
+                        Delete
                       </button>
-                      {(item.status === 'draft' || item.status === 'rejected') && (
-                        <>
-                          <button
-                            onClick={() => handleOpenEdit(item.set)}
-                            className="table-action-link table-action-link--info"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => setDeletingSet(item.set)}
-                            className="table-action-link table-action-link--danger"
-                          >
-                            Delete
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        {item.set.isEnabled ? 'Enabled' : 'Disabled'}
-                      </span>
-                      <PackEnabledToggle
-                        checked={item.set.isEnabled}
-                        onChange={(next) => handleToggleMineSet(item.set.id, next)}
-                      />
-                    </div>
+                    )}
+                    {item.status === 'published' && (
+                      <button
+                        onClick={() => setUnpublishingSet(item.set)}
+                        className="btn btn-danger text-sm"
+                      >
+                        Unpublish
+                      </button>
+                    )}
+                    {(item.status === 'draft' || item.status === 'rejected') && (
+                      <button
+                        onClick={() => handleOpenEdit(item.set)}
+                        className="btn btn-secondary text-sm"
+                      >
+                        Edit
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleOpenBuilder(item.set)}
+                      className="btn btn-secondary text-sm"
+                    >
+                      {item.status === 'draft' || item.status === 'rejected' ? 'Manage' : 'View'}
+                    </button>
                   </div>
                 )}
 
                 {item.owner === 'community' && (
-                  <div className="flex gap-2 w-full">
+                  <div className="marketplace-card-actions">
                     <button
                       onClick={() => handleOpenPreview(item.set)}
-                      className="btn btn-secondary text-sm flex-1"
+                      className="btn btn-secondary text-sm"
                     >
                       Preview
                     </button>
@@ -644,7 +721,7 @@ export const MarketplaceGallery: React.FC = () => {
                       <button
                         onClick={() => handleAdoptCommunity(item.set)}
                         disabled={adoptingId === item.set.id}
-                        className="btn btn-primary text-sm flex-1"
+                        className="btn btn-primary text-sm"
                       >
                         {adoptingId === item.set.id ? 'Subscribing...' : 'Subscribe'}
                       </button>
@@ -739,6 +816,31 @@ export const MarketplaceGallery: React.FC = () => {
         </div>
       )}
 
+      {/* Unpublish Confirmation */}
+      {unpublishingSet && (
+        <div className="modal-overlay">
+          <div className="modal-content modal-content--small">
+            <div className="modal-header">
+              <h2 className="modal-title text-red-600 dark:text-red-400">Unpublish Set?</h2>
+              <button className="modal-close-btn" onClick={() => setUnpublishingSet(null)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p className="text-sm text-[var(--text-secondary)]">
+                &ldquo;{unpublishingSet.name}&rdquo; will come off the marketplace and go back to Draft. Centers
+                that already adopted it keep their own copy — this only affects new adoptions going forward.
+                You can edit it and resubmit for review anytime.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button onClick={() => setUnpublishingSet(null)} className="btn btn-secondary">Cancel</button>
+              <button onClick={handleConfirmUnpublish} disabled={unpublishLoading} className="btn btn-danger">
+                {unpublishLoading ? 'Unpublishing...' : 'Unpublish'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Builder / Viewer Panel */}
       {openSet && (
         <div className="side-panel-overlay" onClick={handleCloseBuilder}>
@@ -793,7 +895,7 @@ export const MarketplaceGallery: React.FC = () => {
                           )}
                         </div>
 
-                        {editable && (
+                        {editable && creatingDrillForCategory !== category.id && (
                           <div className="flex gap-2 mb-3">
                             <select
                               value={addDrillSelections[category.id] || ''}
@@ -815,6 +917,52 @@ export const MarketplaceGallery: React.FC = () => {
                             >
                               Add
                             </button>
+                            {canCreateDrills && (
+                              <button
+                                onClick={() => handleOpenCreateDrill(category.id, category.name)}
+                                className="btn btn-secondary text-sm"
+                                title="Create a brand-new drill and add it here"
+                              >
+                                + New Drill
+                              </button>
+                            )}
+                          </div>
+                        )}
+
+                        {editable && creatingDrillForCategory === category.id && (
+                          <div className="card-base p-3 mb-3" style={{ background: 'var(--surface-muted)' }}>
+                            {creatingDrillError && (
+                              <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{creatingDrillError}</p>
+                            )}
+                            <div className="flex flex-col gap-2">
+                              <input
+                                type="text"
+                                value={newDrillForm.name}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, name: e.target.value }))}
+                                placeholder="Drill name"
+                                className="form-input text-sm"
+                                autoFocus
+                              />
+                              <textarea
+                                value={newDrillForm.description}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, description: e.target.value }))}
+                                placeholder="Description"
+                                className="form-input text-sm"
+                                rows={2}
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <button onClick={handleCancelCreateDrill} className="btn btn-secondary text-sm" disabled={creatingDrillLoading}>
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={() => handleCreateAndAddDrill(category.id)}
+                                  className="btn btn-primary text-sm"
+                                  disabled={creatingDrillLoading || !newDrillForm.name.trim() || !newDrillForm.description.trim()}
+                                >
+                                  {creatingDrillLoading ? 'Creating...' : 'Create & Add'}
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         )}
 

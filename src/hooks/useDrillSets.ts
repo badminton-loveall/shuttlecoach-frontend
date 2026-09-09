@@ -5,7 +5,7 @@
  * and submit a set for admin review.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { DrillSet, DrillSetCategory, SetStatus } from '../types';
 import apiClient from '../utils/apiClient';
 
@@ -34,6 +34,7 @@ export interface UseDrillSetsReturn {
   addDrillToSetCategory: (setId: string, categoryId: string, drillId: string) => Promise<void>;
   removeDrillFromSetCategory: (setId: string, categoryId: string, drillId: string) => Promise<void>;
   submitSet: (id: string) => Promise<DrillSet>;
+  unpublishSet: (id: string) => Promise<DrillSet>;
   toggleEnabled: (id: string, enabled: boolean) => Promise<DrillSet>;
 }
 
@@ -41,19 +42,27 @@ export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn 
   const [sets, setSets] = useState<DrillSet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Guards against out-of-order responses: two toggles fired in quick
+  // succession each trigger their own refetch, and a slower earlier request
+  // resolving after a faster later one would otherwise clobber it with stale
+  // data. Only the response from the most recently issued fetch is applied.
+  const fetchSeq = useRef(0);
 
   const fetchSets = useCallback(async () => {
+    const seq = ++fetchSeq.current;
     try {
       setLoading(true);
       setError(null);
       const params: Record<string, string> = {};
       if (options?.status) params.status = options.status;
       const response = await apiClient.get('/drill-sets', { params });
+      if (seq !== fetchSeq.current) return;
       setSets(response.data.sets);
     } catch {
+      if (seq !== fetchSeq.current) return;
       setError('Failed to load drill sets. Please try again.');
     } finally {
-      setLoading(false);
+      if (seq === fetchSeq.current) setLoading(false);
     }
   }, [options?.status]);
 
@@ -110,6 +119,12 @@ export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn 
     return response.data;
   }, [fetchSets]);
 
+  const unpublishSet = useCallback(async (id: string): Promise<DrillSet> => {
+    const response = await apiClient.post(`/drill-sets/${id}/unpublish`);
+    await fetchSets();
+    return response.data;
+  }, [fetchSets]);
+
   const toggleEnabled = useCallback(async (id: string, enabled: boolean): Promise<DrillSet> => {
     const response = await apiClient.patch(`/drill-sets/${id}/enabled`, { enabled });
     await fetchSets();
@@ -131,6 +146,7 @@ export function useDrillSets(options?: UseDrillSetsOptions): UseDrillSetsReturn 
     addDrillToSetCategory,
     removeDrillFromSetCategory,
     submitSet,
+    unpublishSet,
     toggleEnabled,
   };
 }

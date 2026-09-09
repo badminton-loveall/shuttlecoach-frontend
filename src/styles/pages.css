@@ -19,6 +19,35 @@
   gap: var(--space-md, 16px);
 }
 
+/* Title row — heading on the left, the enable/disable switch (own/adopted
+   packs only) pinned to the right on the same line. align-items: flex-start
+   keeps the switch pinned to the top when the title wraps to two lines. */
+.marketplace-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm, 8px);
+}
+
+/* Status pills, one row below the title — mixed-case labels rather than
+   .badge-base's all-caps default, which reads as shouty at this density. */
+.marketplace-card-badges .badge-base {
+  text-transform: none;
+}
+
+/* Marketplace card action row — every card's buttons (Manage/Edit/Delete,
+   View/Unpublish, Preview/Subscribe) share this one layout: fit-width
+   buttons, right-aligned, instead of each card stretching or centering
+   them differently. */
+.marketplace-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-sm, 8px);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
 /* Same collision as above: these two rows need flex-col-by-default /
    flex-row-at-desktop, which the colliding unprefixed .flex-col wins over
    Tailwind's sm:flex-row every time. Dedicated classes sidestep it. */
