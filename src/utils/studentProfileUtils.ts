@@ -213,3 +213,15 @@ export function canEditStudent(role: string, userId: string, student: { assigned
 export function canArchiveStudent(role: string): boolean {
   return role === 'HEAD_COACH';
 }
+
+/**
+ * Check if a user can reset a student's login password directly from the
+ * profile page. Same "center admin" semantics as canArchiveStudent — kept as
+ * its own named function since it's a conceptually distinct capability.
+ *
+ * @param role - The user's role
+ * @returns true if the user has permission to reset a student's password
+ */
+export function canResetStudentPassword(role: string): boolean {
+  return role === 'HEAD_COACH';
+}

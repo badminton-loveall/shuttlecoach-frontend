@@ -13,6 +13,7 @@ import { SkillProgressionTracker } from '../components/SkillProgressionTracker';
 import { EditStudentModal } from '../components/EditStudentModal';
 import { EnrollmentSection } from '../components/EnrollmentSection';
 import { ArchiveConfirmDialog } from '../components/ArchiveConfirmDialog';
+import { ResetPasswordModal } from '../components/ResetPasswordModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useStudent } from '../hooks/useStudent';
@@ -24,7 +25,7 @@ import { StudentScheduleCalendar } from '../components/StudentScheduleCalendar';
 import { AttendanceCalendarGrid } from '../components/AttendanceCalendarGrid';
 import { deriveProgressState } from '../utils/progressState';
 import { generateCycleKey } from '../utils/skillUtils';
-import { canEditStudent, canArchiveStudent, classifyError } from '../utils/studentProfileUtils';
+import { canEditStudent, canArchiveStudent, canResetStudentPassword, classifyError } from '../utils/studentProfileUtils';
 import apiClient from '../utils/apiClient';
 import type { Student, AttendanceRecord } from '../types';
 import '../styles/pages.css';
@@ -98,6 +99,7 @@ export const StudentProfilePage: React.FC = () => {
   // Modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 
   // Handler for successful edit - refetch student data, show toast, close modal
@@ -217,6 +219,7 @@ export const StudentProfilePage: React.FC = () => {
   // Permission derivation for edit and archive actions
   const canEdit = canEditStudent(role || '', user?.id || '', student);
   const canArchive = canArchiveStudent(role || '');
+  const canResetPassword = canResetStudentPassword(role || '');
 
   return (
     <DashboardLayout>
@@ -270,6 +273,19 @@ export const StudentProfilePage: React.FC = () => {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 20h9" />
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                </button>
+              )}
+              {canResetPassword && (
+                <button
+                  className="sp-header-icon-btn"
+                  onClick={() => setIsResetPasswordModalOpen(true)}
+                  aria-label="Reset student password"
+                  title="Reset student password"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </button>
               )}
@@ -377,6 +393,16 @@ export const StudentProfilePage: React.FC = () => {
           onConfirm={handleArchiveConfirm}
           onCancel={() => setIsArchiveDialogOpen(false)}
           isLoading={isArchiving}
+        />
+      )}
+
+      {/* Reset Password Modal (HEAD_COACH only) */}
+      {student && isResetPasswordModalOpen && (
+        <ResetPasswordModal
+          targetName={student.fullName}
+          apiPath={`/students/${student.id}/reset-password`}
+          sendEmailApiPath={`/students/${student.id}/send-reset-email`}
+          onClose={() => setIsResetPasswordModalOpen(false)}
         />
       )}
     </DashboardLayout>
