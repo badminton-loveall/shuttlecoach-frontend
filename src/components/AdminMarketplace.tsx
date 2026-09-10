@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Drill, DrillSet, DrillSetCategory, SetStatus, MarketplaceItem, DrillPackTier } from '../types';
 import { useAdminDrills } from '../hooks/useAdminDrills';
 import { SearchInput } from './SearchInput';
+import { DrillAutocomplete } from './DrillAutocomplete';
 import { SPORT_LABELS } from '../constants/sports';
 import { DRILL_CATEGORIES } from '../constants/drillCategories';
 import apiClient from '../utils/apiClient';
@@ -62,6 +63,29 @@ const VIDEO_ICON_STYLE: React.CSSProperties = {
   cursor: 'pointer',
   flexShrink: 0,
 };
+
+// Small inline trash-can icon — matches the coach-side set builder
+// (MarketplaceGallery.tsx) so "remove" reads the same way in both places
+// instead of one being an icon button and the other a red text link.
+const TrashIcon: React.FC<{ size?: number }> = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+  </svg>
+);
+
+// Small inline pencil icon — sits next to a click-to-rename title or
+// category name so it reads as editable at a glance instead of only on
+// hover/click discovery.
+const PencilIcon: React.FC<{ size?: number; className?: string }> = ({ size = 12, className = 'editable-hint' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    <path d="m15 5 4 4" />
+  </svg>
+);
 
 function extractErrorMessage(err: unknown, fallback: string): string {
   const message =
@@ -406,7 +430,16 @@ export const AdminMarketplace: React.FC = () => {
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [addDrillSelections, setAddDrillSelections] = useState<Record<string, string>>({});
+  // Which category's "add a drill" row is expanded — collapsed by default,
+  // toggled by the + next to the category name.
+  const [addingDrillForCategory, setAddingDrillForCategory] = useState<string | null>(null);
+
+  // Inline rename — pack title and category names, same click-to-edit UX as
+  // the coach's own set builder (MarketplaceGallery.tsx)
+  const [editingBuildTitle, setEditingBuildTitle] = useState(false);
+  const [buildNameDraft, setBuildNameDraft] = useState('');
+  const [editingCategory, setEditingCategory] = useState<{ categoryId: string; name: string } | null>(null);
+  const [savingCategoryName, setSavingCategoryName] = useState(false);
 
   // Inline "create a new drill" form, opened per-category from within the builder
   const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
@@ -571,7 +604,10 @@ export const AdminMarketplace: React.FC = () => {
   const handleOpenBuild = async (set: DrillSet) => {
     setBuilding(set);
     setNewCategoryName('');
-    setAddDrillSelections({});
+    setAddingDrillForCategory(null);
+    setEditingBuildTitle(false);
+    setBuildNameDraft(set.name);
+    setEditingCategory(null);
     await loadBuildDetail(set);
   };
 
@@ -579,7 +615,56 @@ export const AdminMarketplace: React.FC = () => {
     setBuilding(null);
     setBuildCategories([]);
     setBuildError(null);
+    setEditingBuildTitle(false);
+    setEditingCategory(null);
     await fetchSets();
+  };
+
+  const handleSaveBuildTitle = async () => {
+    if (!building) return;
+    const trimmed = buildNameDraft.trim();
+    if (!trimmed || trimmed === building.name) {
+      setBuildNameDraft(building.name);
+      setEditingBuildTitle(false);
+      return;
+    }
+    setEditingBuildTitle(false);
+    try {
+      const response = await apiClient.patch(`/admin/drill-sets/${building.id}`, { name: trimmed });
+      setBuilding(response.data);
+      setBuildNameDraft(response.data.name);
+    } catch {
+      setBuildNameDraft(building.name);
+      setBuildError('Failed to rename the pack.');
+    }
+  };
+
+  const handleStartEditCategory = (category: DrillSetCategory) => {
+    setEditingCategory({ categoryId: category.id, name: category.name });
+  };
+
+  const handleCancelEditCategory = () => {
+    setEditingCategory(null);
+  };
+
+  const handleSaveCategoryName = async () => {
+    if (!building || !editingCategory) return;
+    const trimmed = editingCategory.name.trim();
+    const original = buildCategories.find((c) => c.id === editingCategory.categoryId);
+    if (!trimmed || trimmed === original?.name) {
+      setEditingCategory(null);
+      return;
+    }
+    setSavingCategoryName(true);
+    try {
+      await apiClient.patch(`/admin/drill-sets/${building.id}/categories/${editingCategory.categoryId}`, { name: trimmed });
+      setEditingCategory(null);
+      await loadBuildDetail(building);
+    } catch {
+      setBuildError('Failed to rename category.');
+    } finally {
+      setSavingCategoryName(false);
+    }
   };
 
   const handleAddCategory = async () => {
@@ -606,13 +691,11 @@ export const AdminMarketplace: React.FC = () => {
     }
   };
 
-  const handleAddDrill = async (categoryId: string) => {
-    const drillId = addDrillSelections[categoryId];
+  const handleAddDrill = async (categoryId: string, drillId: string) => {
     if (!building || !drillId) return;
     setBuildError(null);
     try {
       await apiClient.post(`/admin/drill-sets/${building.id}/categories/${categoryId}/drills`, { drillId });
-      setAddDrillSelections((prev) => ({ ...prev, [categoryId]: '' }));
       await loadBuildDetail(building);
     } catch {
       setBuildError('Failed to add drill.');
@@ -621,10 +704,11 @@ export const AdminMarketplace: React.FC = () => {
 
   // --- Inline "create a new drill" (right from the builder, no separate trip to
   // the Drill Catalog page) — creates the global drill, then immediately links
-  // it into the category being built. ---
-  const handleOpenCreateDrill = (categoryId: string) => {
+  // it into the category being built. Reached from the drill combobox when
+  // nothing in the catalog already matches what was typed. ---
+  const handleOpenCreateDrill = (categoryId: string, prefillName = '') => {
     setCreatingDrillForCategory(categoryId);
-    setNewDrillForm({ name: '', description: '', category: DRILL_CATEGORIES[0] });
+    setNewDrillForm({ name: prefillName, description: '', category: DRILL_CATEGORIES[0] });
     setCreatingDrillError(null);
   };
 
@@ -796,7 +880,7 @@ export const AdminMarketplace: React.FC = () => {
 
       {/* Detail panel (non-official packs) — approve/reject when pending_review */}
       {viewing && (
-        <div className="side-panel-overlay" onClick={handleCloseView}>
+        <div className="side-panel-overlay">
           <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{viewing.name}</h2>
@@ -914,30 +998,58 @@ export const AdminMarketplace: React.FC = () => {
 
       {/* Official pack builder panel */}
       {building && (
-        <div className="side-panel-overlay" onClick={() => { void handleCloseBuild(); }}>
+        <div className="side-panel-overlay">
           <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">{building.name}</h2>
+              {editingBuildTitle ? (
+                <input
+                  type="text"
+                  value={buildNameDraft}
+                  onChange={(e) => setBuildNameDraft(e.target.value)}
+                  onBlur={handleSaveBuildTitle}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); handleSaveBuildTitle(); }
+                    if (e.key === 'Escape') { e.preventDefault(); setBuildNameDraft(building.name); setEditingBuildTitle(false); }
+                  }}
+                  autoFocus
+                  className="form-input modal-title-input"
+                  placeholder="Pack name"
+                  aria-label="Pack name"
+                />
+              ) : (
+                <h2
+                  className="modal-title modal-title--editable"
+                  onClick={() => setEditingBuildTitle(true)}
+                  title="Click to rename"
+                >
+                  {building.name}
+                  <PencilIcon size={14} />
+                </h2>
+              )}
               <button className="modal-close-btn" onClick={handleCloseBuild}>✕</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body builder-stack-lg">
               {buildError && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm mb-3">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
                   {buildError}
                 </div>
               )}
 
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="New category name (e.g. Footwork)"
-                  className="form-input text-sm flex-1"
-                />
-                <button onClick={handleAddCategory} disabled={!newCategoryName.trim()} className="btn btn-primary text-sm">
-                  Add Category
-                </button>
+              <div className="form-group">
+                <label htmlFor="new-category-name" className="form-label">Add a category</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="new-category-name"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category name (e.g. Footwork)"
+                    className="form-input text-sm flex-1"
+                  />
+                  <button onClick={handleAddCategory} disabled={!newCategoryName.trim()} className="btn btn-primary text-sm">
+                    Add Category
+                  </button>
+                </div>
               </div>
 
               {buildLoading ? (
@@ -945,54 +1057,99 @@ export const AdminMarketplace: React.FC = () => {
               ) : buildCategories.length === 0 ? (
                 <div className="table-empty">No categories yet — add one above, then add drills under it.</div>
               ) : (
-                <div className="space-y-4">
+                <div className="builder-stack-lg">
                   {buildCategories.map((category) => {
                     const categoryDrillIds = new Set((category.drills || []).map((d) => d.id));
                     const eligibleDrills = globalDrills.filter((d: Drill) => !categoryDrillIds.has(d.id));
+                    const isEditingCategory = editingCategory?.categoryId === category.id;
                     return (
-                      <div key={category.id} className="card-base">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-[var(--text-primary)]">{category.name}</h4>
+                      <div key={category.id} className="card-base builder-stack-md">
+                        <div className="flex items-start justify-between builder-category-header">
+                          {isEditingCategory ? (
+                            <input
+                              type="text"
+                              value={editingCategory.name}
+                              onChange={(e) => setEditingCategory({ categoryId: category.id, name: e.target.value })}
+                              onBlur={handleSaveCategoryName}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') { e.preventDefault(); handleSaveCategoryName(); }
+                                if (e.key === 'Escape') { e.preventDefault(); handleCancelEditCategory(); }
+                              }}
+                              disabled={savingCategoryName}
+                              autoFocus
+                              className="form-input text-sm"
+                              style={{ flex: 1, marginRight: 'var(--space-sm)' }}
+                            />
+                          ) : (
+                            <h4
+                              className="font-semibold text-[var(--text-primary)] editable-text"
+                              onClick={() => handleStartEditCategory(category)}
+                              title="Click to rename"
+                            >
+                              {category.name}
+                              <PencilIcon />
+                            </h4>
+                          )}
                           <button
                             onClick={() => handleRemoveCategory(category.id)}
-                            className="table-action-link table-action-link--danger text-xs"
+                            className="icon-btn icon-btn--danger"
+                            aria-label={`Remove category: ${category.name}`}
+                            title="Remove category"
                           >
-                            Remove Category
+                            <TrashIcon />
                           </button>
                         </div>
 
-                        {creatingDrillForCategory !== category.id ? (
-                          <div className="flex gap-2 mb-3">
-                            <select
-                              value={addDrillSelections[category.id] || ''}
-                              onChange={(e) =>
-                                setAddDrillSelections((prev) => ({ ...prev, [category.id]: e.target.value }))
-                              }
-                              className="form-input text-sm flex-1"
-                              aria-label={`Select a drill to add to ${category.name}`}
-                            >
-                              <option value="">Select a drill to add...</option>
-                              {eligibleDrills.map((d) => (
-                                <option key={d.id} value={d.id}>{d.name} ({d.category})</option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={() => handleAddDrill(category.id)}
-                              disabled={!addDrillSelections[category.id]}
-                              className="btn btn-secondary text-sm"
-                            >
-                              Add
-                            </button>
-                            <button
-                              onClick={() => handleOpenCreateDrill(category.id)}
-                              className="btn btn-secondary text-sm"
-                              title="Create a brand-new global drill and add it here"
-                            >
-                              + New Drill
-                            </button>
-                          </div>
+                        {category.drills && category.drills.length > 0 ? (
+                          <ul className="builder-drill-list">
+                            {category.drills.map((drill) => (
+                              <li key={drill.id} className="builder-drill-row text-sm">
+                                <span>{drill.name}</span>
+                                <span className="flex items-center gap-2">
+                                  {drill.videoUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
+                                      aria-label={`Watch demonstration: ${drill.name}`}
+                                      title="Watch demonstration"
+                                      style={VIDEO_ICON_STYLE}
+                                    >
+                                      ▶
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleRemoveDrill(category.id, drill.id)}
+                                    className="icon-btn icon-btn--danger"
+                                    aria-label={`Remove ${drill.name}`}
+                                    title="Remove drill"
+                                  >
+                                    <TrashIcon size={13} />
+                                  </button>
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
                         ) : (
-                          <div className="card-base p-3 mb-3" style={{ background: 'var(--surface-muted)' }}>
+                          <p className="text-xs text-[var(--text-secondary)]">No drills in this category yet.</p>
+                        )}
+
+                        {addingDrillForCategory !== category.id ? (
+                          <button
+                            onClick={() => setAddingDrillForCategory(category.id)}
+                            className="builder-add-drill-btn"
+                          >
+                            <span aria-hidden="true">+</span> Add a drill
+                          </button>
+                        ) : creatingDrillForCategory !== category.id ? (
+                          <DrillAutocomplete
+                            allDrills={globalDrills}
+                            eligibleDrills={eligibleDrills}
+                            onSelectExisting={(drill) => handleAddDrill(category.id, drill.id)}
+                            onCreateNew={(name) => handleOpenCreateDrill(category.id, name)}
+                            placeholder="Type a drill name..."
+                          />
+                        ) : (
+                          <div className="card-base p-3" style={{ background: 'var(--surface-muted)' }}>
                             {creatingDrillError && (
                               <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{creatingDrillError}</p>
                             )}
@@ -1036,37 +1193,6 @@ export const AdminMarketplace: React.FC = () => {
                               </div>
                             </div>
                           </div>
-                        )}
-
-                        {category.drills && category.drills.length > 0 ? (
-                          <ul className="space-y-1">
-                            {category.drills.map((drill) => (
-                              <li key={drill.id} className="flex items-center justify-between text-sm py-1">
-                                <span>{drill.name}</span>
-                                <span className="flex items-center gap-2">
-                                  {drill.videoUrl && (
-                                    <button
-                                      type="button"
-                                      onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
-                                      aria-label={`Watch demonstration: ${drill.name}`}
-                                      title="Watch demonstration"
-                                      style={VIDEO_ICON_STYLE}
-                                    >
-                                      ▶
-                                    </button>
-                                  )}
-                                  <button
-                                    onClick={() => handleRemoveDrill(category.id, drill.id)}
-                                    className="table-action-link table-action-link--danger text-xs"
-                                  >
-                                    Remove
-                                  </button>
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-xs text-[var(--text-secondary)]">No drills in this category yet.</p>
                         )}
                       </div>
                     );

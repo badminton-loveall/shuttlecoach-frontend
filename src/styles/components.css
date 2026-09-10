@@ -767,7 +767,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .modal-content {
+  .modal-content,
+  .side-panel {
     background-color: var(--surface-dark-card);
     border-color: var(--border-dark);
   }
@@ -1150,7 +1151,8 @@
    ============================================================================ */
 
 /* Shell: flex column layout, no scroll gap */
-.modal-content {
+.modal-content,
+.side-panel {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1158,7 +1160,8 @@
 }
 
 /* Header */
-.modal-content .modal-header {
+.modal-content .modal-header,
+.side-panel .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1168,7 +1171,8 @@
   flex-shrink: 0;
 }
 
-.modal-content .modal-title {
+.modal-content .modal-title,
+.side-panel .modal-title {
   font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--text-primary);
@@ -1176,14 +1180,16 @@
   line-height: var(--line-snug);
 }
 
-.modal-content .modal-subtitle {
+.modal-content .modal-subtitle,
+.side-panel .modal-subtitle {
   font-size: var(--font-sm);
   color: var(--text-secondary);
   margin: var(--space-xs) 0 0;
   line-height: var(--line-normal);
 }
 
-.modal-content .modal-close-btn {
+.modal-content .modal-close-btn,
+.side-panel .modal-close-btn {
   background: none;
   border: none;
   color: var(--text-tertiary);
@@ -1200,13 +1206,15 @@
   flex-shrink: 0;
 }
 
-.modal-content .modal-close-btn:hover {
+.modal-content .modal-close-btn:hover,
+.side-panel .modal-close-btn:hover {
   background: var(--feedback-danger-light);
   color: var(--color-danger);
 }
 
 /* Form wrapper: zero padding/gap so tabbed body fills flush */
-.modal-content .modal-form {
+.modal-content .modal-form,
+.side-panel .modal-form {
   padding: 0;
   margin: 0;
   display: flex;
@@ -1217,7 +1225,8 @@
 }
 
 /* Form body padding for simple (non-tabbed) modals */
-.modal-content .modal-form-body {
+.modal-content .modal-form-body,
+.side-panel .modal-form-body {
   padding: var(--space-lg);
   display: flex;
   flex-direction: column;
@@ -1227,7 +1236,8 @@
 }
 
 /* Error banner */
-.modal-content .form-error-banner {
+.modal-content .form-error-banner,
+.side-panel .form-error-banner {
   padding: var(--space-sm) var(--space-md);
   margin: var(--space-md) var(--space-lg) 0;
   background-color: var(--feedback-danger-light);
@@ -1241,14 +1251,16 @@
   flex-shrink: 0;
 }
 
-.modal-content .form-error-banner::before {
+.modal-content .form-error-banner::before,
+.side-panel .form-error-banner::before {
   content: '✕';
   font-weight: var(--weight-bold);
   flex-shrink: 0;
 }
 
 /* Warning banner */
-.modal-content .form-warning-banner {
+.modal-content .form-warning-banner,
+.side-panel .form-warning-banner {
   padding: var(--space-sm) var(--space-md);
   background-color: var(--feedback-warning-light);
   border-radius: var(--radius-md);
@@ -1258,7 +1270,8 @@
 }
 
 /* Info banner */
-.modal-content .form-info-banner {
+.modal-content .form-info-banner,
+.side-panel .form-info-banner {
   padding: var(--space-sm) var(--space-md);
   background-color: var(--feedback-info-light);
   border-radius: var(--radius-md);
@@ -1267,7 +1280,8 @@
 }
 
 /* Form group: no card border/background (override PersonalInfoForm.css) */
-.modal-content .form-group {
+.modal-content .form-group,
+.side-panel .form-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1282,13 +1296,15 @@
   transition: none;
 }
 
-.modal-content .form-group:hover {
+.modal-content .form-group:hover,
+.side-panel .form-group:hover {
   box-shadow: none;
   transform: none;
 }
 
 /* Label: sentence case, small, secondary color */
-.modal-content .form-label {
+.modal-content .form-label,
+.side-panel .form-label {
   font-size: var(--font-sm);
   font-weight: var(--weight-semibold);
   color: var(--text-secondary);
@@ -1297,21 +1313,25 @@
   margin: 0;
 }
 
-.modal-content .form-optional {
+.modal-content .form-optional,
+.side-panel .form-optional {
   font-size: var(--font-xs);
   color: var(--text-tertiary);
   font-weight: var(--weight-regular);
   margin-left: 2px;
 }
 
-.modal-content .form-required {
+.modal-content .form-required,
+.side-panel .form-required {
   color: var(--color-danger);
   margin-left: 2px;
 }
 
 /* Inputs */
 .modal-content .form-input,
-.modal-content .form-textarea {
+.modal-content .form-textarea,
+.side-panel .form-input,
+.side-panel .form-textarea {
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--border-default);
@@ -1324,36 +1344,45 @@
   height: 38px;
 }
 
-.modal-content .form-textarea {
+.modal-content .form-textarea,
+.side-panel .form-textarea {
   height: auto;
   resize: vertical;
 }
 
 .modal-content .form-input:focus,
-.modal-content .form-textarea:focus {
+.modal-content .form-textarea:focus,
+.side-panel .form-input:focus,
+.side-panel .form-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: var(--shadow-focus);
 }
 
 .modal-content .form-input::placeholder,
-.modal-content .form-textarea::placeholder {
+.modal-content .form-textarea::placeholder,
+.side-panel .form-input::placeholder,
+.side-panel .form-textarea::placeholder {
   color: var(--text-tertiary);
 }
 
 .modal-content .form-input:disabled,
-.modal-content .form-textarea:disabled {
+.modal-content .form-textarea:disabled,
+.side-panel .form-input:disabled,
+.side-panel .form-textarea:disabled {
   background-color: var(--surface-hover);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.modal-content .form-input-error {
+.modal-content .form-input-error,
+.side-panel .form-input-error {
   border-color: var(--color-danger) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
 }
 
-.modal-content .form-error-text {
+.modal-content .form-error-text,
+.side-panel .form-error-text {
   font-size: var(--font-xs);
   color: var(--color-danger);
   font-weight: var(--weight-medium);
@@ -1362,36 +1391,42 @@
   gap: 4px;
 }
 
-.modal-content .form-error-text::before {
+.modal-content .form-error-text::before,
+.side-panel .form-error-text::before {
   content: '⚠';
 }
 
-.modal-content .form-helper-text {
+.modal-content .form-helper-text,
+.side-panel .form-helper-text {
   font-size: var(--font-xs);
   color: var(--text-tertiary);
   margin-top: 2px;
 }
 
-.modal-content .form-read-only {
+.modal-content .form-read-only,
+.side-panel .form-read-only {
   font-size: var(--font-sm);
   color: var(--text-primary);
   padding: var(--space-sm) 0;
   font-weight: var(--weight-medium);
 }
 
-.modal-content .form-read-only-sub {
+.modal-content .form-read-only-sub,
+.side-panel .form-read-only-sub {
   font-size: var(--font-xs);
   color: var(--text-tertiary);
   margin-left: var(--space-xs);
 }
 
-.modal-content .form-changed {
+.modal-content .form-changed,
+.side-panel .form-changed {
   font-size: var(--font-xs);
   color: var(--color-primary-dark);
 }
 
 /* Footer: full-width separator, vertically centered buttons */
-.modal-content .form-actions {
+.modal-content .form-actions,
+.side-panel .form-actions {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
@@ -1404,7 +1439,8 @@
 /* Buttons inside modal — same height/padding/radius as .btn-base elsewhere,
    so a modal's Cancel/Save never look like a different button system than
    the page behind it. */
-.modal-content .btn {
+.modal-content .btn,
+.side-panel .btn {
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-md);
   font-size: var(--font-body);
@@ -1419,90 +1455,112 @@
   height: 40px;
 }
 
-.modal-content .btn:disabled {
+.modal-content .btn:disabled,
+.side-panel .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.modal-content .btn-primary {
+.modal-content .btn-primary,
+.side-panel .btn-primary {
   background: var(--color-primary);
   color: var(--text-primary);
 }
 
-.modal-content .btn-primary:hover:not(:disabled) {
+.modal-content .btn-primary:hover:not(:disabled),
+.side-panel .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
 }
 
-.modal-content .btn-primary:active:not(:disabled) {
+.modal-content .btn-primary:active:not(:disabled),
+.side-panel .btn-primary:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.modal-content .btn-secondary {
+.modal-content .btn-secondary,
+.side-panel .btn-secondary {
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border-default);
 }
 
-.modal-content .btn-secondary:hover:not(:disabled) {
+.modal-content .btn-secondary:hover:not(:disabled),
+.side-panel .btn-secondary:hover:not(:disabled) {
   background: var(--surface-hover);
   border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
-.modal-content .btn-danger {
+.modal-content .btn-danger,
+.side-panel .btn-danger {
   background: var(--color-danger);
   color: var(--text-inverse);
 }
 
-.modal-content .btn-danger:hover:not(:disabled) {
+.modal-content .btn-danger:hover:not(:disabled),
+.side-panel .btn-danger:hover:not(:disabled) {
   background: var(--color-danger-dark);
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
-  .modal-content .modal-header {
+  .modal-content .modal-header,
+  .side-panel .modal-header {
     background: var(--surface-dark-card);
     border-bottom-color: var(--border-dark);
   }
 
-  .modal-content .modal-title { color: var(--text-dark-primary); }
-  .modal-content .modal-subtitle { color: var(--text-dark-secondary); }
+  .modal-content .modal-title,
+  .side-panel .modal-title { color: var(--text-dark-primary); }
+  .modal-content .modal-subtitle,
+  .side-panel .modal-subtitle { color: var(--text-dark-secondary); }
 
-  .modal-content .modal-close-btn:hover {
+  .modal-content .modal-close-btn:hover,
+  .side-panel .modal-close-btn:hover {
     background: rgba(239, 68, 68, 0.15);
     color: var(--color-danger);
   }
 
-  .modal-content .form-label { color: var(--text-dark-secondary); }
+  .modal-content .form-label,
+  .side-panel .form-label { color: var(--text-dark-secondary); }
 
   .modal-content .form-input,
-  .modal-content .form-textarea {
+  .modal-content .form-textarea,
+  .side-panel .form-input,
+  .side-panel .form-textarea {
     background-color: var(--surface-dark-hover);
     border-color: var(--border-dark);
     color: var(--text-dark-primary);
   }
 
   .modal-content .form-input:focus,
-  .modal-content .form-textarea:focus {
+  .modal-content .form-textarea:focus,
+  .side-panel .form-input:focus,
+  .side-panel .form-textarea:focus {
     border-color: var(--color-primary);
     background-color: var(--surface-dark-card);
   }
 
   .modal-content .form-input::placeholder,
-  .modal-content .form-textarea::placeholder {
+  .modal-content .form-textarea::placeholder,
+  .side-panel .form-input::placeholder,
+  .side-panel .form-textarea::placeholder {
     color: var(--text-dark-tertiary);
   }
 
-  .modal-content .form-actions { border-top-color: var(--border-dark); }
+  .modal-content .form-actions,
+  .side-panel .form-actions { border-top-color: var(--border-dark); }
 
-  .modal-content .btn-secondary {
+  .modal-content .btn-secondary,
+  .side-panel .btn-secondary {
     color: var(--text-dark-secondary);
     border-color: var(--border-dark);
   }
 
-  .modal-content .btn-secondary:hover:not(:disabled) {
+  .modal-content .btn-secondary:hover:not(:disabled),
+  .side-panel .btn-secondary:hover:not(:disabled) {
     background: var(--surface-dark-hover);
     border-color: var(--border-dark-strong);
     color: var(--text-dark-primary);

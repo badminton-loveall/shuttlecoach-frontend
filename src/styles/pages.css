@@ -48,6 +48,265 @@
   width: 100%;
 }
 
+/* Editable set name in the builder panel header — reads like .modal-title
+   until clicked, instead of a generic boxed input. */
+.modal-title-input {
+  font-size: var(--font-h3);
+  font-weight: var(--weight-semibold);
+  flex: 1;
+  margin-right: var(--space-sm, 8px);
+}
+
+/* Click-to-edit affordance on the builder panel's title — plain text until
+   hovered, same pattern as the drill-name inline edit. */
+.modal-title--editable {
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 6px;
+  margin: -2px -6px;
+  transition: background-color var(--transition-base, 0.15s ease);
+}
+.modal-title--editable:hover {
+  background-color: var(--surface-muted);
+}
+
+/* Pencil glyph next to any click-to-rename text (title, category name,
+   drill name) — a faint but always-visible hint that the text is editable,
+   rather than requiring a hover/click to discover it. Brightens on the
+   parent's hover to confirm the affordance. */
+.editable-hint {
+  display: inline-flex;
+  margin-left: 6px;
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  vertical-align: middle;
+  transition: opacity var(--transition-base, 0.15s ease), color var(--transition-base, 0.15s ease);
+}
+.modal-title--editable:hover .editable-hint,
+.editable-text:hover .editable-hint {
+  opacity: 1;
+  color: var(--color-primary-dark, var(--color-primary));
+}
+
+/* Click-to-rename text elsewhere in the builder (category names, drill
+   names) — same affordance as .modal-title--editable, sized for smaller
+   inline text instead of a modal heading. */
+.editable-text {
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 6px;
+  margin: -2px -6px;
+  transition: background-color var(--transition-base, 0.15s ease);
+}
+.editable-text:hover {
+  background-color: var(--surface-muted);
+}
+
+/* Small icon-only action button — replaces repeated "Remove"/"Remove
+   Category" text links in the set builder with one consistent trash icon. */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: background-color var(--transition-base, 0.15s ease), color var(--transition-base, 0.15s ease), opacity var(--transition-base, 0.15s ease);
+  flex-shrink: 0;
+}
+.icon-btn:hover {
+  background-color: var(--surface-muted);
+}
+.icon-btn--danger:hover {
+  color: var(--color-danger, #dc2626);
+  background-color: var(--color-danger-bg, rgba(220, 38, 38, 0.1));
+}
+
+/* Trash icons in the set builder only show up when their row is hovered
+   (or focused, so keyboard users can still reach them) instead of sitting
+   there permanently — scoped to these two rows specifically so it doesn't
+   silently hide .icon-btn everywhere else. */
+.builder-category-header .icon-btn,
+.builder-drill-row .icon-btn {
+  opacity: 0;
+}
+.builder-category-header:hover .icon-btn,
+.builder-category-header:focus-within .icon-btn,
+.builder-drill-row:hover .icon-btn,
+.builder-drill-row:focus-within .icon-btn {
+  opacity: 1;
+}
+
+/* Compact square "+" button for "create a brand-new drill" — self-contained
+   like .icon-btn rather than a padding override on .btn: .btn is another
+   unscoped global that other component CSS files (PersonalInfoForm.css etc.)
+   redefine, and fighting that cascade with padding overrides is exactly the
+   kind of fragile fix this codebase has had to work around before. Sized to
+   match the row's .btn.text-sm height (32px) without depending on it. */
+.builder-btn-plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-hover);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--transition-base, 0.15s ease), border-color var(--transition-base, 0.15s ease);
+  flex-shrink: 0;
+}
+.builder-btn-plus:hover {
+  background-color: var(--color-slate-100, var(--surface-muted));
+  border-color: var(--border-strong, var(--border-default));
+}
+
+/* "Add a drill" trigger — sits as the last row in a category card (below
+   the drill list) rather than crowded into the header, so the card reads
+   top-to-bottom as "name, contents, add more" instead of front-loading the
+   action before there's anything to look at. */
+.builder-add-drill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: var(--space-sm, 8px);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md, 10px);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background-color var(--transition-base, 0.15s ease), border-color var(--transition-base, 0.15s ease), color var(--transition-base, 0.15s ease);
+}
+.builder-add-drill-btn span {
+  font-size: 16px;
+  line-height: 1;
+}
+.builder-add-drill-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--border-strong, var(--border-default));
+  color: var(--text-primary);
+}
+
+/* Set builder panel — one deliberate vertical rhythm instead of scattered
+   mb-3/mb-4/mb-5/py-2 utilities, which each read as a different gap and
+   never actually line up: space-lg between major sections (metadata card,
+   add-category bar, each category card), space-md between elements inside
+   a section, space-sm between drill rows. Both scales below use the exact
+   same "gap after every child but the first" rule (`> * + *`); which
+   spacing applies depends only on which of the two classes wraps them. */
+.builder-stack-lg > * + * {
+  margin-top: var(--space-lg, 24px);
+}
+.builder-stack-md > * + * {
+  margin-top: var(--space-md, 16px);
+}
+.builder-drill-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm, 8px);
+}
+.builder-drill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Type-to-add drill combobox — one text field standing in for the old
+   <select> + Add + "New Drill" trio. Positions its suggestion menu below
+   itself; the menu owns its own scroll so a long catalog doesn't push the
+   category card taller. */
+.drill-autocomplete {
+  position: relative;
+}
+.drill-autocomplete__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: var(--z-dropdown, 50);
+  background: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md, 10px);
+  box-shadow: var(--shadow-overlay, 0 8px 24px rgba(0, 0, 0, 0.12));
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.drill-autocomplete__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm, 8px);
+  width: 100%;
+  padding: var(--space-sm, 8px) var(--space-sm, 8px);
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--font-sm);
+  text-align: left;
+  cursor: pointer;
+}
+.drill-autocomplete__option:hover {
+  background-color: var(--surface-hover);
+}
+.drill-autocomplete__option-meta {
+  flex-shrink: 0;
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+}
+.drill-autocomplete__option--create {
+  color: var(--color-primary-dark, var(--color-primary));
+  font-weight: var(--weight-semibold);
+}
+.drill-autocomplete__empty {
+  padding: var(--space-sm, 8px);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .drill-autocomplete__menu {
+    background: var(--surface-dark-card);
+    border-color: var(--border-dark);
+  }
+  .drill-autocomplete__option {
+    color: var(--text-dark-primary);
+  }
+  .drill-autocomplete__option:hover {
+    background-color: var(--surface-dark-hover);
+  }
+}
+
+/* Label + input pair inside the builder panel. Deliberately not .form-group/
+   .form-label: those are unscoped globals that several component CSS files
+   (PersonalInfoForm.css, CoachProfile.css, components.css's .modal-content
+   scope) each redefine differently, and outside .modal-content the "boxed
+   fieldset" version wins — wrapping the label in a bordered, overflow:hidden
+   box instead of a plain label-over-input stack. */
+.builder-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs, 4px);
+}
+.builder-field-label {
+  font-size: var(--font-small, 12px);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+}
+
 /* Same collision as above: these two rows need flex-col-by-default /
    flex-row-at-desktop, which the colliding unprefixed .flex-col wins over
    Tailwind's sm:flex-row every time. Dedicated classes sidestep it. */

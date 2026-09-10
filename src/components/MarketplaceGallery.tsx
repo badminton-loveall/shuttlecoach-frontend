@@ -4,6 +4,7 @@ import { useDrillSets } from '../hooks/useDrillSets';
 import { useSetMarketplace } from '../hooks/useSetMarketplace';
 import { useDrills } from '../hooks/useDrills';
 import { SearchInput } from './SearchInput';
+import { DrillAutocomplete } from './DrillAutocomplete';
 import { PackEnabledToggle } from './PackEnabledToggle';
 import { SPORT_LABELS, SUPPORTED_SPORTS } from '../constants/sports';
 import { DRILL_CATEGORIES } from '../constants/drillCategories';
@@ -76,7 +77,44 @@ interface SetFormData {
   sport: string;
 }
 
+// Category/drill membership edits made inside the builder are staged here
+// instead of hitting the API as each button is clicked — they're only sent
+// to the server (in this order: categories added, categories removed, drills
+// removed, drills added, drills renamed) when "Save Changes" or "Submit for
+// Review" is pressed. `queuePendingOp` coalesces add/remove pairs for the
+// same item down to nothing, and keeps only the latest rename per drill, so
+// e.g. adding then removing a drill before saving never touches the server.
+type PendingOp =
+  | { type: 'addCategory'; tempId: string; name: string }
+  | { type: 'removeCategory'; categoryId: string }
+  | { type: 'addDrill'; categoryId: string; drillId: string }
+  | { type: 'removeDrill'; categoryId: string; drillId: string }
+  | { type: 'renameDrill'; drillId: string; name: string };
+
 const emptyFormData: SetFormData = { name: '', description: '', sport: '' };
+
+// Small inline trash-can icon — stands in for the repeated "Remove"/"Remove
+// Category" text links in the set builder, so removal reads as one
+// consistent icon action instead of a run of red text everywhere.
+const TrashIcon: React.FC<{ size?: number }> = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
+  </svg>
+);
+
+// Small inline pencil icon — sits next to a click-to-rename title, category
+// name, or drill name so it reads as editable at a glance instead of only
+// on hover/click discovery.
+const PencilIcon: React.FC<{ size?: number; className?: string }> = ({ size = 12, className = 'editable-hint' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    <path d="m15 5 4 4" />
+  </svg>
+);
 
 export const MarketplaceGallery: React.FC = () => {
   // --- My sets ---
@@ -134,8 +172,21 @@ export const MarketplaceGallery: React.FC = () => {
   const [openLoading, setOpenLoading] = useState(false);
   const [openError, setOpenError] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [addDrillSelections, setAddDrillSelections] = useState<Record<string, string>>({});
+  // Which category's "add a drill" row is expanded — collapsed by default,
+  // toggled by the + next to the category name.
+  const [addingDrillForCategory, setAddingDrillForCategory] = useState<string | null>(null);
   const [submitTargetId, setSubmitTargetId] = useState<string | null>(null);
+  const [editingDrill, setEditingDrill] = useState<{ drillId: string; name: string } | null>(null);
+  const [editingTitle, setEditingTitle] = useState(false);
+  // Description/Sport stay collapsed until the title is clicked into edit —
+  // keeps the panel compact for the common case (just managing categories)
+  // and only surfaces the rest of the metadata form when actually wanted.
+  // Set once on the first title click and left open for the rest of the
+  // session so it doesn't vanish mid-edit when the title input blurs.
+  const [metaExpanded, setMetaExpanded] = useState(false);
+  // Staged category/drill edits, applied on Save Changes / Submit for
+  // Review — see the PendingOp comment above.
+  const [pendingOps, setPendingOps] = useState<PendingOp[]>([]);
 
   // Inline "create a new drill" form, opened per-category from within the builder
   const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
@@ -322,13 +373,6 @@ export const MarketplaceGallery: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleOpenEdit = (set: DrillSet) => {
-    setEditingSet(set);
-    setFormData({ name: set.name, description: set.description || '', sport: set.sport || '' });
-    setFormError(null);
-    setShowForm(true);
-  };
-
   const handleCloseForm = () => {
     setShowForm(false);
     setEditingSet(null);
@@ -412,12 +456,117 @@ export const MarketplaceGallery: React.FC = () => {
     }
   }, [getSetDetail]);
 
+  // Coalesces a new op into the pending queue: an add cancelled out by a
+  // later remove of the same item (or vice versa) is dropped entirely
+  // rather than queued as two round-trips, and a second rename of the same
+  // drill replaces the first rather than stacking.
+  const queuePendingOp = (op: PendingOp) => {
+    setPendingOps((prev) => {
+      if (op.type === 'removeCategory') {
+        const addIdx = prev.findIndex((o) => o.type === 'addCategory' && o.tempId === op.categoryId);
+        if (addIdx !== -1) {
+          // Category never existed server-side — drop it and anything queued under it.
+          return prev.filter((o, i) => i !== addIdx && !('categoryId' in o && o.categoryId === op.categoryId));
+        }
+        // Real category — anything else queued for it is moot once it's deleted.
+        return [...prev.filter((o) => !('categoryId' in o && o.categoryId === op.categoryId)), op];
+      }
+      if (op.type === 'removeDrill') {
+        const addIdx = prev.findIndex((o) => o.type === 'addDrill' && o.categoryId === op.categoryId && o.drillId === op.drillId);
+        if (addIdx !== -1) return prev.filter((_, i) => i !== addIdx);
+        return [...prev, op];
+      }
+      if (op.type === 'renameDrill') {
+        return [...prev.filter((o) => !(o.type === 'renameDrill' && o.drillId === op.drillId)), op];
+      }
+      return [...prev, op];
+    });
+  };
+
+  // Sends every staged op to the server in dependency order (categories
+  // before the drills that live in them), then reloads from the server so
+  // temp ids and any partial failures resolve to the real, current state.
+  // Returns false if anything failed, so callers (Submit for Review) can
+  // hold off rather than submit a set that didn't fully save.
+  const flushPendingChanges = async (): Promise<boolean> => {
+    if (!openSet || pendingOps.length === 0) return true;
+    let hadError = false;
+    const tempIdMap: Record<string, string> = {};
+
+    for (const op of pendingOps) {
+      if (op.type !== 'addCategory') continue;
+      try {
+        const created = await createSetCategory(openSet.id, op.name);
+        tempIdMap[op.tempId] = created.id;
+      } catch {
+        hadError = true;
+      }
+    }
+
+    const resolveCategoryId = (id: string) => tempIdMap[id] || id;
+
+    for (const op of pendingOps) {
+      if (op.type !== 'removeCategory') continue;
+      try {
+        await deleteSetCategory(openSet.id, resolveCategoryId(op.categoryId));
+      } catch {
+        hadError = true;
+      }
+    }
+
+    for (const op of pendingOps) {
+      if (op.type !== 'removeDrill') continue;
+      try {
+        await removeDrillFromSetCategory(openSet.id, resolveCategoryId(op.categoryId), op.drillId);
+      } catch {
+        hadError = true;
+      }
+    }
+
+    for (const op of pendingOps) {
+      if (op.type !== 'addDrill') continue;
+      try {
+        await addDrillToSetCategory(openSet.id, resolveCategoryId(op.categoryId), op.drillId);
+      } catch {
+        hadError = true;
+      }
+    }
+
+    for (const op of pendingOps) {
+      if (op.type !== 'renameDrill') continue;
+      try {
+        await apiClient.patch(`/drills/${op.drillId}`, { name: op.name });
+      } catch {
+        hadError = true;
+      }
+    }
+
+    setPendingOps([]);
+    await loadOpenDetail(openSet);
+    return !hadError;
+  };
+
   const handleOpenBuilder = async (set: DrillSet) => {
-    setOpenSet(set);
+    let target = set;
+    if (set.status === 'pending_review') {
+      try {
+        target = await unpublishSet(set.id);
+        setSuccessMessage('Pulled back to draft so you can edit it — resubmit when you\'re ready.');
+      } catch (err) {
+        setErrorMessage(extractError(err, 'Failed to withdraw this set for editing.'));
+      }
+    }
+    setOpenSet(target);
+    setFormData({ name: target.name, description: target.description || '', sport: target.sport || '' });
+    setFormError(null);
     setNewCategoryName('');
-    setAddDrillSelections({});
+    setAddingDrillForCategory(null);
     setVideoUrls({});
-    await Promise.all([loadOpenDetail(set), loadVideoUrls(set.id)]);
+    setEditingDrill(null);
+    setEditingTitle(false);
+    setMetaExpanded(false);
+    setPendingOps([]);
+    await Promise.all([loadOpenDetail(target), loadVideoUrls(target.id)]);
   };
 
   const handleCloseBuilder = async () => {
@@ -425,51 +574,99 @@ export const MarketplaceGallery: React.FC = () => {
     setOpenCategories([]);
     setOpenError(null);
     setVideoUrls({});
+    setEditingDrill(null);
+    setEditingTitle(false);
+    setMetaExpanded(false);
+    setPendingOps([]);
     await refetchMine();
   };
 
-  const handleAddCategory = async () => {
-    if (!openSet || !newCategoryName.trim()) return;
-    setOpenError(null);
-    try {
-      await createSetCategory(openSet.id, newCategoryName.trim());
-      setNewCategoryName('');
-      await loadOpenDetail(openSet);
-    } catch {
-      setOpenError('Failed to add category.');
-    }
-  };
-
-  const handleRemoveCategory = async (categoryId: string) => {
+  const handleSaveChanges = async () => {
     if (!openSet) return;
-    setOpenError(null);
+    if (!formData.name.trim()) {
+      setFormError('Name is required');
+      return;
+    }
+    setSavingForm(true);
+    setFormError(null);
     try {
-      await deleteSetCategory(openSet.id, categoryId);
-      await loadOpenDetail(openSet);
+      const updated = await updateSet(openSet.id, {
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        sport: formData.sport || undefined,
+      });
+      setOpenSet(updated);
+      const ok = await flushPendingChanges();
+      setSuccessMessage(ok ? 'Set updated' : 'Set updated, but some category/drill changes failed to save — please check and retry.');
     } catch {
-      setOpenError('Failed to remove category.');
+      setFormError('An error occurred. Please try again.');
+    } finally {
+      setSavingForm(false);
     }
   };
 
-  const handleAddDrill = async (categoryId: string) => {
-    const drillId = addDrillSelections[categoryId];
-    if (!openSet || !drillId) return;
-    setOpenError(null);
-    try {
-      await addDrillToSetCategory(openSet.id, categoryId, drillId);
-      setAddDrillSelections((prev) => ({ ...prev, [categoryId]: '' }));
-      await loadOpenDetail(openSet);
-    } catch (err) {
-      setOpenError(extractError(err, 'Failed to add drill.'));
+  // --- Inline drill-name editing (within the builder, draft/rejected only) ---
+  const handleStartEditDrillName = (drill: Drill) => {
+    setEditingDrill({ drillId: drill.id, name: drill.name });
+  };
+
+  const handleCancelEditDrillName = () => {
+    setEditingDrill(null);
+  };
+
+  const handleSaveDrillName = () => {
+    if (!editingDrill) return;
+    const trimmed = editingDrill.name.trim();
+    if (!trimmed) {
+      setEditingDrill(null);
+      return;
     }
+    const { drillId } = editingDrill;
+    setOpenCategories((prev) => prev.map((c) => ({
+      ...c,
+      drills: (c.drills || []).map((d) => (d.id === drillId ? { ...d, name: trimmed } : d)),
+    })));
+    queuePendingOp({ type: 'renameDrill', drillId, name: trimmed });
+    setEditingDrill(null);
+  };
+
+  // Category/drill membership edits below only touch local state
+  // (openCategories) plus the pending-ops queue — nothing reaches the API
+  // until Save Changes or Submit for Review calls flushPendingChanges.
+  const handleAddCategory = () => {
+    if (!openSet || !newCategoryName.trim()) return;
+    const name = newCategoryName.trim();
+    const tempId = `temp-cat-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    setOpenCategories((prev) => [
+      ...prev,
+      { id: tempId, setId: openSet.id, name, sortOrder: prev.length, createdAt: '', updatedAt: '', drills: [] },
+    ]);
+    queuePendingOp({ type: 'addCategory', tempId, name });
+    setNewCategoryName('');
+  };
+
+  const handleRemoveCategory = (categoryId: string) => {
+    setOpenCategories((prev) => prev.filter((c) => c.id !== categoryId));
+    queuePendingOp({ type: 'removeCategory', categoryId });
+  };
+
+  const handleAddDrill = (categoryId: string, drillId: string) => {
+    const drill = centerDrills.find((d) => d.id === drillId);
+    if (!drill) return;
+    setOpenCategories((prev) => prev.map((c) => (
+      c.id === categoryId ? { ...c, drills: [...(c.drills || []), drill] } : c
+    )));
+    queuePendingOp({ type: 'addDrill', categoryId, drillId });
   };
 
   // --- Inline "create a new drill" (right from the set builder, no separate trip
-  // to the drill library) — creates the center drill, then immediately links it
-  // into the category being built. ---
-  const handleOpenCreateDrill = (categoryId: string, categoryName: string) => {
+  // to the drill library) — Reached from the drill combobox when nothing in the
+  // catalog already matches what was typed. The drill record itself is created
+  // right away (it's reusable center-wide catalog data, not set-specific); only
+  // linking it into this category is staged like every other membership edit. ---
+  const handleOpenCreateDrill = (categoryId: string, categoryName: string, prefillName = '') => {
     setCreatingDrillForCategory(categoryId);
-    setNewDrillForm({ name: '', description: '', category: categoryName || DRILL_CATEGORIES[0] });
+    setNewDrillForm({ name: prefillName, description: '', category: categoryName || DRILL_CATEGORIES[0] });
     setCreatingDrillError(null);
   };
 
@@ -494,10 +691,12 @@ export const MarketplaceGallery: React.FC = () => {
         sport: openSet.sport || 'badminton',
       });
       const newDrill = response.data;
-      await addDrillToSetCategory(openSet.id, categoryId, newDrill.id);
       await refetchCenterDrills();
+      setOpenCategories((prev) => prev.map((c) => (
+        c.id === categoryId ? { ...c, drills: [...(c.drills || []), newDrill] } : c
+      )));
+      queuePendingOp({ type: 'addDrill', categoryId, drillId: newDrill.id });
       setCreatingDrillForCategory(null);
-      await loadOpenDetail(openSet);
     } catch (err) {
       setCreatingDrillError(extractError(err, 'Failed to create drill.'));
     } finally {
@@ -505,20 +704,24 @@ export const MarketplaceGallery: React.FC = () => {
     }
   };
 
-  const handleRemoveDrill = async (categoryId: string, drillId: string) => {
-    if (!openSet) return;
-    setOpenError(null);
-    try {
-      await removeDrillFromSetCategory(openSet.id, categoryId, drillId);
-      await loadOpenDetail(openSet);
-    } catch {
-      setOpenError('Failed to remove drill.');
-    }
+  const handleRemoveDrill = (categoryId: string, drillId: string) => {
+    setOpenCategories((prev) => prev.map((c) => (
+      c.id === categoryId ? { ...c, drills: (c.drills || []).filter((d) => d.id !== drillId) } : c
+    )));
+    queuePendingOp({ type: 'removeDrill', categoryId, drillId });
   };
 
   const handleSubmitSet = async (set: DrillSet) => {
     setSubmitTargetId(set.id);
     try {
+      if (openSet?.id === set.id && pendingOps.length > 0) {
+        const ok = await flushPendingChanges();
+        if (!ok) {
+          setErrorMessage('Some changes failed to save — please review the set before submitting again.');
+          setSubmitTargetId(null);
+          return;
+        }
+      }
       await submitSet(set.id);
       setSuccessMessage('Set submitted for review');
       if (openSet?.id === set.id) {
@@ -562,6 +765,7 @@ export const MarketplaceGallery: React.FC = () => {
   };
 
   const totalOpenDrills = openCategories.reduce((sum, c) => sum + (c.drills?.length || 0), 0);
+  const hasEmptyCategory = openCategories.some((c) => (c.drills?.length || 0) === 0);
   const isLoading = mineLoading && communityLoading;
 
   return (
@@ -689,19 +893,11 @@ export const MarketplaceGallery: React.FC = () => {
                         Unpublish
                       </button>
                     )}
-                    {(item.status === 'draft' || item.status === 'rejected') && (
-                      <button
-                        onClick={() => handleOpenEdit(item.set)}
-                        className="btn btn-secondary text-sm"
-                      >
-                        Edit
-                      </button>
-                    )}
                     <button
                       onClick={() => handleOpenBuilder(item.set)}
                       className="btn btn-secondary text-sm"
                     >
-                      {item.status === 'draft' || item.status === 'rejected' ? 'Manage' : 'View'}
+                      {item.status === 'draft' || item.status === 'rejected' || item.status === 'pending_review' ? 'Edit' : 'View'}
                     </button>
                   </div>
                 )}
@@ -842,22 +1038,83 @@ export const MarketplaceGallery: React.FC = () => {
       )}
 
       {/* Builder / Viewer Panel */}
-      {openSet && (
-        <div className="side-panel-overlay" onClick={handleCloseBuilder}>
+      {openSet && (() => {
+        const editableSet = openSet.status === 'draft' || openSet.status === 'rejected';
+        return (
+        <div className="side-panel-overlay">
           <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">{openSet.name}</h2>
+              {editableSet && editingTitle ? (
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onBlur={() => setEditingTitle(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); setEditingTitle(false); }
+                    if (e.key === 'Escape') { e.preventDefault(); setFormData({ ...formData, name: openSet.name }); setEditingTitle(false); }
+                  }}
+                  autoFocus
+                  className="form-input modal-title-input"
+                  placeholder="Set name"
+                  aria-label="Set name"
+                />
+              ) : (
+                <h2
+                  className={`modal-title${editableSet ? ' modal-title--editable' : ''}`}
+                  onClick={() => {
+                    if (!editableSet) return;
+                    setEditingTitle(true);
+                    setMetaExpanded(true);
+                  }}
+                  title={editableSet ? 'Click to rename' : undefined}
+                >
+                  {(editableSet ? formData.name : openSet.name) || openSet.name}
+                  {editableSet && <PencilIcon size={14} />}
+                </h2>
+              )}
               <button className="modal-close-btn" onClick={handleCloseBuilder}>✕</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body builder-stack-lg">
               {openError && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm mb-3">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-md text-sm">
                   {openError}
                 </div>
               )}
 
-              {(openSet.status === 'draft' || openSet.status === 'rejected') && (
-                <div className="flex gap-2 mb-4">
+              {editableSet && metaExpanded && (
+                <div className="card-base card-compact builder-stack-md" style={{ background: 'var(--surface-muted)' }}>
+                  {formError && <p className="text-xs" style={{ color: 'var(--color-danger)' }}>{formError}</p>}
+                  <div className="builder-field">
+                    <label htmlFor="builder-set-description" className="builder-field-label">Description</label>
+                    <textarea
+                      id="builder-set-description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      className="form-input text-sm"
+                      placeholder="What is this set for?"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="builder-field">
+                    <label htmlFor="builder-set-sport" className="builder-field-label">Sport</label>
+                    <select
+                      id="builder-set-sport"
+                      value={formData.sport}
+                      onChange={(e) => setFormData({ ...formData, sport: e.target.value })}
+                      className="form-input text-sm"
+                    >
+                      <option value="">Not specified</option>
+                      {SUPPORTED_SPORTS.map((sport) => (
+                        <option key={sport} value={sport}>{SPORT_LABELS[sport]}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {editableSet && (
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={newCategoryName}
@@ -876,61 +1133,104 @@ export const MarketplaceGallery: React.FC = () => {
               ) : openCategories.length === 0 ? (
                 <div className="table-empty">No categories yet — add one above, then add drills under it.</div>
               ) : (
-                <div className="space-y-4">
+                <div className="builder-stack-lg">
                   {openCategories.map((category) => {
-                    const editable = openSet.status === 'draft' || openSet.status === 'rejected';
+                    const editable = editableSet;
                     const categoryDrillIds = new Set((category.drills || []).map((d) => d.id));
                     const eligibleDrills = centerDrills.filter((d: Drill) => !categoryDrillIds.has(d.id));
                     return (
-                      <div key={category.id} className="card-base">
-                        <div className="flex items-center justify-between mb-2">
+                      <div key={category.id} className="card-base builder-stack-md">
+                        <div className="flex items-start justify-between builder-category-header">
                           <h4 className="font-semibold text-[var(--text-primary)]">{category.name}</h4>
                           {editable && (
                             <button
                               onClick={() => handleRemoveCategory(category.id)}
-                              className="table-action-link table-action-link--danger text-xs"
+                              className="icon-btn icon-btn--danger"
+                              aria-label="Remove category"
+                              title="Remove category"
                             >
-                              Remove Category
+                              <TrashIcon />
                             </button>
                           )}
                         </div>
 
-                        {editable && creatingDrillForCategory !== category.id && (
-                          <div className="flex gap-2 mb-3">
-                            <select
-                              value={addDrillSelections[category.id] || ''}
-                              onChange={(e) =>
-                                setAddDrillSelections((prev) => ({ ...prev, [category.id]: e.target.value }))
-                              }
-                              className="form-input text-sm flex-1"
-                              aria-label={`Select a drill to add to ${category.name}`}
-                            >
-                              <option value="">Select a drill to add...</option>
-                              {eligibleDrills.map((d) => (
-                                <option key={d.id} value={d.id}>{d.name} ({d.category})</option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={() => handleAddDrill(category.id)}
-                              disabled={!addDrillSelections[category.id]}
-                              className="btn btn-secondary text-sm"
-                            >
-                              Add
-                            </button>
-                            {canCreateDrills && (
-                              <button
-                                onClick={() => handleOpenCreateDrill(category.id, category.name)}
-                                className="btn btn-secondary text-sm"
-                                title="Create a brand-new drill and add it here"
-                              >
-                                + New Drill
-                              </button>
-                            )}
-                          </div>
+                        {category.drills && category.drills.length > 0 ? (
+                          <ul className="builder-drill-list">
+                            {category.drills.map((drill) => (
+                              <li key={drill.id} className="builder-drill-row text-sm">
+                                {editable && editingDrill?.drillId === drill.id ? (
+                                  <input
+                                    type="text"
+                                    value={editingDrill.name}
+                                    onChange={(e) => setEditingDrill({ drillId: drill.id, name: e.target.value })}
+                                    onBlur={handleSaveDrillName}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') { e.preventDefault(); handleSaveDrillName(); }
+                                      if (e.key === 'Escape') { e.preventDefault(); handleCancelEditDrillName(); }
+                                    }}
+                                    autoFocus
+                                    className="form-input text-sm"
+                                    style={{ flex: 1, marginRight: 'var(--space-sm)' }}
+                                  />
+                                ) : (
+                                  <span
+                                    className={editable ? 'editable-text' : undefined}
+                                    onClick={() => editable && handleStartEditDrillName(drill)}
+                                    title={editable ? 'Click to rename' : undefined}
+                                  >
+                                    {drill.name}
+                                    {editable && <PencilIcon size={11} />}
+                                  </span>
+                                )}
+                                <span className="flex items-center gap-2">
+                                  {videoUrls[drill.id] && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
+                                      aria-label={`Watch demonstration: ${drill.name}`}
+                                      title="Watch demonstration"
+                                      style={VIDEO_ICON_STYLE}
+                                    >
+                                      ▶
+                                    </button>
+                                  )}
+                                  {editable && (
+                                    <button
+                                      onClick={() => handleRemoveDrill(category.id, drill.id)}
+                                      className="icon-btn icon-btn--danger"
+                                      aria-label={`Remove ${drill.name}`}
+                                      title="Remove drill"
+                                    >
+                                      <TrashIcon size={13} />
+                                    </button>
+                                  )}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-xs" style={{ color: 'var(--color-danger)' }}>
+                            No drills yet — add at least one before submitting.
+                          </p>
                         )}
 
-                        {editable && creatingDrillForCategory === category.id && (
-                          <div className="card-base p-3 mb-3" style={{ background: 'var(--surface-muted)' }}>
+                        {!editable ? null : addingDrillForCategory !== category.id ? (
+                          <button
+                            onClick={() => setAddingDrillForCategory(category.id)}
+                            className="builder-add-drill-btn"
+                          >
+                            <span aria-hidden="true">+</span> Add a drill
+                          </button>
+                        ) : creatingDrillForCategory !== category.id ? (
+                          <DrillAutocomplete
+                            allDrills={centerDrills}
+                            eligibleDrills={eligibleDrills}
+                            onSelectExisting={(drill) => handleAddDrill(category.id, drill.id)}
+                            onCreateNew={canCreateDrills ? (name) => handleOpenCreateDrill(category.id, category.name, name) : undefined}
+                            placeholder="Type a drill name..."
+                          />
+                        ) : (
+                          <div className="card-base p-3" style={{ background: 'var(--surface-muted)' }}>
                             {creatingDrillError && (
                               <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{creatingDrillError}</p>
                             )}
@@ -965,39 +1265,6 @@ export const MarketplaceGallery: React.FC = () => {
                             </div>
                           </div>
                         )}
-
-                        {category.drills && category.drills.length > 0 ? (
-                          <ul className="space-y-1">
-                            {category.drills.map((drill) => (
-                              <li key={drill.id} className="flex items-center justify-between text-sm py-1">
-                                <span>{drill.name}</span>
-                                <span className="flex items-center gap-2">
-                                  {videoUrls[drill.id] && (
-                                    <button
-                                      type="button"
-                                      onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
-                                      aria-label={`Watch demonstration: ${drill.name}`}
-                                      title="Watch demonstration"
-                                      style={VIDEO_ICON_STYLE}
-                                    >
-                                      ▶
-                                    </button>
-                                  )}
-                                  {editable && (
-                                    <button
-                                      onClick={() => handleRemoveDrill(category.id, drill.id)}
-                                      className="table-action-link table-action-link--danger text-xs"
-                                    >
-                                      Remove
-                                    </button>
-                                  )}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-xs text-[var(--text-secondary)]">No drills in this category yet.</p>
-                        )}
                       </div>
                     );
                   })}
@@ -1006,12 +1273,23 @@ export const MarketplaceGallery: React.FC = () => {
             </div>
             <div className="modal-footer">
               <button onClick={handleCloseBuilder} className="btn btn-secondary">Close</button>
-              {(openSet.status === 'draft' || openSet.status === 'rejected') && (
+              {editableSet && (
+                <button onClick={handleSaveChanges} disabled={savingForm} className="btn btn-secondary">
+                  {savingForm ? 'Saving...' : pendingOps.length > 0 ? `Save Changes (${pendingOps.length})` : 'Save Changes'}
+                </button>
+              )}
+              {editableSet && (
                 <button
                   onClick={() => handleSubmitSet(openSet)}
-                  disabled={submitTargetId === openSet.id || totalOpenDrills === 0}
+                  disabled={submitTargetId === openSet.id || totalOpenDrills === 0 || hasEmptyCategory}
                   className="btn btn-primary"
-                  title={totalOpenDrills === 0 ? 'Add at least one drill first' : undefined}
+                  title={
+                    totalOpenDrills === 0
+                      ? 'Add at least one drill first'
+                      : hasEmptyCategory
+                        ? 'Every category needs at least one drill before you can submit'
+                        : undefined
+                  }
                 >
                   {submitTargetId === openSet.id ? 'Submitting...' : 'Submit for Review'}
                 </button>
@@ -1019,13 +1297,14 @@ export const MarketplaceGallery: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* Community Preview Panel — a drill set's full category/drill list can run
           long, so this opens as a right-side slide-over instead of a centered
           dialog that would run out of height. */}
       {previewSet && (
-        <div className="side-panel-overlay" onClick={() => setPreviewSet(null)}>
+        <div className="side-panel-overlay">
           <div className="side-panel" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2 className="modal-title">{previewSet.name}</h2>
