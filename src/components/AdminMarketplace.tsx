@@ -261,7 +261,7 @@ const PackagesSection: React.FC<{
   };
 
   return (
-    <div className="pt-4" style={{ borderTop: '1px solid var(--border-default)' }}>
+    <div style={{ paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--border-default)' }}>
       <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-2">Packages</h4>
       {toggleError && <p className="text-xs mb-2" style={{ color: 'var(--color-danger)' }}>{toggleError}</p>}
 
@@ -270,20 +270,17 @@ const PackagesSection: React.FC<{
       ) : (
         <ul className="space-y-2 mb-2">
           {items.map((item) => (
-            <li key={item.id} className="flex items-center justify-between text-sm py-1">
-              <div>
-                <span className="text-bold">{item.tier ? TIER_LABEL[item.tier] : item.name}</span>{' '}
+            <li key={item.id} className="flex items-center justify-between flex-wrap text-sm py-1" style={{ gap: 'var(--space-sm)' }}>
+              <div className="flex items-center flex-wrap" style={{ gap: 'var(--space-xs)' }}>
+                <span className="text-bold">{item.tier ? TIER_LABEL[item.tier] : item.name}</span>
                 <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                   {formatPackagePrice(item.price)} · {item.durationDays ? `${item.durationDays} days` : 'Lifetime'}
                 </span>
-                <span
-                  className={`table-badge ${item.isEnabled ? 'table-badge--success' : 'table-badge--overdue'}`}
-                  style={{ marginLeft: 8 }}
-                >
+                <span className={`table-badge ${item.isEnabled ? 'table-badge--success' : 'table-badge--overdue'}`}>
                   {item.isEnabled ? 'Published' : 'Unpublished'}
                 </span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <button className="table-action-link text-xs" onClick={() => openEdit(item)}>
                   Edit
                 </button>
@@ -963,7 +960,7 @@ export const AdminMarketplace: React.FC = () => {
               ) : viewCategories.length > 0 ? (
                 <div className="builder-stack-lg">
                   {viewCategories.map((category) => (
-                    <div key={category.id} className="card-base builder-stack-md">
+                    <div key={category.id} className="card-base builder-stack-md review-category-card">
                       <h4 className="font-semibold text-sm text-[var(--text-primary)]">{category.name}</h4>
                       {category.drills && category.drills.length > 0 ? (
                         <div className="table-container">

@@ -618,6 +618,18 @@
   gap: var(--space-sm);
 }
 
+/* StudentQuickViewModal.css defines its own unscoped, global .modal-footer
+   with flex-direction: column-reverse at mobile width — since that class
+   name isn't scoped to that component, it leaks into every other modal's
+   footer in the app, including this one, whenever that file happens to be
+   part of the bundle. A compound selector always beats a single-class one
+   on specificity regardless of load order, so this reliably wins back the
+   canonical side-by-side layout without needing to touch that file. */
+.modal-content .modal-footer,
+.side-panel .modal-footer {
+  flex-direction: row;
+}
+
 /* Modal Sizes */
 .modal-sm .modal-container {
   max-width: 400px;

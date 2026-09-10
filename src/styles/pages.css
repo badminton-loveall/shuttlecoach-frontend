@@ -1142,9 +1142,30 @@
    description stacked below it with a small label (from the td's
    data-label) standing in for the header row that's no longer shown. */
 @media (max-width: 640px) {
+  /* .table-container (the scrollable frame around the desktop table) drew
+     its own border + radius around the whole group — harmless around an
+     actual table, but once rows become independent cards below, that
+     wrapper border reads as one big box "holding" all the cards together
+     instead of each card standing on its own. */
+  .table-container:has(.table-styled--drills) {
+    border: none;
+    border-radius: 0;
+  }
+
+  /* Read-only category review card (AdminMarketplace's set-review panel) —
+     .card-base's default padding is sized for a card that's the main thing
+     on a page, not one of several stacked inside an already-padded modal
+     body on a narrow screen. */
+  .review-category-card {
+    padding: var(--space-sm) var(--space-md);
+  }
   .table-styled--drills {
     display: block;
     border: none;
+    /* .table-styled sets border-collapse: collapse for the desktop table;
+       left in place, adjacent row cards' borders visually fuse into one
+       shared line despite the margin-top gap between them below. */
+    border-collapse: separate;
   }
   .table-styled--drills thead {
     display: none;
@@ -1154,7 +1175,7 @@
   }
   .table-styled--drills tbody tr {
     display: block;
-    padding: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
   }
