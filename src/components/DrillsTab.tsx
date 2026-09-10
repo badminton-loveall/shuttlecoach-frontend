@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import type { Drill } from '../types';
 import apiClient from '../utils/apiClient';
+import { getDrillCategoryOptions } from '../constants/drillCatalogCategories';
 import '../styles/pages.css';
 
 /**
@@ -21,6 +22,7 @@ interface DrillFormData {
   name: string;
   description: string;
   category: string;
+  videoUrl: string;
 }
 
 interface FormErrors {
@@ -29,20 +31,7 @@ interface FormErrors {
   category?: string;
 }
 
-const DRILL_CATEGORIES = [
-  'Fundamentals',
-  'Footwork',
-  'Stroke Practice',
-  'Combination Drills',
-  'Net Play',
-  'Service',
-  'Return',
-  'Defense',
-  'Rally',
-  'Match Practice',
-];
-
-const emptyFormData: DrillFormData = { name: '', description: '', category: '' };
+const emptyFormData: DrillFormData = { name: '', description: '', category: '', videoUrl: '' };
 
 export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplace }) => {
   const [drills, setDrills] = useState<Drill[]>([]);
@@ -50,6 +39,12 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
   const [error, setError] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  // Unfiltered, fetched once (then refreshed after create/edit) purely to
+  // compute the full set of category values in use — `drills` above is
+  // itself filtered by category/search, so it can't be used for that
+  // without the category dropdown collapsing to whatever's currently
+  // selected.
+  const [allDrillsForCategories, setAllDrillsForCategories] = useState<Drill[]>([]);
 
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -57,6 +52,8 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
   const [formData, setFormData] = useState<DrillFormData>(emptyFormData);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+
+  const categoryOptions = getDrillCategoryOptions(allDrillsForCategories, [formData.category]);
 
   // Delete confirmation
   const [deletingDrill, setDeletingDrill] = useState<Drill | null>(null);
@@ -84,6 +81,19 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
   useEffect(() => {
     fetchDrills();
   }, [fetchDrills]);
+
+  const fetchAllDrillsForCategories = useCallback(async () => {
+    try {
+      const response = await apiClient.get('/drills');
+      setAllDrillsForCategories(response.data.drills);
+    } catch {
+      // Non-critical — the category dropdowns just fall back to the default list.
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllDrillsForCategories();
+  }, [fetchAllDrillsForCategories]);
 
   // Auto-dismiss success message
   useEffect(() => {
@@ -125,6 +135,7 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
       name: drill.name,
       description: drill.description,
       category: drill.category,
+      videoUrl: drill.videoUrl || '',
     });
     setFormErrors({});
     setShowForm(true);
@@ -152,6 +163,7 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
       }
       handleCloseForm();
       fetchDrills();
+      fetchAllDrillsForCategories();
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosErr = err as { response?: { data?: { errors?: Array<{ field: string; message: string }> } } };
@@ -268,7 +280,7 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
             aria-label="Filter by category"
           >
             <option value="">All Categories</option>
-            {DRILL_CATEGORIES.map((cat) => (
+            {categoryOptions.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
               </option>
@@ -353,7 +365,7 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
                     className={`form-input ${formErrors.category ? 'form-input-error' : ''}`}
                   >
                     <option value="">Select a category</option>
-                    {DRILL_CATEGORIES.map((cat) => (
+                    {categoryOptions.map((cat) => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
@@ -362,6 +374,21 @@ export const DrillsTab: React.FC<DrillsTabProps> = ({ readOnly, onGoToMarketplac
                   {formErrors.category && (
                     <p className="text-red-500 text-xs mt-1">{formErrors.category}</p>
                   )}
+                </div>
+
+                {/* Video URL Field */}
+                <div className="form-group">
+                  <label htmlFor="drill-video-url" className="form-label">
+                    Video URL <span className="form-optional">(optional)</span>
+                  </label>
+                  <input
+                    id="drill-video-url"
+                    type="text"
+                    value={formData.videoUrl}
+                    onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                    className="form-input"
+                    placeholder="https://..."
+                  />
                 </div>
               </div>
               <div className="form-actions">

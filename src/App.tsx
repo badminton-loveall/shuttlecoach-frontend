@@ -45,6 +45,7 @@ import AdminSetReviewPage from './pages/admin/AdminSetReviewPage';
 import AdminMarketplacePage from './pages/admin/AdminMarketplacePage';
 import AdminSubscriptionCatalogPage from './pages/admin/AdminSubscriptionCatalogPage';
 import AdminAccountingPage from './pages/admin/AdminAccountingPage';
+import AdminPayoutsPage from './pages/admin/AdminPayoutsPage';
 import './App.css';
 
 /**
@@ -324,6 +325,7 @@ function App() {
             <Route path="marketplace" element={<AdminMarketplacePage />} />
             <Route path="subscription-catalog" element={<AdminSubscriptionCatalogPage />} />
             <Route path="accounting" element={<AdminAccountingPage />} />
+            <Route path="payouts" element={<AdminPayoutsPage />} />
           </Route>
 
           {/* Password Management - Public Routes */}

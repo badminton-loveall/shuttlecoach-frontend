@@ -223,7 +223,7 @@ export const AdminSetReview: React.FC = () => {
                       <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-1">{category.name}</h4>
                       {category.drills && category.drills.length > 0 ? (
                         <div className="table-container">
-                          <table className="table-styled">
+                          <table className="table-styled table-styled--drills">
                             <thead>
                               <tr>
                                 <th>Name</th>
@@ -234,9 +234,9 @@ export const AdminSetReview: React.FC = () => {
                             <tbody>
                               {category.drills.map((drill) => (
                                 <tr key={drill.id}>
-                                  <td className="text-bold">{drill.name}</td>
-                                  <td>{drill.category}</td>
-                                  <td className="text-muted">{drill.description}</td>
+                                  <td className="text-bold" data-label="Name">{drill.name}</td>
+                                  <td data-label="Category">{drill.category}</td>
+                                  <td className="text-muted" data-label="Description">{drill.description}</td>
                                 </tr>
                               ))}
                             </tbody>

@@ -1135,6 +1135,66 @@
   font-weight: var(--weight-semibold);
 }
 
+/* Drill listing tables (Name/Category/Description — AdminMarketplace's and
+   AdminSetReview's set-review tables) — a 3-column table has no room to
+   breathe on a narrow screen, so below 640px each row becomes its own
+   bordered card instead: the name as the card's title, category and
+   description stacked below it with a small label (from the td's
+   data-label) standing in for the header row that's no longer shown. */
+@media (max-width: 640px) {
+  .table-styled--drills {
+    display: block;
+    border: none;
+  }
+  .table-styled--drills thead {
+    display: none;
+  }
+  .table-styled--drills tbody {
+    display: block;
+  }
+  .table-styled--drills tbody tr {
+    display: block;
+    padding: var(--space-md);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+  }
+  .table-styled--drills tbody tr:hover {
+    background-color: transparent;
+  }
+  .table-styled--drills tbody tr + tr {
+    margin-top: var(--space-sm);
+  }
+  .table-styled--drills td {
+    display: block;
+    padding: 0;
+  }
+  .table-styled--drills td + td {
+    margin-top: var(--space-xs);
+  }
+  .table-styled--drills td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: var(--font-xs);
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-tertiary);
+    margin-bottom: 2px;
+  }
+  .table-styled--drills td.text-bold {
+    font-size: var(--font-body);
+  }
+  .table-styled--drills td.text-bold::before {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) and (prefers-color-scheme: dark) {
+  .table-styled--drills tbody tr {
+    border-color: var(--border-dark);
+  }
+}
+
 .table-badge {
   display: inline-flex;
   align-items: center;

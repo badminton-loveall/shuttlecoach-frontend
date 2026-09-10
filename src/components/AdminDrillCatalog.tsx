@@ -3,6 +3,7 @@ import { useAdminDrills } from '../hooks/useAdminDrills';
 import { SUPPORTED_SPORTS, SPORT_LABELS } from '../constants/sports';
 import type { Sport } from '../constants/sports';
 import type { CreateDrillPayload, UpdateDrillPayload } from '../hooks/useAdminDrills';
+import { getDrillCategoryOptions } from '../constants/drillCatalogCategories';
 import './AdminDrillCatalog.css';
 
 /**
@@ -11,19 +12,6 @@ import './AdminDrillCatalog.css';
  * Provides CRUD operations, filtering by sport/category, and search.
  * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7
  */
-
-const DRILL_CATEGORIES = [
-  'Fundamentals',
-  'Footwork',
-  'Stroke Practice',
-  'Combination Drills',
-  'Net Play',
-  'Service',
-  'Return',
-  'Defense',
-  'Rally',
-  'Match Practice',
-] as const;
 
 interface DrillRecord {
   id: string;
@@ -66,6 +54,10 @@ export const AdminDrillCatalog: React.FC = () => {
   }), [sportFilter, categoryFilter, searchInput]);
 
   const { drills, loading, error, createDrill, updateDrill, archiveDrill, refetch } = useAdminDrills(hookOptions);
+  // Unfiltered, so the category dropdowns reflect everything in the
+  // catalog rather than collapsing to whatever the filters above select.
+  const { drills: allDrillsForCategories, refetch: refetchAllForCategories } = useAdminDrills();
+  const categoryOptions = getDrillCategoryOptions(allDrillsForCategories, [createCategory, editCategory]);
 
   // --- Handlers ---
 
@@ -83,6 +75,7 @@ export const AdminDrillCatalog: React.FC = () => {
 
     try {
       await createDrill(payload);
+      void refetchAllForCategories();
       // Reset form
       setCreateName('');
       setCreateDescription('');
@@ -118,6 +111,7 @@ export const AdminDrillCatalog: React.FC = () => {
 
     try {
       await updateDrill(editingDrillId, payload);
+      void refetchAllForCategories();
       setEditingDrillId(null);
     } catch {
       // Error is handled by the hook
@@ -227,7 +221,7 @@ export const AdminDrillCatalog: React.FC = () => {
                 required
               >
                 <option value="">Select category</option>
-                {DRILL_CATEGORIES.map((cat) => (
+                {categoryOptions.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>
@@ -299,7 +293,7 @@ export const AdminDrillCatalog: React.FC = () => {
           aria-label="Filter by category"
         >
           <option value="">All Categories</option>
-          {DRILL_CATEGORIES.map((cat) => (
+          {categoryOptions.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
             </option>
@@ -401,7 +395,7 @@ export const AdminDrillCatalog: React.FC = () => {
                                 required
                               >
                                 <option value="">Select category</option>
-                                {DRILL_CATEGORIES.map((cat) => (
+                                {categoryOptions.map((cat) => (
                                   <option key={cat} value={cat}>
                                     {cat}
                                   </option>

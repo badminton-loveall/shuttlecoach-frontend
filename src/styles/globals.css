@@ -968,7 +968,7 @@ body.body-scroll-locked {
   /* Apple HIG / Material minimum touch target is 44x44pt / 48x48dp. Below
      this, taps miss and the UI feels like a shrunk desktop site. */
   .btn,
-  button:not([class*="drill-item"]):not(.day-cell),
+  button:not([class*="drill-item"]):not(.day-cell):not(.video-icon-btn):not(.icon-btn):not(.builder-btn-plus),
   .sp-tab,
   .curriculum-week-tab,
   .topnav__link,

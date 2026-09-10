@@ -4,7 +4,7 @@ import { useAdminDrills } from '../hooks/useAdminDrills';
 import { SearchInput } from './SearchInput';
 import { DrillAutocomplete } from './DrillAutocomplete';
 import { SPORT_LABELS } from '../constants/sports';
-import { DRILL_CATEGORIES } from '../constants/drillCategories';
+import { DEFAULT_DRILL_CATALOG_CATEGORIES, getDrillCategoryOptions } from '../constants/drillCatalogCategories';
 import apiClient from '../utils/apiClient';
 import '../styles/pages.css';
 
@@ -26,8 +26,13 @@ import '../styles/pages.css';
  * drill set's own lifecycle, content and commerce alike.
  */
 
-type StatusFilter = SetStatus | 'all';
-type OwnerFilter = 'all' | 'official';
+// Admin only ever needs to act on what's actually live or awaiting a
+// decision — a coach's private draft, and anything rejected and sent back
+// for rework, aren't the admin's concern and stay out of this view
+// entirely (same for a set the coach has turned off). Official catalog
+// management gets its own tab since it's a different workflow (direct
+// edit vs. approve/reject).
+type AdminMarketplaceTab = 'pending_review' | 'published' | 'official';
 
 const TIER_LABEL: Record<DrillPackTier, string> = {
   STANDARD: 'Standard',
@@ -49,9 +54,45 @@ const getEmbedUrl = (url: string): string | null => {
   return null;
 };
 
+/**
+ * Fallback for a demonstration clip that isn't a YouTube/Vimeo page link —
+ * a direct file (S3, Cloudinary, a plain .mp4, etc.) plays right in the
+ * modal via a native <video> element instead of just linking out. Only
+ * falls back to a plain "open in new tab" link if the browser genuinely
+ * can't play it (onError) — keyed by url from the caller so switching to a
+ * different clip resets this instead of carrying over the previous one's
+ * error state.
+ */
+const DirectVideoPlayer: React.FC<{ name: string; url: string }> = ({ name, url }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <p className="text-sm text-[var(--text-secondary)]">
+        Couldn&rsquo;t play this link in-page.{' '}
+        <a href={url} target="_blank" rel="noreferrer">Open demonstration video</a>
+      </p>
+    );
+  }
+  return (
+    <video
+      controls
+      autoPlay
+      src={url}
+      aria-label={name}
+      onError={() => setFailed(true)}
+      style={{ width: '100%', maxHeight: '70vh', display: 'block', borderRadius: 'var(--radius-md)', background: '#000' }}
+    >
+      <p className="text-sm text-[var(--text-secondary)]">
+        Your browser can&rsquo;t play this video. <a href={url} target="_blank" rel="noreferrer">Open it in a new tab</a> instead.
+      </p>
+    </video>
+  );
+};
+
 const VIDEO_ICON_STYLE: React.CSSProperties = {
   width: 20,
   height: 20,
+  aspectRatio: '1',
   borderRadius: '50%',
   border: 'none',
   background: 'var(--color-primary, #16a34a)',
@@ -62,6 +103,7 @@ const VIDEO_ICON_STYLE: React.CSSProperties = {
   justifyContent: 'center',
   cursor: 'pointer',
   flexShrink: 0,
+  alignSelf: 'center',
 };
 
 // Small inline trash-can icon — matches the coach-side set builder
@@ -402,8 +444,7 @@ export const AdminMarketplace: React.FC = () => {
   const [sets, setSets] = useState<DrillSet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [ownerFilter, setOwnerFilter] = useState<OwnerFilter>('all');
+  const [activeTab, setActiveTab] = useState<AdminMarketplaceTab>('pending_review');
   const [search, setSearch] = useState('');
 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -443,18 +484,23 @@ export const AdminMarketplace: React.FC = () => {
 
   // Inline "create a new drill" form, opened per-category from within the builder
   const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
-  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DRILL_CATEGORIES[0] as string });
+  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DEFAULT_DRILL_CATALOG_CATEGORIES[0], videoUrl: '' });
   const [creatingDrillError, setCreatingDrillError] = useState<string | null>(null);
   const [creatingDrillLoading, setCreatingDrillLoading] = useState(false);
 
   const { drills: globalDrills, refetch: refetchGlobalDrills } = useAdminDrills();
+  const categoryOptions = getDrillCategoryOptions(globalDrills, [newDrillForm.category]);
 
+  // Fetches every status in one request — the three tabs below are then a
+  // pure client-side split of that one list, so switching tabs is instant
+  // and doesn't re-fetch. Draft/rejected/disabled sets are filtered out of
+  // `reviewableSets` (below) before any tab ever sees them.
   const fetchSets = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await apiClient.get('/admin/drill-sets', {
-        params: { status: statusFilter },
+        params: { status: 'all' },
       });
       setSets(response.data.sets);
     } catch {
@@ -462,7 +508,7 @@ export const AdminMarketplace: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, []);
 
   const fetchMarketplaceItems = useCallback(async () => {
     try {
@@ -490,13 +536,25 @@ export const AdminMarketplace: React.FC = () => {
     }
   }, [successMessage]);
 
-  const visibleSets = sets.filter((set) => {
-    if (ownerFilter === 'official' && !set.isOfficial) return false;
+  // Admin-relevant sets only: live (published) or actually awaiting a
+  // decision (pending_review). A coach's untouched draft, anything
+  // rejected back to them, and anything they've turned off never appear
+  // here — see the AdminMarketplaceTab comment above.
+  const reviewableSets = sets.filter((set) =>
+    set.isEnabled && (set.status === 'published' || set.status === 'pending_review')
+  );
+
+  const pendingReviewCount = reviewableSets.filter((s) => s.status === 'pending_review').length;
+  const publishedCount = reviewableSets.filter((s) => s.status === 'published' && !s.isOfficial).length;
+  const officialCount = reviewableSets.filter((s) => s.isOfficial).length;
+
+  const visibleSets = reviewableSets.filter((set) => {
+    if (activeTab === 'pending_review' && set.status !== 'pending_review') return false;
+    if (activeTab === 'official' && !set.isOfficial) return false;
+    if (activeTab === 'published' && (set.status !== 'published' || set.isOfficial)) return false;
     if (search && !set.name.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
-
-  const officialCount = sets.filter((s) => s.isOfficial).length;
 
   const itemsBySetId = useMemo(() => {
     const map = new Map<string, MarketplaceItem[]>();
@@ -708,7 +766,7 @@ export const AdminMarketplace: React.FC = () => {
   // nothing in the catalog already matches what was typed. ---
   const handleOpenCreateDrill = (categoryId: string, prefillName = '') => {
     setCreatingDrillForCategory(categoryId);
-    setNewDrillForm({ name: prefillName, description: '', category: DRILL_CATEGORIES[0] });
+    setNewDrillForm({ name: prefillName, description: '', category: DEFAULT_DRILL_CATALOG_CATEGORIES[0], videoUrl: '' });
     setCreatingDrillError(null);
   };
 
@@ -731,6 +789,7 @@ export const AdminMarketplace: React.FC = () => {
         description: newDrillForm.description.trim(),
         category: newDrillForm.category,
         sport: building.sport || 'badminton',
+        videoUrl: newDrillForm.videoUrl.trim() || undefined,
       });
       const newDrill = response.data;
       await apiClient.post(`/admin/drill-sets/${building.id}/categories/${categoryId}/drills`, { drillId: newDrill.id });
@@ -760,7 +819,7 @@ export const AdminMarketplace: React.FC = () => {
       <div className="admin-page-header">
         <h1 className="admin-page-title">Marketplace</h1>
         <p className="admin-page-subtitle">
-          Every pack across every center — browse the full catalog and manage the Badminton Drills Pack directly.
+          Review submissions awaiting a decision, browse what's live, and manage the Badminton Drills Pack directly.
         </p>
       </div>
 
@@ -777,36 +836,37 @@ export const AdminMarketplace: React.FC = () => {
       )}
 
       <div className="marketplace-toolbar">
-        <div className="marketplace-toolbar__filters">
+        <div className="marketplace-toolbar__filters" role="tablist" aria-label="Marketplace view">
           <button
             type="button"
-            onClick={() => setOwnerFilter('all')}
-            className={`badge-base ${ownerFilter === 'all' ? 'badge-primary' : 'badge-outline'}`}
-            style={{ cursor: 'pointer', fontFamily: 'inherit', border: ownerFilter === 'all' ? '1px solid transparent' : undefined }}
+            role="tab"
+            aria-selected={activeTab === 'pending_review'}
+            onClick={() => setActiveTab('pending_review')}
+            className={`badge-base ${activeTab === 'pending_review' ? 'badge-primary' : 'badge-outline'}`}
+            style={{ cursor: 'pointer', fontFamily: 'inherit', border: activeTab === 'pending_review' ? '1px solid transparent' : undefined }}
           >
-            All ({sets.length})
+            Pending Review ({pendingReviewCount})
           </button>
           <button
             type="button"
-            onClick={() => setOwnerFilter('official')}
-            className={`badge-base ${ownerFilter === 'official' ? 'badge-primary' : 'badge-outline'}`}
-            style={{ cursor: 'pointer', fontFamily: 'inherit', border: ownerFilter === 'official' ? '1px solid transparent' : undefined }}
+            role="tab"
+            aria-selected={activeTab === 'published'}
+            onClick={() => setActiveTab('published')}
+            className={`badge-base ${activeTab === 'published' ? 'badge-primary' : 'badge-outline'}`}
+            style={{ cursor: 'pointer', fontFamily: 'inherit', border: activeTab === 'published' ? '1px solid transparent' : undefined }}
+          >
+            Published ({publishedCount})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'official'}
+            onClick={() => setActiveTab('official')}
+            className={`badge-base ${activeTab === 'official' ? 'badge-primary' : 'badge-outline'}`}
+            style={{ cursor: 'pointer', fontFamily: 'inherit', border: activeTab === 'official' ? '1px solid transparent' : undefined }}
           >
             Official ({officialCount})
           </button>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="form-input text-sm"
-            style={{ width: 'auto' }}
-            aria-label="Filter by status"
-          >
-            <option value="all">Any status</option>
-            <option value="pending_review">Pending Review</option>
-            <option value="published">Published</option>
-            <option value="rejected">Rejected</option>
-            <option value="draft">Draft</option>
-          </select>
         </div>
         <div className="marketplace-toolbar__search">
           <SearchInput value={search} onChange={setSearch} placeholder="Search packs..." />
@@ -886,24 +946,28 @@ export const AdminMarketplace: React.FC = () => {
               <h2 className="modal-title">{viewing.name}</h2>
               <button className="modal-close-btn" onClick={handleCloseView}>✕</button>
             </div>
-            <div className="modal-body">
-              <p className="text-sm text-[var(--text-secondary)] mb-1">
-                Submitted by {viewing.coachName || 'a coach'} at {viewing.centerName || 'a center'}
-              </p>
-              {viewing.description && (
-                <p className="text-sm text-[var(--text-secondary)] mb-3">{viewing.description}</p>
-              )}
+            <div className="modal-body builder-stack-lg">
+              <div className="card-base card-compact" style={{ background: 'var(--surface-muted)' }}>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  Submitted by {viewing.coachName || 'a coach'} at {viewing.centerName || 'a center'}
+                </p>
+                {viewing.description && (
+                  <p className="text-sm text-[var(--text-secondary)]" style={{ marginTop: 'var(--space-xs)' }}>
+                    {viewing.description}
+                  </p>
+                )}
+              </div>
 
               {viewLoading ? (
                 <p className="text-sm text-[var(--text-secondary)]">Loading categories and drills...</p>
               ) : viewCategories.length > 0 ? (
-                <div className="space-y-4">
+                <div className="builder-stack-lg">
                   {viewCategories.map((category) => (
-                    <div key={category.id}>
-                      <h4 className="font-semibold text-sm text-[var(--text-primary)] mb-1">{category.name}</h4>
+                    <div key={category.id} className="card-base builder-stack-md">
+                      <h4 className="font-semibold text-sm text-[var(--text-primary)]">{category.name}</h4>
                       {category.drills && category.drills.length > 0 ? (
                         <div className="table-container">
-                          <table className="table-styled">
+                          <table className="table-styled table-styled--drills">
                             <thead>
                               <tr>
                                 <th>Name</th>
@@ -914,7 +978,7 @@ export const AdminMarketplace: React.FC = () => {
                             <tbody>
                               {category.drills.map((drill) => (
                                 <tr key={drill.id}>
-                                  <td className="text-bold">
+                                  <td className="text-bold" data-label="Name">
                                     <span className="flex items-center justify-between gap-2">
                                       <span>{drill.name}</span>
                                       {drill.videoUrl && (
@@ -923,6 +987,7 @@ export const AdminMarketplace: React.FC = () => {
                                           onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
                                           aria-label={`Watch demonstration: ${drill.name}`}
                                           title="Watch demonstration"
+                                          className="video-icon-btn"
                                           style={VIDEO_ICON_STYLE}
                                         >
                                           ▶
@@ -930,8 +995,8 @@ export const AdminMarketplace: React.FC = () => {
                                       )}
                                     </span>
                                   </td>
-                                  <td>{drill.category}</td>
-                                  <td className="text-muted">{drill.description}</td>
+                                  <td data-label="Category">{drill.category}</td>
+                                  <td className="text-muted" data-label="Description">{drill.description}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -956,7 +1021,7 @@ export const AdminMarketplace: React.FC = () => {
               )}
 
               {showRejectForm && (
-                <div className="form-group mt-3">
+                <div className="form-group">
                   <label htmlFor="admin-reject-reason" className="form-label">Rejection reason (optional)</label>
                   <textarea
                     id="admin-reject-reason"
@@ -1112,7 +1177,8 @@ export const AdminMarketplace: React.FC = () => {
                                       onClick={() => setViewingVideo({ name: drill.name, url: drill.videoUrl! })}
                                       aria-label={`Watch demonstration: ${drill.name}`}
                                       title="Watch demonstration"
-                                      style={VIDEO_ICON_STYLE}
+                                      className="video-icon-btn"
+                                          style={VIDEO_ICON_STYLE}
                                     >
                                       ▶
                                     </button>
@@ -1168,7 +1234,7 @@ export const AdminMarketplace: React.FC = () => {
                                 className="form-input text-sm"
                                 aria-label="Drill category"
                               >
-                                {DRILL_CATEGORIES.map((c) => (
+                                {categoryOptions.map((c) => (
                                   <option key={c} value={c}>{c}</option>
                                 ))}
                               </select>
@@ -1178,6 +1244,13 @@ export const AdminMarketplace: React.FC = () => {
                                 placeholder="Description"
                                 className="form-input text-sm"
                                 rows={2}
+                              />
+                              <input
+                                type="text"
+                                value={newDrillForm.videoUrl}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+                                placeholder="Video URL (optional)"
+                                className="form-input text-sm"
                               />
                               <div className="flex gap-2 justify-end">
                                 <button onClick={handleCancelCreateDrill} className="btn btn-secondary text-sm" disabled={creatingDrillLoading}>
@@ -1234,9 +1307,7 @@ export const AdminMarketplace: React.FC = () => {
                   />
                 </div>
               ) : (
-                <p className="text-sm">
-                  <a href={viewingVideo.url} target="_blank" rel="noreferrer">Open demonstration video</a>
-                </p>
+                <DirectVideoPlayer key={viewingVideo.url} name={viewingVideo.name} url={viewingVideo.url} />
               )}
             </div>
           </div>

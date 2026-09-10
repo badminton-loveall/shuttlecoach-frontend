@@ -886,3 +886,35 @@ export interface PlatformLedgerSummary {
     netBalance: number;
   };
 }
+
+export type CoachRoyaltyStatus = 'PENDING' | 'PAID';
+
+export interface CoachRoyalty {
+  id: string;
+  centerSubscriptionId: string;
+  drillSetId: string;
+  coachUserId: string;
+  purchasingCenterId: string;
+  saleAmount: number;
+  coachSharePercent: number;
+  coachAmount: number;
+  platformAmount: number;
+  status: CoachRoyaltyStatus;
+  paidAt: string | null;
+  paidBy: string | null;
+  payoutNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+  drillSetName?: string;
+  coachName?: string;
+  purchasingCenterName?: string;
+}
+
+export interface CoachRoyaltyTotals {
+  coachUserId: string;
+  coachName: string;
+  pendingAmount: number;
+  paidAmount: number;
+  lifetimeAmount: number;
+  saleCount: number;
+}

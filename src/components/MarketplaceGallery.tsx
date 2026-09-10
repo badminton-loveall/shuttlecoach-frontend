@@ -7,7 +7,7 @@ import { SearchInput } from './SearchInput';
 import { DrillAutocomplete } from './DrillAutocomplete';
 import { PackEnabledToggle } from './PackEnabledToggle';
 import { SPORT_LABELS, SUPPORTED_SPORTS } from '../constants/sports';
-import { DRILL_CATEGORIES } from '../constants/drillCategories';
+import { DEFAULT_DRILL_CATALOG_CATEGORIES, getDrillCategoryOptions } from '../constants/drillCatalogCategories';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/apiClient';
 import { getTrialInfo, formatTrialLabel } from '../utils/subscriptionUtils';
@@ -59,6 +59,7 @@ const STATUS_LABEL: Record<string, string> = {
 const VIDEO_ICON_STYLE: React.CSSProperties = {
   width: 20,
   height: 20,
+  aspectRatio: '1',
   borderRadius: '50%',
   border: 'none',
   background: 'var(--color-primary, #16a34a)',
@@ -69,6 +70,42 @@ const VIDEO_ICON_STYLE: React.CSSProperties = {
   justifyContent: 'center',
   cursor: 'pointer',
   flexShrink: 0,
+  alignSelf: 'center',
+};
+
+/**
+ * Fallback for a demonstration clip that isn't a YouTube/Vimeo page link —
+ * a direct file (S3, Cloudinary, a plain .mp4, etc.) plays right in the
+ * modal via a native <video> element instead of just linking out. Only
+ * falls back to a plain "open in new tab" link if the browser genuinely
+ * can't play it (onError) — keyed by url from the caller so switching to a
+ * different clip resets this instead of carrying over the previous one's
+ * error state.
+ */
+const DirectVideoPlayer: React.FC<{ name: string; url: string }> = ({ name, url }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <p className="text-sm text-[var(--text-secondary)]">
+        Couldn&rsquo;t play this link in-page.{' '}
+        <a href={url} target="_blank" rel="noreferrer">Open demonstration video</a>
+      </p>
+    );
+  }
+  return (
+    <video
+      controls
+      autoPlay
+      src={url}
+      aria-label={name}
+      onError={() => setFailed(true)}
+      style={{ width: '100%', maxHeight: '70vh', display: 'block', borderRadius: 'var(--radius-md)', background: '#000' }}
+    >
+      <p className="text-sm text-[var(--text-secondary)]">
+        Your browser can&rsquo;t play this video. <a href={url} target="_blank" rel="noreferrer">Open it in a new tab</a> instead.
+      </p>
+    </video>
+  );
 };
 
 interface SetFormData {
@@ -190,9 +227,10 @@ export const MarketplaceGallery: React.FC = () => {
 
   // Inline "create a new drill" form, opened per-category from within the builder
   const [creatingDrillForCategory, setCreatingDrillForCategory] = useState<string | null>(null);
-  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DRILL_CATEGORIES[0] as string });
+  const [newDrillForm, setNewDrillForm] = useState({ name: '', description: '', category: DEFAULT_DRILL_CATALOG_CATEGORIES[0], videoUrl: '' });
   const [creatingDrillError, setCreatingDrillError] = useState<string | null>(null);
   const [creatingDrillLoading, setCreatingDrillLoading] = useState(false);
+  const categoryOptions = getDrillCategoryOptions(centerDrills, [newDrillForm.category]);
 
   // Community preview / adopt
   const [previewSet, setPreviewSet] = useState<DrillSet | null>(null);
@@ -666,7 +704,7 @@ export const MarketplaceGallery: React.FC = () => {
   // linking it into this category is staged like every other membership edit. ---
   const handleOpenCreateDrill = (categoryId: string, categoryName: string, prefillName = '') => {
     setCreatingDrillForCategory(categoryId);
-    setNewDrillForm({ name: prefillName, description: '', category: categoryName || DRILL_CATEGORIES[0] });
+    setNewDrillForm({ name: prefillName, description: '', category: categoryName || DEFAULT_DRILL_CATALOG_CATEGORIES[0], videoUrl: '' });
     setCreatingDrillError(null);
   };
 
@@ -689,6 +727,7 @@ export const MarketplaceGallery: React.FC = () => {
         description: newDrillForm.description.trim(),
         category: newDrillForm.category,
         sport: openSet.sport || 'badminton',
+        videoUrl: newDrillForm.videoUrl.trim() || undefined,
       });
       const newDrill = response.data;
       await refetchCenterDrills();
@@ -1189,6 +1228,7 @@ export const MarketplaceGallery: React.FC = () => {
                                       onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
                                       aria-label={`Watch demonstration: ${drill.name}`}
                                       title="Watch demonstration"
+                                      className="video-icon-btn"
                                       style={VIDEO_ICON_STYLE}
                                     >
                                       ▶
@@ -1249,6 +1289,23 @@ export const MarketplaceGallery: React.FC = () => {
                                 placeholder="Description"
                                 className="form-input text-sm"
                                 rows={2}
+                              />
+                              <select
+                                value={newDrillForm.category}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, category: e.target.value }))}
+                                className="form-input text-sm"
+                                aria-label="Drill category"
+                              >
+                                {categoryOptions.map((c) => (
+                                  <option key={c} value={c}>{c}</option>
+                                ))}
+                              </select>
+                              <input
+                                type="text"
+                                value={newDrillForm.videoUrl}
+                                onChange={(e) => setNewDrillForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+                                placeholder="Video URL (optional)"
+                                className="form-input text-sm"
                               />
                               <div className="flex gap-2 justify-end">
                                 <button onClick={handleCancelCreateDrill} className="btn btn-secondary text-sm" disabled={creatingDrillLoading}>
@@ -1400,7 +1457,8 @@ export const MarketplaceGallery: React.FC = () => {
                                   onClick={() => setViewingVideo({ name: drill.name, url: videoUrls[drill.id] })}
                                   aria-label={`Watch demonstration: ${drill.name}`}
                                   title="Watch demonstration"
-                                  style={VIDEO_ICON_STYLE}
+                                  className="video-icon-btn"
+                                      style={VIDEO_ICON_STYLE}
                                 >
                                   ▶
                                 </button>
@@ -1455,11 +1513,7 @@ export const MarketplaceGallery: React.FC = () => {
                   />
                 </div>
               ) : (
-                <p className="text-sm">
-                  <a href={viewingVideo.url} target="_blank" rel="noreferrer">
-                    Open demonstration video
-                  </a>
-                </p>
+                <DirectVideoPlayer key={viewingVideo.url} name={viewingVideo.name} url={viewingVideo.url} />
               )}
             </div>
           </div>

@@ -197,7 +197,7 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="admin-dashboard__stat-content">
             <span className="admin-dashboard__stat-value">{data.totals.marketplacePacks}</span>
             <span className="admin-dashboard__stat-label">
-              Marketplace Packs
+              Published Packs
               {data.totals.pendingReviews > 0 ? ` · ${data.totals.pendingReviews} pending` : ''}
             </span>
           </div>

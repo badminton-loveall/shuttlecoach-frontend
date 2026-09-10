@@ -72,6 +72,17 @@ const NAV_ITEMS: AdminNavItem[] = [
       </svg>
     ),
   },
+  {
+    label: 'Payouts',
+    path: '/admin/payouts',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1" />
+        <path d="M14 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0z" />
+        <path d="M4 8V6a2 2 0 0 1 2-2h10" />
+      </svg>
+    ),
+  },
 ];
 
 export const AdminLayout: React.FC = () => {
