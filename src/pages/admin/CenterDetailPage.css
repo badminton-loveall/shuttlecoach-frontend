@@ -135,7 +135,7 @@
 .center-detail-page__back-btn {
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
@@ -335,7 +335,7 @@
 .center-detail-page__save-btn {
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
@@ -513,7 +513,7 @@
 .center-detail-page__assign-btn {
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);

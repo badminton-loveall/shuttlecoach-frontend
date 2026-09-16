@@ -63,7 +63,7 @@
   justify-content: center;
   font-weight: var(--weight-bold);
   font-size: 24px;
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .coach-profile-info {
@@ -248,7 +248,7 @@
 
 .btn-tab-action--primary {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .btn-tab-action--primary:hover {
@@ -373,7 +373,7 @@
 
 .btn-form--primary {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .btn-form--primary:hover:not(:disabled) {

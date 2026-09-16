@@ -78,22 +78,27 @@
   height: 100%;
 }
 
-/* Avatar color variants based on skill level (Modifiers) */
+/* Avatar color variants based on skill level (Modifiers).
+   -solid tokens (not the plain --color-info/-warning/-success, which are
+   tuned for icons/borders against a light background): white/--text-inverse
+   avatar text fails WCAG AA against the base tones in light mode and
+   against the "-dark" tones in dark mode. See design-system.css .btn-danger
+   for the full explanation. */
 .student-card__avatar--info {
-  background-color: var(--color-info);
+  background-color: var(--color-info-solid);
 }
 
 .student-card__avatar--warning {
-  background-color: var(--color-warning);
+  background-color: var(--color-warning-solid);
 }
 
 .student-card__avatar--primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .student-card__avatar--success {
-  background-color: var(--color-success);
+  background-color: var(--color-success-solid);
 }
 
 /* ============================================================================
@@ -242,7 +247,7 @@
   right: var(--space-sm);
   width: 24px;
   height: 24px;
-  background-color: var(--color-success);
+  background-color: var(--color-success-solid);
   color: var(--text-inverse);
   border-radius: var(--radius-full);
   display: flex;

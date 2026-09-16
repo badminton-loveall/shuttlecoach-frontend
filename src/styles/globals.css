@@ -29,24 +29,13 @@
    ============================================================================ */
 
    :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.153 0.006 107.1);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.153 0.006 107.1);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.153 0.006 107.1);
-  --primary: oklch(0.841 0.238 128.85);
-  --primary-foreground: oklch(0.405 0.101 131.063);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.966 0.005 106.5);
-  --muted-foreground: oklch(0.58 0.031 107.3);
-  --accent: oklch(0.966 0.005 106.5);
-  --accent-foreground: oklch(0.228 0.013 107.4);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.93 0.007 106.5);
-  --input: oklch(0.93 0.007 106.5);
-  --ring: oklch(0.737 0.021 106.9);
+  /* --background/--foreground/--card/--primary/--border/etc. now live in
+     theme-light.css / theme-dark.css (the single source of truth for every
+     color token). This block used to redefine the same variable names with
+     different OKLCH values, silently fighting design-system.css's HSL
+     versions depending on cascade order — that conflict is why dark mode
+     rendered inconsistently ("mixed") across the app. Only the non-color
+     shadcn tokens (radius, chart colors, sidebar) stay here. */
   --chart-1: oklch(0.897 0.196 126.665);
   --chart-2: oklch(0.768 0.233 130.85);
   --chart-3: oklch(0.648 0.2 131.684);
@@ -64,35 +53,17 @@
 }
 
 .dark {
-  --background: oklch(0.153 0.006 107.1);
-  --foreground: oklch(0.988 0.003 106.5);
-  --card: oklch(0.228 0.013 107.4);
-  --card-foreground: oklch(0.988 0.003 106.5);
-  --popover: oklch(0.228 0.013 107.4);
-  --popover-foreground: oklch(0.988 0.003 106.5);
-  --primary: oklch(0.768 0.233 130.85);
-  --primary-foreground: oklch(0.405 0.101 131.063);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.286 0.016 107.4);
-  --muted-foreground: oklch(0.737 0.021 106.9);
-  --accent: oklch(0.286 0.016 107.4);
-  --accent-foreground: oklch(0.988 0.003 106.5);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.58 0.031 107.3);
-  --chart-1: oklch(0.897 0.196 126.665);
-  --chart-2: oklch(0.768 0.233 130.85);
-  --chart-3: oklch(0.648 0.2 131.684);
-  --chart-4: oklch(0.532 0.157 131.589);
-  --chart-5: oklch(0.453 0.124 130.933);
   --sidebar: oklch(0.228 0.013 107.4);
   --sidebar-foreground: oklch(0.988 0.003 106.5);
   --sidebar-primary: oklch(0.768 0.233 130.85);
   --sidebar-primary-foreground: oklch(0.274 0.072 132.109);
   --sidebar-accent: oklch(0.286 0.016 107.4);
   --sidebar-accent-foreground: oklch(0.988 0.003 106.5);
+  --chart-1: oklch(0.897 0.196 126.665);
+  --chart-2: oklch(0.768 0.233 130.85);
+  --chart-3: oklch(0.648 0.2 131.684);
+  --chart-4: oklch(0.532 0.157 131.589);
+  --chart-5: oklch(0.453 0.124 130.933);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.58 0.031 107.3);
 }
@@ -113,8 +84,8 @@ html {
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #FFFFFF;
-  color: #1B2B4E;
+  background-color: var(--surface-background);
+  color: var(--text-primary);
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
   /* Horizontal-clip lives on <html> only (above). Declaring it here too
@@ -122,11 +93,6 @@ body {
      scrolls internally (html already owns the real scroll), which silently
      breaks position:sticky for every descendant (e.g. TopNav) — sticky
      then anchors to body's static box instead of the real viewport. */
-}
-
-body.dark {
-  background-color: #1B2B4E;
-  color: #F8FAFB;
 }
 
 /* ============================================================================
@@ -168,13 +134,13 @@ p {
 }
 
 a {
-  color: #B8E135;
+  color: var(--color-primary-dark);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #9ac61a;
+  color: var(--color-primary);
   text-decoration: underline;
 }
 
@@ -258,28 +224,16 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F1F4F6;
+  background: var(--surface-hover);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #9CA8B3;
+  background: var(--border-strong);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6B7885;
-}
-
-body.dark ::-webkit-scrollbar-track {
-  background: #1F262E;
-}
-
-body.dark ::-webkit-scrollbar-thumb {
-  background: #6B7885;
-}
-
-body.dark ::-webkit-scrollbar-thumb:hover {
-  background: #9CA8B3;
+  background: var(--text-tertiary);
 }
 
 /* ============================================================================
@@ -602,30 +556,27 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 
 /* ============================================================================
    DARK MODE SUPPORT
-   ============================================================================ */
+   `body`'s own background/color (above) already read the reactive
+   --surface-background/--text-primary tokens, so they don't need to be
+   repeated here. Native form controls (select, date/time inputs, etc.) get
+   their dark chrome from the browser itself based on `color-scheme` — set
+   per-theme on :root in theme-light.css/theme-dark.css — so without an
+   explicit background/color here they were rendering native-dark chrome
+   (from a dark OS) inside otherwise-light cards. Styling them directly
+   with tokens keeps them in sync with whichever theme is actually active,
+   explicit toggle or OS default alike. */
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #0A0D11;
-    color: #F8FAFB;
-  }
+input,
+select,
+textarea {
+  background-color: var(--surface-card);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
 
-  input,
-  select,
-  textarea {
-    background-color: #131820;
-    color: #F8FAFB;
-    border-color: #1F262E;
-  }
-
-  input::placeholder,
-  textarea::placeholder {
-    color: #9CA8B3;
-  }
-
-  a:hover {
-    color: #d0f766;
-  }
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
 }
 
 /* ============================================================================
@@ -846,72 +797,12 @@ body.dark ::-webkit-scrollbar-thumb:hover {
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.153 0.006 107.1);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.153 0.006 107.1);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.153 0.006 107.1);
-  --primary: oklch(0.841 0.238 128.85);
-  --primary-foreground: oklch(0.405 0.101 131.063);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.966 0.005 106.5);
-  --muted-foreground: oklch(0.58 0.031 107.3);
-  --accent: oklch(0.966 0.005 106.5);
-  --accent-foreground: oklch(0.228 0.013 107.4);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.93 0.007 106.5);
-  --input: oklch(0.93 0.007 106.5);
-  --ring: oklch(0.737 0.021 106.9);
-  --chart-1: oklch(0.897 0.196 126.665);
-  --chart-2: oklch(0.768 0.233 130.85);
-  --chart-3: oklch(0.648 0.2 131.684);
-  --chart-4: oklch(0.532 0.157 131.589);
-  --chart-5: oklch(0.453 0.124 130.933);
+  /* This was a byte-for-byte duplicate of the shadcn :root/.dark color
+     block near the top of this file (already reduced to non-color tokens
+     only) — a leftover from a bad merge. Color tokens live in
+     theme-light.css / theme-dark.css; only the non-color values that were
+     unique to this copy stay here. */
   --radius: 0.45rem;
-  --sidebar: oklch(0.988 0.003 106.5);
-  --sidebar-foreground: oklch(0.153 0.006 107.1);
-  --sidebar-primary: oklch(0.648 0.2 131.684);
-  --sidebar-primary-foreground: oklch(0.986 0.031 120.757);
-  --sidebar-accent: oklch(0.966 0.005 106.5);
-  --sidebar-accent-foreground: oklch(0.228 0.013 107.4);
-  --sidebar-border: oklch(0.93 0.007 106.5);
-  --sidebar-ring: oklch(0.737 0.021 106.9);
-}
-
-.dark {
-  --background: oklch(0.153 0.006 107.1);
-  --foreground: oklch(0.988 0.003 106.5);
-  --card: oklch(0.228 0.013 107.4);
-  --card-foreground: oklch(0.988 0.003 106.5);
-  --popover: oklch(0.228 0.013 107.4);
-  --popover-foreground: oklch(0.988 0.003 106.5);
-  --primary: oklch(0.768 0.233 130.85);
-  --primary-foreground: oklch(0.405 0.101 131.063);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.286 0.016 107.4);
-  --muted-foreground: oklch(0.737 0.021 106.9);
-  --accent: oklch(0.286 0.016 107.4);
-  --accent-foreground: oklch(0.988 0.003 106.5);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.58 0.031 107.3);
-  --chart-1: oklch(0.897 0.196 126.665);
-  --chart-2: oklch(0.768 0.233 130.85);
-  --chart-3: oklch(0.648 0.2 131.684);
-  --chart-4: oklch(0.532 0.157 131.589);
-  --chart-5: oklch(0.453 0.124 130.933);
-  --sidebar: oklch(0.228 0.013 107.4);
-  --sidebar-foreground: oklch(0.988 0.003 106.5);
-  --sidebar-primary: oklch(0.768 0.233 130.85);
-  --sidebar-primary-foreground: oklch(0.274 0.072 132.109);
-  --sidebar-accent: oklch(0.286 0.016 107.4);
-  --sidebar-accent-foreground: oklch(0.988 0.003 106.5);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.58 0.031 107.3);
 }
 
 /* ============================================================================

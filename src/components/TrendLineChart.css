@@ -83,7 +83,7 @@
 
 .trend-line-chart__toggle-btn--active {
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .trend-line-chart__toggle-btn--active:hover {

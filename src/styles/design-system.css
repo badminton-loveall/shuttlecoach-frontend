@@ -4,78 +4,13 @@
    ============================================================================ */
 
 @layer base {
+  /* Shadcn-style HSL color tokens (--background, --primary, --border, etc.)
+     now live in theme-light.css / theme-dark.css, the single source of
+     truth for every color token in the app. --radius stays here since it
+     isn't a color. */
   :root {
-    /* Shadcn-style color system using HSL */
-    --background: 36 14% 89%; /* #E8E6DF - Beige background */
-    --foreground: 222.2 84% 4.9%; /* Dark text */
-
-    --card: 36 30% 95%; /* Light card background */
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 75 76% 60%; /* #B8E135 - Electric Lime */
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 75 76% 60%;
-
     --radius: 0.5rem;
   }
-
-  .dark {
-    --background: 0 0% 100%; /* White background */
-    --foreground: 222.2 84% 4.9%; /* Dark text */
-
-    --card: 0 0% 100%; /* White card */
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%; /* White popover */
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 75 76% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 210 40% 96.1%; /* Light secondary */
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%; /* Light muted */
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%; /* Light accent */
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%; /* Light border */
-    --input: 214.3 31.8% 91.4%; /* Light input */
-    --ring: 75 76% 60%;
-  }
-}
-
-/* Apply background colors to html and body */
-* {
-  border-color: hsl(var(--border));
-}
-
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
 }
 
 /* Apply background colors to html and body */
@@ -93,76 +28,10 @@ body {
    ============================================================================ */
 
 :root {
-  /* Map shadcn colors to old variable names for compatibility */
-  --color-primary: #B8E135;
-  --color-primary-dark: #9AC61A;
-  --color-primary-light: #CFF05E;
-
-  --color-success: #22C55E;
-  --color-success-dark: #16A34A;
-  --color-success-light: #86EFAC;
-
-  --color-warning: #F59E0B;
-  --color-warning-dark: #D97706;
-  --color-warning-light: #FCD34D;
-
-  --color-danger: #EF4444;
-  --color-danger-dark: #DC2626;
-  --color-danger-light: #FCA5A5;
-
-  --color-info: #3B82F6;
-  --color-info-dark: #2563EB;
-  --color-info-light: #93C5FD;
-
-  /* Surface colors */
-  --surface-background: #E8E6DF;
-  --surface-card: #F8FAFB;
-  --surface-hover: #F1F4F6;
-  --surface-elevated: #FFFFFF;
-
-  /* Text colors */
-  --text-primary: #1B2B4E;
-  --text-secondary: #4A5662;
-  --text-tertiary: #6B7885;
-  --text-inverse: #FFFFFF;
-
-  /* Dark mode colors */
-  --surface-dark-card: #131820;
-  --surface-dark-hover: #1F262E;
-  --text-dark-primary: #F8FAFB;
-  --text-dark-secondary: #D1D9DE;
-  --text-dark-tertiary: #9CA8B3;
-
-  /* Border colors */
-  --border-default: #E4E9EC;
-  --border-strong: #D1D9DE;
-  --border-focus: #B8E135;
-  --border-dark: #1F262E;
-  --border-dark-strong: #333D47;
-
-  /* Feedback backgrounds */
-  --feedback-success-light: #F0FDF4;
-  --feedback-warning-light: #FFFBEB;
-  --feedback-danger-light: #FEF2F2;
-  --feedback-info-light: #EFF6FF;
-
-  --color-success-text: #166534;
-  --color-warning-text: #92400E;
-  --color-danger-text: #991B1B;
-  --color-info-text: #1E40AF;
-
-  /* Slate palette */
-  --color-slate-50: #F8FAFB;
-  --color-slate-100: #F1F4F6;
-  --color-slate-200: #E4E9EC;
-  --color-slate-300: #D1D9DE;
-  --color-slate-400: #9CA8B3;
-  --color-slate-500: #6B7885;
-  --color-slate-600: #4A5662;
-  --color-slate-700: #333D47;
-  --color-slate-800: #1F262E;
-  --color-slate-900: #131820;
-  --color-slate-950: #1B2B4E;
+  /* All color tokens formerly mapped here (--color-primary, --surface-*,
+     --text-*, --border-*, --feedback-*, --color-slate-*, etc.) now live in
+     theme-light.css / theme-dark.css. Keeping this rule (instead of
+     deleting it outright) preserves the section below untouched. */
 
   /* ============================================================================
      2. TYPOGRAPHY
@@ -386,34 +255,8 @@ body {
   color: var(--text-inverse);
 }
 
-/* Dark mode text colors */
-@media (prefers-color-scheme: dark) {
-  .text-display,
-  .text-h1,
-  .text-h2,
-  .text-h3,
-  .text-body {
-    color: var(--text-dark-primary);
-  }
-
-  .text-primary {
-    color: var(--text-dark-primary);
-  }
-
-  .text-secondary,
-  .text-small,
-  .text-label {
-    color: var(--text-dark-secondary);
-  }
-
-  .text-tertiary {
-    color: var(--text-dark-tertiary);
-  }
-
-  .text-disabled {
-    color: var(--text-dark-disabled);
-  }
-}
+/* No dark-mode override needed: --text-primary/-secondary/-tertiary/-disabled
+   above are already theme-reactive. */
 
 /* ============================================================================
    SPACING UTILITIES
@@ -515,15 +358,12 @@ body {
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .card {
-    background-color: var(--surface-dark-card);
-  }
-
-  .card:hover {
-    background-color: var(--surface-dark-hover);
-  }
-}
+/* No dark-mode override needed: --surface-card / --surface-hover above are
+   already theme-reactive (theme-light.css / theme-dark.css). An explicit
+   @media(prefers-color-scheme:dark) override here used to reassign to the
+   old fixed --surface-dark-card/-hover constants regardless of the user's
+   explicit Light/Dark choice, which is exactly what made an explicit
+   "Light" pick still render dark cards on a dark-OS device. */
 
 /* ============================================================================
    BUTTON STYLES
@@ -557,7 +397,7 @@ body {
    secondary buttons always match in shape; only color differs by variant. */
 .btn-primary {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -581,13 +421,21 @@ body {
   border-color: var(--border-strong);
 }
 
+/* Solid danger/success/info buttons use the dedicated "-solid" tokens for
+   their background (not the base --color-danger/-success/-info, which are
+   tuned for icons/borders/tinted badges against a light background): white/
+   --text-inverse button text fails WCAG AA against the base tones in light
+   mode (as low as 2.3:1 for success), and against the "-dark" tones in dark
+   mode (--text-inverse is navy there, and the "-dark" tones are too
+   saturated for navy text). "-solid" is verified >=4.5:1 with
+   --text-inverse in both themes. */
 .btn-danger {
-  background-color: var(--color-danger);
+  background-color: var(--color-danger-solid);
   color: var(--text-inverse);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: var(--color-danger-dark);
+  filter: brightness(0.9);
 }
 
 .btn-danger:focus-visible {
@@ -595,21 +443,21 @@ body {
 }
 
 .btn-success {
-  background-color: var(--color-success);
+  background-color: var(--color-success-solid);
   color: var(--text-inverse);
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: var(--color-success-dark);
+  filter: brightness(0.9);
 }
 
 .btn-info {
-  background-color: var(--color-info);
+  background-color: var(--color-info-solid);
   color: var(--text-inverse);
 }
 
 .btn-info:hover:not(:disabled) {
-  background-color: var(--color-info-dark);
+  filter: brightness(0.9);
 }
 
 .btn-info:focus-visible {
@@ -659,17 +507,8 @@ body {
   color: var(--text-tertiary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .input {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-
-  .input::placeholder {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* No dark-mode override needed: --surface-background / --text-primary above
+   are already theme-reactive. */
 
 /* ============================================================================
    BADGE STYLES
@@ -687,7 +526,7 @@ body {
 
 .badge-primary {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .badge-success {
@@ -796,11 +635,8 @@ body {
   overflow-x: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  .tab-bar {
-    border-bottom-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --border-default above is already
+   theme-reactive. */
 
 /* Responsive card / stat grid */
 .card-grid {
@@ -1020,28 +856,19 @@ body {
 
 /* End of Design System CSS */
 
+/* A prior "FORCE LIGHT MODE" block used to live here: `!important` on
+   html/body/#root background-color, color, AND color-scheme, including a
+   version inside `@media (prefers-color-scheme: dark)` that forced light
+   colors even when the OS was dark. `!important` beats any non-!important
+   rule regardless of specificity, so this was silently overriding both the
+   OS dark preference AND this file's own theme tokens the entire time —
+   the actual root cause of dark mode looking broken/"mixed": some
+   components had their own `!important`-free dark overrides that still
+   worked, while html/body/#root itself was hard-locked to light. Removed
+   so theme-light.css / theme-dark.css (via `[data-theme]` / OS preference)
+   are the only thing controlling this. */
 
-/* ============================================================================
-   FORCE LIGHT MODE - Override all dark mode preferences
-   ============================================================================ */
-
-html,
-html.light,
-:root {
-  color-scheme: light !important;
-}
-
-html.dark {
-  /* Disable dark mode completely */
-  color-scheme: light !important;
-}
-
-/* Force light mode colors on all elements */
-html,
-body,
 #root {
-  background-color: #E8E6DF !important;
-  color: #1B2B4E !important;
   max-width: 100vw;
 }
 
@@ -1050,17 +877,3 @@ body,
    own scroll container, which silently breaks position:sticky (e.g. TopNav)
    for every descendant, since sticky then anchors to #root's own box instead
    of the real viewport. */
-
-/* Override any dark mode media queries */
-@media (prefers-color-scheme: dark) {
-  html,
-  body,
-  #root {
-    background-color: #E8E6DF !important;
-    color: #1B2B4E !important;
-  }
-  
-  * {
-    color-scheme: light !important;
-  }
-}

@@ -55,8 +55,8 @@
   padding: 0 3px;
   font-size: 9px;
   font-weight: var(--weight-bold);
-  color: white;
-  background-color: var(--color-danger);
+  color: var(--text-inverse);
+  background-color: var(--color-danger-solid);
   border-radius: var(--radius-pill);
   position: absolute;
   top: -6px;

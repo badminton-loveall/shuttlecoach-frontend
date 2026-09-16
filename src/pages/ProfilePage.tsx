@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/apiClient';
 import DashboardLayout from '../components/DashboardLayout';
+import ThemeToggle from '../components/ThemeToggle';
 import '../styles/pages.css';
 
 /**
@@ -288,6 +289,17 @@ export const ProfilePage: React.FC = () => {
                 </button>
               </form>
             </div>
+          </div>
+
+          {/* Appearance */}
+          <div className="card" style={{ padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 0.25rem 0', fontSize: 'var(--font-md)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-primary)' }}>
+              Appearance
+            </h3>
+            <p style={{ margin: '0 0 1rem 0', fontSize: 'var(--font-xs)', color: 'var(--text-tertiary)' }}>
+              Choose Light or Dark, or follow your device's setting.
+            </p>
+            <ThemeToggle />
           </div>
         </div>
       </div>

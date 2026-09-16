@@ -147,7 +147,7 @@
 
 .btn-primary {
   background-color: var(--color-primary);
-  color: var(--text-inverse);
+  color: var(--on-primary);
   font-weight: 700;
 }
 
@@ -184,7 +184,12 @@
 }
 
 @media (max-width: 640px) {
-  .btn {
+  /* Scoped to this modal's own footer, not a bare .btn — CSS bundles
+     globally regardless of which component imports it, so an unscoped
+     `.btn { width: 100% }` here was stretching every button on every page
+     at this breakpoint (e.g. the Curriculum page's "+ New" button), not
+     just this modal's Close/View Full Profile pair. */
+  .modal-content--small .modal-footer .btn {
     width: 100%;
     padding: 10px 12px;
   }

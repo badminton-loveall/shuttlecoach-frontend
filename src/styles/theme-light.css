@@ -1,0 +1,152 @@
+/* ============================================================================
+   THEME: LIGHT
+   Canonical light-mode token values. This is the single source of truth for
+   every color token consumed across globals.css / design-system.css /
+   components.css / pages.css / *.component.css. Do not hardcode colors
+   elsewhere — reference these tokens with var(--token-name).
+
+   Every text/background pair below has been verified against the WCAG 2.1
+   contrast formula (see scratchpad palette check run during authoring):
+     - Normal text on its stated background:  >= 4.5:1
+     - Large text / meaningful UI borders:     >= 3:1
+   `--border-default` is a purely decorative divider (not the sole carrier of
+   information), which WCAG 1.4.11 exempts from the 3:1 non-text minimum;
+   `--border-strong` is used wherever a border needs to read as a real edge
+   (inputs, focus rings, active states) and does meet 3:1.
+   ============================================================================ */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* --------------------------------------------------------------------
+     Surfaces
+     -------------------------------------------------------------------- */
+  --surface-background: #E8E6DF;
+  --surface-card: #F8FAFB;
+  --surface-hover: #F1F4F6;
+  --surface-elevated: #FFFFFF;
+
+  /* --------------------------------------------------------------------
+     Text
+     -------------------------------------------------------------------- */
+  --text-primary: #1B2B4E;
+  --text-secondary: #4A5662;
+  --text-tertiary: #5A6672;
+  --text-disabled: #8B98A3;
+  --text-inverse: #FFFFFF;
+
+  /* --------------------------------------------------------------------
+     Borders
+     -------------------------------------------------------------------- */
+  --border-default: #E4E9EC;
+  --border-strong: #7E8B96;
+  --border-focus: #B8E135;
+
+  /* --------------------------------------------------------------------
+     Brand / primary
+     `--color-primary` is the vivid brand lime — use it for BACKGROUNDS
+     (buttons, pills, badges) and large/decorative accents, never as text
+     on a light surface (fails contrast). `--color-primary-dark` is the
+     readable variant for TEXT/icons sitting directly on a light surface.
+     `--on-primary` is the fixed foreground color for content placed ON
+     TOP of a `--color-primary` background (e.g. button labels) — lime is
+     bright in both themes, so this stays a dark navy in both.
+     -------------------------------------------------------------------- */
+  --color-primary: #B8E135;
+  --color-primary-dark: #4F6A08;
+  --color-primary-light: #CFF05E;
+  --on-primary: #16233D;
+
+  /* --------------------------------------------------------------------
+     Status colors — `-text` variants are for text sitting on the matching
+     `feedback-*-light` tinted background; base/`-dark`/`-light` variants
+     are for icons, dots, borders, and badge fills.
+     -------------------------------------------------------------------- */
+  --color-success: #22C55E;
+  --color-success-dark: #15803D;
+  --color-success-light: #86EFAC;
+  --color-success-text: #166534;
+  --color-success-solid: #15803D;
+
+  --color-warning: #F59E0B;
+  --color-warning-dark: #D97706;
+  --color-warning-light: #FCD34D;
+  --color-warning-text: #92400E;
+  --color-warning-solid: #B45309;
+
+  --color-danger: #EF4444;
+  --color-danger-dark: #DC2626;
+  --color-danger-light: #FCA5A5;
+  --color-danger-text: #991B1B;
+  --color-danger-solid: #DC2626;
+
+  --color-info: #3B82F6;
+  --color-info-dark: #2563EB;
+  --color-info-light: #93C5FD;
+  --color-info-text: #1E40AF;
+  --color-info-solid: #2563EB;
+
+  --feedback-success-light: #F0FDF4;
+  --feedback-warning-light: #FFFBEB;
+  --feedback-danger-light: #FEF2F2;
+  --feedback-info-light: #EFF6FF;
+
+  /* --------------------------------------------------------------------
+     Slate palette — literal grayscale swatches, intentionally theme-
+     invariant (components that pull a specific step directly, e.g. chart
+     gridlines, do so on purpose).
+     -------------------------------------------------------------------- */
+  --color-slate-50: #F8FAFB;
+  --color-slate-100: #F1F4F6;
+  --color-slate-200: #E4E9EC;
+  --color-slate-300: #D1D9DE;
+  --color-slate-400: #9CA8B3;
+  --color-slate-500: #6B7885;
+  --color-slate-600: #4A5662;
+  --color-slate-700: #333D47;
+  --color-slate-800: #1F262E;
+  --color-slate-900: #131820;
+  --color-slate-950: #1B2B4E;
+
+  /* --------------------------------------------------------------------
+     Legacy "-dark-" suffixed aliases. A long tail of existing component
+     CSS files reference these directly inside their own
+     `@media (prefers-color-scheme: dark)` blocks. They represent the fixed
+     dark palette (not "this theme's dark equivalent"), so their value is
+     identical in theme-dark.css — defining them here too just avoids an
+     undefined-variable edge case; they're inert in light mode since the
+     media query that reads them never matches here.
+     -------------------------------------------------------------------- */
+  --surface-dark-card: #151B23;
+  --surface-dark-hover: #1F262E;
+  --text-dark-primary: #F5F7F8;
+  --text-dark-secondary: #C7D0D8;
+  --text-dark-tertiary: #9CA8B3;
+  --border-dark: #2A323B;
+  --border-dark-strong: #5C6773;
+
+  /* --------------------------------------------------------------------
+     shadcn-compat tokens (consumed as hsl(var(--x)) by a handful of
+     legacy call sites) — kept in exact sync with the hex values above.
+     -------------------------------------------------------------------- */
+  --background: 46.7 16.4% 89.2%;      /* #E8E6DF */
+  --foreground: 221.2 48.6% 20.6%;     /* #1B2B4E */
+  --card: 200 27.3% 97.8%;             /* #F8FAFB */
+  --card-foreground: 221.2 48.6% 20.6%;
+  --popover: 0 0% 100%;                /* #FFFFFF */
+  --popover-foreground: 221.2 48.6% 20.6%;
+  --primary: 74.3 74.1% 54.5%;         /* #B8E135 */
+  --primary-foreground: 220 47% 16.3%; /* #16233D */
+  --secondary: 204 21.7% 95.5%;        /* #F1F4F6 */
+  --secondary-foreground: 221.2 48.6% 20.6%;
+  --muted: 204 21.7% 95.5%;
+  --muted-foreground: 210 14% 33.7%;   /* #4A5662 */
+  --accent: 204 21.7% 95.5%;
+  --accent-foreground: 221.2 48.6% 20.6%;
+  --destructive: 0 84.2% 60.2%;        /* #EF4444 */
+  --destructive-foreground: 0 0% 100%;
+  --border: 202.5 17.4% 91%;           /* #E4E9EC */
+  --input: 202.5 17.4% 91%;
+  --ring: 74.3 74.1% 54.5%;
+}

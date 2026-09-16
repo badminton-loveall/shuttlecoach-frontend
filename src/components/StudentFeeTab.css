@@ -103,7 +103,7 @@
   gap: var(--space-sm);
   padding: 10px 24px;
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: 6px;
   font-size: var(--font-sm);
@@ -331,7 +331,7 @@
 .fees-empty-button {
   padding: var(--space-sm) var(--space-lg);
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);

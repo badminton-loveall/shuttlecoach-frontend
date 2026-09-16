@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HeadCoachDashboard from './pages/HeadCoachDashboard';
@@ -74,6 +75,7 @@ const RoleDashboard: React.FC = () => {
  */
 function App() {
   return (
+    <ThemeProvider>
     <Router>
       <AuthProvider>
         <ToastProvider>
@@ -370,6 +372,7 @@ function App() {
         </ToastProvider>
       </AuthProvider>
     </Router>
+    </ThemeProvider>
   );
 }
 

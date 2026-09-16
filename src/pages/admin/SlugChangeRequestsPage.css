@@ -117,7 +117,7 @@
 
 .slug-requests-page__btn--approve {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border-color: var(--color-primary);
 }
 

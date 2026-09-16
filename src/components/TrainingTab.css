@@ -398,21 +398,21 @@
 /* Solid fills so these read as real buttons (matching the app's primary
    action style) instead of the low-contrast tinted labels they were before. */
 .tag-add-btn-strength {
-  background: var(--color-success);
-  color: #FFFFFF;
+  background: var(--color-success-solid);
+  color: var(--text-inverse);
 }
 
 .tag-add-btn-strength:hover:not(:disabled) {
-  background: var(--color-success-dark);
+  filter: brightness(0.9);
 }
 
 .tag-add-btn-weakness {
-  background: var(--color-danger);
-  color: #FFFFFF;
+  background: var(--color-danger-solid);
+  color: var(--text-inverse);
 }
 
 .tag-add-btn-weakness:hover:not(:disabled) {
-  background: var(--color-danger-dark);
+  filter: brightness(0.9);
 }
 
 /* Tag Remove Button */

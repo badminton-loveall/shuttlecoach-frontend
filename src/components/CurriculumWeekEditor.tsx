@@ -194,10 +194,14 @@ export const CurriculumWeekEditor: React.FC<CurriculumWeekEditorProps> = ({
           </div>
         </div>
 
-        {/* Middle: arrow column (visual balance) */}
-        <div className="curriculum-step__drill-arrows" style={{ paddingTop: '56px' }}>
-          <span style={{ fontSize: '18px', color: 'var(--text-tertiary)' }}>→</span>
-          <span style={{ fontSize: '18px', color: 'var(--text-tertiary)' }}>←</span>
+        {/* Middle: arrow column (visual balance) — spacing is handled
+            entirely in CSS (including the mobile stacked layout), not
+            inline, since a fixed inline padding-top meant to align these
+            next to the desktop box header left a large empty gap above
+            them once the columns stack into rows on mobile. */}
+        <div className="curriculum-step__drill-arrows" aria-hidden="true">
+          <span className="curriculum-step__drill-arrow-icon">→</span>
+          <span className="curriculum-step__drill-arrow-icon">←</span>
         </div>
 
         {/* Right: Assigned */}

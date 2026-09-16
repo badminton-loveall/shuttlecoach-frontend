@@ -87,7 +87,7 @@
 }
 
 .admin-layout__nav-link--active {
-  color: var(--text-primary);
+  color: var(--on-primary);
   background-color: var(--color-primary);
   font-weight: var(--weight-semibold);
   box-shadow: 0 2px 8px rgba(184, 225, 53, 0.2);

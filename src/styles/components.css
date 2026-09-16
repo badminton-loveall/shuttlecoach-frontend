@@ -86,7 +86,7 @@
 .btn-outline:hover:not(:disabled),
 .btn--outline:hover:not(:disabled) {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   opacity: 0.9;
 }
 
@@ -101,16 +101,20 @@
   background-color: rgba(184, 225, 53, 0.1);
 }
 
+/* -solid tokens (not the base --color-danger/-success): the base tones fail
+   WCAG AA with white/--text-inverse text in light mode, and the "-dark"
+   tones fail with navy --text-inverse in dark mode. See design-system.css
+   .btn-danger for the full explanation. */
 .btn-danger,
 .btn--danger {
-  background-color: var(--color-danger);
+  background-color: var(--color-danger-solid);
   color: var(--text-inverse);
   box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
 .btn-danger:hover:not(:disabled),
 .btn--danger:hover:not(:disabled) {
-  background-color: var(--color-danger-dark);
+  filter: brightness(0.9);
 }
 
 .btn-danger:focus-visible,
@@ -120,13 +124,13 @@
 
 .btn-success,
 .btn--success {
-  background-color: var(--color-success);
+  background-color: var(--color-success-solid);
   color: var(--text-inverse);
 }
 
 .btn-success:hover:not(:disabled),
 .btn--success:hover:not(:disabled) {
-  background-color: var(--color-success-dark);
+  filter: brightness(0.9);
 }
 
 /* Button Sizes - Both old and BEM naming */
@@ -265,18 +269,8 @@
   pointer-events: none;
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .input-base {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-
-  .input-base::placeholder {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* No dark-mode override needed: --text-primary / --surface-background /
+   --border-default above are already theme-reactive. */
 
 /* ============================================================================
    SELECT SYSTEM
@@ -468,18 +462,8 @@
   line-height: var(--line-body);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .card-base {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .card-header,
-  .card-footer {
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default above are
+   already theme-reactive. */
 
 /* ============================================================================
    BADGE SYSTEM
@@ -663,18 +647,8 @@
   }
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .modal-container {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .modal-header,
-  .modal-footer {
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default above are
+   already theme-reactive. */
 
 /* ----------------------------------------------------------------------------
    CANONICAL MODAL OVERLAY / CONTENT (single source of truth)
@@ -778,13 +752,8 @@
   max-width: 700px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .modal-content,
-  .side-panel {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default above are
+   already theme-reactive. */
 
 @media (max-width: 768px) {
   .modal-content--large {
@@ -897,24 +866,8 @@
   padding: var(--space-xs) var(--space-sm);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .table-container {
-    border-color: var(--border-dark);
-  }
-
-  .table-header {
-    background-color: var(--surface-dark-hover);
-  }
-
-  .table-row {
-    border-color: var(--border-dark);
-  }
-
-  .table-row:hover {
-    background-color: var(--surface-dark-hover);
-  }
-}
+/* No dark-mode override needed: --border-default / --surface-hover above are
+   already theme-reactive. */
 
 /* ============================================================================
    ALERT SYSTEM
@@ -1476,7 +1429,7 @@
 .modal-content .btn-primary,
 .side-panel .btn-primary {
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .modal-content .btn-primary:hover:not(:disabled),
@@ -1507,77 +1460,20 @@
 
 .modal-content .btn-danger,
 .side-panel .btn-danger {
-  background: var(--color-danger);
+  background: var(--color-danger-solid);
   color: var(--text-inverse);
 }
 
 .modal-content .btn-danger:hover:not(:disabled),
 .side-panel .btn-danger:hover:not(:disabled) {
-  background: var(--color-danger-dark);
+  filter: brightness(0.9);
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .modal-content .modal-header,
-  .side-panel .modal-header {
-    background: var(--surface-dark-card);
-    border-bottom-color: var(--border-dark);
-  }
-
-  .modal-content .modal-title,
-  .side-panel .modal-title { color: var(--text-dark-primary); }
-  .modal-content .modal-subtitle,
-  .side-panel .modal-subtitle { color: var(--text-dark-secondary); }
-
-  .modal-content .modal-close-btn:hover,
-  .side-panel .modal-close-btn:hover {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--color-danger);
-  }
-
-  .modal-content .form-label,
-  .side-panel .form-label { color: var(--text-dark-secondary); }
-
-  .modal-content .form-input,
-  .modal-content .form-textarea,
-  .side-panel .form-input,
-  .side-panel .form-textarea {
-    background-color: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-
-  .modal-content .form-input:focus,
-  .modal-content .form-textarea:focus,
-  .side-panel .form-input:focus,
-  .side-panel .form-textarea:focus {
-    border-color: var(--color-primary);
-    background-color: var(--surface-dark-card);
-  }
-
-  .modal-content .form-input::placeholder,
-  .modal-content .form-textarea::placeholder,
-  .side-panel .form-input::placeholder,
-  .side-panel .form-textarea::placeholder {
-    color: var(--text-dark-tertiary);
-  }
-
-  .modal-content .form-actions,
-  .side-panel .form-actions { border-top-color: var(--border-dark); }
-
-  .modal-content .btn-secondary,
-  .side-panel .btn-secondary {
-    color: var(--text-dark-secondary);
-    border-color: var(--border-dark);
-  }
-
-  .modal-content .btn-secondary:hover:not(:disabled),
-  .side-panel .btn-secondary:hover:not(:disabled) {
-    background: var(--surface-dark-hover);
-    border-color: var(--border-dark-strong);
-    color: var(--text-dark-primary);
-  }
-}
+/* No dark-mode override needed: every property this used to reassign
+   (--surface-card/-hover, --text-primary/-secondary/-tertiary,
+   --border-default/-strong, --feedback-danger-light) is already
+   theme-reactive above, including the close button's hover tint and the
+   secondary button's hover state. */
 
 /* ============================================================================
    CANONICAL DIALOG SYSTEM (single source of truth)
@@ -1722,14 +1618,14 @@
 }
 
 .dialog-content .btn-danger {
-  background: var(--color-danger);
-  color: white;
+  background: var(--color-danger-solid);
+  color: var(--text-inverse);
   border: 1px solid var(--color-danger-dark);
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
 
 .dialog-content .btn-danger:hover:not(:disabled) {
-  background: var(--color-danger-dark);
+  filter: brightness(0.9);
   box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
   transform: translateY(-2px);
 }
@@ -1813,85 +1709,10 @@
   margin-top: var(--space-sm);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  .dialog-content {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-  }
-
-  .dialog-icon-danger {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, transparent 100%);
-    border-color: rgba(239, 68, 68, 0.3);
-  }
-
-  .dialog-title {
-    color: var(--text-dark-primary);
-  }
-
-  .dialog-message {
-    color: var(--text-dark-secondary);
-  }
-
-  .dialog-details {
-    background: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
-
-  .detail-label {
-    color: var(--text-dark-secondary);
-  }
-
-  .detail-value {
-    color: var(--text-dark-primary);
-  }
-
-  .dialog-actions {
-    border-top-color: var(--border-dark);
-  }
-
-  .dialog-content .btn-secondary {
-    background: var(--surface-dark-hover);
-    color: var(--text-dark-primary);
-    border-color: var(--border-dark-strong);
-  }
-
-  .dialog-content .btn-secondary:hover:not(:disabled) {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .dialog-content .btn-danger {
-    background: var(--color-danger);
-    border-color: var(--color-danger);
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-  }
-
-  .dialog-content .btn-danger:hover:not(:disabled) {
-    background: var(--color-danger-dark);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
-  }
-
-  .dialog-info {
-    background: var(--surface-dark-hover);
-  }
-
-  .dialog-info p,
-  .dialog-info .info-label,
-  .dialog-info ul li {
-    color: var(--text-dark-secondary);
-  }
-
-  .dialog-info .info-note {
-    color: var(--text-dark-tertiary);
-  }
-
-  .dialog-warning {
-    border-color: var(--color-warning);
-  }
-}
+/* No dark-mode override needed: every property this used to reassign
+   (--surface-card/-hover, --text-primary/-secondary/-tertiary,
+   --border-default/-strong, --feedback-warning-light, --color-danger/-dark,
+   --color-warning) is already theme-reactive above. */
 
 /* Responsive */
 @media (max-width: 640px) {

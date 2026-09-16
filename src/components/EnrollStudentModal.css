@@ -302,7 +302,7 @@
 
 .modal-content--large .btn-primary {
   background: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
 }
 
 .modal-content--large .btn-primary:hover:not(:disabled) {

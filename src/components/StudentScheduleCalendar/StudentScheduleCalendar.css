@@ -186,7 +186,7 @@
 /* 9. Selected day — darker highlight with ring */
 .day-cell--selected {
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   font-weight: var(--weight-bold);
   box-shadow: 0 0 0 2px var(--color-primary-dark);
 }

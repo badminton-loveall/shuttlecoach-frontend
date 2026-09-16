@@ -277,18 +277,7 @@
   color: var(--text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .drill-autocomplete__menu {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-  .drill-autocomplete__option {
-    color: var(--text-dark-primary);
-  }
-  .drill-autocomplete__option:hover {
-    background-color: var(--surface-dark-hover);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* Label + input pair inside the builder panel. Deliberately not .form-group/
    .form-label: those are unscoped globals that several component CSS files
@@ -417,11 +406,7 @@
   padding: var(--space-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page {
-    background: linear-gradient(135deg, var(--color-slate-900) 0%, var(--color-slate-950) 100%);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__container {
   width: 100%;
@@ -437,12 +422,7 @@
   animation: slideInUp var(--transition-base);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__card {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__header {
   text-align: center;
@@ -457,11 +437,7 @@
   font-family: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__subtitle {
   font-size: var(--font-small);
@@ -469,11 +445,7 @@
   margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__subtitle {
-    color: var(--text-dark-secondary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__form {
   display: flex;
@@ -503,11 +475,7 @@
   border-top: 1px solid var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__demo-credentials {
-    border-top-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__demo-title {
   font-size: var(--font-label);
@@ -518,11 +486,7 @@
   margin: 0 0 var(--space-md) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__demo-title {
-    color: var(--text-dark-secondary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__credential-list {
   display: flex;
@@ -541,12 +505,7 @@
   border: 1px solid var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__credential-item {
-    background-color: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__credential-role {
   font-weight: var(--weight-semibold);
@@ -554,11 +513,7 @@
   font-size: var(--font-label);
 }
 
-@media (prefers-color-scheme: dark) {
-  .login-page__credential-role {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .login-page__credential-value {
   font-family: 'Monaco', 'Courier New', monospace;
@@ -643,11 +598,7 @@
   margin: 0 0 var(--space-xs) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .hc-welcome-title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .hc-welcome-subtitle {
   font-size: var(--font-sm);
@@ -656,11 +607,7 @@
   margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .hc-welcome-subtitle {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .hc-stats-grid {
   display: grid;
@@ -697,11 +644,7 @@
   margin: 0 0 var(--space-xs) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .hc-review-title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .hc-review-subtitle {
   font-size: var(--font-xs);
@@ -710,11 +653,7 @@
   margin: var(--space-xs) 0 0 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .hc-review-subtitle {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .hc-overview {
   display: flex;
@@ -801,11 +740,7 @@
   margin: 0 0 var(--space-xs) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .ac-welcome-title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .ac-welcome-subtitle {
   font-size: var(--font-sm);
@@ -814,11 +749,7 @@
   margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .ac-welcome-subtitle {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .ac-stats-grid {
   display: grid;
@@ -859,11 +790,7 @@
   margin: 0 0 var(--space-md) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .ac-section-title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .ac-search-filter-row {
   display: flex;
@@ -886,11 +813,7 @@
   font-style: italic;
 }
 
-@media (prefers-color-scheme: dark) {
-  .ac-filter-results {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .ac-overview {
   margin-top: var(--space-xl);
@@ -967,12 +890,7 @@
   overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-section {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-filter-controls {
   display: flex;
@@ -983,11 +901,7 @@
   flex-wrap: wrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-controls {
-    border-bottom-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-filter-label {
   font-size: var(--font-sm);
@@ -996,11 +910,7 @@
   white-space: nowrap;
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-label {
-    color: var(--text-dark-secondary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-filter-select {
   padding: var(--space-sm) var(--space-md);
@@ -1015,23 +925,13 @@
   min-width: 140px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-select {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-filter-select:hover {
   border-color: var(--border-strong);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-select:hover {
-    border-color: var(--border-dark-strong);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-filter-select:focus {
   outline: none;
@@ -1045,11 +945,7 @@
   margin-left: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-filter-results {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-container {
   overflow-x: auto;
@@ -1064,11 +960,7 @@
   background-color: var(--surface-hover);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled thead {
-    background-color: var(--surface-dark-hover);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled th {
   padding: var(--space-md) var(--space-lg);
@@ -1081,33 +973,20 @@
   border-bottom: 1px solid var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled th {
-    color: var(--text-dark-secondary);
-    border-bottom-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled tbody tr {
   border-bottom: 1px solid var(--border-light);
   transition: background-color var(--transition-base);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled tbody tr {
-    border-bottom-color: var(--border-dark-light);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled tbody tr:hover {
   background-color: var(--surface-hover);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled tbody tr:hover {
-    background-color: var(--surface-dark-hover);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled td {
   padding: var(--space-md) var(--space-lg);
@@ -1115,21 +994,13 @@
   color: var(--text-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled td {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled td.text-muted {
   color: var(--text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-styled td.text-muted {
-    color: var(--text-dark-secondary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .table-styled td.text-bold {
   font-weight: var(--weight-semibold);
@@ -1210,11 +1081,8 @@
   }
 }
 
-@media (max-width: 640px) and (prefers-color-scheme: dark) {
-  .table-styled--drills tbody tr {
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --border-default above (mobile card
+   treatment) is already theme-reactive. */
 
 .table-badge {
   display: inline-flex;
@@ -1233,23 +1101,12 @@
   color: var(--color-success);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-badge--success {
-    background-color: rgba(34, 197, 94, 0.15);
-    color: #86efac;
-  }
-}
+/* No dark-mode override needed: --feedback-success-light / --color-success
+   above are already theme-reactive (and WCAG-AA verified as a pair). */
 
 .table-badge--pending {
   background-color: var(--feedback-warning-light);
   color: var(--color-warning);
-}
-
-@media (prefers-color-scheme: dark) {
-  .table-badge--pending {
-    background-color: rgba(245, 158, 11, 0.15);
-    color: #fcd34d;
-  }
 }
 
 .table-badge--overdue {
@@ -1257,23 +1114,9 @@
   color: var(--color-danger);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-badge--overdue {
-    background-color: rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
-  }
-}
-
 .table-badge--waived {
   background-color: var(--surface-hover);
   color: var(--text-secondary);
-}
-
-@media (prefers-color-scheme: dark) {
-  .table-badge--waived {
-    background-color: var(--surface-dark-hover);
-    color: var(--text-dark-secondary);
-  }
 }
 
 .table-action-link {
@@ -1339,11 +1182,7 @@
   font-size: var(--font-sm);
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-empty {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* ============================================================================
    TEXT ACTION BUTTONS - CONSISTENT LINK STYLE ACROSS ALL TABLES
@@ -1361,38 +1200,24 @@
 }
 
 .text-action--primary {
-  color: #3B82F6;
+  color: var(--color-info);
 }
 
 .text-action--primary:hover {
-  color: #2563EB;
+  color: var(--color-info-dark);
 }
 
 .text-action--danger {
-  color: #EF4444;
+  color: var(--color-danger);
 }
 
 .text-action--danger:hover {
-  color: #DC2626;
+  color: var(--color-danger-dark);
 }
 
-@media (prefers-color-scheme: dark) {
-  .text-action--primary {
-    color: #93C5FD;
-  }
-
-  .text-action--primary:hover {
-    color: #60A5FA;
-  }
-
-  .text-action--danger {
-    color: #FCA5A5;
-  }
-
-  .text-action--danger:hover {
-    color: #F87171;
-  }
-}
+/* No dark-mode override needed: --color-info/-dark and --color-danger/-dark
+   above are already theme-reactive and land on the same hex values this
+   override used to hardcode. */
 
 @media (max-width: 768px) {
   .table-filter-controls {
@@ -1549,20 +1374,8 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .table-responsive-cards tr {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .table-responsive-cards td::before {
-    color: var(--text-dark-secondary);
-  }
-
-  .table-responsive-cards td:first-child {
-    border-bottom-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default /
+   --text-secondary above are already theme-reactive. */
 
 /* ============================================================================
    FILTER PANEL - NOVEL MODERN DESIGN
@@ -1592,12 +1405,7 @@
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-panel {
-    background: linear-gradient(135deg, var(--surface-dark-card) 0%, rgba(184, 225, 53, 0.05) 100%);
-    border-color: var(--border-dark);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-panel-search {
   flex: 0 1 300px;
@@ -1617,23 +1425,13 @@
   position: relative;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-search {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-search::placeholder {
   color: var(--text-tertiary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-search::placeholder {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-search:focus {
   outline: none;
@@ -1642,11 +1440,7 @@
   background-color: var(--surface-card);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-search:focus {
-    background-color: var(--surface-dark-card);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-panel-divider {
   width: 2px;
@@ -1655,11 +1449,7 @@
   margin: 0 var(--space-sm);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-panel-divider {
-    background: linear-gradient(180deg, transparent 0%, var(--border-dark) 50%, transparent 100%);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-status-badges {
   display: flex;
@@ -1772,12 +1562,7 @@
   gap: 6px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-count {
-    color: var(--text-dark-tertiary);
-    background: var(--surface-dark-hover);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 @media (max-width: 1024px) {
   .filter-panel {
@@ -1866,11 +1651,7 @@
   margin-left: auto;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-count {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 @media (max-width: 1024px) {
   .filter-panel {
@@ -1946,6 +1727,16 @@
   gap: var(--space-lg);
 }
 
+/* The title/subtitle block is the only thing here allowed to shrink and
+   wrap — without min-width:0 a flex child can't shrink below its content's
+   natural width, which is exactly what a long subtitle needs to do to wrap
+   onto multiple lines instead of overflowing past the (flex-shrink:0)
+   button next to it. */
+.page-header > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .page-header-actions {
   display: flex;
   align-items: center;
@@ -1962,11 +1753,7 @@
   letter-spacing: -0.5px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .page-header-title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .page-header-subtitle {
   font-size: var(--font-sm);
@@ -1975,11 +1762,7 @@
   line-height: 1.3;
 }
 
-@media (prefers-color-scheme: dark) {
-  .page-header-subtitle {
-    color: var(--text-dark-tertiary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .btn-create-fee {
   display: inline-flex;
@@ -1990,7 +1773,7 @@
   font-weight: var(--weight-semibold);
   text-transform: capitalize;
   background-color: var(--color-primary);
-  color: var(--text-primary);
+  color: var(--on-primary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -2023,16 +1806,21 @@
   stroke-linejoin: round;
 }
 
+/* .page-header stays a row (title left, action button right) at every
+   width, per product direction — the button should always sit beside its
+   heading, sized to its own content, never stacked full-width below it. */
 @media (max-width: 768px) {
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .page-header-title {
+    font-size: 22px;
   }
 
   .btn-create-fee {
-    width: 100%;
-    justify-content: center;
+    padding: 8px 14px;
+    font-size: var(--font-xs);
   }
 }
 
@@ -2055,23 +1843,13 @@
   min-width: 120px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-dropdown {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-dropdown:hover {
   border-color: var(--border-strong);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-dropdown:hover {
-    border-color: var(--border-dark-strong);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 .filter-dropdown:focus {
   outline: none;
@@ -2085,12 +1863,7 @@
   padding: 6px 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .filter-dropdown option {
-    background-color: var(--surface-dark-card);
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* ============================================================================
    CURRICULUM BUILDER PAGE
@@ -2143,6 +1916,18 @@
 .curriculum-library {
   position: sticky;
   top: var(--space-md);
+}
+
+/* The sticky sidebar only makes sense in the two-column desktop layout
+   above — .curriculum-layout collapses to a single stacked column below
+   768px, and left sticky here, .curriculum-library (course list) stayed
+   pinned near the top of the viewport while .curriculum-editor (Course
+   Title, "Create Course", week tabs...) scrolled normally and rendered on
+   top of it, since it comes later in the DOM. */
+@media (max-width: 768px) {
+  .curriculum-library {
+    position: static;
+  }
 }
 
 .curriculum-editor {
@@ -2213,21 +1998,7 @@
   margin-top: 2px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .drill-library__footer {
-    background: var(--surface-dark-hover);
-    border-top-color: var(--border-dark);
-  }
-
-  .drill-item {
-    background: var(--surface-dark-hover);
-    border-color: var(--border-dark);
-  }
-
-  .drill-item:hover {
-    background: var(--surface-dark-card);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* Week tabs */
 .curriculum-week-tabs {
@@ -2261,19 +2032,7 @@
   font-weight: var(--weight-semibold);
 }
 
-@media (prefers-color-scheme: dark) {
-  .curriculum-week-tabs {
-    border-bottom-color: var(--border-dark);
-  }
-
-  .curriculum-week-tab {
-    color: var(--text-dark-secondary);
-  }
-
-  .curriculum-week-tab:hover {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* Week content area */
 .curriculum-week-content {
@@ -2358,22 +2117,24 @@
   color: var(--color-danger);
 }
 
+/* .curriculum-drop-zone / .curriculum-drill-item: no dark-mode override
+   needed, --surface-hover/-card / --border-default above are already
+   theme-reactive. .curriculum-week-content .input has no light-mode
+   equivalent of its own (it otherwise falls back to plain .input /
+   input styling) — kept as an explicit dark-only tint, now gated on the
+   explicit toggle too instead of only the OS preference. */
 @media (prefers-color-scheme: dark) {
-  .curriculum-drop-zone {
-    border-color: var(--border-dark);
-    background: var(--surface-dark-hover);
-  }
-
-  .curriculum-drill-item {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .curriculum-week-content .input {
+  :root:not([data-theme="light"]) .curriculum-week-content .input {
     background: var(--surface-dark-hover);
     border-color: var(--border-dark);
     color: var(--text-dark-primary);
   }
+}
+
+:root[data-theme="dark"] .curriculum-week-content .input {
+  background: var(--surface-dark-hover);
+  border-color: var(--border-dark);
+  color: var(--text-dark-primary);
 }
 
 /* Course list panel (Curriculum page master list) */
@@ -2390,6 +2151,16 @@
   justify-content: space-between;
   padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-default);
+}
+
+/* .btn-create-fee is shared with the page-level "Create Fee" CTA, which
+   goes full-width below 768px (see the .btn-create-fee media rule above).
+   That collides with this compact inline "+ New" button, which should
+   always stay content-sized next to the "Courses (N)" title — not stretch
+   across the row and overlap it. Higher specificity wins regardless of the
+   media query. */
+.course-list-panel__header .btn-create-fee {
+  width: auto;
 }
 
 .course-list-panel__title {
@@ -2500,30 +2271,8 @@
   display: inline-block;
 }
 
-@media (prefers-color-scheme: dark) {
-  .course-list-panel {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .course-list-panel__header {
-    border-bottom-color: var(--border-dark);
-  }
-
-  .course-list-panel__title {
-    color: var(--text-dark-primary);
-  }
-
-  .course-list-card__name {
-    color: var(--text-dark-primary);
-  }
-
-  .course-list-card--active,
-  .course-list-card:hover {
-    background: var(--surface-dark-hover);
-  }
-
-}
+/* No dark-mode override needed: --surface-card/-hover / --border-default /
+   --text-primary above are already theme-reactive. */
 
 /* Enrollment section (Student edit page) */
 .enrollment-form-grid {
@@ -2600,21 +2349,8 @@
   border-radius: var(--radius-sm);
 }
 
-@media (prefers-color-scheme: dark) {
-  .enrollment-summary-card,
-  .enrollment-history-row {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .enrollment-summary-card__value {
-    color: var(--text-dark-primary);
-  }
-
-  .enrollment-calendar-preview {
-    background: var(--surface-dark-hover);
-  }
-}
+/* No dark-mode override needed: --surface-card/-hover / --border-default /
+   --text-primary above are already theme-reactive. */
 
 /* Drill training record (Training Log page) */
 .drill-record-list {
@@ -2684,28 +2420,7 @@
   color: var(--text-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  .drill-record-row {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-
-  .drill-record-row__name {
-    color: var(--text-dark-primary);
-  }
-
-  .drill-record-row__edit {
-    border-top-color: var(--border-dark);
-  }
-
-  .enrollment-period-group {
-    background: var(--surface-dark-hover);
-  }
-
-  .enrollment-period-group__title {
-    color: var(--text-dark-primary);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* ============================================================================
    STUDENT PROFILE PAGE
@@ -2969,22 +2684,7 @@
   .sp-header-meta .text-small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 }
 
-@media (prefers-color-scheme: dark) {
-  .sp-student-name { color: var(--text-dark-primary); }
-  .sp-tab { color: var(--text-dark-secondary); }
-  .sp-tab:hover { color: var(--text-dark-primary); }
-  .sp-tab-nav { border-bottom-color: var(--border-dark); }
-  .sp-back-arrow {
-    background: var(--surface-dark-card);
-    border-color: var(--border-dark);
-    color: var(--text-dark-secondary);
-  }
-  .sp-back-arrow:hover {
-    background: var(--surface-dark-hover);
-    color: var(--text-dark-primary);
-    border-color: var(--border-dark-strong);
-  }
-}
+/* dark-mode override removed: already theme-reactive via base rule tokens */
 
 /* ============================================================================
    ACCESS DENIED PAGE
@@ -3046,11 +2746,20 @@
   outline-offset: 2px;
 }
 
+/* This page is deliberately dark by default regardless of the app theme,
+   flipping light only when the OS/user is explicitly in light mode — kept
+   as-is, just widened to also honor the explicit toggle (not only OS
+   preference). */
 @media (prefers-color-scheme: light) {
-  .access-denied-page {
+  :root:not([data-theme="dark"]) .access-denied-page {
     background-color: var(--color-slate-50);
     color: var(--color-slate-900);
   }
+}
+
+:root[data-theme="light"] .access-denied-page {
+  background-color: var(--color-slate-50);
+  color: var(--color-slate-900);
 }
 
 
@@ -3079,14 +2788,8 @@
   border: 1px solid var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .change-password-page__card,
-  .forgot-password-page__card,
-  .reset-password-page__card {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default above are
+   already theme-reactive. */
 
 .change-password-page__header,
 .forgot-password-page__header,
@@ -3103,13 +2806,8 @@
   margin: 0 0 var(--space-sm) 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .change-password-page__title,
-  .forgot-password-page__title,
-  .reset-password-page__title {
-    color: var(--text-dark-primary);
-  }
-}
+/* No dark-mode override needed: --text-primary above is already
+   theme-reactive. */
 
 .change-password-page__subtitle,
 .forgot-password-page__subtitle,
@@ -3120,13 +2818,8 @@
   line-height: var(--line-normal);
 }
 
-@media (prefers-color-scheme: dark) {
-  .change-password-page__subtitle,
-  .forgot-password-page__subtitle,
-  .reset-password-page__subtitle {
-    color: var(--text-dark-secondary);
-  }
-}
+/* No dark-mode override needed: --text-secondary above is already
+   theme-reactive. */
 
 .change-password-page__form,
 .forgot-password-page__form,
@@ -3200,12 +2893,8 @@
   border: 1px solid var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-page__card {
-    background-color: var(--surface-dark-card);
-    border-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --surface-card / --border-default above are
+   already theme-reactive. */
 
 .profile-page__header {
   margin-bottom: var(--space-xl);
@@ -3232,16 +2921,8 @@
   line-height: var(--line-normal);
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-page__title,
-  .profile-page__section-title {
-    color: var(--text-dark-primary);
-  }
-
-  .profile-page__subtitle {
-    color: var(--text-dark-secondary);
-  }
-}
+/* No dark-mode override needed: --text-primary / --text-secondary above are
+   already theme-reactive. */
 
 /* Profile Info Section */
 .profile-page__info {
@@ -3267,7 +2948,7 @@
   height: 80px;
   border-radius: 50%;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3303,34 +2984,27 @@
   font-weight: var(--weight-regular, 400);
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-page__detail-label {
-    color: var(--text-dark-secondary);
-  }
-
-  .profile-page__detail-value {
-    color: var(--text-dark-primary);
-  }
-}
+/* No dark-mode override needed: --text-secondary / --text-primary above are
+   already theme-reactive. */
 
 .profile-page__role-badge {
   display: inline-block;
   padding: 2px 10px;
   border-radius: var(--radius-sm);
-  background-color: var(--color-primary-lightest, #e8f4fd);
-  color: var(--color-primary-dark, #1565c0);
+  background-color: var(--feedback-info-light);
+  color: var(--color-info-text);
   font-size: var(--font-small);
   font-weight: var(--weight-medium);
   text-transform: capitalize;
   width: fit-content;
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-page__role-badge {
-    background-color: rgba(66, 165, 245, 0.15);
-    color: var(--color-primary-light, #64b5f6);
-  }
-}
+/* No dark-mode override needed: this used to read undefined
+   --color-primary-lightest/-light tokens (silently falling back to
+   hardcoded pale-blue hex) alongside --color-primary-dark, an unrelated
+   green brand token — a pre-existing mismatch. Pointed at the WCAG-verified
+   --feedback-info-light / --color-info-text pair instead, both already
+   theme-reactive. */
 
 /* Divider */
 .profile-page__divider {
@@ -3339,11 +3013,8 @@
   background-color: var(--border-default);
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-page__divider {
-    background-color: var(--border-dark);
-  }
-}
+/* No dark-mode override needed: --border-default above is already
+   theme-reactive. */
 
 /* Password Form */
 .profile-page__form {
