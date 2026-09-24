@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/apiClient';
 import type { Center, CenterSubscription, MarketplaceItem } from '../../types';
 import AdminCenterAccounting from '../../components/AdminCenterAccounting';
+import AdminCenterStudents from '../../components/AdminCenterStudents';
 import { getTrialInfo, formatTrialLabel } from '../../utils/subscriptionUtils';
 import { SUPPORTED_SPORTS, SPORT_LABELS } from '../../constants/sports';
 import type { Sport } from '../../constants/sports';
@@ -632,6 +633,12 @@ export const CenterDetailPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Students Section — resend invite / reset password per student */}
+      <div className="center-detail-page__section">
+        <h2 className="center-detail-page__section-title">Students</h2>
+        {id && <AdminCenterStudents centerId={id} />}
+      </div>
 
       {/* Activation Section */}
       <div className="center-detail-page__section">
