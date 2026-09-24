@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, matchPath } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccountingAccess } from '../hooks/useAccountingAccess';
 import CenterSwitcher from './CenterSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 import logoImg from '../assets/logo.png';
 import './TopNav.css';
 
@@ -350,6 +351,11 @@ export const TopNav: React.FC = () => {
                   Help
                 </Link>
                 <div className="topnav__profile-divider" />
+                <div className="topnav__profile-theme">
+                  <span className="topnav__profile-theme-label">Theme</span>
+                  <ThemeToggle />
+                </div>
+                <div className="topnav__profile-divider" />
                 <button className="topnav__profile-item topnav__profile-item--danger" onClick={handleSignOut}>
                   Sign Out
                 </button>
@@ -443,6 +449,11 @@ export const TopNav: React.FC = () => {
             >
               Help
             </Link>
+
+            <div className="topnav__profile-theme">
+              <span className="topnav__profile-theme-label">Theme</span>
+              <ThemeToggle />
+            </div>
 
             {/* Sign out */}
             <button className="topnav__drawer-link topnav__drawer-signout" onClick={handleSignOut}>

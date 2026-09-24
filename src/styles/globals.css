@@ -22,7 +22,20 @@
 /* Import Component Styles */
 @import "./components.css";
 
-@custom-variant dark (&:is(.dark *));
+/* `dark:` utilities follow the in-app theme choice (ThemeContext sets
+   data-theme on <html>; "System" removes it and defers to the OS).
+   Previously keyed off a `.dark` class nothing ever set, so every dark:
+   utility in the app was dead and those components stayed light in dark mode. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
 
 /* ============================================================================
    BASE STYLES

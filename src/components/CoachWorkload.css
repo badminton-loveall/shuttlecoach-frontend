@@ -6,8 +6,8 @@
 /* Block */
 .coach-workload {
   border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  background-color: #ffffff;
+  border: 1px solid var(--border-default);
+  background-color: var(--surface-card);
   padding: 0;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -17,7 +17,7 @@
 .coach-workload__title {
   font-size: 16px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0;
   padding: 20px 24px 0 24px;
   letter-spacing: -0.02em;
@@ -25,11 +25,11 @@
 
 .coach-workload__subtitle {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
   padding: 0 24px 16px 24px;
   font-weight: 500;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-default);
 }
 
 /* Grid List */
@@ -46,9 +46,9 @@
   align-items: center;
   gap: 12px;
   padding: 14px 24px;
-  background-color: #ffffff;
+  background-color: var(--surface-card);
   border: none;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-default);
   transition: all 0.15s ease;
 }
 
@@ -57,7 +57,7 @@
 }
 
 .coach-workload__item:hover {
-  background-color: #f9fafb;
+  background-color: var(--surface-hover);
 }
 
 .coach-workload__item-content {
@@ -104,7 +104,7 @@
   min-width: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -144,14 +144,14 @@
 .coach-workload__legend {
   margin: 0;
   padding: 16px 24px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
   font-size: 12px;
-  color: #6b7280;
-  background-color: #f9fafb;
+  color: var(--text-secondary);
+  background-color: var(--surface-hover);
 }
 
 .coach-workload__legend-item {
@@ -178,57 +178,4 @@
 
 .coach-workload__legend-dot--red {
   background-color: #dc2626;
-}
-
-/* Light mode - clean grid styling */
-@media (prefers-color-scheme: light) {
-  .coach-workload {
-    background-color: #ffffff;
-    border-color: #e5e7eb;
-  }
-
-  .coach-workload__title {
-    color: #111827;
-  }
-
-  .coach-workload__subtitle {
-    color: #6b7280;
-    border-bottom-color: #f3f4f6;
-  }
-
-  .coach-workload__item {
-    background-color: #ffffff;
-    border-bottom-color: #f3f4f6;
-  }
-
-  .coach-workload__item:hover {
-    background-color: #f9fafb;
-  }
-
-  .coach-workload__name {
-    color: #374151;
-  }
-
-  .coach-workload__legend {
-    border-top-color: #f3f4f6;
-    color: #6b7280;
-    background-color: #f9fafb;
-  }
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .coach-workload {
-    background-color: var(--surface-dark-card, #131820);
-    border-color: var(--border-dark, #333d47);
-  }
-
-  .coach-workload__item {
-    background-color: var(--surface-dark-hover, #1f262e);
-    border-color: var(--border-dark, #2a3441);
-  }
-
-  .coach-workload__legend {
-    border-top-color: var(--border-dark, #2a3441);
-  }
 }

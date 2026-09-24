@@ -56,7 +56,7 @@
   --color-primary: #B8E135;
   --color-primary-dark: #4F6A08;
   --color-primary-light: #CFF05E;
-  --on-primary: #16233D;
+  --on-primary: #000000;
 
   /* --------------------------------------------------------------------
      Status colors — `-text` variants are for text sitting on the matching
@@ -137,7 +137,7 @@
   --popover: 0 0% 100%;                /* #FFFFFF */
   --popover-foreground: 221.2 48.6% 20.6%;
   --primary: 74.3 74.1% 54.5%;         /* #B8E135 */
-  --primary-foreground: 220 47% 16.3%; /* #16233D */
+  --primary-foreground: 0 0% 0%; /* #000000 */
   --secondary: 204 21.7% 95.5%;        /* #F1F4F6 */
   --secondary-foreground: 221.2 48.6% 20.6%;
   --muted: 204 21.7% 95.5%;

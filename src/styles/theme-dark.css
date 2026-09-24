@@ -41,7 +41,7 @@
     --color-primary: #C8E85E;
     --color-primary-dark: #B8E135;
     --color-primary-light: #D8F08A;
-    --on-primary: #16233D;
+    --on-primary: #000000;
 
     --color-success: #4ADE80;
     --color-success-dark: #22C55E;
@@ -87,7 +87,7 @@
     --popover: 214.3 25% 11%;
     --popover-foreground: 200 17.6% 96.7%;
     --primary: 73.9 75% 63.9%;           /* #C8E85E */
-    --primary-foreground: 220 47% 16.3%; /* #16233D */
+    --primary-foreground: 0 0% 0%; /* #000000 */
     --secondary: 212 19.5% 15.1%;        /* #1F262E */
     --secondary-foreground: 200 17.6% 96.7%;
     --muted: 212 19.5% 15.1%;
@@ -123,7 +123,7 @@
   --color-primary: #C8E85E;
   --color-primary-dark: #B8E135;
   --color-primary-light: #D8F08A;
-  --on-primary: #16233D;
+  --on-primary: #000000;
 
   --color-success: #4ADE80;
   --color-success-dark: #22C55E;
@@ -169,7 +169,7 @@
   --popover: 214.3 25% 11%;
   --popover-foreground: 200 17.6% 96.7%;
   --primary: 73.9 75% 63.9%;
-  --primary-foreground: 220 47% 16.3%;
+  --primary-foreground: 0 0% 0%; /* #000000 */
   --secondary: 212 19.5% 15.1%;
   --secondary-foreground: 200 17.6% 96.7%;
   --muted: 212 19.5% 15.1%;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTheme, type ThemePreference } from '../contexts/ThemeContext';
 
-const OPTIONS: { value: ThemePreference; label: string; icon: string }[] = [
-  { value: 'light', label: 'Light', icon: '☀️' },
-  { value: 'dark', label: 'Dark', icon: '🌙' },
-  { value: 'system', label: 'System', icon: '🖥️' },
+const OPTIONS: { value: ThemePreference; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'system', label: 'System' },
 ];
 
 /**
@@ -22,8 +22,8 @@ export const ThemeToggle: React.FC = () => {
       aria-label="Theme"
       style={{
         display: 'inline-flex',
-        padding: '4px',
-        gap: '4px',
+        padding: '2px',
+        gap: '2px',
         backgroundColor: 'var(--surface-hover)',
         borderRadius: 'var(--radius-pill)',
         border: '1px solid var(--border-default)',
@@ -39,13 +39,11 @@ export const ThemeToggle: React.FC = () => {
             aria-checked={isActive}
             onClick={() => setTheme(option.value)}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
+              padding: '3px 10px',
               border: 'none',
               borderRadius: 'var(--radius-pill)',
-              fontSize: 'var(--font-sm)',
+              fontSize: 'var(--font-xs)',
+              lineHeight: 1.4,
               fontWeight: isActive ? 'var(--weight-semibold)' : 'var(--weight-medium)',
               fontFamily: 'var(--font-body)',
               cursor: 'pointer',
@@ -54,7 +52,6 @@ export const ThemeToggle: React.FC = () => {
               color: isActive ? 'var(--on-primary)' : 'var(--text-secondary)',
             }}
           >
-            <span aria-hidden="true">{option.icon}</span>
             {option.label}
           </button>
         );

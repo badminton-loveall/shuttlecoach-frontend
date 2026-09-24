@@ -103,8 +103,14 @@ export function ResetPasswordModal({ targetName, apiPath, sendEmailApiPath, onCl
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md mx-4"
-        style={{ padding: 'var(--space-2xl)', border: '1px solid var(--border-default)' }}
+        className="rounded-lg shadow-xl w-full max-w-md mx-4"
+        style={{
+          padding: 'var(--space-2xl)',
+          border: '1px solid var(--border-default)',
+          // Theme token, not Tailwind's bg-white/dark: — the dark: variant doesn't
+          // follow the app's data-theme, so the card stayed white under light text.
+          backgroundColor: 'var(--surface-card)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Tailwind's utility classes (text-lg, font-semibold) lose to this
