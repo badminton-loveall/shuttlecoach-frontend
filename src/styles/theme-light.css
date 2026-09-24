@@ -55,6 +55,7 @@
      -------------------------------------------------------------------- */
   --color-primary: #B8E135;
   --color-primary-dark: #4F6A08;
+  --color-primary-hover: #A6CC2A; /* hover fill for lime surfaces; -dark is for text */
   --color-primary-light: #CFF05E;
   --on-primary: #000000;
 

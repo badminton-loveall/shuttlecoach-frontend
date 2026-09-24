@@ -117,7 +117,7 @@
 }
 
 .btn-create-fee-student:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-hover);
   box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
   transform: translateY(-2px);
 }
@@ -343,7 +343,7 @@
 }
 
 .fees-empty-button:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-hover);
   box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
   transform: translateY(-2px);
 }

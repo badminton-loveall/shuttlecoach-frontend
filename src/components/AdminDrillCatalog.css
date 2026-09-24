@@ -38,7 +38,7 @@
 }
 
 .admin-drill-catalog__create-btn:hover {
-  background-color: var(--color-primary-dark, #a5cc2e);
+  background-color: var(--color-primary-hover, #a5cc2e);
   transform: translateY(-1px);
 }
 
@@ -211,7 +211,7 @@
 }
 
 .admin-drill-catalog__btn-primary:hover {
-  background-color: var(--color-primary-dark, #a5cc2e);
+  background-color: var(--color-primary-hover, #a5cc2e);
 }
 
 .admin-drill-catalog__btn-secondary {

@@ -40,6 +40,7 @@
        as "vivid accent" rather than muddy against a near-black background. */
     --color-primary: #C8E85E;
     --color-primary-dark: #B8E135;
+    --color-primary-hover: #B8E135; /* hover fill for lime surfaces; -dark is for text */
     --color-primary-light: #D8F08A;
     --on-primary: #000000;
 
@@ -122,6 +123,7 @@
 
   --color-primary: #C8E85E;
   --color-primary-dark: #B8E135;
+  --color-primary-hover: #B8E135; /* hover fill for lime surfaces; -dark is for text */
   --color-primary-light: #D8F08A;
   --on-primary: #000000;
 

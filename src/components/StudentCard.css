@@ -93,7 +93,7 @@
 }
 
 .student-card__avatar--primary {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
   color: var(--on-primary);
 }
 

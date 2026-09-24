@@ -401,7 +401,7 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-primary-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
 }
