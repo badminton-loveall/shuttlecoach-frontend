@@ -55,6 +55,20 @@ apiClient.interceptors.request.use(
 );
 
 /**
+ * Requests whose own 401 means "this attempt was rejected" (wrong
+ * credentials, expired reset token, ...), not "your existing session
+ * expired" — the auto-logout-and-redirect below must not fire for these,
+ * or a failed login attempt forces a hard reload of /login before the
+ * page's own error state ever gets a chance to render, which reads to the
+ * user as the form silently resetting with no error message at all.
+ */
+const AUTH_ENDPOINTS_EXEMPT_FROM_AUTO_LOGOUT = [
+  '/auth/login',
+  '/auth/forgot-password',
+  '/auth/reset-password',
+];
+
+/**
  * Response Interceptor
  * Handles 401 Unauthorized errors by logging out and redirecting to login
  */
@@ -65,7 +79,12 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError) => {
     // Handle 401 Unauthorized errors
-    if (error.response?.status === 401) {
+    const requestUrl = error.config?.url ?? '';
+    const isExemptAuthRequest = AUTH_ENDPOINTS_EXEMPT_FROM_AUTO_LOGOUT.some((path) =>
+      requestUrl.includes(path)
+    );
+
+    if (error.response?.status === 401 && !isExemptAuthRequest) {
       // Clear authentication state
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');

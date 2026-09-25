@@ -99,8 +99,13 @@ export const LoginPage: React.FC = () => {
     try {
       await login(formData.email, formData.password, centerSlug);
     } catch (error) {
+      // error.message on a raw AxiosError is a generic string like "Request
+      // failed with status code 401" — the backend's actual reason (e.g.
+      // "Invalid credentials") is in the JSON response body, not the
+      // exception message, so it has to be read from there explicitly.
+      const axiosError = error as { response?: { data?: { error?: string } } };
       setErrors({
-        general: error instanceof Error ? error.message : 'Login failed. Please try again.',
+        general: axiosError.response?.data?.error ?? 'Login failed. Please try again.',
       });
       setIsLoading(false);
     }

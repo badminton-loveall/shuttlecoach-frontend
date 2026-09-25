@@ -169,7 +169,15 @@ export const StudentDashboard: React.FC = () => {
       <div className="page-container">
         <div className="section-stack">
           {/* Welcome Banner with Name and Photo */}
-          <div className="bg-gradient-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 shadow-md border-l-4 border-primary" style={{ borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)' }}>
+          <div
+            className="shadow-md"
+            style={{
+              backgroundColor: 'var(--surface-elevated)',
+              borderLeft: '4px solid var(--color-primary)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-lg)',
+            }}
+          >
             <div className="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left" style={{ gap: 'var(--space-md)' }}>
               <div className="flex-shrink-0">
                 {student.profilePhoto ? (
