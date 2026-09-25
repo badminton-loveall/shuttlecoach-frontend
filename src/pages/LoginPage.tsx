@@ -21,7 +21,18 @@ interface FormErrors {
   email?: string;
   password?: string;
   general?: string;
+  generalAction?: string;
 }
+
+/**
+ * Maps the backend's login error codes to a concrete next step, shown as a
+ * second line under the error message — "incorrect password" alone doesn't
+ * tell someone whether to retype it or go reset it.
+ */
+const LOGIN_ERROR_ACTIONS: Record<string, string> = {
+  USER_NOT_FOUND: 'Double-check the email or username, or ask your coach/admin to confirm your account exists.',
+  PASSWORD_MISMATCH: 'Re-check your password, or use "Forgot Password?" below to reset it.',
+};
 
 const getRedirectPath = (role: UserRole): string => {
   switch (role) {
@@ -101,11 +112,13 @@ export const LoginPage: React.FC = () => {
     } catch (error) {
       // error.message on a raw AxiosError is a generic string like "Request
       // failed with status code 401" — the backend's actual reason (e.g.
-      // "Invalid credentials") is in the JSON response body, not the
-      // exception message, so it has to be read from there explicitly.
-      const axiosError = error as { response?: { data?: { error?: string } } };
+      // "Incorrect password") and errorCode are in the JSON response body,
+      // not the exception message, so they have to be read from there.
+      const axiosError = error as { response?: { data?: { error?: string; errorCode?: string } } };
+      const errorCode = axiosError.response?.data?.errorCode;
       setErrors({
         general: axiosError.response?.data?.error ?? 'Login failed. Please try again.',
+        generalAction: errorCode ? LOGIN_ERROR_ACTIONS[errorCode] : undefined,
       });
       setIsLoading(false);
     }
@@ -202,6 +215,9 @@ export const LoginPage: React.FC = () => {
             {errors.general && (
               <div style={styles.errorBanner}>
                 <span>{errors.general}</span>
+                {errors.generalAction && (
+                  <span style={styles.errorBannerAction}>{errors.generalAction}</span>
+                )}
               </div>
             )}
 
@@ -364,13 +380,22 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
   },
   errorBanner: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '4px',
     padding: 'var(--space-sm) var(--space-md)',
-    backgroundColor: '#fef2f2',
-    border: '1px solid #fecaca',
+    backgroundColor: 'var(--feedback-danger-light)',
+    border: '1px solid var(--color-danger-light)',
     borderRadius: '10px',
-    color: '#dc2626',
+    color: 'var(--color-danger-text)',
     fontSize: '13px',
     fontWeight: 500,
+  },
+  errorBannerAction: {
+    fontSize: '12px',
+    fontWeight: 400,
+    color: 'var(--color-danger-text)',
+    opacity: 0.85,
   },
   submitBtn: {
     width: '100%',

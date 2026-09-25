@@ -20,7 +20,7 @@ export interface EnrollStudentFormData {
   dateOfBirth: Date;
   gender: Gender;
   contactPhone: string;
-  email?: string;
+  email: string;
   guardianName?: string;
   guardianPhone?: string;
   baidNumber?: string;
@@ -153,7 +153,9 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
       newErrors.contactPhone = 'Phone number must be 10 digits';
     }
 
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email || !formData.email.trim()) {
+      newErrors.email = 'Email is required to create the student\'s login account';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
@@ -421,7 +423,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                     {errors.contactPhone && <span className="form-error-text">{errors.contactPhone}</span>}
                   </div>
                   <div className="form-group">
-                    <label htmlFor="email" className="form-label">Email <span className="form-optional">(optional)</span></label>
+                    <label htmlFor="email" className="form-label">Email *</label>
                     <input
                       id="email"
                       type="email"
@@ -430,6 +432,7 @@ export const EnrollStudentModal: React.FC<EnrollStudentModalProps> = ({
                       className={`form-input ${errors.email ? 'form-input-error' : ''}`}
                       placeholder="john@example.com"
                       disabled={isSubmitting}
+                      required
                     />
                     {errors.email && <span className="form-error-text">{errors.email}</span>}
                   </div>

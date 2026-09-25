@@ -14,7 +14,7 @@ import type { FeeStatus } from '../types';
 import { computeAllFeeStatuses } from '../utils/feeUtils';
 import { calculateAge } from '../utils/studentUtils';
 import { formatCurrency, formatDate, formatMonthYear } from '../utils/formatters';
-import { resolveAttributionName } from '../utils/displayName';
+import { resolveAttributionName, toTitleCase } from '../utils/displayName';
 
 /**
  * StudentDashboard Page
@@ -164,6 +164,11 @@ export const StudentDashboard: React.FC = () => {
     );
   }
 
+  // Names are stored however they were originally typed ("archana", "JOHN
+  // SMITH", ...) — title-case is purely cosmetic display formatting, so it
+  // happens here rather than being normalized in the database.
+  const displayName = toTitleCase(student.fullName);
+
   return (
     <DashboardLayout>
       <div className="page-container">
@@ -183,21 +188,21 @@ export const StudentDashboard: React.FC = () => {
                 {student.profilePhoto ? (
                   <img
                     src={student.profilePhoto}
-                    alt={student.fullName}
+                    alt={displayName}
                     className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-lg"
                     style={{ border: '4px solid var(--surface-elevated)', borderColor: 'var(--surface-elevated)' }}
                   />
                 ) : (
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center shadow-lg" style={{ border: '4px solid var(--surface-elevated)' }}>
                     <span className="text-xl sm:text-2xl font-bold text-primary">
-                      {student.fullName.charAt(0)}
+                      {displayName.charAt(0)}
                     </span>
                   </div>
                 )}
               </div>
               <div>
                 <h1 style={{ fontSize: 'var(--font-xl)', fontWeight: 'var(--weight-bold)', lineHeight: 'var(--line-tight)', color: 'var(--text-primary)', marginBottom: 'var(--space-xs)' }}>
-                  Welcome back, {student.fullName}!
+                  Welcome back, {displayName}!
                 </h1>
                 <p style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
                   Keep up the great work! Here's your training overview.
@@ -519,7 +524,7 @@ export const StudentDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--space-lg)' }}>
               <div>
                 <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Full Name</p>
-                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{student.fullName}</p>
+                <p className="text-base" style={{ color: 'var(--text-primary)' }}>{displayName}</p>
               </div>
               <div>
                 <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>Age</p>

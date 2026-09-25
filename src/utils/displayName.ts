@@ -29,3 +29,21 @@ export function resolveAttributionName(
 
   return value;
 }
+
+/**
+ * toTitleCase
+ *
+ * Capitalizes the first letter of each space-separated word and lowercases
+ * the rest — display-only formatting for names stored however they were
+ * originally typed ("archana", "JOHN SMITH", ...), without touching the
+ * underlying data (unlike email, name casing has no functional meaning, so
+ * there's nothing to normalize on write — this is purely cosmetic).
+ */
+export function toTitleCase(name: string | null | undefined): string {
+  if (!name) return name ?? '';
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word))
+    .join(' ');
+}
