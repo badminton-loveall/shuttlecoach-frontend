@@ -13,6 +13,14 @@ import '../styles/pages.css';
 const formatPrice = (price: number): string =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
 
+function extractErrorMessage(err: unknown, fallback: string): string {
+  const message =
+    err && typeof err === 'object' && 'response' in err
+      ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      : undefined;
+  return message || fallback;
+}
+
 export const AdminSubscriptionRequests: React.FC = () => {
   const [requests, setRequests] = useState<CenterSubscription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,8 +59,8 @@ export const AdminSubscriptionRequests: React.FC = () => {
       await apiClient.post(`/admin/subscription-requests/${request.id}/approve`, {});
       setSuccessMessage(`Approved "${request.itemName}" for ${request.centerName}.`);
       await fetchRequests();
-    } catch {
-      setError('Failed to approve this request.');
+    } catch (err) {
+      setError(extractErrorMessage(err, 'Failed to approve this request.'));
     } finally {
       setActingId(null);
     }
@@ -65,8 +73,8 @@ export const AdminSubscriptionRequests: React.FC = () => {
       await apiClient.post(`/admin/subscription-requests/${request.id}/reject`, {});
       setSuccessMessage(`Rejected "${request.itemName}" for ${request.centerName}.`);
       await fetchRequests();
-    } catch {
-      setError('Failed to reject this request.');
+    } catch (err) {
+      setError(extractErrorMessage(err, 'Failed to reject this request.'));
     } finally {
       setActingId(null);
     }
