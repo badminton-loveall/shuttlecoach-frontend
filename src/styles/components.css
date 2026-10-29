@@ -979,10 +979,13 @@
 
 /* ============================================================================
    UTILITY CLASSES
+   Classes sharing a Tailwind utility's name skip .marketing-scope: unlayered,
+   they would beat Tailwind's layered responsive variants there (e.g. `.hidden`
+   over `lg:block`, `.grid-cols-1` over `md:grid-cols-3`).
    ============================================================================ */
 
 /* Layout */
-.container {
+.container:not(.marketing-scope *) {
   max-width: var(--max-width-content);
   margin-left: auto;
   margin-right: auto;
@@ -999,11 +1002,11 @@
 }
 
 /* Flexbox */
-.flex {
+.flex:not(.marketing-scope *) {
   display: flex;
 }
 
-.flex-col {
+.flex-col:not(.marketing-scope *) {
   display: flex;
   flex-direction: column;
 }
@@ -1033,60 +1036,60 @@
 }
 
 /* Grid */
-.grid {
+.grid:not(.marketing-scope *) {
   display: grid;
 }
 
-.grid-cols-1 {
+.grid-cols-1:not(.marketing-scope *) {
   grid-template-columns: repeat(1, 1fr);
 }
 
-.grid-cols-2 {
+.grid-cols-2:not(.marketing-scope *) {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.grid-cols-3 {
+.grid-cols-3:not(.marketing-scope *) {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.grid-cols-4 {
+.grid-cols-4:not(.marketing-scope *) {
   grid-template-columns: repeat(4, 1fr);
 }
 
 /* Responsive Grid */
 @media (max-width: 1024px) {
-  .grid-cols-4 {
+  .grid-cols-4:not(.marketing-scope *) {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .grid-cols-3 {
+  .grid-cols-3:not(.marketing-scope *) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .grid-cols-4,
-  .grid-cols-3,
-  .grid-cols-2 {
+  .grid-cols-4:not(.marketing-scope *),
+  .grid-cols-3:not(.marketing-scope *),
+  .grid-cols-2:not(.marketing-scope *) {
     grid-template-columns: repeat(1, 1fr);
   }
 }
 
 /* Text Alignment */
-.text-left {
+.text-left:not(.marketing-scope *) {
   text-align: left;
 }
 
-.text-center {
+.text-center:not(.marketing-scope *) {
   text-align: center;
 }
 
-.text-right {
+.text-right:not(.marketing-scope *) {
   text-align: right;
 }
 
 /* Visibility */
-.hidden {
+.hidden:not(.marketing-scope *) {
   display: none;
 }
 
@@ -1103,7 +1106,7 @@
 }
 
 /* Width */
-.w-full {
+.w-full:not(.marketing-scope *) {
   width: 100%;
 }
 

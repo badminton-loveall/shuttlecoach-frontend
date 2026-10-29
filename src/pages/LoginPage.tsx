@@ -174,12 +174,11 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="marketing-scope grid min-h-screen bg-canvas text-fg lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      {/* Court panel (desktop). `max-lg:hidden`, not `hidden lg:flex`: the app's
-          unlayered `.hidden` rule in components.css would beat `lg:flex`. */}
+      {/* Court panel (desktop) */}
       <aside
         data-surface="court"
         aria-hidden="true"
-        className="relative overflow-hidden bg-court text-on-court max-lg:hidden lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16"
+        className="relative hidden overflow-hidden bg-court text-on-court lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16"
       >
         <ShuttleCourt className="pointer-events-none absolute bottom-10 right-10 top-10 h-[calc(100%-5rem)] w-auto text-on-court/20 xl:right-16" />
         <div className="relative max-w-sm">

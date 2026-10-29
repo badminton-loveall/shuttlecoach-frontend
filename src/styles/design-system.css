@@ -14,7 +14,9 @@
 }
 
 /* Apply background colors to html and body */
-* {
+/* Not inside .marketing-scope: unlayered, it would override every Tailwind
+   border color there (border-rule, border-accent, border-transparent). */
+*:not(.marketing-scope, .marketing-scope *) {
   border-color: hsl(var(--border));
 }
 
@@ -553,11 +555,13 @@ body {
    LAYOUT UTILITIES
    ============================================================================ */
 
-.flex {
+/* Skips .marketing-scope, where Tailwind's utilities of the same name apply
+   (see components.css UTILITY CLASSES). */
+.flex:not(.marketing-scope *) {
   display: flex;
 }
 
-.flex-col {
+.flex-col:not(.marketing-scope *) {
   display: flex;
   flex-direction: column;
 }
@@ -568,7 +572,7 @@ body {
   justify-content: center;
 }
 
-.grid {
+.grid:not(.marketing-scope *) {
   display: grid;
 }
 
@@ -577,7 +581,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.container {
+.container:not(.marketing-scope *) {
   max-width: var(--max-width-content);
   margin-left: auto;
   margin-right: auto;
