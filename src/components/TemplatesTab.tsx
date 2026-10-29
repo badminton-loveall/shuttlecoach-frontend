@@ -1,6 +1,7 @@
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import apiClient from '../utils/apiClient';
 import TemplateFormModal from './TemplateFormModal';
+import BatchInviteLinkModal from './BatchInviteLinkModal';
 import '../styles/pages.css';
 
 /**
@@ -46,6 +47,9 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
     name: string;
     slots: Array<{ day_of_week: string; start_time: string; duration_hours: number }>;
   } | null>(null);
+
+  // Invite link modal state
+  const [invitingTemplate, setInvitingTemplate] = useState<TemplateRecord | null>(null);
 
   // Delete confirmation state
   const [deletingTemplate, setDeletingTemplate] = useState<TemplateRecord | null>(null);
@@ -227,6 +231,13 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
                       <td>
                         <div className="flex gap-2">
                           <button
+                            onClick={() => setInvitingTemplate(template)}
+                            className="table-action-link table-action-link--success"
+                            aria-label={`Invite link for ${template.name}`}
+                          >
+                            Invite Link
+                          </button>
+                          <button
                             onClick={() => handleEditClick(template)}
                             className="table-action-link table-action-link--info"
                             aria-label={`Edit ${template.name}`}
@@ -258,6 +269,15 @@ const TemplatesTab = forwardRef<TemplatesTabHandle, TemplatesTabProps>(({ readOn
         onSuccess={handleFormSuccess}
         editingTemplate={editingTemplateWithSlots}
       />
+
+      {/* Shareable invite link for students to request to join */}
+      {invitingTemplate && (
+        <BatchInviteLinkModal
+          key={invitingTemplate.id}
+          batch={invitingTemplate}
+          onClose={() => setInvitingTemplate(null)}
+        />
+      )}
 
       {/* Delete confirmation dialog */}
       {deletingTemplate && (

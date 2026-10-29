@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import TemplatesTab from '../components/TemplatesTab';
 import type { TemplatesTabHandle } from '../components/TemplatesTab';
+import BatchJoinRequestsPanel from '../components/BatchJoinRequestsPanel';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/pages.css';
 
@@ -39,6 +40,9 @@ const BatchTimingsPage: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Requests from students who opened a batch's invite link */}
+          {!isReadOnly && <BatchJoinRequestsPanel />}
 
           <TemplatesTab ref={templatesTabRef} readOnly={isReadOnly} />
         </div>
