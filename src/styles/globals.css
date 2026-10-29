@@ -255,6 +255,23 @@
   text-wrap: pretty;
 }
 
+/* design-system.css reuses --font-display as a font *size* for the app, which
+   breaks the `font-display` utility (logo wordmark, headings) here. */
+.marketing-scope {
+  --font-display: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+}
+
+/* The app's form-element defaults (Inter, 12px radius) would otherwise
+   override the design system's type and restrained corners. Literal values:
+   --font-sans and --radius-md are redefined later by the shadcn theme. */
+.marketing-scope :is(input, select, textarea, button, .font-sans) {
+  font-family: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.marketing-scope :is(input, select, textarea, button[type="submit"]) {
+  border-radius: 6px;
+}
+
 .marketing-scope ::selection {
   background: var(--color-lime);
   color: var(--color-ink);

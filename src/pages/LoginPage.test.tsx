@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import LoginPage from './LoginPage';
 
 // Mock apiClient
@@ -40,13 +41,27 @@ vi.mock('../utils/apiClient', () => ({
  * Tests for: form validation, error messages, login flow, redirect
  */
 
+// ThemeProvider (used by the header's theme toggle) reads the OS color scheme;
+// jsdom has no matchMedia.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }),
+});
+
 // Wrapper component for routing and auth context
 const LoginPageWithProviders = () => (
-  <BrowserRouter>
-    <AuthProvider>
-      <LoginPage />
-    </AuthProvider>
-  </BrowserRouter>
+  <ThemeProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <LoginPage />
+      </AuthProvider>
+    </BrowserRouter>
+  </ThemeProvider>
 );
 
 describe('LoginPage Component', () => {
