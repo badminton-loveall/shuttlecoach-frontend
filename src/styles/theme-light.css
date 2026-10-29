@@ -43,6 +43,17 @@
   --la-info-bg:         #E3ECF2;
   --la-shadow-1:        0 1px 2px rgb(20 32 43 / 0.06), 0 1px 1px rgb(20 32 43 / 0.04);
   --la-shadow-2:        0 18px 40px -18px rgb(20 32 43 / 0.22), 0 2px 6px rgb(20 32 43 / 0.05);
+  --la-space-1:         2px;
+  --la-space-2:         4px;
+  --la-space-3:         8px;
+  --la-space-4:         12px;
+  --la-space-5:         16px;
+  --la-space-6:         24px;
+  --la-space-7:         36px;
+  --la-space-8:         42px;
+  --la-space-9:         64px;
+  --la-content-max:     1200px;
+  --la-gutter:          16px;
 
   /* --------------------------------------------------------------------
      Legacy surface / text / border aliases (used throughout existing components)

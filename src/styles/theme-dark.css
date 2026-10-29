@@ -45,6 +45,17 @@
     --la-info-bg:         #15232D;
     --la-shadow-1:        0 1px 2px rgb(0 0 0 / 0.35);
     --la-shadow-2:        0 18px 40px -18px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.3);
+    --la-space-1:         2px;
+    --la-space-2:         4px;
+    --la-space-3:         8px;
+    --la-space-4:         12px;
+    --la-space-5:         16px;
+    --la-space-6:         24px;
+    --la-space-7:         36px;
+    --la-space-8:         42px;
+    --la-space-9:         64px;
+    --la-content-max:     1200px;
+    --la-gutter:          16px;
 
     /* Legacy aliases */
     --surface-background:  var(--la-canvas);
@@ -174,6 +185,17 @@
   --la-info-bg:         #15232D;
   --la-shadow-1:        0 1px 2px rgb(0 0 0 / 0.35);
   --la-shadow-2:        0 18px 40px -18px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.3);
+  --la-space-1:         2px;
+  --la-space-2:         4px;
+  --la-space-3:         8px;
+  --la-space-4:         12px;
+  --la-space-5:         16px;
+  --la-space-6:         24px;
+  --la-space-7:         36px;
+  --la-space-8:         42px;
+  --la-space-9:         64px;
+  --la-content-max:     1200px;
+  --la-gutter:          16px;
 
   /* Legacy aliases */
   --surface-background:  var(--la-canvas);

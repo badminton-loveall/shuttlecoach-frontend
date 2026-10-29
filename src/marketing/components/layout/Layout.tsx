@@ -24,7 +24,7 @@ export function Layout() {
   }, [pathname, hash]);
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-canvas text-fg">
+    <div className="marketing-scope flex min-h-screen w-full flex-col bg-canvas text-fg">
       <a
         href="#main"
         className="sr-only rounded-md bg-primary px-4 py-2 text-on-primary focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50">
