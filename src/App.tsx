@@ -48,6 +48,16 @@ import AdminMarketplacePage from './pages/admin/AdminMarketplacePage';
 import AdminSubscriptionCatalogPage from './pages/admin/AdminSubscriptionCatalogPage';
 import AdminAccountingPage from './pages/admin/AdminAccountingPage';
 import AdminPayoutsPage from './pages/admin/AdminPayoutsPage';
+import { Layout as MarketingLayout } from './marketing/components/layout/Layout';
+import { HomePage } from './marketing/pages/Home';
+import { FeaturesPage } from './marketing/pages/Features';
+import { RolesPage } from './marketing/pages/Roles';
+import { SportsPage } from './marketing/pages/Sports';
+import { PricingPage } from './marketing/pages/Pricing';
+import { AboutPage } from './marketing/pages/About';
+import { ContactPage } from './marketing/pages/Contact';
+import { StyleGuidePage } from './marketing/pages/StyleGuide';
+import { NotFoundPage } from './marketing/pages/NotFound';
 import './App.css';
 
 /**
@@ -368,9 +378,18 @@ function App() {
             }
           />
 
-          {/* Default Redirect */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* Marketing & Public Website Routes */}
+          <Route element={<MarketingLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/roles" element={<RolesPage />} />
+            <Route path="/sports" element={<SportsPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/style-guide" element={<StyleGuidePage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
           </Routes>
         </ToastProvider>
       </AuthProvider>

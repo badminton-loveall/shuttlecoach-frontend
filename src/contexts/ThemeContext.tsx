@@ -18,6 +18,10 @@ interface ThemeContextInterface {
   theme: ThemePreference;
   resolvedTheme: ResolvedTheme;
   setTheme: (theme: ThemePreference) => void;
+  // Aliases for marketing components compatibility
+  preference: ThemePreference;
+  resolved: ResolvedTheme;
+  setPreference: (theme: ThemePreference) => void;
 }
 
 const STORAGE_KEY = 'shuttlecoach-theme';
@@ -91,7 +95,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
-  const value: ThemeContextInterface = { theme, resolvedTheme, setTheme };
+  const value: ThemeContextInterface = {
+    theme,
+    resolvedTheme,
+    setTheme,
+    preference: theme,
+    resolved: resolvedTheme,
+    setPreference: setTheme,
+  };
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
