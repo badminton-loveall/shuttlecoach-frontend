@@ -42,11 +42,11 @@ export function SportsPage() {
           <div className="container-page grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
             <PhotoFrame
             {...images.footworkDrill}
-            className="lg:col-span-6"
+            className="min-w-0 lg:col-span-6"
             imgClassName="aspect-[3/2]"
             caption="Footwork before strokes. Strokes before tactics." />
           
-            <div className="lg:col-span-6">
+            <div className="min-w-0 lg:col-span-6">
               <SportChip name={live.name} status="live" />
               <h2 id="badminton-title" className="mt-5 text-[30px] leading-[1.2] text-fg md:text-h2">
                 Badminton, game, set and match.

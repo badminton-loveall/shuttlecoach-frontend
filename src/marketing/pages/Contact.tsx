@@ -26,10 +26,10 @@ export function ContactPage() {
       
       <section aria-label="Demo request" className="py-16 md:py-20">
         <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-8">
+          <div className="min-w-0 lg:col-span-8">
             <DemoForm />
           </div>
-          <aside className="lg:col-span-4">
+          <aside className="min-w-0 lg:col-span-4">
             <h2 className="text-h3 text-fg">What happens next</h2>
             <ol className="mt-6 space-y-6">
               {steps.map((s, i) =>

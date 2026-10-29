@@ -20,7 +20,7 @@ export function ProductTour() {
             const flip = i % 2 === 1;
             return (
               <article key={row.id} className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
-                <div className={cn("lg:col-span-5", flip && "lg:order-2")}>
+                <div className={cn("min-w-0 lg:col-span-5", flip && "lg:order-2")}>
                   <Eyebrow>{row.eyebrow}</Eyebrow>
                   <h3 className="mt-3 text-[28px] leading-[1.2] text-fg md:text-h2">{row.title}</h3>
                   <p className="mt-4 text-lead text-fg-muted">{row.body}</p>
@@ -33,7 +33,7 @@ export function ProductTour() {
                     )}
                   </ul>
                 </div>
-                <Reveal className={cn("lg:col-span-7", flip && "lg:order-1")}>
+                <Reveal className={cn("min-w-0 lg:col-span-7", flip && "lg:order-1")}>
                   <MockScreen mock={row.mock} />
                 </Reveal>
               </article>);

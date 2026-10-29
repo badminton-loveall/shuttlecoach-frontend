@@ -127,22 +127,75 @@
   width: 100%;
   max-width: 1280px;
   margin-inline: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   padding-left: max(1.25rem, env(safe-area-inset-left));
   padding-right: max(1.25rem, env(safe-area-inset-right));
   @media (min-width: 640px) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
     padding-left: max(1.5rem, env(safe-area-inset-left));
     padding-right: max(1.5rem, env(safe-area-inset-right));
   }
   @media (min-width: 768px) {
+    padding-left: 2rem;
+    padding-right: 2rem;
     padding-left: max(2rem, env(safe-area-inset-left));
     padding-right: max(2rem, env(safe-area-inset-right));
   }
   @media (min-width: 1024px) {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
     padding-left: max(2.5rem, env(safe-area-inset-left));
     padding-right: max(2.5rem, env(safe-area-inset-right));
   }
   @media (min-width: 1280px) {
     max-width: calc(var(--la-content-max, 1200px) + 6rem);
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-left: max(3rem, env(safe-area-inset-left));
+    padding-right: max(3rem, env(safe-area-inset-right));
+  }
+}
+
+.container-page {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+}
+@media (min-width: 640px) {
+  .container-page {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+}
+@media (min-width: 768px) {
+  .container-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
+}
+@media (min-width: 1024px) {
+  .container-page {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-left: max(2.5rem, env(safe-area-inset-left));
+    padding-right: max(2.5rem, env(safe-area-inset-right));
+  }
+}
+@media (min-width: 1280px) {
+  .container-page {
+    max-width: calc(var(--la-content-max, 1200px) + 6rem);
+    padding-left: 3rem;
+    padding-right: 3rem;
     padding-left: max(3rem, env(safe-area-inset-left));
     padding-right: max(3rem, env(safe-area-inset-right));
   }
@@ -260,10 +313,10 @@
   --sidebar-ring: oklch(0.58 0.031 107.3);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 }
 
 html {

@@ -52,7 +52,7 @@ export function FeaturesPage() {
             className={cn("scroll-mt-16 py-20 md:py-24", flip && "border-y border-rule bg-surface-alt")}>
             
             <div className="container-page grid items-start gap-12 lg:grid-cols-12 lg:gap-14">
-              <div className={cn("lg:col-span-5", flip && "lg:order-2")}>
+              <div className={cn("min-w-0 lg:col-span-5", flip && "lg:order-2")}>
                 <p className="font-display text-[15px] italic text-fg-subtle">
                   Chapter <span className="numerals not-italic">{theme.numeral}</span>
                 </p>
@@ -70,7 +70,7 @@ export function FeaturesPage() {
                   )}
                 </dl>
               </div>
-              <Reveal className={cn("lg:col-span-7 lg:pt-10", flip && "lg:order-1")}>
+              <Reveal className={cn("min-w-0 lg:col-span-7 lg:pt-10", flip && "lg:order-1")}>
                 <MockScreen mock={theme.mock} />
                 <p className="mt-3 flex items-center gap-2 text-[13px] text-fg-subtle">
                   <ThemeIcon name={theme.icon} size={14} />

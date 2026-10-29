@@ -9,7 +9,7 @@ export function ProblemSection() {
   return (
     <section aria-labelledby="problem-title" className="py-20 md:py-28">
       <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
-        <div className="lg:col-span-4">
+        <div className="min-w-0 lg:col-span-4">
           <SectionHeading
             id="problem-title"
             eyebrow="The problem"
@@ -19,7 +19,7 @@ export function ProblemSection() {
           <PhotoFrame {...images.coachJunior} className="mt-10 hidden lg:flex" imgClassName="aspect-[4/5]" />
         </div>
 
-        <Reveal className="lg:col-span-8">
+        <Reveal className="min-w-0 lg:col-span-8">
           <div className="grid grid-cols-[1fr_1fr] gap-6 border-b border-rule-strong pb-3 md:grid-cols-[150px_1fr_1fr]">
             <span className="hidden md:block" />
             <p className="eyebrow text-fg-subtle">Today</p>
