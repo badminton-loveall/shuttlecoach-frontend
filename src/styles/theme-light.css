@@ -1,18 +1,9 @@
 /* ============================================================================
    THEME: LIGHT
-   Canonical light-mode token values. This is the single source of truth for
-   every color token consumed across globals.css / design-system.css /
-   components.css / pages.css / *.component.css. Do not hardcode colors
-   elsewhere — reference these tokens with var(--token-name).
-
-   Every text/background pair below has been verified against the WCAG 2.1
-   contrast formula (see scratchpad palette check run during authoring):
-     - Normal text on its stated background:  >= 4.5:1
-     - Large text / meaningful UI borders:     >= 3:1
-   `--border-default` is a purely decorative divider (not the sole carrier of
-   information), which WCAG 1.4.11 exempts from the 3:1 non-text minimum;
-   `--border-strong` is used wherever a border needs to read as a real edge
-   (inputs, focus rings, active states) and does meet 3:1.
+   LoveAll Design System — new token layer (Court Green palette).
+   Semantic tokens from the new design system live here as the single source
+   of truth. The shadcn-compat block at the bottom maps them to HSL for any
+   shadcn components (dialogs, dropdowns, etc.) that still use hsl(var(--x)).
    ============================================================================ */
 
 :root,
@@ -20,134 +11,138 @@
   color-scheme: light;
 
   /* --------------------------------------------------------------------
-     Surfaces
+     LoveAll semantic tokens (light)
      -------------------------------------------------------------------- */
-  --surface-background: #E8E6DF;
-  --surface-card: #F8FAFB;
-  --surface-hover: #F1F4F6;
-  --surface-elevated: #FFFFFF;
+  --la-canvas:          #FAF7F0;
+  --la-surface:         #FFFDF8;
+  --la-surface-alt:     #F3EEE2;
+  --la-fg:              #14202B;
+  --la-fg-muted:        #45505A;
+  --la-fg-subtle:       #5F666D;
+  --la-rule:            #E3DCCB;
+  --la-rule-strong:     #C9BDA3;
+  --la-primary:         #1F4D3A;
+  --la-primary-hover:   #173D2D;
+  --la-on-primary:      #FAF7F0;
+  --la-court:           #1F4D3A;
+  --la-court-deep:      #183E2F;
+  --la-on-court:        #FAF7F0;
+  --la-on-court-muted:  #C9D9CF;
+  --la-accent:          #B8975A;
+  --la-accent-ink:      #7E6331;
+  --la-signal:          #B8E135;
+  --la-on-signal:       #14202B;
+  --la-focus:           #1F4D3A;
+  --la-success:         #2F6B4F;
+  --la-success-bg:      #E6EFE8;
+  --la-warning:         #8A5A12;
+  --la-warning-bg:      #F6ECD9;
+  --la-danger:          #9B2C2C;
+  --la-danger-bg:       #F6E4E1;
+  --la-info:            #2C5A7A;
+  --la-info-bg:         #E3ECF2;
+  --la-shadow-1:        0 1px 2px rgb(20 32 43 / 0.06), 0 1px 1px rgb(20 32 43 / 0.04);
+  --la-shadow-2:        0 18px 40px -18px rgb(20 32 43 / 0.22), 0 2px 6px rgb(20 32 43 / 0.05);
 
   /* --------------------------------------------------------------------
-     Text
+     Legacy surface / text / border aliases (used throughout existing components)
+     Mapped to the new design system tokens for a seamless transition.
      -------------------------------------------------------------------- */
-  --text-primary: #1B2B4E;
-  --text-secondary: #4A5662;
-  --text-tertiary: #5A6672;
-  --text-disabled: #8B98A3;
-  --text-inverse: #FFFFFF;
+  --surface-background:  var(--la-canvas);
+  --surface-card:        var(--la-surface);
+  --surface-hover:       var(--la-surface-alt);
+  --surface-elevated:    #FFFFFF;
 
-  /* --------------------------------------------------------------------
-     Borders
-     -------------------------------------------------------------------- */
-  --border-default: #E4E9EC;
-  --border-strong: #7E8B96;
-  --border-focus: #B8E135;
+  --text-primary:        var(--la-fg);
+  --text-secondary:      var(--la-fg-muted);
+  --text-tertiary:       var(--la-fg-subtle);
+  --text-disabled:       #8B98A3;
+  --text-inverse:        var(--la-on-primary);
 
-  /* --------------------------------------------------------------------
-     Brand / primary
-     `--color-primary` is the vivid brand lime — use it for BACKGROUNDS
-     (buttons, pills, badges) and large/decorative accents, never as text
-     on a light surface (fails contrast). `--color-primary-dark` is the
-     readable variant for TEXT/icons sitting directly on a light surface.
-     `--on-primary` is the fixed foreground color for content placed ON
-     TOP of a `--color-primary` background (e.g. button labels) — lime is
-     bright in both themes, so this stays a dark navy in both.
-     -------------------------------------------------------------------- */
-  --color-primary: #B8E135;
-  --color-primary-dark: #4F6A08;
-  --color-primary-hover: #A6CC2A; /* hover fill for lime surfaces; -dark is for text */
+  --border-default:      var(--la-rule);
+  --border-strong:       var(--la-rule-strong);
+  --border-focus:        var(--la-signal);
+
+  /* Signal (Electric Lime) — accent only, not primary */
+  --color-primary:       var(--la-signal);
+  --color-primary-dark:  #4F6A08;
+  --color-primary-hover: #A6CC2A;
   --color-primary-light: #CFF05E;
-  --on-primary: #000000;
+  --on-primary:          #000000;
 
-  /* --------------------------------------------------------------------
-     Status colors — `-text` variants are for text sitting on the matching
-     `feedback-*-light` tinted background; base/`-dark`/`-light` variants
-     are for icons, dots, borders, and badge fills.
-     -------------------------------------------------------------------- */
-  --color-success: #22C55E;
-  --color-success-dark: #15803D;
+  /* Status */
+  --color-success:       #22C55E;
+  --color-success-dark:  #15803D;
   --color-success-light: #86EFAC;
-  --color-success-text: #166534;
+  --color-success-text:  #166534;
   --color-success-solid: #15803D;
 
-  --color-warning: #F59E0B;
-  --color-warning-dark: #D97706;
+  --color-warning:       #F59E0B;
+  --color-warning-dark:  #D97706;
   --color-warning-light: #FCD34D;
-  --color-warning-text: #92400E;
+  --color-warning-text:  #92400E;
   --color-warning-solid: #B45309;
 
-  --color-danger: #EF4444;
-  --color-danger-dark: #DC2626;
-  --color-danger-light: #FCA5A5;
-  --color-danger-text: #991B1B;
-  --color-danger-solid: #DC2626;
+  --color-danger:        #EF4444;
+  --color-danger-dark:   #DC2626;
+  --color-danger-light:  #FCA5A5;
+  --color-danger-text:   #991B1B;
+  --color-danger-solid:  #DC2626;
 
-  --color-info: #3B82F6;
-  --color-info-dark: #2563EB;
-  --color-info-light: #93C5FD;
-  --color-info-text: #1E40AF;
-  --color-info-solid: #2563EB;
+  --color-info:          #3B82F6;
+  --color-info-dark:     #2563EB;
+  --color-info-light:    #93C5FD;
+  --color-info-text:     #1E40AF;
+  --color-info-solid:    #2563EB;
 
-  --feedback-success-light: #F0FDF4;
-  --feedback-warning-light: #FFFBEB;
-  --feedback-danger-light: #FEF2F2;
-  --feedback-info-light: #EFF6FF;
+  --feedback-success-light: #E6EFE8;
+  --feedback-warning-light: #F6ECD9;
+  --feedback-danger-light:  #F6E4E1;
+  --feedback-info-light:    #E3ECF2;
 
-  /* --------------------------------------------------------------------
-     Slate palette — literal grayscale swatches, intentionally theme-
-     invariant (components that pull a specific step directly, e.g. chart
-     gridlines, do so on purpose).
-     -------------------------------------------------------------------- */
-  --color-slate-50: #F8FAFB;
-  --color-slate-100: #F1F4F6;
-  --color-slate-200: #E4E9EC;
-  --color-slate-300: #D1D9DE;
-  --color-slate-400: #9CA8B3;
-  --color-slate-500: #6B7885;
-  --color-slate-600: #4A5662;
-  --color-slate-700: #333D47;
-  --color-slate-800: #1F262E;
-  --color-slate-900: #131820;
-  --color-slate-950: #1B2B4E;
+  /* Warm neutral scale (replaces cool slate) */
+  --color-slate-50:  #FAF7F0;
+  --color-slate-100: #F3EEE2;
+  --color-slate-200: #E3DCCB;
+  --color-slate-300: #CFC4AC;
+  --color-slate-400: #A89D86;
+  --color-slate-500: #857B66;
+  --color-slate-600: #675F4E;
+  --color-slate-700: #4E483B;
+  --color-slate-800: #36322A;
+  --color-slate-900: #221F1A;
+  --color-slate-950: #14120F;
 
-  /* --------------------------------------------------------------------
-     Legacy "-dark-" suffixed aliases. A long tail of existing component
-     CSS files reference these directly inside their own
-     `@media (prefers-color-scheme: dark)` blocks. They represent the fixed
-     dark palette (not "this theme's dark equivalent"), so their value is
-     identical in theme-dark.css — defining them here too just avoids an
-     undefined-variable edge case; they're inert in light mode since the
-     media query that reads them never matches here.
-     -------------------------------------------------------------------- */
-  --surface-dark-card: #151B23;
-  --surface-dark-hover: #1F262E;
-  --text-dark-primary: #F5F7F8;
-  --text-dark-secondary: #C7D0D8;
-  --text-dark-tertiary: #9CA8B3;
-  --border-dark: #2A323B;
-  --border-dark-strong: #5C6773;
+  /* Dark-mode aliases expected by existing components */
+  --surface-dark-card:      #151F1A;
+  --surface-dark-hover:     #1A2620;
+  --text-dark-primary:      #F1ECE0;
+  --text-dark-secondary:    #C9C2B2;
+  --text-dark-tertiary:     #A39D8E;
+  --border-dark:            #28352E;
+  --border-dark-strong:     #3B4A42;
 
   /* --------------------------------------------------------------------
-     shadcn-compat tokens (consumed as hsl(var(--x)) by a handful of
-     legacy call sites) — kept in exact sync with the hex values above.
+     shadcn-compat tokens — Court Green mapped to HSL for hsl(var(--x))
+     call sites in shadcn components (Button, Dialog, etc.)
      -------------------------------------------------------------------- */
-  --background: 46.7 16.4% 89.2%;      /* #E8E6DF */
-  --foreground: 221.2 48.6% 20.6%;     /* #1B2B4E */
-  --card: 200 27.3% 97.8%;             /* #F8FAFB */
-  --card-foreground: 221.2 48.6% 20.6%;
-  --popover: 0 0% 100%;                /* #FFFFFF */
-  --popover-foreground: 221.2 48.6% 20.6%;
-  --primary: 74.3 74.1% 54.5%;         /* #B8E135 */
-  --primary-foreground: 0 0% 0%; /* #000000 */
-  --secondary: 204 21.7% 95.5%;        /* #F1F4F6 */
-  --secondary-foreground: 221.2 48.6% 20.6%;
-  --muted: 204 21.7% 95.5%;
-  --muted-foreground: 210 14% 33.7%;   /* #4A5662 */
-  --accent: 204 21.7% 95.5%;
-  --accent-foreground: 221.2 48.6% 20.6%;
-  --destructive: 0 84.2% 60.2%;        /* #EF4444 */
-  --destructive-foreground: 0 0% 100%;
-  --border: 202.5 17.4% 91%;           /* #E4E9EC */
-  --input: 202.5 17.4% 91%;
-  --ring: 74.3 74.1% 54.5%;
+  --background:              46.7 16.4% 89.2%;   /* #FAF7F0 canvas */
+  --foreground:              210 33% 12%;         /* #14202B ink */
+  --card:                    40 33% 99%;          /* #FFFDF8 surface */
+  --card-foreground:         210 33% 12%;
+  --popover:                 0 0% 100%;
+  --popover-foreground:      210 33% 12%;
+  --primary:                 155 43% 21%;         /* #1F4D3A court green */
+  --primary-foreground:      46 100% 97%;         /* #FAF7F0 */
+  --secondary:               38 35% 93%;          /* #F3EEE2 surface-alt */
+  --secondary-foreground:    210 33% 12%;
+  --muted:                   38 35% 93%;
+  --muted-foreground:        208 12% 31%;         /* #45505A */
+  --accent:                  38 35% 93%;
+  --accent-foreground:       210 33% 12%;
+  --destructive:             0 84.2% 60.2%;       /* #EF4444 */
+  --destructive-foreground:  0 0% 100%;
+  --border:                  36 24% 85%;          /* #E3DCCB rule */
+  --input:                   36 24% 85%;
+  --ring:                    155 43% 21%;         /* court green focus */
 }

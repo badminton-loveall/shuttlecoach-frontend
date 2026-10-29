@@ -4,20 +4,16 @@
    Font scale: 12, 16, 18, 24, 36, 42, 64
    ============================================================================ */
 
+/* CRITICAL: font imports must come before tailwindcss */
+/* LoveAll Design System fonts */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
 /* Import Tailwind CSS directives */
 @import "tailwindcss";
-
-/* ============================================================================
-   FONT IMPORTS
-   ============================================================================ */
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 @import "tw-animate-css";
 
 @import "shadcn/tailwind.css";
-
-@import "@fontsource-variable/inter";
 
 /* Import Component Styles */
 @import "./components.css";
@@ -96,9 +92,9 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--surface-background);
-  color: var(--text-primary);
+  font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background-color: var(--la-canvas);
+  color: var(--la-fg);
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
   /* Horizontal-clip lives on <html> only (above). Declaring it here too
