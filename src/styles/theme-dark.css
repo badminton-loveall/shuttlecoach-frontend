@@ -55,7 +55,7 @@
     --la-space-8:         42px;
     --la-space-9:         64px;
     --la-content-max:     1200px;
-    --la-gutter:          16px;
+    --la-gutter:          24px;
 
     /* Legacy aliases */
     --surface-background:  var(--la-canvas);
@@ -195,7 +195,7 @@
   --la-space-8:         42px;
   --la-space-9:         64px;
   --la-content-max:     1200px;
-  --la-gutter:          16px;
+  --la-gutter:          24px;
 
   /* Legacy aliases */
   --surface-background:  var(--la-canvas);

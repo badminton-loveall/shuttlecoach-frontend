@@ -125,12 +125,26 @@
 
 @utility container-page {
   width: 100%;
-  max-width: calc(var(--la-content-max, 1200px) + 2 * var(--la-gutter, 16px));
+  max-width: 1280px;
   margin-inline: auto;
-  padding-inline: var(--la-gutter, 16px);
+  padding-left: max(1.25rem, env(safe-area-inset-left));
+  padding-right: max(1.25rem, env(safe-area-inset-right));
+  @media (min-width: 640px) {
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
   @media (min-width: 768px) {
-    max-width: calc(var(--la-content-max, 1200px) + 48px);
-    padding-inline: 24px;
+    padding-left: max(2rem, env(safe-area-inset-left));
+    padding-right: max(2rem, env(safe-area-inset-right));
+  }
+  @media (min-width: 1024px) {
+    padding-left: max(2.5rem, env(safe-area-inset-left));
+    padding-right: max(2.5rem, env(safe-area-inset-right));
+  }
+  @media (min-width: 1280px) {
+    max-width: calc(var(--la-content-max, 1200px) + 6rem);
+    padding-left: max(3rem, env(safe-area-inset-left));
+    padding-right: max(3rem, env(safe-area-inset-right));
   }
 }
 @utility eyebrow {

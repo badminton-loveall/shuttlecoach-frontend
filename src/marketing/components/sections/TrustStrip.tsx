@@ -12,7 +12,7 @@ export function TrustStrip() {
     <section aria-label="Why academies trust LoveAll" className="border-b border-rule">
       <ul className="container-page grid divide-y divide-rule sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {items.map((item) =>
-        <li key={item.title} className="flex gap-4 py-6 sm:px-6 sm:first:pl-0 sm:last:pr-0 md:py-8">
+          <li key={item.title} className="flex gap-4 py-6 px-1 sm:px-6 md:py-8">
             <ThemeIcon name={item.icon} size={22} className="mt-0.5 shrink-0 text-accent-ink" />
             <div>
               <p className="font-semibold text-fg">{item.title}</p>
