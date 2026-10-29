@@ -27,6 +27,7 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import JoinBatchPage from './pages/JoinBatchPage';
 import DesignSystemTestPage from './pages/DesignSystemTestPage';
 import ModernDesignSystemPage from './pages/ModernDesignSystemPage';
 import AttendancePage from './pages/AttendancePage';
@@ -333,6 +334,8 @@ function App() {
           {/* Password Management - Public Routes */}
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          {/* Public batch invite link — student requests to join, head coach approves */}
+          <Route path="/join/:token" element={<JoinBatchPage />} />
 
           {/* Password Management - Protected Route (all roles) */}
           <Route
