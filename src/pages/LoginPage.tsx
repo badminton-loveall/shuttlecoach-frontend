@@ -286,12 +286,7 @@ export const LoginPage: React.FC = () => {
                   </Link>
                 </div>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="mt-1 w-full border-lime bg-lime text-ink hover:border-lime hover:bg-lime hover:brightness-95"
-                  disabled={isLoading}
-                >
+                <Button type="submit" size="lg" className="mt-1 w-full" disabled={isLoading}>
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </form>

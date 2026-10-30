@@ -20,7 +20,7 @@
   border-color: hsl(var(--border));
 }
 
-body {
+body:not(.marketing-scope *) {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
@@ -162,7 +162,7 @@ body {
    TYPOGRAPHY STYLES
    ============================================================================ */
 
-.text-display {
+.text-display:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-display);
   font-weight: var(--weight-bold);
@@ -170,7 +170,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h1 {
+.text-h1:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h1);
   font-weight: var(--weight-bold);
@@ -178,7 +178,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h2 {
+.text-h2:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h2);
   font-weight: var(--weight-semibold);
@@ -186,7 +186,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h3 {
+.text-h3:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h3);
   font-weight: var(--weight-semibold);
@@ -194,7 +194,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-body {
+.text-body:not(.marketing-scope *) {
   font-family: var(--font-body);
   font-size: var(--font-body);
   font-weight: var(--weight-regular);
@@ -237,11 +237,11 @@ body {
 }
 
 /* Text color utilities */
-.text-primary {
+.text-primary:not(.marketing-scope *) {
   color: var(--text-primary);
 }
 
-.text-secondary {
+.text-secondary:not(.marketing-scope *) {
   color: var(--text-secondary);
 }
 
