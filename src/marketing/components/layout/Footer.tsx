@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Logo } from "../brand/Logo";
 import { footerNav } from "../../data/nav";
-import { CONTACT_EMAIL, WHATSAPP_DISPLAY, nameLine, socialLinks, whatsappUrl } from "../../data/site";
+import { CONTACT_EMAIL, nameLine, socialLinks, whatsappUrl } from "../../data/site";
 
 export function Footer() {
   return (
@@ -38,7 +38,7 @@ export function Footer() {
               </li>
               <li>
                 <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="text-fg-muted hover:text-fg">
-                  WhatsApp {WHATSAPP_DISPLAY}
+                  WhatsApp
                 </a>
               </li>
               <li className="text-fg-muted">Made in India</li>

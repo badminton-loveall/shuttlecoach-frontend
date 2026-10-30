@@ -5,7 +5,6 @@ export const CONTACT_EMAIL = "info@loveall.co.in";
 
 /** LoveAll's WhatsApp, in international format without "+" (as wa.me needs). */
 export const WHATSAPP_NUMBER = "919972151617";
-export const WHATSAPP_DISPLAY = "+91 99721 51617";
 
 /**
  * WhatsApp click-to-chat link (https://wa.me/<number>?text=...). Opens a chat
