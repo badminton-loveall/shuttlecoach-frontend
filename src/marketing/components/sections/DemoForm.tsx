@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon, MessageCircleIcon } from "lucide-react";
 import { Field } from "../ui/Field";
 import { Button } from "../ui/Button";
 import { Crest } from "../brand/Crest";
-import { CONTACT_EMAIL } from "../../data/site";
+import { CONTACT_EMAIL, whatsappUrl } from "../../data/site";
 import { submitLead } from "../../utils/leads";
 import { Honeypot } from "../ui/Honeypot";
 
@@ -35,6 +35,23 @@ const sizeOptions = [
 { value: "151-400", label: "151–400 players" },
 { value: "400+", label: "More than 400 players" }];
 
+
+/** The visitor's details, pre-typed into a WhatsApp message to LoveAll. */
+function demoWhatsAppText(form: FormState): string {
+  const role = roleOptions.find((o) => o.value === form.role)?.label;
+  const size = sizeOptions.find((o) => o.value === form.size)?.label;
+  return [
+  `Hi LoveAll, I've just requested a demo.`,
+  `Name: ${form.name.trim()}`,
+  `Academy: ${form.academy.trim()}`,
+  form.city.trim() && `City: ${form.city.trim()}`,
+  form.phone.trim() && `Phone: ${form.phone.trim()}`,
+  `Email: ${form.email.trim()}`,
+  role && `Role: ${role}`,
+  size && `Academy size: ${size}`,
+  form.message.trim() && `Would like to see: ${form.message.trim()}`].
+  filter(Boolean).join("\n");
+}
 
 export function DemoForm() {
   const [form, setForm] = useState<FormState>(initial);
@@ -90,6 +107,10 @@ export function DemoForm() {
           Thank you, {form.name.split(" ")[0]}. We've emailed a confirmation to {form.email} and will write within two working
           days to fix a time for your demo.
         </p>
+        <Button href={whatsappUrl(demoWhatsAppText(form))} target="_blank" rel="noreferrer" variant="secondary" className="mt-6">
+          <MessageCircleIcon className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          Send these details on WhatsApp too
+        </Button>
         <Button
           variant="tertiary"
           className="mt-6"
