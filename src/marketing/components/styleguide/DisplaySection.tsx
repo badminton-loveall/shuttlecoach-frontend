@@ -2,14 +2,14 @@ import { SgSection } from "./SgSection";
 import { SgExample } from "./SgExample";
 import { FeatureCard } from "../ui/FeatureCard";
 import { RoleCard } from "../ui/RoleCard";
-import { PricingCard } from "../ui/PricingCard";
+import { PlanCard } from "../ui/PlanCard";
 import { TestimonialCard } from "../ui/TestimonialCard";
 import { ScoreTile } from "../ui/ScoreTile";
 import { LifecycleTimeline } from "../ui/LifecycleTimeline";
 import { MockScreen } from "../mocks/MockScreen";
 import { featureThemes } from "../../data/features";
 import { roles } from "../../data/roles";
-import { pricingTiers } from "../../data/pricing";
+import { formatInr } from "../../data/pricing";
 import { testimonials } from "../../data/testimonials";
 import { lifecycleSteps } from "../../data/lifecycle";
 
@@ -25,7 +25,17 @@ export function DisplaySection() {
         <div className="grid gap-5 md:grid-cols-2">
           <FeatureCard theme={featureThemes[1]} />
           <RoleCard role={roles[1]} index={1} />
-          <PricingCard tier={pricingTiers[1]} />
+          <PlanCard
+            id="sg-students"
+            title="Student seats"
+            description="Add seats as your batches fill up."
+            pricePrefix="From"
+            price={formatInr(1000)}
+            priceNote="Per month, per academy"
+            rows={[
+            { label: "Up to 2 students", value: "Free" },
+            { label: "Up to 10 students", value: `${formatInr(1000)} / mo` }]
+            } />
           <TestimonialCard testimonial={testimonials[0]} />
         </div>
       </SgExample>

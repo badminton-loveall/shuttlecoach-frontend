@@ -27,7 +27,7 @@ export const faqs: Faq[] = [
   topic: "pricing",
   question: "How much does LoveAll cost?",
   answer:
-  "We are finalising pricing for Starter Academy, Pro Academy and Enterprise plans. Request a demo and we will share indicative pricing for an academy of your size, in ₹."
+  "LoveAll is free to start, with every training feature included for a small number of coaches and students. As you grow, add student or coach seats and the Accounting Section, billed monthly per academy in ₹. The Pricing page always shows current prices."
 },
 {
   id: "sports",

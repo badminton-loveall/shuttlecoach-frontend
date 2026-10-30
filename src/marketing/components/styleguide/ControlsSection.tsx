@@ -100,7 +100,7 @@ export function ControlsSection() {
             hint="Shown in its focus state" />
           
           <Field label="Email" name="sg-error" value="coach@" onChange={() => undefined} error="Please enter a valid email address." />
-          <Field label="Plan" name="sg-disabled" value="Pro Academy" onChange={() => undefined} disabled />
+          <Field label="Plan" name="sg-disabled" value="Accounting Section" onChange={() => undefined} disabled />
         </div>
       </SgExample>
 
