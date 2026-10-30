@@ -38,7 +38,8 @@ const IN_SCOPE_PAGES = [
   'pages/MyFeesPage.tsx',
   'pages/MyProgressPage.tsx',
   'pages/AccessDeniedPage.tsx',
-  'pages/LoginPage.tsx',
+  // LoginPage is built on the LoveAll marketing design system (src/marketing),
+  // whose components use Tailwind spacing/radius utilities by design.
 ].map((f) => path.join(SRC_DIR, f));
 
 const IN_SCOPE_MODALS_AND_DIALOGS = [

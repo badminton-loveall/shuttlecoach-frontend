@@ -255,6 +255,23 @@
   text-wrap: pretty;
 }
 
+/* The app's legacy element rules and same-named utilities (h1, a, input,
+   .bg-primary, .p-4, ...) skip .marketing-scope via :not(.marketing-scope *).
+   What remains is undoing app-wide token overrides for the design system:
+   - design-system.css reuses --font-display as a font *size*;
+   - the shadcn @theme inline below maps bg/text/border-primary and *-accent
+     to --primary/--accent, which the app sets as bare HSL triplets;
+   - shadcn also points `font-sans` at Inter, which is never loaded. */
+.marketing-scope {
+  --font-display: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --primary: var(--la-primary);
+  --accent: var(--la-accent);
+}
+
+.marketing-scope :is(input, select, textarea, button, .font-sans) {
+  font-family: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 .marketing-scope ::selection {
   background: var(--color-lime);
   color: var(--color-ink);
@@ -344,7 +361,7 @@ body {
    TYPOGRAPHY DEFAULTS - Font scale: 12, 16, 18, 24, 36, 42, 64
    ============================================================================ */
 
-h1, h2, h3, h4, h5, h6 {
+h1:not(.marketing-scope *), h2:not(.marketing-scope *), h3:not(.marketing-scope *), h4:not(.marketing-scope *), h5:not(.marketing-scope *), h6:not(.marketing-scope *) {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   font-weight: 700;
   line-height: 1.2;
@@ -352,44 +369,44 @@ h1, h2, h3, h4, h5, h6 {
   color: inherit;
 }
 
-h1 {
+h1:not(.marketing-scope *) {
   font-size: 42px;
   line-height: 1.2;
 }
 
-h2 {
+h2:not(.marketing-scope *) {
   font-size: 36px;
   line-height: 1.2;
 }
 
-h3 {
+h3:not(.marketing-scope *) {
   font-size: 24px;
   line-height: 1.3;
   font-weight: 600;
 }
 
-h4 {
+h4:not(.marketing-scope *) {
   font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
 }
 
-p {
+p:not(.marketing-scope *) {
   margin-bottom: 16px;
 }
 
-a {
+a:not(.marketing-scope *) {
   color: var(--color-primary-dark);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-a:hover {
+a:hover:not(.marketing-scope *) {
   color: var(--color-primary);
   text-decoration: underline;
 }
 
-a:focus-visible {
+a:focus-visible:not(.marketing-scope *) {
   outline: 2px solid #B8E135;
   outline-offset: 2px;
   border-radius: 2px;
@@ -399,17 +416,17 @@ a:focus-visible {
    FORM ELEMENTS - Using spacing scale
    ============================================================================ */
 
-input,
-select,
-textarea,
-button {
+input:not(.marketing-scope *),
+select:not(.marketing-scope *),
+textarea:not(.marketing-scope *),
+button:not(.marketing-scope *) {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 16px;
 }
 
-input,
-select,
-textarea {
+input:not(.marketing-scope *),
+select:not(.marketing-scope *),
+textarea:not(.marketing-scope *) {
   width: 100%;
   /* Padding is now controlled per-component via Tailwind utility classes */
   /* padding: 12px 16px; */
@@ -420,28 +437,28 @@ textarea {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
+input:focus:not(.marketing-scope *),
+select:focus:not(.marketing-scope *),
+textarea:focus:not(.marketing-scope *) {
   outline: none;
   border-color: #B8E135;
   box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.3);
 }
 
-input:disabled,
-select:disabled,
-textarea:disabled {
+input:disabled:not(.marketing-scope *),
+select:disabled:not(.marketing-scope *),
+textarea:disabled:not(.marketing-scope *) {
   background-color: #F1F4F6;
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-input::placeholder,
-textarea::placeholder {
+input:not(.marketing-scope *)::placeholder,
+textarea:not(.marketing-scope *)::placeholder {
   color: #9CA8B3;
 }
 
-button {
+button:not(.marketing-scope *) {
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -449,12 +466,12 @@ button {
   transition: all 0.2s ease;
 }
 
-button:focus-visible {
+button:focus-visible:not(.marketing-scope *) {
   outline: 2px solid #B8E135;
   outline-offset: 2px;
 }
 
-button:disabled {
+button:disabled:not(.marketing-scope *) {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -486,7 +503,7 @@ button:disabled {
    ============================================================================ */
 
 /* Display utilities */
-.sr-only {
+.sr-only:not(.marketing-scope *) {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -499,74 +516,74 @@ button:disabled {
 }
 
 /* Flexbox utilities */
-.flex-between {
+.flex-between:not(.marketing-scope *) {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.flex-center {
+.flex-center:not(.marketing-scope *) {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.flex-start {
+.flex-start:not(.marketing-scope *) {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-.flex-end {
+.flex-end:not(.marketing-scope *) {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
-.flex-col {
+.flex-col:not(.marketing-scope *) {
   display: flex;
   flex-direction: column;
 }
 
-.flex-col-reverse {
+.flex-col-reverse:not(.marketing-scope *) {
   display: flex;
   flex-direction: column-reverse;
 }
 
 /* Grid utilities */
-.grid-auto-fit {
+.grid-auto-fit:not(.marketing-scope *) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-.grid-auto-fill {
+.grid-auto-fill:not(.marketing-scope *) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
 /* Responsive grid */
-.grid-cols-1-sm-2-md-3 {
+.grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
 @media (min-width: 640px) {
-  .grid-cols-1-sm-2-md-3 {
+  .grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 768px) {
-  .grid-cols-1-sm-2-md-3 {
+  .grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 /* Container utility */
-.container-max {
+.container-max:not(.marketing-scope *) {
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
@@ -575,29 +592,29 @@ button:disabled {
 }
 
 /* Aspect ratio utilities */
-.aspect-square {
+.aspect-square:not(.marketing-scope *) {
   aspect-ratio: 1;
 }
 
-.aspect-video {
+.aspect-video:not(.marketing-scope *) {
   aspect-ratio: 16 / 9;
 }
 
 /* Text utilities */
-.text-truncate {
+.text-truncate:not(.marketing-scope *) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.text-line-clamp-2 {
+.text-line-clamp-2:not(.marketing-scope *) {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.text-line-clamp-3 {
+.text-line-clamp-3:not(.marketing-scope *) {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -605,197 +622,197 @@ button:disabled {
 }
 
 /* Sizing utilities */
-.w-full {
+.w-full:not(.marketing-scope *) {
   width: 100%;
 }
 
-.h-full {
+.h-full:not(.marketing-scope *) {
   height: 100%;
 }
 
-.min-h-screen {
+.min-h-screen:not(.marketing-scope *) {
   min-height: 100vh;
 }
 
-.h-screen {
+.h-screen:not(.marketing-scope *) {
   height: 100vh;
 }
 
 /* Opacity utilities */
-.opacity-disabled {
+.opacity-disabled:not(.marketing-scope *) {
   opacity: 0.5;
 }
 
-.opacity-muted {
+.opacity-muted:not(.marketing-scope *) {
   opacity: 0.7;
 }
 
 /* Spacing scale utilities with design tokens - Scale: 2, 4, 8, 12, 16, 18, 24, 36, 42, 64 */
-.gap-0-5 { gap: 2px; }
-.gap-1 { gap: 4px; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
-.gap-4 { gap: 16px; }
-.gap-4-5 { gap: 18px; }
-.gap-6 { gap: 24px; }
-.gap-9 { gap: 36px; }
-.gap-10-5 { gap: 42px; }
-.gap-16 { gap: 64px; }
+.gap-0-5:not(.marketing-scope *) { gap: 2px; }
+.gap-1:not(.marketing-scope *) { gap: 4px; }
+.gap-2:not(.marketing-scope *) { gap: 8px; }
+.gap-3:not(.marketing-scope *) { gap: 12px; }
+.gap-4:not(.marketing-scope *) { gap: 16px; }
+.gap-4-5:not(.marketing-scope *) { gap: 18px; }
+.gap-6:not(.marketing-scope *) { gap: 24px; }
+.gap-9:not(.marketing-scope *) { gap: 36px; }
+.gap-10-5:not(.marketing-scope *) { gap: 42px; }
+.gap-16:not(.marketing-scope *) { gap: 64px; }
 
-.p-0-5 { padding: 2px; }
-.p-1 { padding: 4px; }
-.p-2 { padding: 8px; }
-.p-3 { padding: 12px; }
-.p-4 { padding: 16px; }
-.p-4-5 { padding: 18px; }
-.p-6 { padding: 24px; }
-.p-9 { padding: 36px; }
-.p-10-5 { padding: 42px; }
-.p-16 { padding: 64px; }
+.p-0-5:not(.marketing-scope *) { padding: 2px; }
+.p-1:not(.marketing-scope *) { padding: 4px; }
+.p-2:not(.marketing-scope *) { padding: 8px; }
+.p-3:not(.marketing-scope *) { padding: 12px; }
+.p-4:not(.marketing-scope *) { padding: 16px; }
+.p-4-5:not(.marketing-scope *) { padding: 18px; }
+.p-6:not(.marketing-scope *) { padding: 24px; }
+.p-9:not(.marketing-scope *) { padding: 36px; }
+.p-10-5:not(.marketing-scope *) { padding: 42px; }
+.p-16:not(.marketing-scope *) { padding: 64px; }
 
-.px-0-5 { padding-left: 2px; padding-right: 2px; }
-.px-1 { padding-left: 4px; padding-right: 4px; }
-.px-2 { padding-left: 8px; padding-right: 8px; }
-.px-3 { padding-left: 12px; padding-right: 12px; }
-.px-4 { padding-left: 16px; padding-right: 16px; }
-.px-4-5 { padding-left: 18px; padding-right: 18px; }
-.px-6 { padding-left: 24px; padding-right: 24px; }
-.px-9 { padding-left: 36px; padding-right: 36px; }
-.px-10-5 { padding-left: 42px; padding-right: 42px; }
-.px-16 { padding-left: 64px; padding-right: 64px; }
+.px-0-5:not(.marketing-scope *) { padding-left: 2px; padding-right: 2px; }
+.px-1:not(.marketing-scope *) { padding-left: 4px; padding-right: 4px; }
+.px-2:not(.marketing-scope *) { padding-left: 8px; padding-right: 8px; }
+.px-3:not(.marketing-scope *) { padding-left: 12px; padding-right: 12px; }
+.px-4:not(.marketing-scope *) { padding-left: 16px; padding-right: 16px; }
+.px-4-5:not(.marketing-scope *) { padding-left: 18px; padding-right: 18px; }
+.px-6:not(.marketing-scope *) { padding-left: 24px; padding-right: 24px; }
+.px-9:not(.marketing-scope *) { padding-left: 36px; padding-right: 36px; }
+.px-10-5:not(.marketing-scope *) { padding-left: 42px; padding-right: 42px; }
+.px-16:not(.marketing-scope *) { padding-left: 64px; padding-right: 64px; }
 
-.py-0-5 { padding-top: 2px; padding-bottom: 2px; }
-.py-1 { padding-top: 4px; padding-bottom: 4px; }
-.py-2 { padding-top: 8px; padding-bottom: 8px; }
-.py-3 { padding-top: 12px; padding-bottom: 12px; }
-.py-4 { padding-top: 16px; padding-bottom: 16px; }
-.py-4-5 { padding-top: 18px; padding-bottom: 18px; }
-.py-6 { padding-top: 24px; padding-bottom: 24px; }
-.py-9 { padding-top: 36px; padding-bottom: 36px; }
-.py-10-5 { padding-top: 42px; padding-bottom: 42px; }
-.py-16 { padding-top: 64px; padding-bottom: 64px; }
+.py-0-5:not(.marketing-scope *) { padding-top: 2px; padding-bottom: 2px; }
+.py-1:not(.marketing-scope *) { padding-top: 4px; padding-bottom: 4px; }
+.py-2:not(.marketing-scope *) { padding-top: 8px; padding-bottom: 8px; }
+.py-3:not(.marketing-scope *) { padding-top: 12px; padding-bottom: 12px; }
+.py-4:not(.marketing-scope *) { padding-top: 16px; padding-bottom: 16px; }
+.py-4-5:not(.marketing-scope *) { padding-top: 18px; padding-bottom: 18px; }
+.py-6:not(.marketing-scope *) { padding-top: 24px; padding-bottom: 24px; }
+.py-9:not(.marketing-scope *) { padding-top: 36px; padding-bottom: 36px; }
+.py-10-5:not(.marketing-scope *) { padding-top: 42px; padding-bottom: 42px; }
+.py-16:not(.marketing-scope *) { padding-top: 64px; padding-bottom: 64px; }
 
-.m-0-5 { margin: 2px; }
-.m-1 { margin: 4px; }
-.m-2 { margin: 8px; }
-.m-3 { margin: 12px; }
-.m-4 { margin: 16px; }
-.m-4-5 { margin: 18px; }
-.m-6 { margin: 24px; }
-.m-9 { margin: 36px; }
-.m-10-5 { margin: 42px; }
-.m-16 { margin: 64px; }
+.m-0-5:not(.marketing-scope *) { margin: 2px; }
+.m-1:not(.marketing-scope *) { margin: 4px; }
+.m-2:not(.marketing-scope *) { margin: 8px; }
+.m-3:not(.marketing-scope *) { margin: 12px; }
+.m-4:not(.marketing-scope *) { margin: 16px; }
+.m-4-5:not(.marketing-scope *) { margin: 18px; }
+.m-6:not(.marketing-scope *) { margin: 24px; }
+.m-9:not(.marketing-scope *) { margin: 36px; }
+.m-10-5:not(.marketing-scope *) { margin: 42px; }
+.m-16:not(.marketing-scope *) { margin: 64px; }
 
-.mx-auto {
+.mx-auto:not(.marketing-scope *) {
   margin-left: auto;
   margin-right: auto;
 }
 
-.mt-auto {
+.mt-auto:not(.marketing-scope *) {
   margin-top: auto;
 }
 
-.mb-auto {
+.mb-auto:not(.marketing-scope *) {
   margin-bottom: auto;
 }
 
 /* Rounded utilities - Using scale: 8, 12, 16, 24 */
-.rounded-sm {
+.rounded-sm:not(.marketing-scope *) {
   border-radius: 8px;
 }
 
-.rounded-md {
+.rounded-md:not(.marketing-scope *) {
   border-radius: 12px;
 }
 
-.rounded-lg {
+.rounded-lg:not(.marketing-scope *) {
   border-radius: 16px;
 }
 
-.rounded-xl {
+.rounded-xl:not(.marketing-scope *) {
   border-radius: 24px;
 }
 
-.rounded-full {
+.rounded-full:not(.marketing-scope *) {
   border-radius: 999px;
 }
 
 /* Shadow utilities */
-.shadow-card {
+.shadow-card:not(.marketing-scope *) {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
-.shadow-float {
+.shadow-float:not(.marketing-scope *) {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
 }
 
-.shadow-focus {
+.shadow-focus:not(.marketing-scope *) {
   box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.3);
 }
 
-.shadow-overlay {
+.shadow-overlay:not(.marketing-scope *) {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Color utilities - WCAG AA compliant */
-.bg-primary {
+.bg-primary:not(.marketing-scope *) {
   background-color: #B8E135;
 }
 
-.bg-primary-dark {
+.bg-primary-dark:not(.marketing-scope *) {
   background-color: #9ac61a;
 }
 
-.bg-success {
+.bg-success:not(.marketing-scope *) {
   background-color: #22C55E;
 }
 
-.bg-warning {
+.bg-warning:not(.marketing-scope *) {
   background-color: #F59E0B;
 }
 
-.bg-danger {
+.bg-danger:not(.marketing-scope *) {
   background-color: #EF4444;
 }
 
-.bg-info {
+.bg-info:not(.marketing-scope *) {
   background-color: #3B82F6;
 }
 
-.text-primary {
+.text-primary:not(.marketing-scope *) {
   color: #B8E135;
 }
 
-.text-success {
+.text-success:not(.marketing-scope *) {
   color: #22C55E;
 }
 
-.text-warning {
+.text-warning:not(.marketing-scope *) {
   color: #F59E0B;
 }
 
-.text-danger {
+.text-danger:not(.marketing-scope *) {
   color: #EF4444;
 }
 
-.text-info {
+.text-info:not(.marketing-scope *) {
   color: #3B82F6;
 }
 
 /* Border utilities */
-.border-primary {
+.border-primary:not(.marketing-scope *) {
   border-color: #B8E135;
 }
 
-.border-danger {
+.border-danger:not(.marketing-scope *) {
   border-color: #EF4444;
 }
 
-.border-warning {
+.border-warning:not(.marketing-scope *) {
   border-color: #F59E0B;
 }
 
-.border-info {
+.border-info:not(.marketing-scope *) {
   border-color: #3B82F6;
 }
 
@@ -811,16 +828,16 @@ button:disabled {
    with tokens keeps them in sync with whichever theme is actually active,
    explicit toggle or OS default alike. */
 
-input,
-select,
-textarea {
+input:not(.marketing-scope *),
+select:not(.marketing-scope *),
+textarea:not(.marketing-scope *) {
   background-color: var(--surface-card);
   color: var(--text-primary);
   border-color: var(--border-default);
 }
 
-input::placeholder,
-textarea::placeholder {
+input:not(.marketing-scope *)::placeholder,
+textarea:not(.marketing-scope *)::placeholder {
   color: var(--text-tertiary);
 }
 

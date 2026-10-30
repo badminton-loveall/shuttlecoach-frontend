@@ -14,11 +14,13 @@
 }
 
 /* Apply background colors to html and body */
-* {
+/* Not inside .marketing-scope: unlayered, it would override every Tailwind
+   border color there (border-rule, border-accent, border-transparent). */
+*:not(.marketing-scope, .marketing-scope *) {
   border-color: hsl(var(--border));
 }
 
-body {
+body:not(.marketing-scope *) {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
@@ -160,7 +162,7 @@ body {
    TYPOGRAPHY STYLES
    ============================================================================ */
 
-.text-display {
+.text-display:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-display);
   font-weight: var(--weight-bold);
@@ -168,7 +170,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h1 {
+.text-h1:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h1);
   font-weight: var(--weight-bold);
@@ -176,7 +178,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h2 {
+.text-h2:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h2);
   font-weight: var(--weight-semibold);
@@ -184,7 +186,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-h3 {
+.text-h3:not(.marketing-scope *) {
   font-family: var(--font-display);
   font-size: var(--font-h3);
   font-weight: var(--weight-semibold);
@@ -192,7 +194,7 @@ body {
   color: var(--text-primary);
 }
 
-.text-body {
+.text-body:not(.marketing-scope *) {
   font-family: var(--font-body);
   font-size: var(--font-body);
   font-weight: var(--weight-regular);
@@ -235,11 +237,11 @@ body {
 }
 
 /* Text color utilities */
-.text-primary {
+.text-primary:not(.marketing-scope *) {
   color: var(--text-primary);
 }
 
-.text-secondary {
+.text-secondary:not(.marketing-scope *) {
   color: var(--text-secondary);
 }
 
@@ -553,11 +555,13 @@ body {
    LAYOUT UTILITIES
    ============================================================================ */
 
-.flex {
+/* Skips .marketing-scope, where Tailwind's utilities of the same name apply
+   (see components.css UTILITY CLASSES). */
+.flex:not(.marketing-scope *) {
   display: flex;
 }
 
-.flex-col {
+.flex-col:not(.marketing-scope *) {
   display: flex;
   flex-direction: column;
 }
@@ -568,7 +572,7 @@ body {
   justify-content: center;
 }
 
-.grid {
+.grid:not(.marketing-scope *) {
   display: grid;
 }
 
@@ -577,7 +581,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.container {
+.container:not(.marketing-scope *) {
   max-width: var(--max-width-content);
   margin-left: auto;
   margin-right: auto;
