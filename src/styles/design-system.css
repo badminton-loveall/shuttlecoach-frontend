@@ -109,7 +109,10 @@ body:not(:where(.marketing-scope *)) {
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 8px;
-  --radius-pill: 999px;
+  /* LoveAll draws buttons, badges and tags with 6px corners (no pills);
+     true circles use --radius-full or 50%. */
+  --radius-pill: 6px;
+  --radius-full: 9999px;
 
   /* ============================================================================
      5. SHADOWS (Consistent elevation)

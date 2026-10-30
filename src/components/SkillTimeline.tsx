@@ -220,7 +220,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
               <path
                 d={linePath}
                 fill="none"
-                stroke="#16A34A"
+                stroke="#2F6B4F"
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -234,7 +234,7 @@ export function SkillTimeline({ studentId, skillId, skillName, onBack }: SkillTi
                     cy={pos.y}
                     r={DOT_RADIUS}
                     fill={getScoreColor(pos.point.score)}
-                    stroke="#374151"
+                    stroke="#5A5244"
                     strokeWidth={1.5}
                     className="cursor-pointer transition-transform hover:scale-125"
                     style={{ transformOrigin: `${pos.x}px ${pos.y}px` }}
@@ -320,7 +320,7 @@ function TimelineHeader({
           className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium"
           style={{
             backgroundColor: getScoreColor(currentScore),
-            color: currentScore >= 4 ? '#FFFFFF' : '#1F2937',
+            color: currentScore >= 4 ? '#FAF7F0' : '#14202B',
           }}
           data-testid="current-score-badge"
         >
@@ -378,7 +378,7 @@ function TimelineTooltip({
         <p style={{ color: 'var(--text-secondary)' }}>Date: {formattedDate}</p>
         <p style={{ color: 'var(--text-secondary)' }}>
           Score:{' '}
-          <span className="font-medium" style={{ color: getScoreColor(point.score) === '#FEE2E2' ? '#B91C1C' : '#16A34A' }}>
+          <span className="font-medium" style={{ color: point.score === 0 ? 'var(--color-danger)' : 'var(--color-success)' }}>
             {point.score} - {getScoreLabel(point.score)}
           </span>
         </p>

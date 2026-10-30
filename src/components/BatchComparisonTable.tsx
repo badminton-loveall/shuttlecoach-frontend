@@ -95,7 +95,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
   const renderSortIndicator = (column: SortColumn) => {
     if (sortColumn !== column) {
       return (
-        <svg className="w-3 h-3 text-gray-400 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg className="w-3 h-3 text-[var(--text-tertiary)] ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
         </svg>
       );
@@ -117,7 +117,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading comparison data...</p>
+          <p className="text-sm text-[var(--text-secondary)]">Loading comparison data...</p>
         </div>
       </div>
     );
@@ -138,7 +138,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-5 h-5 text-[var(--text-tertiary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
               d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
             />
           </svg>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             No comparison data available.
           </p>
         </div>
@@ -163,10 +163,10 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
     <div className="rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-card)' }}>
       {/* Header */}
       <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--border-default)' }}>
-        <h3 className="text-base font-semibold text-gray-900">
+        <h3 className="text-base font-semibold text-[var(--text-primary)]">
           {title}
         </h3>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-[var(--text-secondary)] mt-1">
           Rows highlighted in amber indicate below-average performance. Click column headers to sort.
         </p>
       </div>
@@ -174,13 +174,13 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left" role="grid" aria-label={title}>
-          <thead className="text-xs uppercase bg-gray-50 text-gray-600" style={{ borderBottom: '1px solid var(--border-default)' }}>
+          <thead className="text-xs uppercase bg-[var(--surface-hover)] text-[var(--text-secondary)]" style={{ borderBottom: '1px solid var(--border-default)' }}>
             <tr>
               <th scope="col" className="px-4 py-3">
                 <button
                   type="button"
                   onClick={() => handleSort('batchName')}
-                  className="flex items-center font-semibold uppercase hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+                  className="flex items-center font-semibold uppercase hover:text-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] rounded"
                   aria-sort={sortColumn === 'batchName' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   {nameColumnLabel}
@@ -191,7 +191,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSort('avgSkillImprovement')}
-                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] rounded"
                   aria-sort={sortColumn === 'avgSkillImprovement' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   Avg Improvement
@@ -202,7 +202,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSort('avgAttendancePercentage')}
-                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] rounded"
                   aria-sort={sortColumn === 'avgAttendancePercentage' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   Attendance %
@@ -213,7 +213,7 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSort('avgDrillCompletionRate')}
-                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 rounded"
+                  className="flex items-center justify-end w-full font-semibold uppercase hover:text-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] rounded"
                   aria-sort={sortColumn === 'avgDrillCompletionRate' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   Drill Completion %
@@ -235,10 +235,10 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
                   className={
                     isHighlighted
                       ? 'bg-amber-50amber-900/20 hover:bg-amber-100'
-                      : 'hover:bg-gray-50'
+                      : 'hover:bg-[var(--surface-hover)]'
                   }
                 >
-                  <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
+                  <td className="px-4 py-3 font-medium text-[var(--text-primary)] whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       {isHighlighted && (
                         <svg
@@ -257,13 +257,13 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
                       {row.batchName}
                     </div>
                   </td>
-                  <td className={`px-4 py-3 text-right tabular-nums ${belowImprovement ? 'text-amber-700 font-semibold' : 'text-gray-700'}`}>
+                  <td className={`px-4 py-3 text-right tabular-nums ${belowImprovement ? 'text-amber-700 font-semibold' : 'text-[var(--text-primary)]'}`}>
                     {row.avgSkillImprovement >= 0 ? '+' : ''}{row.avgSkillImprovement.toFixed(1)}
                   </td>
-                  <td className={`px-4 py-3 text-right tabular-nums ${belowAttendance ? 'text-amber-700 font-semibold' : 'text-gray-700'}`}>
+                  <td className={`px-4 py-3 text-right tabular-nums ${belowAttendance ? 'text-amber-700 font-semibold' : 'text-[var(--text-primary)]'}`}>
                     {row.avgAttendancePercentage.toFixed(1)}%
                   </td>
-                  <td className={`px-4 py-3 text-right tabular-nums ${belowCompletion ? 'text-amber-700 font-semibold' : 'text-gray-700'}`}>
+                  <td className={`px-4 py-3 text-right tabular-nums ${belowCompletion ? 'text-amber-700 font-semibold' : 'text-[var(--text-primary)]'}`}>
                     {row.avgDrillCompletionRate.toFixed(1)}%
                   </td>
                 </tr>
@@ -274,16 +274,16 @@ export const BatchComparisonTable: React.FC<BatchComparisonTableProps> = ({
       </div>
 
       {/* Footer with averages summary */}
-      <div className="px-5 py-3 bg-gray-50" style={{ borderTop: '1px solid var(--border-default)' }}>
-        <div className="flex flex-wrap gap-4 text-xs text-gray-600">
+      <div className="px-5 py-3 bg-[var(--surface-hover)]" style={{ borderTop: '1px solid var(--border-default)' }}>
+        <div className="flex flex-wrap gap-4 text-xs text-[var(--text-secondary)]">
           <span>
-            Avg Improvement: <strong className="text-gray-800">{averages.avgSkillImprovement >= 0 ? '+' : ''}{averages.avgSkillImprovement.toFixed(1)}</strong>
+            Avg Improvement: <strong className="text-[var(--text-primary)]">{averages.avgSkillImprovement >= 0 ? '+' : ''}{averages.avgSkillImprovement.toFixed(1)}</strong>
           </span>
           <span>
-            Avg Attendance: <strong className="text-gray-800">{averages.avgAttendancePercentage.toFixed(1)}%</strong>
+            Avg Attendance: <strong className="text-[var(--text-primary)]">{averages.avgAttendancePercentage.toFixed(1)}%</strong>
           </span>
           <span>
-            Avg Drill Completion: <strong className="text-gray-800">{averages.avgDrillCompletionRate.toFixed(1)}%</strong>
+            Avg Drill Completion: <strong className="text-[var(--text-primary)]">{averages.avgDrillCompletionRate.toFixed(1)}%</strong>
           </span>
         </div>
       </div>

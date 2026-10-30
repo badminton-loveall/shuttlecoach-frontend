@@ -177,9 +177,9 @@ describe('TabNavigation Component', () => {
       );
 
       const batchesTab = screen.getByText('Batches').closest('[role="tab"]');
-      // Inactive tab should have gray border
-      expect(batchesTab?.className).toMatch(/border-gray-200/);
-      expect(batchesTab?.className).toMatch(/text-gray/);
+      // Inactive tab should have the default rule border and muted text
+      expect(batchesTab?.className).toMatch(/border-\[var\(--border-default\)\]/);
+      expect(batchesTab?.className).toMatch(/text-\[var\(--text-secondary\)\]/);
     });
   });
 

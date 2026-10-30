@@ -26,9 +26,9 @@ function drillStatusBadgeClasses(status: string): string {
     case 'scheduled':
       return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
     case 'skipped':
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+      return 'bg-[var(--surface-hover)] text-[var(--text-primary)]';
     default:
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+      return 'bg-[var(--surface-hover)] text-[var(--text-primary)]';
   }
 }
 

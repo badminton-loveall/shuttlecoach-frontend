@@ -62,16 +62,16 @@
 
 .batch-student-list__error-message {
   font-size: var(--font-xs, 12px);
-  color: var(--color-danger, #ef4444);
+  color: var(--color-danger, var(--color-danger));
   margin: 0;
   text-align: center;
 }
 
 .batch-student-list__retry-btn {
   font-size: var(--font-xs, 12px);
-  color: var(--color-primary, #3b82f6);
+  color: var(--color-primary, var(--color-info));
   background: none;
-  border: 1px solid var(--color-primary, #3b82f6);
+  border: 1px solid var(--color-primary, var(--color-info));
   border-radius: var(--radius-md);
   padding: 4px 12px;
   cursor: pointer;
@@ -80,8 +80,8 @@
 }
 
 .batch-student-list__retry-btn:hover {
-  background-color: var(--color-primary, #3b82f6);
-  color: #fff;
+  background-color: var(--color-primary, var(--color-info));
+  color: var(--on-primary);
 }
 
 /* Empty state */
@@ -108,7 +108,7 @@
   }
 
   .batch-student-list__error-message {
-    color: var(--color-danger-light, #fca5a5);
+    color: var(--color-danger-light, var(--color-danger-light));
   }
 
   .batch-student-list__empty-message {

@@ -174,12 +174,12 @@
 
 /* Selected / highlighted row */
 .session-drill-down__student-row--selected {
-  background-color: rgba(184, 225, 53, 0.12);
+  background-color: color-mix(in srgb, var(--color-primary) 12%, transparent);
   border-left: 3px solid var(--color-primary);
 }
 
 .session-drill-down__student-row--selected:hover {
-  background-color: rgba(184, 225, 53, 0.18);
+  background-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 /* Student name */
@@ -223,7 +223,7 @@
 
 .session-drill-down__badge--advanced {
   background-color: rgba(139, 92, 246, 0.12);
-  color: #7c3aed;
+  color: var(--la-accent-ink);
 }
 
 .session-drill-down__badge--professional {
@@ -256,11 +256,11 @@
   }
 
   .session-drill-down__student-row--selected {
-    background-color: rgba(184, 225, 53, 0.08);
+    background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
   }
 
   .session-drill-down__student-row--selected:hover {
-    background-color: rgba(184, 225, 53, 0.14);
+    background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
   }
 
   .session-drill-down__student-name {
@@ -273,6 +273,6 @@
 
   .session-drill-down__badge--advanced {
     background-color: rgba(139, 92, 246, 0.18);
-    color: #c4b5fd;
+    color: var(--la-accent-ink);
   }
 }

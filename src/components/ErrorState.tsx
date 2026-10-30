@@ -93,7 +93,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   // Full page variant
   if (variant === 'page') {
     return (
-      <div className={`flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 ${className}`}>
+      <div className={`flex flex-col items-center justify-center min-h-screen bg-[var(--surface-hover)] p-4 ${className}`}>
         <div className="text-center max-w-md">
           {/* Error Icon */}
           <div className="mb-4 flex justify-center">
@@ -117,23 +117,23 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           </div>
 
           {/* Error Title */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{errorTitle}</h1>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">{errorTitle}</h1>
 
           {/* Error Message */}
-          <p className="text-gray-700 mb-4">{parsedError.message}</p>
+          <p className="text-[var(--text-primary)] mb-4">{parsedError.message}</p>
 
           {/* Description if provided */}
-          {description && <p className="text-gray-600 text-sm mb-6">{description}</p>}
+          {description && <p className="text-[var(--text-secondary)] text-sm mb-6">{description}</p>}
 
           {/* Retry suggestion */}
-          <p className="text-gray-600 text-sm mb-6">{retryText}</p>
+          <p className="text-[var(--text-secondary)] text-sm mb-6">{retryText}</p>
 
           {/* Retry Button */}
           {showRetry && (
             <button
               onClick={onRetry}
               disabled={isRetrying}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 bg-[var(--color-primary)] text-[var(--on-primary)] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               aria-label="Retry loading data"
             >
               {isRetrying ? (

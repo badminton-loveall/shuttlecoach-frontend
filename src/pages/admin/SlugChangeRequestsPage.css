@@ -26,14 +26,14 @@
   background-color: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-md);
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
   font-size: var(--font-sm);
 }
 
 .slug-requests-page__error-dismiss {
   background: none;
   border: none;
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
   cursor: pointer;
   font-size: var(--font-md);
   padding: 0 var(--space-xs);
@@ -127,8 +127,8 @@
 
 .slug-requests-page__btn--reject {
   background-color: transparent;
-  color: var(--color-error, #ef4444);
-  border-color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
+  border-color: var(--color-error, var(--color-danger));
 }
 
 .slug-requests-page__btn--reject:hover:not(:disabled) {

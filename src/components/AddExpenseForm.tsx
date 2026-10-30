@@ -198,7 +198,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Expense Type Dropdown */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-type" className="text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="expense-type" className="text-sm font-medium text-[var(--text-primary)] mb-1">
           Expense Type <span className="text-red-600">*</span>
         </label>
         <select
@@ -209,10 +209,10 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.type}
           aria-describedby={errors.type ? 'expense-type-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
+          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-[var(--text-primary)] transition-all ${
             errors.type
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'border-[var(--border-strong)] bg-[var(--surface-card)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
           {EXPENSE_TYPES.map((type) => (
@@ -230,7 +230,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Amount Input */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-amount" className="text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="expense-amount" className="text-sm font-medium text-[var(--text-primary)] mb-1">
           Amount <span className="text-red-600">*</span>
         </label>
         <input
@@ -245,10 +245,10 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.amount}
           aria-describedby={errors.amount ? 'expense-amount-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
+          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-[var(--text-primary)] transition-all ${
             errors.amount
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'border-[var(--border-strong)] bg-[var(--surface-card)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.amount && (
@@ -260,7 +260,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Date Input */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-date" className="text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="expense-date" className="text-sm font-medium text-[var(--text-primary)] mb-1">
           Date <span className="text-red-600">*</span>
         </label>
         <input
@@ -273,10 +273,10 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.date}
           aria-describedby={errors.date ? 'expense-date-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all ${
+          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-[var(--text-primary)] transition-all ${
             errors.date
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'border-[var(--border-strong)] bg-[var(--surface-card)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.date && (
@@ -288,7 +288,7 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
 
       {/* Description Textarea */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="expense-description" className="text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="expense-description" className="text-sm font-medium text-[var(--text-primary)] mb-1">
           Description <span className="text-red-600">*</span>
         </label>
         <textarea
@@ -301,10 +301,10 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.description}
           aria-describedby={errors.description ? 'expense-description-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-gray-900 transition-all resize-none ${
+          className={`w-full rounded-md border px-3 py-2 text-sm font-normal text-[var(--text-primary)] transition-all resize-none ${
             errors.description
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'border-[var(--border-strong)] bg-[var(--surface-card)] focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${isSubmitting || isLoading ? 'opacity-60 cursor-not-allowed' : ''}`}
         />
         {errors.description && (
@@ -320,14 +320,14 @@ export const AddExpenseForm: React.FC<AddExpenseFormProps> = ({
           type="button"
           onClick={handleCancel}
           disabled={isSubmitting || isLoading}
-          className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex-1 rounded-md border border-[var(--border-strong)] bg-[var(--surface-card)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting || isLoading}
-          className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex-1 rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--on-primary)] transition-all hover:bg-[var(--color-primary-hover)] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isSubmitting || isLoading ? (isEditing ? 'Updating...' : 'Saving...') : (isEditing ? 'Update Expense' : 'Save Expense')}
         </button>

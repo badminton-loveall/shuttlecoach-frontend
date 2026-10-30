@@ -176,7 +176,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
         <div className="flex-1">
           <label
             htmlFor="batch-select"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[var(--text-primary)] mb-1"
           >
             Batch
           </label>
@@ -184,7 +184,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
             id="batch-select"
             value={selectedBatchId}
             onChange={handleBatchChange}
-            className="w-full rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
             style={{ border: '1px solid var(--border-default)' }}
           >
             <option value="">Select a batch</option>
@@ -200,7 +200,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
         <div className="flex-1">
           <label
             htmlFor="session-date"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-[var(--text-primary)] mb-1"
           >
             Session Date
           </label>
@@ -209,7 +209,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
             type="date"
             value={sessionDate}
             onChange={handleDateChange}
-            className="w-full rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg px-3 py-2 text-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
             style={{ border: '1px solid var(--border-default)' }}
           />
         </div>
@@ -218,7 +218,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
       {/* Quick Actions */}
       {selectedBatchId && batchStudents.length > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Mark all:</span>
+          <span className="text-sm text-[var(--text-secondary)]">Mark all:</span>
           <button
             type="button"
             onClick={() => handleMarkAll('PRESENT')}
@@ -245,13 +245,13 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
 
       {/* Student List */}
       {!selectedBatchId && (
-        <p className="text-center text-sm text-gray-500 py-8">
+        <p className="text-center text-sm text-[var(--text-secondary)] py-8">
           Select a batch to mark attendance.
         </p>
       )}
 
       {selectedBatchId && batchStudents.length === 0 && (
-        <p className="text-center text-sm text-gray-500 py-8">
+        <p className="text-center text-sm text-[var(--text-secondary)] py-8">
           No students found in the selected batch.
         </p>
       )}
@@ -259,7 +259,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
       {selectedBatchId && batchStudents.length > 0 && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700">
+            <h3 className="text-sm font-medium text-[var(--text-primary)]">
               Students ({batchStudents.length})
             </h3>
           </div>
@@ -275,11 +275,11 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     {/* Student Name */}
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                         {student.fullName}
                       </p>
                       {student.baidNumber && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-[var(--text-secondary)]">
                           BAID: {student.baidNumber}
                         </p>
                       )}
@@ -301,7 +301,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
                               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                                 isActive
                                   ? config.activeClass
-                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--border-default)]'
                               }`}
                               aria-pressed={isActive}
                               aria-label={`Mark ${student.fullName} as ${config.label}`}
@@ -319,7 +319,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
                     <div className="mt-3 sm:ml-auto sm:max-w-xs">
                       <label
                         htmlFor={`leave-type-${student.id}`}
-                        className="block text-xs font-medium text-gray-600 mb-1"
+                        className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
                       >
                         Leave Type
                       </label>
@@ -332,7 +332,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
                             e.target.value as LeaveType
                           )
                         }
-                        className="w-full rounded px-2 py-1.5 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full rounded px-2 py-1.5 text-xs focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                         style={{ border: '1px solid var(--border-default)' }}
                       >
                         <option value="">Select leave type</option>
@@ -358,7 +358,7 @@ export const AttendanceMarker: React.FC<AttendanceMarkerProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={submitting || !selectedBatchId}
-            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+            className="rounded-lg bg-[var(--color-primary)] px-6 py-2.5 text-sm font-medium text-[var(--on-primary)] hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
           >
             {submitting ? 'Submitting...' : 'Submit Attendance'}
           </button>

@@ -54,7 +54,7 @@ export const BatchListItem: React.FC<BatchListItemProps> = ({
 
   return (
     <div
-      className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-sm transition-shadow cursor-pointer"
+      className="bg-[var(--surface-card)] rounded-lg border border-[var(--border-default)] p-6 hover:shadow-sm transition-shadow cursor-pointer"
       onClick={handleItemClick}
       onKeyDown={handleItemKeyDown}
       role="button"
@@ -63,7 +63,7 @@ export const BatchListItem: React.FC<BatchListItemProps> = ({
     >
       {/* Batch Name as Heading with Remove Button */}
       <div className="flex justify-between items-start mb-3">
-        <h4 className="text-lg font-semibold text-gray-900">{batch.name}</h4>
+        <h4 className="text-lg font-semibold text-[var(--text-primary)]">{batch.name}</h4>
         {canRemove && (
           <button
             className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
@@ -79,28 +79,28 @@ export const BatchListItem: React.FC<BatchListItemProps> = ({
       {/* Schedule */}
       {batch.schedule && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600 mb-1">Schedule</p>
-          <p className="text-base text-gray-900">{batch.schedule}</p>
+          <p className="text-sm text-[var(--text-secondary)] mb-1">Schedule</p>
+          <p className="text-base text-[var(--text-primary)]">{batch.schedule}</p>
         </div>
       )}
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mt-6 pt-6 border-t border-gray-200">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 mt-6 pt-6 border-t border-[var(--border-default)]">
         {/* Student Count */}
         <div>
-          <p className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+          <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
             Students
           </p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{batch.studentCount}</p>
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{batch.studentCount}</p>
         </div>
 
         {/* Attendance Rate */}
         <div>
-          <p className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+          <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
             Attendance
           </p>
           <div className="flex items-center gap-2 mt-1">
-            <p className="text-2xl font-bold text-gray-900">{metrics.attendanceRate}%</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{metrics.attendanceRate}%</p>
             <div
               className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                 metrics.attendanceRate >= 90
@@ -121,20 +121,20 @@ export const BatchListItem: React.FC<BatchListItemProps> = ({
 
         {/* Average Skill Level */}
         <div>
-          <p className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+          <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
             Avg Skill
           </p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">
+          <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
             {Math.round(metrics.averageSkillLevel)}%
           </p>
         </div>
 
         {/* Created Date */}
         <div>
-          <p className="text-xs font-medium text-gray-600 uppercase tracking-wider">
+          <p className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
             Created
           </p>
-          <p className="text-base text-gray-900 mt-1">
+          <p className="text-base text-[var(--text-primary)] mt-1">
             {new Date(batch.createdAt).toLocaleDateString('en-IN', {
               year: 'numeric',
               month: 'short',

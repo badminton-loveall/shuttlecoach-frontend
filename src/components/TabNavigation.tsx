@@ -138,11 +138,11 @@ export const TabNavigation = React.forwardRef<HTMLDivElement, TabNavigationProps
               'border-b-2 lg:border-b-0 lg:border-r-2',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
               'disabled:opacity-50 disabled:cursor-not-allowed',
-              'hover:bg-slate-50 lg:hover:bg-transparent',
+              'hover:bg-[var(--surface-hover)] lg:hover:bg-transparent',
               // Active state
               activeTab === tab.id
                 ? 'border-primary text-primary bg-primary/5 lg:bg-transparent'
-                : 'border-gray-200 text-gray-700 hover:text-gray-900',
+                : 'border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
               // Disabled state
               tab.disabled && 'pointer-events-none'
             )}

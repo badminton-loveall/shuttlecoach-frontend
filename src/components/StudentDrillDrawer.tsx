@@ -11,6 +11,7 @@ import React, { useMemo } from 'react';
 import { useBatchStudentsDrills } from '../hooks/useBatchStudentsDrills';
 import type { Student } from '../types';
 import './StudentDrillDrawer.css';
+import { SKILL_LEVEL_COLORS } from '../constants/chartColors';
 
 export interface StudentDrillDrawerProps {
   /** Whether the drawer is open */
@@ -26,10 +27,10 @@ export interface StudentDrillDrawerProps {
 }
 
 const SKILL_COLORS: Record<string, string> = {
-  Beginner: '#3B82F6',
-  Intermediate: '#F97316',
-  Advanced: '#8B5CF6',
-  Professional: '#10B981',
+  Beginner: SKILL_LEVEL_COLORS.Beginner,
+  Intermediate: SKILL_LEVEL_COLORS.Intermediate,
+  Advanced: SKILL_LEVEL_COLORS.Advanced,
+  Professional: SKILL_LEVEL_COLORS.Professional,
 };
 
 /**

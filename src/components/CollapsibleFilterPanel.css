@@ -26,7 +26,7 @@
   border-color: var(--color-primary);
   background-color: var(--surface-hover);
   color: var(--text-primary);
-  box-shadow: 0 2px 4px rgba(184, 225, 53, 0.1);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .filter-toggle-btn:active {
@@ -247,7 +247,7 @@
 .filter-panel-inner .filter-search:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 /* ============================================================================
@@ -296,7 +296,7 @@
 .filter-panel-inner .filter-dropdown:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 /* ============================================================================
@@ -368,7 +368,7 @@
   letter-spacing: 0.2px;
   border-radius: var(--radius-pill);
   border: 1px solid;
-  background-color: white;
+  background-color: var(--surface-card);
   cursor: pointer;
   transition: all 120ms ease-out;
   white-space: nowrap;
@@ -399,43 +399,43 @@
 
 /* Color variants - minimal borders */
 .filter-badge--paid {
-  border-color: #10b981;
-  color: #10b981;
+  border-color: var(--color-success);
+  color: var(--color-success);
 }
 
 .filter-badge--paid.active {
-  background-color: #10b981;
-  color: white;
+  background-color: var(--color-success);
+  color: var(--la-canvas);
 }
 
 .filter-badge--pending {
-  border-color: #f59e0b;
-  color: #f59e0b;
+  border-color: var(--color-warning);
+  color: var(--color-warning);
 }
 
 .filter-badge--pending.active {
-  background-color: #f59e0b;
-  color: white;
+  background-color: var(--color-warning);
+  color: var(--la-canvas);
 }
 
 .filter-badge--overdue {
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .filter-badge--overdue.active {
-  background-color: #ef4444;
-  color: white;
+  background-color: var(--color-danger);
+  color: var(--la-canvas);
 }
 
 .filter-badge--waived {
-  border-color: #9ca3af;
-  color: #9ca3af;
+  border-color: var(--border-strong);
+  color: var(--text-tertiary);
 }
 
 .filter-badge--waived.active {
-  background-color: #9ca3af;
-  color: white;
+  background-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 /* ============================================================================

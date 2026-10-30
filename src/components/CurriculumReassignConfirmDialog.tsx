@@ -38,7 +38,7 @@ export const CurriculumReassignConfirmDialog: React.FC<CurriculumReassignConfirm
         aria-labelledby="reassign-dialog-title"
       >
         <div className="modal-header">
-          <h2 id="reassign-dialog-title" className="text-lg font-semibold text-gray-900">
+          <h2 id="reassign-dialog-title" className="text-lg font-semibold text-[var(--text-primary)]">
             Confirm Curriculum Reassignment
           </h2>
         </div>
@@ -47,13 +47,13 @@ export const CurriculumReassignConfirmDialog: React.FC<CurriculumReassignConfirm
           <div className="flex items-start gap-3 mb-4">
             <span className="text-2xl" aria-hidden="true">⚠️</span>
             <div>
-              <p className="text-sm text-gray-700 mb-2">
+              <p className="text-sm text-[var(--text-primary)] mb-2">
                 <strong>{studentName}</strong> has existing training progress at Week {currentWeek}.
               </p>
-              <p className="text-sm text-gray-700 font-semibold">
+              <p className="text-sm text-[var(--text-primary)] font-semibold">
                 This will reset the student's progress to Week 1, Day 1.
               </p>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
                 All current cycle training logs will no longer align with the new curriculum plan.
                 Are you sure you want to proceed?
               </p>
@@ -64,7 +64,7 @@ export const CurriculumReassignConfirmDialog: React.FC<CurriculumReassignConfirm
         <div className="flex justify-end gap-3 px-6 pb-6">
           <button
             type="button"
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface-card)] border border-[var(--border-strong)] rounded-md hover:bg-[var(--surface-hover)] disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={onCancel}
             disabled={isLoading}
           >

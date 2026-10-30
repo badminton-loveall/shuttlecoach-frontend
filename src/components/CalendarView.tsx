@@ -173,7 +173,7 @@ const SessionSlotCard: React.FC<SessionSlotCardProps> = ({ entry, compact, onCli
         {entry.startTime} - {entry.endTime}
       </div>
       {!compact && entry.focusArea && (
-        <div className="text-xs text-blue-600 truncate mt-0.5">
+        <div className="text-xs text-[var(--color-primary)] truncate mt-0.5">
           {entry.focusArea}
         </div>
       )}
@@ -410,7 +410,7 @@ const WeekGrid: React.FC<WeekGridProps> = ({ dates, entriesByDate, today, onSess
               className={cn(
                 'text-sm font-medium mb-1 w-7 h-7 flex items-center justify-center rounded-full',
                 isToday
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[var(--color-primary)] text-[var(--on-primary)]'
                   : ''
               )}
               style={isToday ? undefined : { color: 'var(--text-primary)' }}
@@ -492,7 +492,7 @@ const MonthGrid: React.FC<MonthGridProps> = ({
               className={cn(
                 'text-xs font-medium mb-0.5 w-6 h-6 flex items-center justify-center rounded-full',
                 isToday
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[var(--color-primary)] text-[var(--on-primary)]'
                   : ''
               )}
               style={isToday ? undefined : { color: 'var(--text-primary)' }}

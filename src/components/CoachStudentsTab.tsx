@@ -152,15 +152,15 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
   if (isLoading) {
     return (
       <div className="space-y-4 p-6">
-        <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
-        <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2" />
+        <div className="h-6 bg-[var(--border-default)] rounded animate-pulse w-3/4" />
+        <div className="h-4 bg-[var(--surface-hover)] rounded animate-pulse w-1/2" />
         <div className="space-y-3 mt-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex gap-3">
-              <div className="h-12 w-12 bg-gray-200 rounded-full animate-pulse" />
+              <div className="h-12 w-12 bg-[var(--border-default)] rounded-full animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-                <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                <div className="h-4 bg-[var(--border-default)] rounded animate-pulse w-3/4" />
+                <div className="h-3 bg-[var(--surface-hover)] rounded animate-pulse w-1/2" />
               </div>
             </div>
           ))}
@@ -186,10 +186,10 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
             d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
           />
         </svg>
-        <p className="text-gray-600 text-center">No students assigned to this coach</p>
+        <p className="text-[var(--text-secondary)] text-center">No students assigned to this coach</p>
         {canEdit && (
           <button
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-[var(--color-primary)] text-[var(--on-primary)] rounded-md hover:bg-[var(--color-primary-hover)] transition-colors"
             onClick={handleAddStudentClick}
             aria-label="Add student"
           >
@@ -203,12 +203,12 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
   return (
     <div className="space-y-6 p-6">
       {/* Filter UI */}
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-900 mb-4">Filters</h3>
+      <div className="bg-[var(--surface-hover)] rounded-lg p-4 border border-[var(--border-default)]">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">Filters</h3>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Batch Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Batch</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Batch</label>
             <select
               value={filters.batch || ''}
               onChange={(e) =>
@@ -217,7 +217,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                   batch: e.target.value || undefined,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--border-strong)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
               aria-label="Filter by batch"
             >
               <option value="">All Batches</option>
@@ -231,7 +231,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
 
           {/* Skill Level Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Skill Level</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Skill Level</label>
             <select
               value={filters.skillLevel || ''}
               onChange={(e) =>
@@ -240,7 +240,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                   skillLevel: (e.target.value || undefined) as SkillLevel | undefined,
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--border-strong)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
               aria-label="Filter by skill level"
             >
               <option value="">All Skill Levels</option>
@@ -254,7 +254,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
 
           {/* Search Text Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Search</label>
             <input
               type="text"
               value={filters.search || ''}
@@ -265,7 +265,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                 })
               }
               placeholder="Name, BAID, or email..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--border-strong)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
               aria-label="Search students by name, BAID, or email"
             />
           </div>
@@ -279,7 +279,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                 <span>Batch: {filters.batch}</span>
                 <button
                   onClick={() => setFilters({ ...filters, batch: undefined })}
-                  className="text-blue-600 hover:text-blue-900 font-medium"
+                  className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                   aria-label={`Clear batch filter: ${filters.batch}`}
                 >
                   ✕
@@ -291,7 +291,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                 <span>Skill: {filters.skillLevel}</span>
                 <button
                   onClick={() => setFilters({ ...filters, skillLevel: undefined })}
-                  className="text-blue-600 hover:text-blue-900 font-medium"
+                  className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                   aria-label={`Clear skill level filter: ${filters.skillLevel}`}
                 >
                   ✕
@@ -303,7 +303,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                 <span>Search: {filters.search}</span>
                 <button
                   onClick={() => setFilters({ ...filters, search: undefined })}
-                  className="text-blue-600 hover:text-blue-900 font-medium"
+                  className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                   aria-label={`Clear search filter: ${filters.search}`}
                 >
                   ✕
@@ -317,10 +317,10 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
       {/* No results after filtering */}
       {filteredStudents.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">No students match your filters</p>
+          <p className="text-[var(--text-secondary)]">No students match your filters</p>
           <button
             onClick={() => setFilters({ batch: undefined, skillLevel: undefined, search: undefined })}
-            className="mt-3 text-blue-600 hover:text-blue-700 font-medium"
+            className="mt-3 text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
           >
             Clear Filters
           </button>
@@ -329,7 +329,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
         <>
           {/* Student Count */}
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)]">
               Students ({filteredStudents.length})
             </h3>
             {canEdit && (
@@ -362,7 +362,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
       {/* Remove Student Confirmation Dialog */}
       {studentToRemove && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 space-y-4">
+          <div className="bg-[var(--surface-card)] rounded-lg shadow-lg max-w-sm w-full p-6 space-y-4">
             {/* Icon */}
             <div className="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mx-auto">
               <svg
@@ -381,27 +381,27 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
             </div>
 
             {/* Title */}
-            <h2 className="text-lg font-semibold text-gray-900 text-center">
+            <h2 className="text-lg font-semibold text-[var(--text-primary)] text-center">
               Remove Student?
             </h2>
 
             {/* Message */}
-            <p className="text-gray-600 text-center text-sm">
+            <p className="text-[var(--text-secondary)] text-center text-sm">
               Are you sure you want to remove{' '}
               <strong>{studentToRemove.fullName}</strong> from this coach's students? This action cannot be undone.
             </p>
 
             {/* Student Details */}
-            <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+            <div className="bg-[var(--surface-hover)] rounded-lg p-3 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Batch:</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-[var(--text-secondary)]">Batch:</span>
+                <span className="font-medium text-[var(--text-primary)]">
                   {studentToRemove.batchId || '—'}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Skill Level:</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-[var(--text-secondary)]">Skill Level:</span>
+                <span className="font-medium text-[var(--text-primary)]">
                   {studentToRemove.skillLevel}
                 </span>
               </div>
@@ -413,7 +413,7 @@ export const CoachStudentsTab: React.FC<CoachStudentsTabProps> = ({
                 type="button"
                 onClick={handleCancelRemove}
                 disabled={isRemovingStudent}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
+                className="flex-1 px-4 py-2 border border-[var(--border-strong)] text-[var(--text-primary)] rounded-md hover:bg-[var(--surface-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm"
               >
                 Cancel
               </button>

@@ -211,7 +211,7 @@ const AttendancePage: React.FC = () => {
                       id="history-batch-filter"
                       value={historyBatchFilter}
                       onChange={(e) => setHistoryBatchFilter(e.target.value)}
-                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                       style={{
                         backgroundColor: 'var(--surface-card)',
                         border: '1px solid var(--border-default)',
@@ -241,7 +241,7 @@ const AttendancePage: React.FC = () => {
                       type="date"
                       value={historyStartDate}
                       onChange={(e) => setHistoryStartDate(e.target.value)}
-                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                       style={{
                         backgroundColor: 'var(--surface-card)',
                         border: '1px solid var(--border-default)',
@@ -264,7 +264,7 @@ const AttendancePage: React.FC = () => {
                       type="date"
                       value={historyEndDate}
                       onChange={(e) => setHistoryEndDate(e.target.value)}
-                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                       style={{
                         backgroundColor: 'var(--surface-card)',
                         border: '1px solid var(--border-default)',
@@ -299,9 +299,9 @@ const AttendancePage: React.FC = () => {
                   }}
                 >
                   <div className="animate-pulse space-y-4">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-[var(--border-default)] rounded w-3/4"></div>
+                    <div className="h-4 bg-[var(--border-default)] rounded w-1/2"></div>
+                    <div className="h-4 bg-[var(--border-default)] rounded w-5/6"></div>
                   </div>
                 </div>
               )}

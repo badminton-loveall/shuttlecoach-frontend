@@ -102,7 +102,7 @@ export const FeeAccessToggle: React.FC<FeeAccessToggleProps> = ({
 
       {isHeadCoach && (
         <span
-          className="text-xs text-gray-500 dark:text-gray-400"
+          className="text-xs text-[var(--text-secondary)]"
           style={{ fontSize: '0.75rem', color: 'var(--text-muted, #6b7280)' }}
         >
           Always on

@@ -196,13 +196,13 @@ export const ProfilePage: React.FC = () => {
               </p>
 
               {successMessage && (
-                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: '#22c55e', fontSize: 'var(--font-sm)' }} role="alert">
+                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', color: 'var(--color-success)', fontSize: 'var(--font-sm)' }} role="alert">
                   {successMessage}
                 </div>
               )}
 
               {errors.general && (
-                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontSize: 'var(--font-sm)' }} role="alert">
+                <div style={{ padding: '0.5rem 0.75rem', marginBottom: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--color-danger)', fontSize: 'var(--font-sm)' }} role="alert">
                   {errors.general}
                 </div>
               )}
@@ -210,7 +210,7 @@ export const ProfilePage: React.FC = () => {
               <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <div>
                   <label htmlFor="currentPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                    Current Password <span style={{ color: '#ef4444' }}>*</span>
+                    Current Password <span style={{ color: 'var(--color-danger)' }}>*</span>
                   </label>
                   <input
                     id="currentPassword"
@@ -225,13 +225,13 @@ export const ProfilePage: React.FC = () => {
                     style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
                   />
                   {hasAttempted && errors.currentPassword && (
-                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.currentPassword}</span>
+                    <span style={{ fontSize: 'var(--font-xs)', color: 'var(--color-danger)', marginTop: '2px', display: 'block' }}>{errors.currentPassword}</span>
                   )}
                 </div>
 
                 <div>
                   <label htmlFor="newPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                    New Password <span style={{ color: '#ef4444' }}>*</span>
+                    New Password <span style={{ color: 'var(--color-danger)' }}>*</span>
                   </label>
                   <input
                     id="newPassword"
@@ -246,13 +246,13 @@ export const ProfilePage: React.FC = () => {
                     style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
                   />
                   {hasAttempted && errors.newPassword && (
-                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.newPassword}</span>
+                    <span style={{ fontSize: 'var(--font-xs)', color: 'var(--color-danger)', marginTop: '2px', display: 'block' }}>{errors.newPassword}</span>
                   )}
                 </div>
 
                 <div>
                   <label htmlFor="confirmPassword" style={{ display: 'block', fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-medium)', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-                    Confirm Password <span style={{ color: '#ef4444' }}>*</span>
+                    Confirm Password <span style={{ color: 'var(--color-danger)' }}>*</span>
                   </label>
                   <input
                     id="confirmPassword"
@@ -267,7 +267,7 @@ export const ProfilePage: React.FC = () => {
                     style={{ padding: '8px 12px', fontSize: 'var(--font-sm)' }}
                   />
                   {hasAttempted && errors.confirmPassword && (
-                    <span style={{ fontSize: 'var(--font-xs)', color: '#ef4444', marginTop: '2px', display: 'block' }}>{errors.confirmPassword}</span>
+                    <span style={{ fontSize: 'var(--font-xs)', color: 'var(--color-danger)', marginTop: '2px', display: 'block' }}>{errors.confirmPassword}</span>
                   )}
                 </div>
 

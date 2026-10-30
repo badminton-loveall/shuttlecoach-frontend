@@ -13,6 +13,7 @@ import { SKILL_CATEGORIES, SKILL_DEFINITIONS_STRUCTURED } from '../data/skillDef
 import { calculateCategoryAverage } from '../utils/skillUtils';
 import type { SkillAssessment, SkillCategory } from '../types';
 import './TrendLineChart.css';
+import { CHART_COLORS } from '../constants/chartColors';
 
 /**
  * TrendLineChart
@@ -29,12 +30,12 @@ interface TrendLineChartProps {
 type ViewMode = 'per-category' | 'per-skill';
 
 const CATEGORY_COLORS: Record<SkillCategory, string> = {
-  forehand: '#B8E135',
-  backhand: '#3B82F6',
-  return: '#F59E0B',
-  service: '#EC4899',
-  overhead: '#8B5CF6',
-  rally: '#14B8A6',
+  forehand: CHART_COLORS.series[0],
+  backhand: CHART_COLORS.series[1],
+  return: CHART_COLORS.series[2],
+  service: CHART_COLORS.series[4],
+  overhead: CHART_COLORS.series[3],
+  rally: CHART_COLORS.series[6],
 };
 
 const CATEGORY_DISPLAY_LABELS: Record<SkillCategory, string> = {
@@ -47,18 +48,7 @@ const CATEGORY_DISPLAY_LABELS: Record<SkillCategory, string> = {
 };
 
 /** Per-skill line colors (cycle through a palette for up to 10 skills) */
-const SKILL_LINE_COLORS = [
-  '#B8E135',
-  '#3B82F6',
-  '#F59E0B',
-  '#EC4899',
-  '#8B5CF6',
-  '#14B8A6',
-  '#EF4444',
-  '#6366F1',
-  '#10B981',
-  '#F97316',
-];
+const SKILL_LINE_COLORS: readonly string[] = CHART_COLORS.series;
 
 /**
  * Sort cycle keys chronologically.
@@ -209,31 +199,31 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
         <ResponsiveContainer width="100%" height={300}>
           {viewMode === 'per-category' ? (
             <LineChart data={categoryData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E4E9EC" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} strokeOpacity={0.4} />
               <XAxis
                 dataKey="cycleKey"
-                tick={{ fill: '#4A5662', fontSize: 11 }}
+                tick={{ fill: CHART_COLORS.axis, fontSize: 11 }}
               />
               <YAxis
                 domain={[0, 4]}
                 tickCount={5}
-                tick={{ fill: '#4A5662', fontSize: 11 }}
+                tick={{ fill: CHART_COLORS.axis, fontSize: 11 }}
                 label={{
                   value: 'Score',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: '#4A5662', fontSize: 11 },
+                  style: { fill: CHART_COLORS.axis, fontSize: 11 },
                 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E4E9EC',
+                  backgroundColor: 'var(--surface-card)',
+                  border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-sm, 6px)',
                   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.07)',
                   fontSize: 12,
                 }}
-                labelStyle={{ color: '#1B2B4E', fontSize: 12, fontWeight: 600 }}
+                labelStyle={{ color: 'var(--text-primary)', fontSize: 12, fontWeight: 600 }}
                 itemStyle={{ fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -252,31 +242,31 @@ export const TrendLineChart: React.FC<TrendLineChartProps> = ({ assessments }) =
             </LineChart>
           ) : (
             <LineChart data={skillData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E4E9EC" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} strokeOpacity={0.4} />
               <XAxis
                 dataKey="cycleKey"
-                tick={{ fill: '#4A5662', fontSize: 11 }}
+                tick={{ fill: CHART_COLORS.axis, fontSize: 11 }}
               />
               <YAxis
                 domain={[0, 4]}
                 tickCount={5}
-                tick={{ fill: '#4A5662', fontSize: 11 }}
+                tick={{ fill: CHART_COLORS.axis, fontSize: 11 }}
                 label={{
                   value: 'Score',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: '#4A5662', fontSize: 11 },
+                  style: { fill: CHART_COLORS.axis, fontSize: 11 },
                 }}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E4E9EC',
+                  backgroundColor: 'var(--surface-card)',
+                  border: '1px solid var(--border-default)',
                   borderRadius: 'var(--radius-sm, 6px)',
                   boxShadow: '0 2px 12px rgba(0, 0, 0, 0.07)',
                   fontSize: 12,
                 }}
-                labelStyle={{ color: '#1B2B4E', fontSize: 12, fontWeight: 600 }}
+                labelStyle={{ color: 'var(--text-primary)', fontSize: 12, fontWeight: 600 }}
                 itemStyle={{ fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />

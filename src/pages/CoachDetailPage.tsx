@@ -400,7 +400,7 @@ export default function CoachDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className="coach-detail-page bg-white min-h-screen">
+      <div className="coach-detail-page bg-[var(--surface-card)] min-h-screen">
         {/* Page Header Section */}
         <div style={{ borderBottom: '1px solid var(--border-default)' }}>
           <div className="max-w-7xl mx-auto" style={{ padding: 'var(--space-xl) var(--space-md)' }}>
@@ -491,7 +491,7 @@ export default function CoachDetailPage() {
         </div>
 
         {/* Tab Content Section */}
-        <div className="coach-detail-content bg-white">
+        <div className="coach-detail-content bg-[var(--surface-card)]">
           <div className="max-w-7xl mx-auto page-container">
             {/* Profile Tab */}
             {pageState.activeTab === 'profile' && (

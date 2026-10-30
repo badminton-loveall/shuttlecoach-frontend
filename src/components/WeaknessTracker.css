@@ -9,7 +9,7 @@
   font-size: var(--font-base, 1rem);
   font-weight: var(--weight-semibold, 600);
   margin-bottom: var(--space-md, 1rem);
-  color: var(--text-primary, #111827);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .skill-assessment__grid {
@@ -20,10 +20,10 @@
 
 /* Category Card */
 .category-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md, 8px);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--surface-card);
 }
 
 .category-card__header {
@@ -31,21 +31,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--surface-hover);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .category-card__name {
   font-size: var(--font-sm, 0.875rem);
   font-weight: var(--weight-semibold, 600);
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .category-card__avg {
   font-size: var(--font-xs, 0.75rem);
   font-weight: var(--weight-medium, 500);
-  color: #6b7280;
-  background: #f3f4f6;
+  color: var(--text-secondary);
+  background: var(--surface-hover);
   padding: 2px 8px;
   border-radius: 9999px;
 }
@@ -56,7 +56,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.35rem 0.75rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .skill-row:last-child {
@@ -64,12 +64,12 @@
 }
 
 .skill-row:hover {
-  background: #f9fafb;
+  background: var(--surface-hover);
 }
 
 .skill-row__name {
   font-size: var(--font-sm, 0.875rem);
-  color: #111827;
+  color: var(--text-primary);
   flex: 1;
   min-width: 0;
 }
@@ -92,27 +92,27 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #e5e7eb;
+  background: var(--border-default);
 }
 
 .score-dot--filled-0 {
-  background: #ef4444;
+  background: var(--color-danger);
 }
 
 .score-dot--filled-1 {
-  background: #f97316;
+  background: var(--color-warning);
 }
 
 .score-dot--filled-2 {
-  background: #ca8a04;
+  background: var(--color-warning);
 }
 
 .score-dot--filled-3 {
-  background: #22c55e;
+  background: var(--color-success);
 }
 
 .score-dot--filled-4 {
-  background: #15803d;
+  background: var(--color-success);
 }
 
 /* Score label */
@@ -124,23 +124,23 @@
 }
 
 .score-color--0 {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .score-color--1 {
-  color: #f97316;
+  color: var(--color-warning);
 }
 
 .score-color--2 {
-  color: #ca8a04;
+  color: var(--color-warning);
 }
 
 .score-color--3 {
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .score-color--4 {
-  color: #15803d;
+  color: var(--color-success);
 }
 
 /* Trend Indicators */
@@ -152,25 +152,25 @@
 }
 
 .trend--improving {
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .trend--declining {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .trend--stable {
-  color: #9ca3af;
+  color: var(--text-tertiary);
 }
 
 .trend--new {
-  color: #9ca3af;
+  color: var(--text-tertiary);
 }
 
 /* Empty state */
 .skill-assessment__empty {
   font-size: var(--font-sm, 0.875rem);
-  color: #6b7280;
+  color: var(--text-secondary);
   text-align: center;
   padding: var(--space-lg, 1.5rem) var(--space-md, 1rem);
 }
@@ -178,45 +178,45 @@
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   .skill-assessment__title {
-    color: #f1f5f9;
+    color: var(--text-primary);
   }
 
   .category-card {
-    border-color: #334155;
-    background: #1e293b;
+    border-color: var(--text-primary);
+    background: var(--surface-card);
   }
 
   .category-card__header {
-    background: #0f172a;
-    border-bottom-color: #334155;
+    background: var(--surface-background);
+    border-bottom-color: var(--text-primary);
   }
 
   .category-card__name {
-    color: #f1f5f9;
+    color: var(--text-primary);
   }
 
   .category-card__avg {
-    color: #94a3b8;
-    background: #334155;
+    color: var(--text-tertiary);
+    background: var(--surface-hover);
   }
 
   .skill-row {
-    border-bottom-color: #1e293b;
+    border-bottom-color: var(--text-primary);
   }
 
   .skill-row:hover {
-    background: #334155;
+    background: var(--surface-hover);
   }
 
   .skill-row__name {
-    color: #f1f5f9;
+    color: var(--text-primary);
   }
 
   .score-dot {
-    background: #475569;
+    background: var(--border-strong);
   }
 
   .skill-assessment__empty {
-    color: #94a3b8;
+    color: var(--text-tertiary);
   }
 }

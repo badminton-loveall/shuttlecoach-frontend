@@ -344,7 +344,7 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
           <div className="mt-2">
             <button
               onClick={() => toggleExpanded(headCoach.coach_id)}
-              className="text-xs text-blue-600 hover:underline"
+              className="text-xs text-[var(--color-primary)] hover:underline"
               aria-expanded={expandedCoaches.has(headCoach.coach_id)}
             >
               {expandedCoaches.has(headCoach.coach_id) ? '▾ Hide' : '▸ Show'} students
@@ -399,7 +399,7 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
                         <>
                           <button
                             onClick={() => handleAssignStudentOpen(coach.coach_id)}
-                            className="text-xs text-blue-600 hover:underline"
+                            className="text-xs text-[var(--color-primary)] hover:underline"
                             aria-label={`Assign student to ${coach.coach_name}`}
                           >
                             Assign Student
@@ -420,7 +420,7 @@ const CoachAssignmentPanel: React.FC<CoachAssignmentPanelProps> = ({ batchId, re
                   <div className="mt-1">
                     <button
                       onClick={() => toggleExpanded(coach.coach_id)}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-[var(--color-primary)] hover:underline"
                       aria-expanded={isExpanded}
                     >
                       {isExpanded ? '▾ Hide' : '▸ Show'} students
@@ -713,7 +713,7 @@ const StudentList: React.FC<StudentListProps> = ({
           {!readOnly && coaches.length > 1 && (
             <button
               onClick={() => onMoveStudent(student)}
-              className="text-xs text-blue-600 hover:underline"
+              className="text-xs text-[var(--color-primary)] hover:underline"
               aria-label={`Move ${student.student_name}`}
             >
               Move

@@ -56,7 +56,7 @@
 .center-switcher__trigger:hover {
   color: var(--color-primary-dark);
   border-color: var(--color-primary);
-  background-color: rgba(184, 225, 53, 0.08);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .center-switcher__trigger .center-switcher__name {
@@ -134,13 +134,13 @@
 
 .center-switcher__option:hover {
   color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.08);
+  background-color: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .center-switcher__option--active {
   color: var(--color-primary-dark);
   font-weight: var(--weight-semibold);
-  background-color: rgba(184, 225, 53, 0.1);
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .center-switcher__option-name {

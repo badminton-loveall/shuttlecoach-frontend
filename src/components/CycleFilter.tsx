@@ -24,7 +24,7 @@ export const CycleFilter: React.FC<CycleFilterProps> = ({
     <div className="flex items-center gap-2">
       <label
         htmlFor="cycle-filter"
-        className="text-sm font-medium text-gray-700 dark:text-gray-300"
+        className="text-sm font-medium text-[var(--text-primary)]"
       >
         Cycle:
       </label>
@@ -32,7 +32,7 @@ export const CycleFilter: React.FC<CycleFilterProps> = ({
         id="cycle-filter"
         value={selectedCycle}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="rounded-md border border-[var(--border-strong)] bg-[var(--surface-card)] px-3 py-1.5 text-sm text-[var(--text-primary)] shadow-sm focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
         aria-label="Select training cycle"
       >
         {availableCycles.map((cycle) => (

@@ -109,7 +109,7 @@ export const AttendanceStatsWidget: React.FC<AttendanceStatsWidgetProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading attendance data...</p>
+          <p className="text-sm text-[var(--text-secondary)]">Loading attendance data...</p>
         </div>
       </div>
     );
@@ -128,7 +128,7 @@ export const AttendanceStatsWidget: React.FC<AttendanceStatsWidgetProps> = ({
     <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-base font-semibold text-gray-900">
+        <h3 className="text-base font-semibold text-[var(--text-primary)]">
           Attendance Today
         </h3>
         {summary.totalExpected > 0 && (
@@ -142,7 +142,7 @@ export const AttendanceStatsWidget: React.FC<AttendanceStatsWidgetProps> = ({
 
       {/* Summary Stats */}
       {summary.totalExpected === 0 ? (
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-[var(--text-secondary)] mb-4">
           No attendance data for today yet.
         </p>
       ) : (
@@ -152,28 +152,28 @@ export const AttendanceStatsWidget: React.FC<AttendanceStatsWidgetProps> = ({
             <p className="text-xl font-bold text-green-600">
               {summary.totalPresent + summary.totalLate}
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">Present</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Present</p>
           </div>
           {/* Absent */}
           <div className="text-center">
             <p className="text-xl font-bold text-red-600">
               {summary.totalAbsent}
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">Absent</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Absent</p>
           </div>
           {/* Total Expected */}
           <div className="text-center">
-            <p className="text-xl font-bold text-gray-700">
+            <p className="text-xl font-bold text-[var(--text-primary)]">
               {summary.totalExpected}
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">Expected</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">Expected</p>
           </div>
         </div>
       )}
 
       {/* 7-Day Trend */}
       <div>
-        <p className="text-xs uppercase tracking-wide font-medium text-gray-500 mb-2">
+        <p className="text-xs uppercase tracking-wide font-medium text-[var(--text-secondary)] mb-2">
           7-Day Trend
         </p>
         <div className="flex items-end gap-1.5 h-10">
@@ -199,7 +199,7 @@ export const AttendanceStatsWidget: React.FC<AttendanceStatsWidgetProps> = ({
                 )}
               </div>
               {/* Day label */}
-              <span className="text-[9px] text-gray-400 mt-0.5 leading-none">
+              <span className="text-[9px] text-[var(--text-tertiary)] mt-0.5 leading-none">
                 {getShortDay(day.date)}
               </span>
             </div>

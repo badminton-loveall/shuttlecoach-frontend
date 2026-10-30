@@ -32,7 +32,7 @@
   background-color: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-md);
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
   font-size: var(--font-sm);
 }
 
@@ -71,7 +71,7 @@
 }
 
 .create-center-page__required {
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
 }
 
 .create-center-page__input,
@@ -89,11 +89,11 @@
 .create-center-page__select:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.15);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
 .create-center-page__input--error {
-  border-color: var(--color-error, #ef4444);
+  border-color: var(--color-error, var(--color-danger));
 }
 
 .create-center-page__input--error:focus {
@@ -116,7 +116,7 @@
 
 .create-center-page__error-text {
   font-size: var(--font-xs);
-  color: var(--color-error, #ef4444);
+  color: var(--color-error, var(--color-danger));
 }
 
 /* ============================================================================
@@ -169,7 +169,7 @@
 .create-center-page__submit-btn:hover {
   background-color: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.25);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
 .create-center-page__submit-btn:disabled {

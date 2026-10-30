@@ -132,7 +132,7 @@ function getButtonStyle(
   return {
     ...base,
     backgroundColor: 'var(--color-danger)',
-    color: '#fff',
+    color: 'var(--la-canvas)',
     borderColor: 'var(--color-danger)',
   };
 }

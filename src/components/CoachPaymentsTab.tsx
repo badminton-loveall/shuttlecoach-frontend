@@ -190,13 +190,13 @@ export const CoachPaymentsTab: React.FC<CoachPaymentsTabProps> = ({
         <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Payment Records</h3>
-        <p className="text-gray-600 text-center mb-6 max-w-sm">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No Payment Records</h3>
+        <p className="text-[var(--text-secondary)] text-center mb-6 max-w-sm">
           No income or expense records found for this coach yet. Income records will appear as students pay their fees.
         </p>
         {(userRole === 'HEAD_COACH' || userRole === 'ADMIN') && (
           <button
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-6 py-2 bg-[var(--color-primary)] text-[var(--on-primary)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
             aria-label="Add new expense"
             onClick={() => {
               // This would typically open the AddExpenseForm modal

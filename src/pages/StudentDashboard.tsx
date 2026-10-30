@@ -125,9 +125,9 @@ export const StudentDashboard: React.FC = () => {
       case 'OVERDUE':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
       case 'WAIVED':
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+        return 'bg-[var(--surface-hover)] text-[var(--text-primary)]';
       default:
-        return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+        return 'bg-[var(--surface-hover)] text-[var(--text-primary)]';
     }
   };
 

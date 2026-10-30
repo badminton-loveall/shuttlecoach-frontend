@@ -27,8 +27,8 @@
 .batch-list__table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-md, 0.5rem);
-  border: 1px solid var(--border-default, #e5e7eb);
-  background: var(--surface-primary, #fff);
+  border: 1px solid var(--border-default, var(--border-default));
+  background: var(--surface-primary, var(--surface-card));
 }
 
 .batch-list__table {
@@ -40,17 +40,17 @@
 .batch-list__table th {
   text-align: left;
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
-  background: var(--surface-secondary, #f9fafb);
+  background: var(--surface-secondary, var(--surface-hover));
   color: var(--text-secondary);
   font-weight: 500;
-  border-bottom: 1px solid var(--border-default, #e5e7eb);
+  border-bottom: 1px solid var(--border-default, var(--border-default));
   white-space: nowrap;
 }
 
 .batch-list__table td {
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
   color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default, #e5e7eb);
+  border-bottom: 1px solid var(--border-default, var(--border-default));
 }
 
 .batch-list__table tbody tr:last-child td {
@@ -58,7 +58,7 @@
 }
 
 .batch-list__table tbody tr:hover {
-  background: var(--surface-hover, #f3f4f6);
+  background: var(--surface-hover, var(--surface-hover));
 }
 
 .batch-list__name {
@@ -75,7 +75,7 @@
 }
 
 .batch-list__edit-link {
-  color: var(--color-primary, #2563eb);
+  color: var(--color-primary, var(--color-info));
   background: none;
   border: none;
   cursor: pointer;
@@ -86,7 +86,7 @@
 }
 
 .batch-list__edit-link:hover {
-  background: var(--surface-hover, #f3f4f6);
+  background: var(--surface-hover, var(--surface-hover));
   text-decoration: underline;
 }
 
@@ -105,7 +105,7 @@
 .batch-list__error {
   text-align: center;
   padding: var(--space-6, 1.5rem);
-  color: var(--color-error, #dc2626);
+  color: var(--color-error, var(--color-danger));
 }
 
 .batch-list__retry-btn {

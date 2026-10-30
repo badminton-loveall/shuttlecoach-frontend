@@ -65,7 +65,7 @@ export const CoachHeaderCard: React.FC<CoachHeaderCardProps> = ({
   const isSensitiveFieldsVisible = userRole === 'HEAD_COACH';
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm p-4 sm:p-6">
+    <div className="w-full bg-[var(--surface-card)] rounded-lg border border-[var(--border-default)] shadow-sm p-4 sm:p-6">
       {/* Main content: flex container for responsive layout */}
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
         {/* Avatar Section */}
@@ -88,19 +88,19 @@ export const CoachHeaderCard: React.FC<CoachHeaderCardProps> = ({
         {/* Info Section */}
         <div className="flex-1 flex flex-col gap-2">
           {/* Name */}
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 m-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)] m-0">
             {coach.name}
           </h1>
 
           {/* Email and Specialization */}
           <div className="flex flex-col gap-1 text-sm sm:text-base">
             {isSensitiveFieldsVisible && coach.email && (
-              <div className="text-slate-600 dark:text-slate-400">
+              <div className="text-[var(--text-secondary)]">
                 {coach.email}
               </div>
             )}
             {coach.specialization && (
-              <div className="text-slate-600 dark:text-slate-400">
+              <div className="text-[var(--text-secondary)]">
                 Specialization: {coach.specialization}
               </div>
             )}
@@ -114,7 +114,7 @@ export const CoachHeaderCard: React.FC<CoachHeaderCardProps> = ({
             <div className="text-2xl sm:text-3xl font-bold text-primary">
               {batchCount}
             </div>
-            <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+            <div className="text-xs sm:text-sm text-[var(--text-secondary)] whitespace-nowrap">
               {batchCount === 1 ? 'Batch' : 'Batches'}
             </div>
           </div>
@@ -124,7 +124,7 @@ export const CoachHeaderCard: React.FC<CoachHeaderCardProps> = ({
             <div className="text-2xl sm:text-3xl font-bold text-primary">
               {studentCount}
             </div>
-            <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+            <div className="text-xs sm:text-sm text-[var(--text-secondary)] whitespace-nowrap">
               {studentCount === 1 ? 'Student' : 'Students'}
             </div>
           </div>

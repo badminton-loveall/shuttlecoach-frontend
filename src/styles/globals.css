@@ -50,6 +50,25 @@
   --color-gold-500: #B8975A;
   --color-gold-700: #7E6331;
   --color-lime: #B8E135;
+  /* Tailwind color scales → LoveAll semantic tones, so the app's existing
+     red/amber/green/blue/purple-* classes read as danger/warning/success/
+     info/gold in the design system's muted palette. */
+  --color-red-50: #FBF1EF; --color-red-100: #F6E4E1; --color-red-200: #EDCBC6; --color-red-300: #E0A69F; --color-red-400: #C9706A; --color-red-500: #B04A44; --color-red-600: #9B2C2C; --color-red-700: #842525; --color-red-800: #6B1F1F; --color-red-900: #4D1A18; --color-red-950: #301B19;
+  --color-rose-50: #FBF1EF; --color-rose-100: #F6E4E1; --color-rose-200: #EDCBC6; --color-rose-300: #E0A69F; --color-rose-400: #C9706A; --color-rose-500: #B04A44; --color-rose-600: #9B2C2C; --color-rose-700: #842525; --color-rose-800: #6B1F1F; --color-rose-900: #4D1A18; --color-rose-950: #301B19;
+  --color-pink-50: #FBF1EF; --color-pink-100: #F6E4E1; --color-pink-200: #EDCBC6; --color-pink-300: #E0A69F; --color-pink-400: #C9706A; --color-pink-500: #B04A44; --color-pink-600: #9B2C2C; --color-pink-700: #842525; --color-pink-800: #6B1F1F; --color-pink-900: #4D1A18; --color-pink-950: #301B19;
+  --color-orange-50: #FBF6EC; --color-orange-100: #F6ECD9; --color-orange-200: #EDD9B0; --color-orange-300: #E2C080; --color-orange-400: #D1A04F; --color-orange-500: #A8721F; --color-orange-600: #8A5A12; --color-orange-700: #744B0F; --color-orange-800: #5E3D0D; --color-orange-900: #45300F; --color-orange-950: #2B2315;
+  --color-amber-50: #FBF6EC; --color-amber-100: #F6ECD9; --color-amber-200: #EDD9B0; --color-amber-300: #E2C080; --color-amber-400: #D1A04F; --color-amber-500: #A8721F; --color-amber-600: #8A5A12; --color-amber-700: #744B0F; --color-amber-800: #5E3D0D; --color-amber-900: #45300F; --color-amber-950: #2B2315;
+  --color-yellow-50: #FBF6EC; --color-yellow-100: #F6ECD9; --color-yellow-200: #EDD9B0; --color-yellow-300: #E2C080; --color-yellow-400: #D1A04F; --color-yellow-500: #A8721F; --color-yellow-600: #8A5A12; --color-yellow-700: #744B0F; --color-yellow-800: #5E3D0D; --color-yellow-900: #45300F; --color-yellow-950: #2B2315;
+  --color-green-50: #EEF4F0; --color-green-100: #E6EFE8; --color-green-200: #B9D3C2; --color-green-300: #8CC7A4; --color-green-400: #5E9A7A; --color-green-500: #3B7A5C; --color-green-600: #2F6B4F; --color-green-700: #24563F; --color-green-800: #1F4D3A; --color-green-900: #183E2F; --color-green-950: #152A1F;
+  --color-emerald-50: #EEF4F0; --color-emerald-100: #E6EFE8; --color-emerald-200: #B9D3C2; --color-emerald-300: #8CC7A4; --color-emerald-400: #5E9A7A; --color-emerald-500: #3B7A5C; --color-emerald-600: #2F6B4F; --color-emerald-700: #24563F; --color-emerald-800: #1F4D3A; --color-emerald-900: #183E2F; --color-emerald-950: #152A1F;
+  --color-teal-50: #EEF4F0; --color-teal-100: #E6EFE8; --color-teal-200: #B9D3C2; --color-teal-300: #8CC7A4; --color-teal-400: #5E9A7A; --color-teal-500: #3B7A5C; --color-teal-600: #2F6B4F; --color-teal-700: #24563F; --color-teal-800: #1F4D3A; --color-teal-900: #183E2F; --color-teal-950: #152A1F;
+  --color-blue-50: #F1F6F9; --color-blue-100: #E3ECF2; --color-blue-200: #C5D6E3; --color-blue-300: #93BEDB; --color-blue-400: #6E95B1; --color-blue-500: #4A7696; --color-blue-600: #2C5A7A; --color-blue-700: #244B66; --color-blue-800: #1E3D53; --color-blue-900: #1A3142; --color-blue-950: #15232D;
+  --color-sky-50: #F1F6F9; --color-sky-100: #E3ECF2; --color-sky-200: #C5D6E3; --color-sky-300: #93BEDB; --color-sky-400: #6E95B1; --color-sky-500: #4A7696; --color-sky-600: #2C5A7A; --color-sky-700: #244B66; --color-sky-800: #1E3D53; --color-sky-900: #1A3142; --color-sky-950: #15232D;
+  --color-cyan-50: #F1F6F9; --color-cyan-100: #E3ECF2; --color-cyan-200: #C5D6E3; --color-cyan-300: #93BEDB; --color-cyan-400: #6E95B1; --color-cyan-500: #4A7696; --color-cyan-600: #2C5A7A; --color-cyan-700: #244B66; --color-cyan-800: #1E3D53; --color-cyan-900: #1A3142; --color-cyan-950: #15232D;
+  --color-indigo-50: #F1F6F9; --color-indigo-100: #E3ECF2; --color-indigo-200: #C5D6E3; --color-indigo-300: #93BEDB; --color-indigo-400: #6E95B1; --color-indigo-500: #4A7696; --color-indigo-600: #2C5A7A; --color-indigo-700: #244B66; --color-indigo-800: #1E3D53; --color-indigo-900: #1A3142; --color-indigo-950: #15232D;
+  --color-purple-50: #FAF6EE; --color-purple-100: #F3EADB; --color-purple-200: #E6D4B5; --color-purple-300: #D9C39A; --color-purple-400: #C9AB72; --color-purple-500: #A8884C; --color-purple-600: #8A6E3C; --color-purple-700: #7E6331; --color-purple-800: #654F27; --color-purple-900: #4A3A1E; --color-purple-950: #2E2414;
+  --color-violet-50: #FAF6EE; --color-violet-100: #F3EADB; --color-violet-200: #E6D4B5; --color-violet-300: #D9C39A; --color-violet-400: #C9AB72; --color-violet-500: #A8884C; --color-violet-600: #8A6E3C; --color-violet-700: #7E6331; --color-violet-800: #654F27; --color-violet-900: #4A3A1E; --color-violet-950: #2E2414;
+  --color-fuchsia-50: #FAF6EE; --color-fuchsia-100: #F3EADB; --color-fuchsia-200: #E6D4B5; --color-fuchsia-300: #D9C39A; --color-fuchsia-400: #C9AB72; --color-fuchsia-500: #A8884C; --color-fuchsia-600: #8A6E3C; --color-fuchsia-700: #7E6331; --color-fuchsia-800: #654F27; --color-fuchsia-900: #4A3A1E; --color-fuchsia-950: #2E2414;
   /* Tailwind gray → LoveAll neutrals, so the app's existing gray-* / dark:gray-*
      classes match the theme: warm light end, Court Green-tinted dark end
      (700 = dark rule, 800 = dark card, 900 = dark canvas). */
@@ -455,10 +474,10 @@ textarea:not(:where(.marketing-scope *)) {
   width: 100%;
   /* Padding is now controlled per-component via Tailwind utility classes */
   /* padding: 12px 16px; */
-  border: 1px solid #E4E9EC;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background-color: #FFFFFF;
-  color: #0A0D11;
+  background-color: var(--surface-card);
+  color: var(--text-primary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -473,14 +492,14 @@ textarea:focus:not(:where(.marketing-scope *)) {
 input:disabled:not(:where(.marketing-scope *)),
 select:disabled:not(:where(.marketing-scope *)),
 textarea:disabled:not(:where(.marketing-scope *)) {
-  background-color: #F1F4F6;
+  background-color: var(--surface-hover);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
 input:not(:where(.marketing-scope *))::placeholder,
 textarea:not(:where(.marketing-scope *))::placeholder {
-  color: #9CA8B3;
+  color: var(--text-tertiary);
 }
 
 button:not(:where(.marketing-scope *)) {
@@ -789,19 +808,19 @@ button:disabled:not(:where(.marketing-scope *)) {
 }
 
 .bg-success:not(:where(.marketing-scope *)) {
-  background-color: #22C55E;
+  background-color: var(--color-success);
 }
 
 .bg-warning:not(:where(.marketing-scope *)) {
-  background-color: #F59E0B;
+  background-color: var(--color-warning);
 }
 
 .bg-danger:not(:where(.marketing-scope *)) {
-  background-color: #EF4444;
+  background-color: var(--color-danger);
 }
 
 .bg-info:not(:where(.marketing-scope *)) {
-  background-color: #3B82F6;
+  background-color: var(--color-info);
 }
 
 .text-primary:not(:where(.marketing-scope *)) {
@@ -809,19 +828,19 @@ button:disabled:not(:where(.marketing-scope *)) {
 }
 
 .text-success:not(:where(.marketing-scope *)) {
-  color: #22C55E;
+  color: var(--color-success);
 }
 
 .text-warning:not(:where(.marketing-scope *)) {
-  color: #F59E0B;
+  color: var(--color-warning);
 }
 
 .text-danger:not(:where(.marketing-scope *)) {
-  color: #EF4444;
+  color: var(--color-danger);
 }
 
 .text-info:not(:where(.marketing-scope *)) {
-  color: #3B82F6;
+  color: var(--color-info);
 }
 
 /* Border utilities */
@@ -830,15 +849,15 @@ button:disabled:not(:where(.marketing-scope *)) {
 }
 
 .border-danger:not(:where(.marketing-scope *)) {
-  border-color: #EF4444;
+  border-color: var(--color-danger);
 }
 
 .border-warning:not(:where(.marketing-scope *)) {
-  border-color: #F59E0B;
+  border-color: var(--color-warning);
 }
 
 .border-info:not(:where(.marketing-scope *)) {
-  border-color: #3B82F6;
+  border-color: var(--color-info);
 }
 
 /* ============================================================================
@@ -872,7 +891,7 @@ textarea:not(:where(.marketing-scope *))::placeholder {
 
 @media print {
   body {
-    background-color: #FFFFFF;
+    background-color: var(--surface-card);
     color: #1B2B4E;
   }
 

@@ -314,7 +314,7 @@ const CenterSettingsTab: React.FC = () => {
               fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)',
               padding: '2px 8px', borderRadius: 'var(--radius-pill)',
               backgroundColor: center?.isActive ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-              color: center?.isActive ? '#22c55e' : '#ef4444',
+              color: center?.isActive ? 'var(--color-success)' : 'var(--color-danger)',
             }}>
               {center?.isActive ? 'Active' : 'Inactive'}
             </span>
