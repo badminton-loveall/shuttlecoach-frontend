@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T05VGBH6WP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      // Password reset (?token=) and batch invite (/join/<token>) links carry
+      // one-time secrets; report those pages to Analytics without them.
+      (function () {
+        var url = new URL(window.location.href);
+        url.searchParams.delete('token');
+        url.pathname = url.pathname.replace(/^\/join\/[^/]+/, '/join/invite');
+        gtag('config', 'G-T05VGBH6WP', { page_location: url.toString() });
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>LoveAll · Training management for badminton academies</title>
     <meta name="description" content="LoveAll runs your badminton academy in one place: players, batches, 8-week training plans, skill assessments, attendance and fees." />
