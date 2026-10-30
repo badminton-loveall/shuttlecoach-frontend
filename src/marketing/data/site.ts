@@ -1,7 +1,7 @@
 import { SITE_URL } from "../utils/meta";
 
 export const APP_URL = "/login";
-export const CONTACT_EMAIL = "hello@loveall.co.in";
+export const CONTACT_EMAIL = "info@loveall.co.in";
 
 export const nameLine = "Every great match begins at Love all. So does every great player.";
 

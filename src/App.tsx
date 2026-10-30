@@ -48,6 +48,7 @@ import AdminMarketplacePage from './pages/admin/AdminMarketplacePage';
 import AdminSubscriptionCatalogPage from './pages/admin/AdminSubscriptionCatalogPage';
 import AdminAccountingPage from './pages/admin/AdminAccountingPage';
 import AdminPayoutsPage from './pages/admin/AdminPayoutsPage';
+import AdminLeadsPage from './pages/admin/AdminLeadsPage';
 import { Layout as MarketingLayout } from './marketing/components/layout/Layout';
 import { HomePage } from './marketing/pages/Home';
 import { FeaturesPage } from './marketing/pages/Features';
@@ -339,6 +340,7 @@ function App() {
             <Route path="subscription-catalog" element={<AdminSubscriptionCatalogPage />} />
             <Route path="accounting" element={<AdminAccountingPage />} />
             <Route path="payouts" element={<AdminPayoutsPage />} />
+            <Route path="leads" element={<AdminLeadsPage />} />
           </Route>
 
           {/* Password Management - Public Routes */}
