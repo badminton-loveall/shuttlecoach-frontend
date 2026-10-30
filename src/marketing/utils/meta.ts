@@ -1,4 +1,4 @@
-export const SITE_URL = "https://loveall.in";
+export const SITE_URL = "https://loveall.co.in";
 
 export function setMetaTag(attr: "name" | "property", key: string, content: string): void {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);

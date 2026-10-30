@@ -8,12 +8,12 @@ import { FeesMock } from "./FeesMock";
 import type { MockKey } from "../../types/content";
 
 const screens: Record<MockKey, {url: string;label: string;Component: () => React.ReactNode;}> = {
-  dashboard: { url: "app.loveall.in/dashboard", label: "Head coach dashboard with stats, attendance and players due for review", Component: DashboardMock },
-  profile: { url: "app.loveall.in/players/aarav-sharma", label: "Player profile with BAID, guardian, body metrics, medical notes, strengths and weaknesses", Component: PlayerProfileMock },
-  curriculum: { url: "app.loveall.in/curriculum/cycle-3", label: "8-week training cycle with weekly focus and session drills", Component: CurriculumMock },
-  assessment: { url: "app.loveall.in/assessments/diya-nair", label: "Skill assessment comparing this cycle's scores with the last", Component: AssessmentMock },
-  attendance: { url: "app.loveall.in/attendance", label: "Attendance register with a pending leave request and training log", Component: AttendanceMock },
-  fees: { url: "app.loveall.in/fees", label: "Fee ledger with paid, due and overdue statuses", Component: FeesMock }
+  dashboard: { url: "loveall.co.in/dashboard", label: "Head coach dashboard with stats, attendance and players due for review", Component: DashboardMock },
+  profile: { url: "loveall.co.in/players/aarav-sharma", label: "Player profile with BAID, guardian, body metrics, medical notes, strengths and weaknesses", Component: PlayerProfileMock },
+  curriculum: { url: "loveall.co.in/curriculum/cycle-3", label: "8-week training cycle with weekly focus and session drills", Component: CurriculumMock },
+  assessment: { url: "loveall.co.in/assessments/diya-nair", label: "Skill assessment comparing this cycle's scores with the last", Component: AssessmentMock },
+  attendance: { url: "loveall.co.in/attendance", label: "Attendance register with a pending leave request and training log", Component: AttendanceMock },
+  fees: { url: "loveall.co.in/fees", label: "Fee ledger with paid, due and overdue statuses", Component: FeesMock }
 };
 
 interface MockScreenProps {
