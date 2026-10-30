@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { images } from "../data/site";
 import { SITE_URL, setCanonical, setMetaTag } from "../utils/meta";
 
 interface PageMeta {
@@ -9,7 +8,8 @@ interface PageMeta {
   image?: string;
 }
 
-const DEFAULT_OG_IMAGE = images.coachJunior.src;
+/** Branded 1200×630 share card in /public. */
+const DEFAULT_OG_IMAGE = "/og-image.png";
 
 export function usePageMeta({ title, description, path, image = DEFAULT_OG_IMAGE }: PageMeta): void {
   useEffect(() => {
@@ -23,7 +23,10 @@ export function usePageMeta({ title, description, path, image = DEFAULT_OG_IMAGE
     setMetaTag("property", "og:type", "website");
     setMetaTag("property", "og:site_name", "LoveAll");
     setMetaTag("property", "og:locale", "en_IN");
-    setMetaTag("property", "og:image", image);
+    // Scrapers need an absolute image URL.
+    const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
+    setMetaTag("property", "og:image", imageUrl);
+    setMetaTag("name", "twitter:image", imageUrl);
     setMetaTag("name", "twitter:card", "summary_large_image");
     setMetaTag("name", "twitter:title", fullTitle);
     setMetaTag("name", "twitter:description", description);
