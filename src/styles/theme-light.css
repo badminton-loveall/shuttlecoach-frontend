@@ -72,39 +72,39 @@
 
   --border-default:      var(--la-rule);
   --border-strong:       var(--la-rule-strong);
-  --border-focus:        var(--la-signal);
+  --border-focus:        var(--la-focus);
 
-  /* Signal (Electric Lime) — accent only, not primary */
-  --color-primary:       var(--la-signal);
-  --color-primary-dark:  #4F6A08;
-  --color-primary-hover: #A6CC2A;
-  --color-primary-light: #CFF05E;
-  --on-primary:          #000000;
+  /* Primary = Court Green (mint in dark); Electric Lime stays a signal accent (--la-signal) */
+  --color-primary:       var(--la-primary);
+  --color-primary-dark:  var(--la-primary);
+  --color-primary-hover: var(--la-primary-hover);
+  --color-primary-light: #D6E5DC;
+  --on-primary:          var(--la-on-primary);
 
   /* Status */
-  --color-success:       #22C55E;
-  --color-success-dark:  #15803D;
-  --color-success-light: #86EFAC;
-  --color-success-text:  #166534;
-  --color-success-solid: #15803D;
+  --color-success:       var(--la-success);
+  --color-success-dark:  var(--la-success);
+  --color-success-light: #B9D3C2;
+  --color-success-text:  var(--la-success);
+  --color-success-solid: var(--la-success);
 
-  --color-warning:       #F59E0B;
-  --color-warning-dark:  #D97706;
-  --color-warning-light: #FCD34D;
-  --color-warning-text:  #92400E;
-  --color-warning-solid: #B45309;
+  --color-warning:       var(--la-warning);
+  --color-warning-dark:  var(--la-warning);
+  --color-warning-light: #E6CFA4;
+  --color-warning-text:  var(--la-warning);
+  --color-warning-solid: var(--la-warning);
 
-  --color-danger:        #EF4444;
-  --color-danger-dark:   #DC2626;
-  --color-danger-light:  #FCA5A5;
-  --color-danger-text:   #991B1B;
-  --color-danger-solid:  #DC2626;
+  --color-danger:        var(--la-danger);
+  --color-danger-dark:   var(--la-danger);
+  --color-danger-light:  #E3B7B0;
+  --color-danger-text:   var(--la-danger);
+  --color-danger-solid:  var(--la-danger);
 
-  --color-info:          #3B82F6;
-  --color-info-dark:     #2563EB;
-  --color-info-light:    #93C5FD;
-  --color-info-text:     #1E40AF;
-  --color-info-solid:    #2563EB;
+  --color-info:          var(--la-info);
+  --color-info-dark:     var(--la-info);
+  --color-info-light:    #B5CCDB;
+  --color-info-text:     var(--la-info);
+  --color-info-solid:    var(--la-info);
 
   --feedback-success-light: #E6EFE8;
   --feedback-warning-light: #F6ECD9;

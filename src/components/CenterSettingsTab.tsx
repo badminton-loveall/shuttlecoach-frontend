@@ -243,7 +243,7 @@ const CenterSettingsTab: React.FC = () => {
             style={{
               padding: '10px 24px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
               backgroundColor: saving || slugValue === originalSlug ? 'var(--surface-hover)' : 'var(--color-primary)',
-              color: saving || slugValue === originalSlug ? 'var(--text-tertiary)' : 'var(--text-primary)',
+              color: saving || slugValue === originalSlug ? 'var(--text-tertiary)' : 'var(--on-primary)',
               border: 'none', borderRadius: 'var(--radius-pill)',
               cursor: saving || slugValue === originalSlug ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s', fontFamily: 'var(--font-body)',

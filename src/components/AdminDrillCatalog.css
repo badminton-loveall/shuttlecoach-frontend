@@ -27,7 +27,7 @@
 .admin-drill-catalog__create-btn {
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-primary);
-  color: var(--color-primary-contrast, #111827);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
@@ -201,7 +201,7 @@
 .admin-drill-catalog__btn-primary {
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-primary);
-  color: var(--color-primary-contrast, #111827);
+  color: var(--on-primary);
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);

@@ -281,7 +281,7 @@ export const QuickAttendanceWidget: React.FC<QuickAttendanceWidgetProps> = ({
               width: '100%',
               padding: 'var(--space-sm) var(--space-md)',
               backgroundColor: allMarked ? 'var(--color-primary)' : 'var(--border-default)',
-              color: allMarked ? '#fff' : 'var(--text-secondary)',
+              color: allMarked ? 'var(--on-primary)' : 'var(--text-secondary)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               fontWeight: 600,

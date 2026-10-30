@@ -150,7 +150,7 @@ export const ProfilePage: React.FC = () => {
                 ) : (
                   <div style={{
                     width: '56px', height: '56px', borderRadius: '50%',
-                    backgroundColor: 'var(--color-primary)', color: '#fff',
+                    backgroundColor: 'var(--color-primary)', color: 'var(--on-primary)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontSize: 'var(--font-md)', fontWeight: 'var(--weight-bold)',
                   }}>
@@ -279,7 +279,7 @@ export const ProfilePage: React.FC = () => {
                     marginTop: '0.25rem', padding: '10px 24px', width: 'fit-content',
                     fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
                     backgroundColor: isLoading ? 'var(--surface-hover)' : 'var(--color-primary)',
-                    color: isLoading ? 'var(--text-tertiary)' : 'var(--text-primary)',
+                    color: isLoading ? 'var(--text-tertiary)' : 'var(--on-primary)',
                     border: 'none', borderRadius: 'var(--radius-pill)',
                     cursor: isLoading ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s', fontFamily: 'var(--font-body)',

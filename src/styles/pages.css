@@ -2727,7 +2727,7 @@
   display: inline-block;
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-primary);
-  color: var(--color-slate-950);
+  color: var(--on-primary);
   text-decoration: none;
   border-radius: var(--radius-sm);
   font-weight: var(--weight-semibold);

@@ -51,11 +51,7 @@
 }
 
 .admin-layout__brand-logo {
-  height: 36px;
-  width: 36px;
-  object-fit: contain;
   flex-shrink: 0;
-  display: block;
 }
 
 /* Navigation */

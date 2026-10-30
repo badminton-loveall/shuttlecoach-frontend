@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../utils/apiClient';
-import logoImg from '../assets/logo.png';
+import { Logo } from '../marketing/components/brand/Logo';
 import './AdminLayout.css';
 
 /**
@@ -144,7 +144,7 @@ export const AdminLayout: React.FC = () => {
       >
         {/* Brand */}
         <div className="admin-layout__brand">
-          <img src={logoImg} alt="LoveAll logo" className="admin-layout__brand-logo" />
+          <Logo size="sm" variant={isSidebarCollapsed ? 'icon' : 'horizontal'} className="admin-layout__brand-logo marketing-scope" />
 
           {/* Collapse toggle — desktop only, hidden on mobile via CSS */}
           <button

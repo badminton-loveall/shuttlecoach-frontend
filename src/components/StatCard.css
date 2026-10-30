@@ -76,6 +76,7 @@
 
 .stat-card__title {
   margin: 0;
+  font-family: var(--la-font-sans);
   font-size: var(--font-label);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
@@ -92,17 +93,18 @@
 
 .stat-card__value {
   font-size: var(--font-display);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-regular);
   color: var(--text-primary);
   line-height: 1.2;
-  font-family: var(--font-display);
+  font-family: var(--la-font-serif);
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 /* Compact variant — for text values (names, dates) that would otherwise wrap
    awkwardly at the default "big stat number" size. */
 .stat-card--compact-value .stat-card__value {
   font-size: var(--font-lg);
-  font-family: var(--font-body);
+  font-family: var(--la-font-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -128,9 +130,9 @@
    Color Variants (Modifiers)
    ============================================================================ */
 
-/* Primary Variant (Electric Lime) */
+/* Primary Variant (Court Green) */
 .stat-card--primary .stat-card__icon {
-  background-color: rgba(184, 225, 53, 0.1);
+  background-color: var(--color-primary-light);
   color: var(--color-primary);
 }
 

@@ -198,7 +198,7 @@
 @media (prefers-color-scheme: dark) {
   .day-cell--selected {
     background-color: var(--color-primary);
-    color: var(--color-slate-950);
+    color: var(--on-primary);
   }
 }
 

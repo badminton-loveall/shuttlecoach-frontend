@@ -218,7 +218,7 @@ export const StudentDashboard: React.FC = () => {
                 Up Next
               </h2>
               {nextSessionCountdown && (
-                <span className="bg-primary text-slate-900 text-sm font-semibold" style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}>
+                <span className="bg-primary text-on-primary text-sm font-semibold" style={{ padding: 'var(--space-xs) var(--space-sm)', borderRadius: 'var(--radius-pill)' }}>
                   {nextSessionCountdown}
                 </span>
               )}

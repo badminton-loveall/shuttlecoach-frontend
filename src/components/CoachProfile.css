@@ -614,7 +614,9 @@
   margin-bottom: 16px;
 }
 
-.stat-card {
+/* Scoped to the payments grid: a bare .stat-card here leaked onto the
+   dashboard StatCard component (centered text, colored side borders). */
+.payment-stats-grid .stat-card {
   padding: 12px;
   background: var(--surface-hover);
   border: 1px solid var(--border-default);
@@ -623,45 +625,45 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card {
+  .payment-stats-grid .stat-card {
     background: var(--surface-dark-hover);
     border-color: var(--border-dark);
   }
 }
 
-.stat-card .stat-label {
+.payment-stats-grid .stat-card .stat-label {
   font-size: var(--font-xs);
   color: var(--text-secondary);
   margin: 0 0 4px 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card .stat-label {
+  .payment-stats-grid .stat-card .stat-label {
     color: var(--text-dark-secondary);
   }
 }
 
-.stat-card .stat-value {
+.payment-stats-grid .stat-card .stat-value {
   font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--text-primary);
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card .stat-value {
+  .payment-stats-grid .stat-card .stat-value {
     color: var(--text-dark-primary);
   }
 }
 
-.stat-card--success {
+.payment-stats-grid .stat-card--success {
   border-left: 3px solid var(--color-success);
 }
 
-.stat-card--warning {
+.payment-stats-grid .stat-card--warning {
   border-left: 3px solid var(--color-warning);
 }
 
-.stat-card--danger {
+.payment-stats-grid .stat-card--danger {
   border-left: 3px solid var(--color-danger);
 }
 
