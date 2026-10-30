@@ -32,6 +32,17 @@ const NAV_ITEMS: AdminNavItem[] = [
     ),
   },
   {
+    label: 'Leads',
+    path: '/admin/leads',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 4h16v12H5.17L4 17.17z" />
+        <line x1="8" y1="9" x2="16" y2="9" />
+        <line x1="8" y1="12" x2="13" y2="12" />
+      </svg>
+    ),
+  },
+  {
     label: 'Centers',
     path: '/admin/centers',
     icon: (

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { LoaderCircleIcon } from "lucide-react";
+import { LoaderCircleIcon, MessageCircleIcon } from "lucide-react";
 import { Field } from "../ui/Field";
 import { Button } from "../ui/Button";
 import { Crest } from "../brand/Crest";
-import { CONTACT_EMAIL } from "../../data/site";
+import { CONTACT_EMAIL, whatsappUrl } from "../../data/site";
+import { submitLead } from "../../utils/leads";
+import { Honeypot } from "../ui/Honeypot";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -34,10 +36,28 @@ const sizeOptions = [
 { value: "400+", label: "More than 400 players" }];
 
 
+/** The visitor's details, pre-typed into a WhatsApp message to LoveAll. */
+function demoWhatsAppText(form: FormState): string {
+  const role = roleOptions.find((o) => o.value === form.role)?.label;
+  const size = sizeOptions.find((o) => o.value === form.size)?.label;
+  return [
+  `Hi LoveAll, I've just requested a demo.`,
+  `Name: ${form.name.trim()}`,
+  `Academy: ${form.academy.trim()}`,
+  form.city.trim() && `City: ${form.city.trim()}`,
+  form.phone.trim() && `Phone: ${form.phone.trim()}`,
+  `Email: ${form.email.trim()}`,
+  role && `Role: ${role}`,
+  size && `Academy size: ${size}`,
+  form.message.trim() && `Would like to see: ${form.message.trim()}`].
+  filter(Boolean).join("\n");
+}
+
 export function DemoForm() {
   const [form, setForm] = useState<FormState>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [honeypot, setHoneypot] = useState("");
 
   const set = (key: keyof FormState) => (value: string) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -60,8 +80,18 @@ export function DemoForm() {
     if (!validate()) return;
     setStatus("submitting");
     try {
-      // Replace with your form endpoint (e.g. a Vercel serverless function).
-      await new Promise((resolve) => setTimeout(resolve, 900));
+      await submitLead({
+        kind: "DEMO_REQUEST",
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        academy: form.academy.trim(),
+        city: form.city.trim(),
+        role: form.role,
+        size: form.size,
+        message: form.message.trim(),
+        website: honeypot
+      });
       setStatus("success");
     } catch {
       setStatus("error");
@@ -74,9 +104,13 @@ export function DemoForm() {
         <Crest size={56} className="text-fg" />
         <h2 className="mt-6 text-h3 text-fg">Request received. Game on.</h2>
         <p className="mt-3 text-fg-muted">
-          Thank you, {form.name.split(" ")[0]}. We'll email you at {form.email} within two working days to fix a time
-          for your demo.
+          Thank you, {form.name.split(" ")[0]}. We've emailed a confirmation to {form.email} and will write within two working
+          days to fix a time for your demo.
         </p>
+        <Button href={whatsappUrl(demoWhatsAppText(form))} target="_blank" rel="noreferrer" variant="secondary" className="mt-6">
+          <MessageCircleIcon className="size-4" strokeWidth={1.75} aria-hidden="true" />
+          Send these details on WhatsApp too
+        </Button>
         <Button
           variant="tertiary"
           className="mt-6"
@@ -92,7 +126,8 @@ export function DemoForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-lg border border-rule bg-surface p-6 md:p-10">
+    <form onSubmit={onSubmit} noValidate className="relative rounded-lg border border-rule bg-surface p-6 md:p-10">
+      <Honeypot value={honeypot} onChange={setHoneypot} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Your name" name="name" value={form.name} onChange={set("name")} required error={errors.name} autoComplete="name" />
         <Field label="Email" name="email" type="email" value={form.email} onChange={set("email")} required error={errors.email} autoComplete="email" />
@@ -106,7 +141,11 @@ export function DemoForm() {
 
       {status === "error" &&
       <p role="alert" className="mt-6 rounded-md bg-danger-bg px-4 py-3 text-[15px] text-danger">
-          Something went wrong. Please try again, or email us at {CONTACT_EMAIL}.
+          We couldn't send your request. Please try again, or email us at{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline">
+            {CONTACT_EMAIL}
+          </a>
+          .
         </p>
       }
 

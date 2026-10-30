@@ -3,8 +3,11 @@ import { LoaderCircleIcon } from "lucide-react";
 import { Field } from "../ui/Field";
 import { Button } from "../ui/Button";
 import { sports } from "../../data/sports";
+import { CONTACT_EMAIL } from "../../data/site";
+import { submitLead } from "../../utils/leads";
+import { Honeypot } from "../ui/Honeypot";
 
-type Status = "idle" | "submitting" | "success";
+type Status = "idle" | "submitting" | "success" | "error";
 
 const options = sports.filter((s) => s.status === "soon").map((s) => ({ value: s.id, label: s.name }));
 
@@ -13,6 +16,7 @@ export function NotifyForm() {
   const [sport, setSport] = useState("");
   const [errors, setErrors] = useState<{email?: string;sport?: string;}>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [honeypot, setHoneypot] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +26,12 @@ export function NotifyForm() {
     setErrors(next);
     if (Object.keys(next).length) return;
     setStatus("submitting");
-    // Replace with your list provider endpoint.
-    await new Promise((r) => setTimeout(r, 700));
-    setStatus("success");
+    try {
+      await submitLead({ kind: "SPORT_NOTIFY", email: email.trim(), sport, website: honeypot });
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   };
 
   if (status === "success") {
@@ -40,7 +47,8 @@ export function NotifyForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-lg border border-rule bg-surface p-6 md:p-8">
+    <form onSubmit={onSubmit} noValidate className="relative rounded-lg border border-rule bg-surface p-6 md:p-8">
+      <Honeypot value={honeypot} onChange={setHoneypot} />
       <div className="grid gap-5 md:grid-cols-[1fr_220px_auto] md:items-start">
         <Field label="Email" name="notify-email" type="email" value={email} onChange={setEmail} error={errors.email} required autoComplete="email" />
         <Field label="Sport" name="notify-sport" as="select" options={options} placeholder="Choose a sport" value={sport} onChange={setSport} error={errors.sport} required />
@@ -49,6 +57,15 @@ export function NotifyForm() {
           Notify me
         </Button>
       </div>
+      {status === "error" &&
+      <p role="alert" className="mt-5 rounded-md bg-danger-bg px-4 py-3 text-[15px] text-danger">
+          We couldn't sign you up. Please try again, or email{" "}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline">
+            {CONTACT_EMAIL}
+          </a>
+          .
+        </p>
+      }
     </form>);
 
 }

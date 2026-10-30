@@ -1,8 +1,8 @@
-import { MailIcon } from "lucide-react";
+import { MailIcon, MessageCircleIcon } from "lucide-react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { PageHeader } from "../components/sections/PageHeader";
 import { DemoForm } from "../components/sections/DemoForm";
-import { CONTACT_EMAIL } from "../data/site";
+import { CONTACT_EMAIL, whatsappUrl } from "../data/site";
 
 const steps = [
 { title: "We reply", body: "Within two working days, by email, to fix a time that suits your training schedule." },
@@ -52,6 +52,16 @@ export function ContactPage() {
                 
                 <MailIcon className="size-4" strokeWidth={1.5} aria-hidden="true" />
                 {CONTACT_EMAIL}
+              </a>
+              <p className="mt-5 text-[15px] text-fg-muted">Prefer WhatsApp?</p>
+              <a
+                href={whatsappUrl("Hi LoveAll, I'd like to know more about LoveAll for my academy.")}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex items-center gap-2 font-semibold text-fg underline decoration-accent underline-offset-[6px] hover:text-primary">
+                
+                <MessageCircleIcon className="size-4" strokeWidth={1.5} aria-hidden="true" />
+                Chat with us on WhatsApp
               </a>
             </div>
           </aside>

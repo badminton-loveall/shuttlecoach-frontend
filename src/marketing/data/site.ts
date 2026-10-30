@@ -1,7 +1,18 @@
 import { SITE_URL } from "../utils/meta";
 
 export const APP_URL = "/login";
-export const CONTACT_EMAIL = "hello@loveall.co.in";
+export const CONTACT_EMAIL = "info@loveall.co.in";
+
+/** LoveAll's WhatsApp, in international format without "+" (as wa.me needs). */
+export const WHATSAPP_NUMBER = "919972151617";
+
+/**
+ * WhatsApp click-to-chat link (https://wa.me/<number>?text=...). Opens a chat
+ * with LoveAll with the message already typed; the visitor taps Send.
+ */
+export function whatsappUrl(text?: string): string {
+  return `https://wa.me/${WHATSAPP_NUMBER}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
+}
 
 export const nameLine = "Every great match begins at Love all. So does every great player.";
 

@@ -918,3 +918,39 @@ export interface CoachRoyaltyTotals {
   lifetimeAmount: number;
   saleCount: number;
 }
+
+// ============================================================================
+// Marketing leads (super-admin CRM)
+// ============================================================================
+
+export type LeadKind = 'DEMO_REQUEST' | 'SPORT_NOTIFY';
+export type LeadStatus = 'NEW' | 'CONTACTED' | 'DEMO_SCHEDULED' | 'WON' | 'LOST';
+
+export interface MarketingLead {
+  id: string;
+  kind: LeadKind;
+  status: LeadStatus;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  academy: string | null;
+  city: string | null;
+  role: string | null;
+  academySize: string | null;
+  sport: string | null;
+  message: string | null;
+  notes: string | null;
+  teamNotifiedAt: string | null;
+  whatsappNotifiedAt: string | null;
+  confirmationSentAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MarketingLeadList {
+  leads: MarketingLead[];
+  total: number;
+  page: number;
+  pageSize: number;
+  counts: Partial<Record<LeadStatus, number>>;
+}
