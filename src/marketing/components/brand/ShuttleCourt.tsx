@@ -34,9 +34,9 @@ export function ShuttleCourt({ className }: ShuttleCourtProps) {
       <circle cx="-3" cy="67" r="1" fill="currentColor" />
       <circle cx="64" cy="67" r="1" fill="currentColor" />
 
-      {/* Shuttle flight: serve from the near left box into the far right box */}
+      {/* Shuttle flight: a cross-court serve from the near right box into the far left box */}
       <path
-        d="M 17 112 Q 0 60 44 27"
+        d="M 44 112 Q 60 70 17 40"
         fill="none"
         stroke="var(--la-accent)"
         strokeWidth={1.25}
@@ -44,12 +44,12 @@ export function ShuttleCourt({ className }: ShuttleCourtProps) {
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke" />
 
-      <circle cx="17" cy="112" r="1.1" fill="var(--la-accent)" />
-      <circle cx="44" cy="27" r="3.2" fill="none" stroke="var(--color-lime)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-      <circle cx="44" cy="27" r="1" fill="var(--color-lime)" />
+      <circle cx="44" cy="112" r="1.1" fill="var(--la-accent)" />
+      <circle cx="17" cy="40" r="3.2" fill="none" stroke="var(--color-lime)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+      <circle cx="17" cy="40" r="1" fill="var(--color-lime)" />
 
       {/* Shuttlecock, cork-first along the flight path */}
-      <g transform="translate(39.5 30.6) rotate(51)" stroke="var(--la-on-court)" strokeWidth={0.8} strokeLinejoin="round" fill="none">
+      <g transform="translate(21.5 43.1) rotate(-55)" stroke="var(--la-on-court)" strokeWidth={0.8} strokeLinejoin="round" fill="none">
         <path d="M -1.6 0 A 1.6 1.6 0 0 1 1.6 0 Z" fill="var(--la-on-court)" />
         <path d="M -1.6 0 L -3.4 6 L 3.4 6 L 1.6 0" />
         <path d="M 0 0 L 0 6 M -0.8 0 L -1.7 6 M 0.8 0 L 1.7 6" strokeWidth={0.5} />
