@@ -105,7 +105,7 @@ const SessionCalendarPage: React.FC = () => {
         existing.push({
           batchId: entry.batchId,
           batchName: entry.batchName,
-          color: batchColorMap.get(entry.batchId) || '#888',
+          color: batchColorMap.get(entry.batchId) || '#857B66',
         });
       }
       map.set(entry.date, existing);
@@ -120,7 +120,7 @@ const SessionCalendarPage: React.FC = () => {
       return {
         batchId: id,
         batchName: entry?.batchName || id,
-        color: batchColorMap.get(id) || '#888',
+        color: batchColorMap.get(id) || '#857B66',
       };
     });
   }, [uniqueBatchIds, entries, batchColorMap]);
@@ -147,7 +147,7 @@ const SessionCalendarPage: React.FC = () => {
       const batchEntries: CoachBatchEntry[] = Array.from(batchMap.values()).map((entry) => ({
         batchId: entry.batchId,
         batchName: entry.batchName,
-        batchColor: batchColorMap.get(entry.batchId) || '#888',
+        batchColor: batchColorMap.get(entry.batchId) || '#857B66',
         startTime: entry.startTime,
         endTime: entry.endTime,
         focusArea: entry.focusArea || '',
@@ -227,15 +227,15 @@ const SessionCalendarPage: React.FC = () => {
                   }}
                 >
                   <div className="animate-pulse space-y-4">
-                    <div className="h-8 bg-gray-200 rounded w-1/3" />
+                    <div className="h-8 bg-[var(--border-default)] rounded w-1/3" />
                     <div className="grid grid-cols-7 gap-2">
                       {Array.from({ length: 7 }).map((_, i) => (
-                        <div key={i} className="h-24 bg-gray-100 rounded" />
+                        <div key={i} className="h-24 bg-[var(--surface-hover)] rounded" />
                       ))}
                     </div>
                     <div className="grid grid-cols-7 gap-2">
                       {Array.from({ length: 7 }).map((_, i) => (
-                        <div key={i} className="h-24 bg-gray-100 rounded" />
+                        <div key={i} className="h-24 bg-[var(--surface-hover)] rounded" />
                       ))}
                     </div>
                   </div>

@@ -189,7 +189,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                   placeholder="e.g., Jan-Feb 2025"
                   value={cycleKey}
                   onChange={(e) => setCycleKey(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                   style={{
                     backgroundColor: 'var(--surface-card)',
                     border: '1px solid var(--border-default)',
@@ -214,7 +214,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                     setSelectedBatchId(e.target.value);
                     setSelectedStudentId('');
                   }}
-                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                   style={{
                     backgroundColor: 'var(--surface-card)',
                     border: '1px solid var(--border-default)',
@@ -244,7 +244,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
                   disabled={!selectedBatchId && students.length === 0}
-                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: 'var(--surface-card)',
                     border: '1px solid var(--border-default)',
@@ -276,7 +276,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                       type="date"
                       value={startDate}
                       onChange={(e) => handleDateRangeChange('startDate', e.target.value)}
-                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                       style={{
                         backgroundColor: 'var(--surface-card)',
                         border: '1px solid var(--border-default)',
@@ -297,7 +297,7 @@ const TrainingAnalyticsPage: React.FC = () => {
                       type="date"
                       value={endDate}
                       onChange={(e) => handleDateRangeChange('endDate', e.target.value)}
-                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]"
                       style={{
                         backgroundColor: 'var(--surface-card)',
                         border: '1px solid var(--border-default)',

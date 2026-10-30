@@ -37,13 +37,13 @@
   margin: 0 0 var(--space-xs, 8px) 0;
   font-size: var(--font-h4, 20px);
   font-weight: var(--weight-semibold, 600);
-  color: var(--text-dark-primary, #f1f4f6);
+  color: var(--text-dark-primary, var(--text-primary));
 }
 
 .student-grid__empty-text {
   margin: 0;
   font-size: var(--font-body, 14px);
-  color: var(--text-dark-tertiary, #9ca8b3);
+  color: var(--text-dark-tertiary, var(--text-tertiary));
   line-height: var(--line-relaxed, 1.6);
 }
 
@@ -98,10 +98,10 @@
 /* Light mode */
 @media (prefers-color-scheme: light) {
   .student-grid__empty-title {
-    color: var(--text-primary, #131820);
+    color: var(--text-primary, var(--text-primary));
   }
 
   .student-grid__empty-text {
-    color: var(--text-tertiary, #6b7885);
+    color: var(--text-tertiary, var(--text-secondary));
   }
 }

@@ -3,24 +3,24 @@ import { getScoreColor, getScoreLabel, SCORE_LABELS } from './scoreColors';
 import type { SkillScore } from '../constants/skillCatalog';
 
 describe('getScoreColor', () => {
-  it('maps score 0 to #FEE2E2', () => {
-    expect(getScoreColor(0)).toBe('#FEE2E2');
+  it('maps score 0 to #F6E4E1', () => {
+    expect(getScoreColor(0)).toBe('#F6E4E1');
   });
 
-  it('maps score 1 to #FED7AA', () => {
-    expect(getScoreColor(1)).toBe('#FED7AA');
+  it('maps score 1 to #F3DCC4', () => {
+    expect(getScoreColor(1)).toBe('#F3DCC4');
   });
 
-  it('maps score 2 to #FEF08A', () => {
-    expect(getScoreColor(2)).toBe('#FEF08A');
+  it('maps score 2 to #EDD9B0', () => {
+    expect(getScoreColor(2)).toBe('#EDD9B0');
   });
 
-  it('maps score 3 to #BBF7D0', () => {
-    expect(getScoreColor(3)).toBe('#BBF7D0');
+  it('maps score 3 to #B9D3C2', () => {
+    expect(getScoreColor(3)).toBe('#B9D3C2');
   });
 
-  it('maps score 4 to #16A34A', () => {
-    expect(getScoreColor(4)).toBe('#16A34A');
+  it('maps score 4 to #2F6B4F', () => {
+    expect(getScoreColor(4)).toBe('#2F6B4F');
   });
 
   it('returns a consistent color for the same score', () => {

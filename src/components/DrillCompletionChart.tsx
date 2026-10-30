@@ -49,7 +49,7 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading drill completion data...</p>
+          <p className="text-sm text-[var(--text-secondary)]">Loading drill completion data...</p>
         </div>
       </div>
     );
@@ -70,7 +70,7 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-5 h-5 text-[var(--text-tertiary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -83,7 +83,7 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
             />
           </svg>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             No drill completion data available for this cycle.
           </p>
         </div>
@@ -98,7 +98,7 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
   return (
     <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
       {/* Header */}
-      <h3 className="text-base font-semibold text-gray-900 mb-4">
+      <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">
         Drill Completion by Week
       </h3>
 
@@ -110,21 +110,21 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
             <button
               type="button"
               onClick={() => toggleWeek(weekStats.weekNumber)}
-              className="w-full text-left focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-md"
+              className="w-full text-left focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] rounded-md"
               aria-expanded={expandedWeek === weekStats.weekNumber}
               aria-controls={`week-${weekStats.weekNumber}-drills`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-[var(--text-primary)]">
                     Week {weekStats.weekNumber}
                   </span>
-                  <span className="text-xs text-gray-500 truncate max-w-[160px]">
+                  <span className="text-xs text-[var(--text-secondary)] truncate max-w-[160px]">
                     {weekStats.focusArea}
                   </span>
                   {/* Expand/collapse indicator */}
                   <svg
-                    className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
+                    className={`w-3.5 h-3.5 text-[var(--text-tertiary)] transition-transform duration-200 ${
                       expandedWeek === weekStats.weekNumber ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -158,7 +158,7 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
             </div>
 
             {/* Drill count label */}
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
               {weekStats.completedDrills}/{weekStats.totalDrills} drills completed
             </p>
 
@@ -207,18 +207,18 @@ export const DrillCompletionChart: React.FC<DrillCompletionChartProps> = ({
                         <span
                           className={`text-sm ${
                             drill.completed
-                              ? 'text-gray-800'
-                              : 'text-gray-500'
+                              ? 'text-[var(--text-primary)]'
+                              : 'text-[var(--text-secondary)]'
                           }`}
                         >
                           {drill.name}
                         </span>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                        <span className="text-xs bg-[var(--surface-hover)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded">
                           {drill.category}
                         </span>
                       </div>
                       {drill.notes && (
-                        <p className="text-xs text-gray-500 mt-0.5 italic">
+                        <p className="text-xs text-[var(--text-secondary)] mt-0.5 italic">
                           {drill.notes}
                         </p>
                       )}

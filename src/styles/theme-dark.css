@@ -67,41 +67,41 @@
     --text-secondary:      var(--la-fg-muted);
     --text-tertiary:       var(--la-fg-subtle);
     --text-disabled:       #64707B;
-    --text-inverse:        #0F1713;
+    --text-inverse:        var(--la-on-primary);
 
     --border-default:      var(--la-rule);
     --border-strong:       var(--la-rule-strong);
-    --border-focus:        var(--la-signal);
+    --border-focus:        var(--la-focus);
 
-    --color-primary:       var(--la-signal);
-    --color-primary-dark:  var(--la-signal);
-    --color-primary-hover: #A6CC2A;
-    --color-primary-light: #D8F08A;
-    --on-primary:          #000000;
+    --color-primary:       var(--la-primary);
+    --color-primary-dark:  var(--la-primary);
+    --color-primary-hover: var(--la-primary-hover);
+    --color-primary-light: #1F3A2D;
+    --on-primary:          var(--la-on-primary);
 
-    --color-success:       #4ADE80;
-    --color-success-dark:  #22C55E;
-    --color-success-light: #86EFAC;
-    --color-success-text:  #4ADE80;
-    --color-success-solid: #4ADE80;
+    --color-success:       var(--la-success);
+    --color-success-dark:  var(--la-success);
+    --color-success-light: #2A4A38;
+    --color-success-text:  var(--la-success);
+    --color-success-solid: var(--la-success);
 
-    --color-warning:       #FBBF24;
-    --color-warning-dark:  #F59E0B;
-    --color-warning-light: #FCD34D;
-    --color-warning-text:  #FBBF24;
-    --color-warning-solid: #FBBF24;
+    --color-warning:       var(--la-warning);
+    --color-warning-dark:  var(--la-warning);
+    --color-warning-light: #4A3B1F;
+    --color-warning-text:  var(--la-warning);
+    --color-warning-solid: var(--la-warning);
 
-    --color-danger:        #F87171;
-    --color-danger-dark:   #EF4444;
-    --color-danger-light:  #FCA5A5;
-    --color-danger-text:   #F87171;
-    --color-danger-solid:  #F87171;
+    --color-danger:        var(--la-danger);
+    --color-danger-dark:   var(--la-danger);
+    --color-danger-light:  #4D2925;
+    --color-danger-text:   var(--la-danger);
+    --color-danger-solid:  var(--la-danger);
 
-    --color-info:          #60A5FA;
-    --color-info-dark:     #3B82F6;
-    --color-info-light:    #93C5FD;
-    --color-info-text:     #60A5FA;
-    --color-info-solid:    #60A5FA;
+    --color-info:          var(--la-info);
+    --color-info-dark:     var(--la-info);
+    --color-info-light:    #24394A;
+    --color-info-text:     var(--la-info);
+    --color-info-solid:    var(--la-info);
 
     --feedback-success-light: #152A1F;
     --feedback-warning-light: #2B2315;
@@ -207,41 +207,41 @@
   --text-secondary:      var(--la-fg-muted);
   --text-tertiary:       var(--la-fg-subtle);
   --text-disabled:       #64707B;
-  --text-inverse:        #0F1713;
+  --text-inverse:        var(--la-on-primary);
 
   --border-default:      var(--la-rule);
   --border-strong:       var(--la-rule-strong);
-  --border-focus:        var(--la-signal);
+  --border-focus:        var(--la-focus);
 
-  --color-primary:       var(--la-signal);
-  --color-primary-dark:  var(--la-signal);
-  --color-primary-hover: #A6CC2A;
-  --color-primary-light: #D8F08A;
-  --on-primary:          #000000;
+  --color-primary:       var(--la-primary);
+  --color-primary-dark:  var(--la-primary);
+  --color-primary-hover: var(--la-primary-hover);
+  --color-primary-light: #1F3A2D;
+  --on-primary:          var(--la-on-primary);
 
-  --color-success:       #4ADE80;
-  --color-success-dark:  #22C55E;
-  --color-success-light: #86EFAC;
-  --color-success-text:  #4ADE80;
-  --color-success-solid: #4ADE80;
+  --color-success:       var(--la-success);
+  --color-success-dark:  var(--la-success);
+  --color-success-light: #2A4A38;
+  --color-success-text:  var(--la-success);
+  --color-success-solid: var(--la-success);
 
-  --color-warning:       #FBBF24;
-  --color-warning-dark:  #F59E0B;
-  --color-warning-light: #FCD34D;
-  --color-warning-text:  #FBBF24;
-  --color-warning-solid: #FBBF24;
+  --color-warning:       var(--la-warning);
+  --color-warning-dark:  var(--la-warning);
+  --color-warning-light: #4A3B1F;
+  --color-warning-text:  var(--la-warning);
+  --color-warning-solid: var(--la-warning);
 
-  --color-danger:        #F87171;
-  --color-danger-dark:   #EF4444;
-  --color-danger-light:  #FCA5A5;
-  --color-danger-text:   #F87171;
-  --color-danger-solid:  #F87171;
+  --color-danger:        var(--la-danger);
+  --color-danger-dark:   var(--la-danger);
+  --color-danger-light:  #4D2925;
+  --color-danger-text:   var(--la-danger);
+  --color-danger-solid:  var(--la-danger);
 
-  --color-info:          #60A5FA;
-  --color-info-dark:     #3B82F6;
-  --color-info-light:    #93C5FD;
-  --color-info-text:     #60A5FA;
-  --color-info-solid:    #60A5FA;
+  --color-info:          var(--la-info);
+  --color-info-dark:     var(--la-info);
+  --color-info-light:    #24394A;
+  --color-info-text:     var(--la-info);
+  --color-info-solid:    var(--la-info);
 
   --feedback-success-light: #152A1F;
   --feedback-warning-light: #2B2315;

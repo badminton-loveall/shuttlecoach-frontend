@@ -49,7 +49,7 @@
      the cascade again the way earlier utility collisions did. Uses
      --on-primary (fixed black), not --text-primary, which turns near-white
      in dark mode and made every primary button white-on-lime. */
-  color: var(--on-primary, #000000) !important;
+  color: var(--on-primary, var(--text-primary)) !important;
   box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
@@ -100,7 +100,7 @@
 
 .btn-ghost:hover:not(:disabled),
 .btn--ghost:hover:not(:disabled) {
-  background-color: rgba(184, 225, 53, 0.1);
+  background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 /* -solid tokens (not the base --color-danger/-success): the base tones fail
@@ -484,7 +484,7 @@
 }
 
 .badge-primary {
-  background-color: var(--feedback-primary-light, rgba(184, 225, 53, 0.1));
+  background-color: var(--feedback-primary-light, color-mix(in srgb, var(--color-primary) 12%, transparent));
   color: var(--color-primary-dark);
 }
 
@@ -985,7 +985,7 @@
    ============================================================================ */
 
 /* Layout */
-.container:not(.marketing-scope *) {
+.container:not(:where(.marketing-scope *)) {
   max-width: var(--max-width-content);
   margin-left: auto;
   margin-right: auto;
@@ -1002,11 +1002,11 @@
 }
 
 /* Flexbox */
-.flex:not(.marketing-scope *) {
+.flex:not(:where(.marketing-scope *)) {
   display: flex;
 }
 
-.flex-col:not(.marketing-scope *) {
+.flex-col:not(:where(.marketing-scope *)) {
   display: flex;
   flex-direction: column;
 }
@@ -1036,60 +1036,60 @@
 }
 
 /* Grid */
-.grid:not(.marketing-scope *) {
+.grid:not(:where(.marketing-scope *)) {
   display: grid;
 }
 
-.grid-cols-1:not(.marketing-scope *) {
+.grid-cols-1:not(:where(.marketing-scope *)) {
   grid-template-columns: repeat(1, 1fr);
 }
 
-.grid-cols-2:not(.marketing-scope *) {
+.grid-cols-2:not(:where(.marketing-scope *)) {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.grid-cols-3:not(.marketing-scope *) {
+.grid-cols-3:not(:where(.marketing-scope *)) {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.grid-cols-4:not(.marketing-scope *) {
+.grid-cols-4:not(:where(.marketing-scope *)) {
   grid-template-columns: repeat(4, 1fr);
 }
 
 /* Responsive Grid */
 @media (max-width: 1024px) {
-  .grid-cols-4:not(.marketing-scope *) {
+  .grid-cols-4:not(:where(.marketing-scope *)) {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .grid-cols-3:not(.marketing-scope *) {
+  .grid-cols-3:not(:where(.marketing-scope *)) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .grid-cols-4:not(.marketing-scope *),
-  .grid-cols-3:not(.marketing-scope *),
-  .grid-cols-2:not(.marketing-scope *) {
+  .grid-cols-4:not(:where(.marketing-scope *)),
+  .grid-cols-3:not(:where(.marketing-scope *)),
+  .grid-cols-2:not(:where(.marketing-scope *)) {
     grid-template-columns: repeat(1, 1fr);
   }
 }
 
 /* Text Alignment */
-.text-left:not(.marketing-scope *) {
+.text-left:not(:where(.marketing-scope *)) {
   text-align: left;
 }
 
-.text-center:not(.marketing-scope *) {
+.text-center:not(:where(.marketing-scope *)) {
   text-align: center;
 }
 
-.text-right:not(.marketing-scope *) {
+.text-right:not(:where(.marketing-scope *)) {
   text-align: right;
 }
 
 /* Visibility */
-.hidden:not(.marketing-scope *) {
+.hidden:not(:where(.marketing-scope *)) {
   display: none;
 }
 
@@ -1106,7 +1106,7 @@
 }
 
 /* Width */
-.w-full:not(.marketing-scope *) {
+.w-full:not(:where(.marketing-scope *)) {
   width: 100%;
 }
 
@@ -1441,7 +1441,7 @@
 .side-panel .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
+  box-shadow: var(--la-shadow-1);
 }
 
 .modal-content .btn-primary:active:not(:disabled),

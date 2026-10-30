@@ -261,7 +261,7 @@ function ScoreCell({ score, weekNumber, cycleKey, skillId, skillName, onSkillCli
           fontSize: 'var(--font-xs)',
           fontWeight: 'var(--weight-semibold)',
           backgroundColor: bgColor,
-          color: isPro ? '#FFFFFF' : '#1F2937',
+          color: isPro ? '#FAF7F0' : '#14202B',
           cursor: 'pointer',
         }}
         onClick={() => onSkillClick(skillId, skillName)}

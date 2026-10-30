@@ -16,11 +16,11 @@
 /* Apply background colors to html and body */
 /* Not inside .marketing-scope: unlayered, it would override every Tailwind
    border color there (border-rule, border-accent, border-transparent). */
-*:not(.marketing-scope, .marketing-scope *) {
+*:not(:where(.marketing-scope, .marketing-scope *)) {
   border-color: hsl(var(--border));
 }
 
-body:not(.marketing-scope *) {
+body:not(:where(.marketing-scope *)) {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
@@ -39,7 +39,10 @@ body:not(.marketing-scope *) {
      2. TYPOGRAPHY
      ============================================================================ */
 
-  /* Font Families */
+  /* Font Families. --font-display/--font-body are reassigned to *sizes* in
+     the legacy aliases below, so font-family rules use the --la-font-* names. */
+  --la-font-serif: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  --la-font-sans: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
   --font-body: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif;
 
@@ -102,22 +105,25 @@ body:not(.marketing-scope *) {
      4. BORDER RADIUS (Consistent corners)
      ============================================================================ */
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-pill: 999px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  /* LoveAll draws buttons, badges and tags with 6px corners (no pills);
+     true circles use --radius-full or 50%. */
+  --radius-pill: 6px;
+  --radius-full: 9999px;
 
   /* ============================================================================
      5. SHADOWS (Consistent elevation)
      ============================================================================ */
 
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.07);
-  --shadow-float: 0 8px 32px rgba(0, 0, 0, 0.14);
-  --shadow-focus: 0 0 0 3px rgba(184, 225, 53, 0.3);
+  --shadow-card: var(--la-shadow-1);
+  --shadow-float: var(--la-shadow-2);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
   --shadow-focus-danger: 0 0 0 3px rgba(239, 68, 68, 0.3);
   --shadow-focus-info: 0 0 0 3px rgba(59, 130, 246, 0.3);
-  --shadow-overlay: 0 12px 24px rgba(0, 0, 0, 0.15);
+  --shadow-overlay: var(--la-shadow-2);
 
   /* ============================================================================
      6. Z-INDEX SCALE (Layering system)
@@ -162,40 +168,40 @@ body:not(.marketing-scope *) {
    TYPOGRAPHY STYLES
    ============================================================================ */
 
-.text-display:not(.marketing-scope *) {
-  font-family: var(--font-display);
+.text-display:not(:where(.marketing-scope *)) {
+  font-family: var(--la-font-serif);
   font-size: var(--font-display);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-regular);
   line-height: var(--line-display);
   color: var(--text-primary);
 }
 
-.text-h1:not(.marketing-scope *) {
-  font-family: var(--font-display);
+.text-h1:not(:where(.marketing-scope *)) {
+  font-family: var(--la-font-serif);
   font-size: var(--font-h1);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-regular);
   line-height: var(--line-h1);
   color: var(--text-primary);
 }
 
-.text-h2:not(.marketing-scope *) {
-  font-family: var(--font-display);
+.text-h2:not(:where(.marketing-scope *)) {
+  font-family: var(--la-font-serif);
   font-size: var(--font-h2);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-regular);
   line-height: var(--line-h2);
   color: var(--text-primary);
 }
 
-.text-h3:not(.marketing-scope *) {
-  font-family: var(--font-display);
+.text-h3:not(:where(.marketing-scope *)) {
+  font-family: var(--la-font-serif);
   font-size: var(--font-h3);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-regular);
   line-height: var(--line-h3);
   color: var(--text-primary);
 }
 
-.text-body:not(.marketing-scope *) {
-  font-family: var(--font-body);
+.text-body:not(:where(.marketing-scope *)) {
+  font-family: var(--la-font-sans);
   font-size: var(--font-body);
   font-weight: var(--weight-regular);
   line-height: var(--line-body);
@@ -237,11 +243,11 @@ body:not(.marketing-scope *) {
 }
 
 /* Text color utilities */
-.text-primary:not(.marketing-scope *) {
+.text-primary:not(:where(.marketing-scope *)) {
   color: var(--text-primary);
 }
 
-.text-secondary:not(.marketing-scope *) {
+.text-secondary:not(:where(.marketing-scope *)) {
   color: var(--text-secondary);
 }
 
@@ -405,7 +411,7 @@ body:not(.marketing-scope *) {
 .btn-primary:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
+  box-shadow: var(--la-shadow-1);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -557,11 +563,11 @@ body:not(.marketing-scope *) {
 
 /* Skips .marketing-scope, where Tailwind's utilities of the same name apply
    (see components.css UTILITY CLASSES). */
-.flex:not(.marketing-scope *) {
+.flex:not(:where(.marketing-scope *)) {
   display: flex;
 }
 
-.flex-col:not(.marketing-scope *) {
+.flex-col:not(:where(.marketing-scope *)) {
   display: flex;
   flex-direction: column;
 }
@@ -572,7 +578,7 @@ body:not(.marketing-scope *) {
   justify-content: center;
 }
 
-.grid:not(.marketing-scope *) {
+.grid:not(:where(.marketing-scope *)) {
   display: grid;
 }
 
@@ -581,7 +587,7 @@ body:not(.marketing-scope *) {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.container:not(.marketing-scope *) {
+.container:not(:where(.marketing-scope *)) {
   max-width: var(--max-width-content);
   margin-left: auto;
   margin-right: auto;

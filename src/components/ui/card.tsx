@@ -44,7 +44,7 @@ interface CardFooterProps {
 
 // Main Card Component
 export const Card: React.FC<CardProps> = ({ children, className = '', hover = true }) => {
-  const baseClasses = 'bg-white border border-[#e5e7eb] rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition-all overflow-hidden';
+  const baseClasses = 'bg-[var(--surface-card)] border border-[#e5e7eb] rounded-[16px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition-all overflow-hidden';
   const hoverClasses = hover ? 'hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]' : '';
   
   return (

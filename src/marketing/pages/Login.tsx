@@ -23,7 +23,7 @@ export function LoginPage() {
             LoveAll runs in your browser. Continue to the app to sign in with your academy account.
           </p>
           <Button href={APP_URL} size="lg" className="mt-8 w-full">
-            Continue to app.loveall.in
+            Continue to loveall.co.in
             <ArrowUpRightIcon className="size-4" strokeWidth={1.75} aria-hidden="true" />
           </Button>
           <p className="mt-6 border-t border-rule pt-6 text-[15px] text-fg-muted">

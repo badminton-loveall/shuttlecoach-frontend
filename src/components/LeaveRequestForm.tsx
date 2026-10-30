@@ -153,7 +153,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
 
       {/* Requested Date */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="leave-date" className="text-sm font-medium text-gray-700">
+        <label htmlFor="leave-date" className="text-sm font-medium text-[var(--text-primary)]">
           Leave Date <span className="text-red-600">*</span>
         </label>
         <input
@@ -169,10 +169,10 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.requestedDate}
           aria-describedby={errors.requestedDate ? 'leave-date-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 transition-all ${
+          className={`w-full rounded-md border px-3 py-2 text-sm text-[var(--text-primary)] transition-all ${
             errors.requestedDate
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
           style={errors.requestedDate ? undefined : { border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
         />
@@ -185,7 +185,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
 
       {/* Leave Type */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="leave-type" className="text-sm font-medium text-gray-700">
+        <label htmlFor="leave-type" className="text-sm font-medium text-[var(--text-primary)]">
           Leave Type <span className="text-red-600">*</span>
         </label>
         <select
@@ -199,10 +199,10 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
           aria-required="true"
           aria-invalid={!!errors.leaveType}
           aria-describedby={errors.leaveType ? 'leave-type-error' : undefined}
-          className={`w-full rounded-md border px-3 py-2 text-sm text-gray-900 transition-all ${
+          className={`w-full rounded-md border px-3 py-2 text-sm text-[var(--text-primary)] transition-all ${
             errors.leaveType
               ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-1 focus:ring-red-500'
-              : 'focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              : 'focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)]'
           } ${loading ? 'opacity-60 cursor-not-allowed' : ''}`}
           style={errors.leaveType ? undefined : { border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
         >
@@ -221,8 +221,8 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
 
       {/* Reason (optional) */}
       <div className="flex flex-col gap-1">
-        <label htmlFor="leave-reason" className="text-sm font-medium text-gray-700">
-          Reason <span className="text-gray-400">(optional)</span>
+        <label htmlFor="leave-reason" className="text-sm font-medium text-[var(--text-primary)]">
+          Reason <span className="text-[var(--text-tertiary)]">(optional)</span>
         </label>
         <textarea
           id="leave-reason"
@@ -231,7 +231,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
           placeholder="e.g., Family function, medical appointment..."
           disabled={loading}
           rows={3}
-          className={`w-full rounded-md px-3 py-2 text-sm text-gray-900 transition-all resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 ${
+          className={`w-full rounded-md px-3 py-2 text-sm text-[var(--text-primary)] transition-all resize-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--border-focus)] ${
             loading ? 'opacity-60 cursor-not-allowed' : ''
           }`}
           style={{ border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
@@ -245,7 +245,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
             type="button"
             onClick={handleCancel}
             disabled={loading}
-            className="flex-1 rounded-md px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex-1 rounded-md px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-all hover:bg-[var(--surface-hover)] disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ border: '1px solid var(--border-default)', backgroundColor: 'var(--surface-card)' }}
           >
             Cancel
@@ -254,7 +254,7 @@ export const LeaveRequestForm: React.FC<LeaveRequestFormProps> = ({
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="flex-1 rounded-md bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-[var(--on-primary)] transition-all hover:bg-[var(--color-primary-hover)] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? 'Submitting...' : 'Submit Leave Request'}
         </button>

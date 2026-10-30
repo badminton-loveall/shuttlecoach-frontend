@@ -180,7 +180,6 @@ export const LoginPage: React.FC = () => {
         aria-hidden="true"
         className="relative hidden overflow-hidden bg-court text-on-court lg:flex lg:flex-col lg:justify-between lg:p-12 xl:p-16"
       >
-        <ShuttleCourt className="pointer-events-none absolute bottom-10 right-10 top-10 h-[calc(100%-5rem)] w-auto text-on-court/20 xl:right-16" />
         <div className="relative max-w-sm">
           <p className="eyebrow text-on-court-muted">— Love all —</p>
           <div className="mt-6 font-display text-[40px] leading-[1.1] tracking-[-0.015em] xl:text-h1">
@@ -189,6 +188,11 @@ export const LoginPage: React.FC = () => {
           <p className="mt-5 text-lead text-on-court-muted">
             Players, batches, training plans, assessments, attendance and fees — all on one court.
           </p>
+        </div>
+        {/* The court gets its own band between the headline and the scoreboard,
+            so the serve never runs under the text at any window size. */}
+        <div className="relative my-10 min-h-0 flex-1">
+          <ShuttleCourt className="pointer-events-none absolute inset-0 h-full w-full text-on-court/30" />
         </div>
         <div className="relative flex items-end gap-5">
           <div className="rounded-md border border-on-court/30 bg-court-deep/70 px-5 py-3 text-center">

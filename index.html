@@ -1,20 +1,34 @@
 <!doctype html>
-<html lang="en" class="light">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <link rel="preload" as="image" href="/login_bg.webp" type="image/webp" />
-    <title>LoveAll - Badminton Training Management</title>
-    <script>
-      // Force light mode - remove dark class if added
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      // Override system preference
-      if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').matches = false;
-      }
-    </script>
+    <title>LoveAll · Training management for badminton academies</title>
+    <meta name="description" content="LoveAll runs your badminton academy in one place: players, batches, 8-week training plans, skill assessments, attendance and fees." />
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#FAF7F0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F1713" media="(prefers-color-scheme: dark)" />
+
+    <!-- Default share preview. Link scrapers don't run JavaScript, so these
+         static tags are what WhatsApp, LinkedIn, Slack etc. show; pages refine
+         them at runtime via usePageMeta. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LoveAll" />
+    <meta property="og:locale" content="en_IN" />
+    <meta property="og:url" content="https://www.loveall.co.in/" />
+    <meta property="og:title" content="LoveAll · Training management for badminton academies" />
+    <meta property="og:description" content="Every great match begins at Love all. Players, batches, training plans, assessments, attendance and fees, run from one place." />
+    <meta property="og:image" content="https://www.loveall.co.in/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="LoveAll crest and wordmark on court green: Every great match begins at Love all." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://www.loveall.co.in/og-image.png" />
   </head>
   <body>
     <div id="root"></div>

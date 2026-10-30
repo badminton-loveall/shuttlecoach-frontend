@@ -18,9 +18,9 @@ const badgeVariants = cva(
           "bg-danger/10 dark:bg-danger/20 text-danger-dark dark:text-danger-light",
         info:
           "bg-info/10 dark:bg-info/20 text-info-dark dark:text-info-light",
-        outline: "border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300",
+        outline: "border border-[var(--border-strong)] text-[var(--text-primary)]",
         secondary:
-          "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300",
+          "bg-[var(--surface-hover)] text-[var(--text-primary)]",
       },
     },
     defaultVariants: {

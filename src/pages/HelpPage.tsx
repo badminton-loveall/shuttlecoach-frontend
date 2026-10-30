@@ -149,7 +149,7 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 
 const Step: React.FC<{ number: number; title: string; children: React.ReactNode }> = ({ number, title, children }) => (
   <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'flex-start' }}>
-    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
+    <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', color: 'var(--on-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700, flexShrink: 0 }}>
       {number}
     </div>
     <div style={{ flex: 1 }}>

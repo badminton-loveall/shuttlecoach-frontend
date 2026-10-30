@@ -2,7 +2,7 @@
 
 > Every great match begins at Love all. So does every great player.
 
-The marketing website for **loveall.in**, the training management platform for racket-sport academies. LoveAll is live for **badminton**. Tennis, squash, table tennis and pickleball are shown as *Coming soon*.
+The marketing website for **loveall.co.in**, the training management platform for racket-sport academies. LoveAll is live for **badminton**. Tennis, squash, table tennis and pickleball are shown as *Coming soon*.
 
 Stack: React 18 · Vite · TypeScript · Tailwind CSS 4 · React Router · Framer Motion · lucide-react.
 

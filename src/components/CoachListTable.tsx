@@ -124,38 +124,38 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
   }
 
   return (
-    <div className="table-card-wrapper bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div className="table-card-wrapper bg-[var(--surface-card)] rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full table-responsive-cards">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+          <thead className="bg-[var(--surface-hover)]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Coach Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Role
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Specialization
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Assigned Batches
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Assigned Students
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Fee Access
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Last Active
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-[var(--surface-card)] divide-y divide-[var(--border-default)]">
             {allCoaches.map((coach) => {
               const stats = getCoachStats(coach.id);
               const isSelected = selectedCoachId === coach.id;
@@ -163,7 +163,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                 <tr 
                   key={coach.id} 
                   onClick={() => onCoachSelect?.(coach)}
-                  className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                  className={`hover:bg-[var(--surface-hover)] transition-colors ${
                     isSelected ? 'bg-primary/10 dark:bg-primary/20' : ''
                   } ${onCoachSelect ? 'cursor-pointer' : ''}`}
                 >
@@ -178,14 +178,14 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                           />
                         ) : (
                           <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-[var(--text-primary)]">
                               {coach.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        <div className="text-sm font-medium text-[var(--text-primary)]">
                           {coach.name}
                         </div>
                       </div>
@@ -202,13 +202,13 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       {formatRoleLabel(coach.role)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Specialization">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]" data-label="Specialization">
                     {coach.specialization || '—'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" data-label="Batches">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-primary)]" data-label="Batches">
                     <span className="font-medium">{stats.batchCount}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" data-label="Students">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-primary)]" data-label="Students">
                     <span className="font-medium">{stats.studentCount}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap" data-label="Fee Access" onClick={(e) => e.stopPropagation()}>
@@ -219,7 +219,7 @@ export const CoachListTable: React.FC<CoachListTableProps> = ({
                       onToggle={onFeeAccessToggle ?? (() => {})}
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Last Active">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]" data-label="Last Active">
                     {formatLastActive(coach.lastActive)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2" data-label="">

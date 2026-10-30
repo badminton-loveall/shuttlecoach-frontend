@@ -80,10 +80,10 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
     <div className="space-y-6">
       {/* Header with date range */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">
           Financial Summary
         </h3>
-        <span className="text-sm text-gray-600 dark:text-gray-400">
+        <span className="text-sm text-[var(--text-secondary)]">
           {formatDateRange()}
         </span>
       </div>
@@ -156,7 +156,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-blue-600 dark:text-blue-400">
+              <p className="text-sm font-medium text-[var(--color-primary)] dark:text-blue-400">
                 Net Balance
               </p>
               <p className={`mt-2 text-2xl font-bold ${getNetBalanceTextClasses()}`}>
@@ -166,7 +166,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
             {/* Balance Icon */}
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-800">
               <svg
-                className="h-6 w-6 text-blue-600 dark:text-blue-400"
+                className="h-6 w-6 text-[var(--color-primary)] dark:text-blue-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -186,21 +186,21 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
       {/* Period-based Breakdown Section */}
       {(monthlyData.length > 0 || quarterlyData.length > 0 || yearData.length > 0) && (
         <div className="space-y-4">
-          <h4 className="text-base font-semibold text-gray-900 dark:text-white">
+          <h4 className="text-base font-semibold text-[var(--text-primary)]">
             Period Breakdown
           </h4>
 
           {/* Year-to-Date */}
           {yearData.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-card)] p-4">
               <div className="mb-3 flex items-center justify-between">
-                <h5 className="font-semibold text-gray-900 dark:text-white">
+                <h5 className="font-semibold text-[var(--text-primary)]">
                   {yearData[0].label || 'Year-to-Date'}
                 </h5>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  <p className="text-xs font-medium text-[var(--text-secondary)]">
                     Income
                   </p>
                   <p className="mt-1 text-lg font-semibold text-green-600 dark:text-green-400">
@@ -208,7 +208,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  <p className="text-xs font-medium text-[var(--text-secondary)]">
                     Expenses
                   </p>
                   <p className="mt-1 text-lg font-semibold text-red-600 dark:text-red-400">
@@ -216,7 +216,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
                   </p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  <p className="text-xs font-medium text-[var(--text-secondary)]">
                     Net
                   </p>
                   <p
@@ -236,33 +236,33 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
           {/* Quarterly Breakdown */}
           {quarterlyData.length > 0 && (
             <div className="space-y-2">
-              <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <h5 className="text-sm font-semibold text-[var(--text-primary)]">
                 Quarterly
               </h5>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {quarterlyData.map((quarter, idx) => (
                   <div
                     key={idx}
-                    className="rounded border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-900"
+                    className="rounded border border-[var(--border-default)] bg-[var(--surface-hover)] p-3"
                   >
-                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-xs font-medium text-[var(--text-secondary)]">
                       {quarter.label}
                     </p>
                     <div className="mt-2 space-y-1 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Income:</span>
+                        <span className="text-[var(--text-secondary)]">Income:</span>
                         <span className="font-semibold text-green-600 dark:text-green-400">
                           {formatCurrency(quarter.income)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Exp:</span>
+                        <span className="text-[var(--text-secondary)]">Exp:</span>
                         <span className="font-semibold text-red-600 dark:text-red-400">
                           {formatCurrency(quarter.expenses)}
                         </span>
                       </div>
-                      <div className="flex justify-between border-t border-gray-300 pt-1 dark:border-gray-600">
-                        <span className="text-gray-600 dark:text-gray-400">Net:</span>
+                      <div className="flex justify-between border-t border-[var(--border-strong)] pt-1">
+                        <span className="text-[var(--text-secondary)]">Net:</span>
                         <span
                           className={`font-semibold ${
                             quarter.net >= 0
@@ -283,7 +283,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
           {/* Monthly Breakdown - Scrollable on mobile */}
           {monthlyData.length > 0 && (
             <div className="space-y-2">
-              <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <h5 className="text-sm font-semibold text-[var(--text-primary)]">
                 Monthly
               </h5>
               <div className="overflow-x-auto">
@@ -291,9 +291,9 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
                   {monthlyData.map((month, idx) => (
                     <div
                       key={idx}
-                      className="rounded border border-gray-200 bg-gray-50 p-2 dark:border-gray-700 dark:bg-gray-900"
+                      className="rounded border border-[var(--border-default)] bg-[var(--surface-hover)] p-2"
                     >
-                      <p className="truncate text-xs font-medium text-gray-600 dark:text-gray-400">
+                      <p className="truncate text-xs font-medium text-[var(--text-secondary)]">
                         {month.label
                           ? month.label
                               .split(' ')
@@ -303,13 +303,13 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
                       </p>
                       <div className="mt-1 space-y-0.5 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">+</span>
+                          <span className="text-[var(--text-secondary)]">+</span>
                           <span className="font-semibold text-green-600 dark:text-green-400">
                             {formatCurrency(month.income)}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">-</span>
+                          <span className="text-[var(--text-secondary)]">-</span>
                           <span className="font-semibold text-red-600 dark:text-red-400">
                             {formatCurrency(month.expenses)}
                           </span>
@@ -326,9 +326,9 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
 
       {/* Empty state for zero transactions */}
       {summary.periodData.length === 0 && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-700 dark:bg-gray-900">
+        <div className="rounded-lg border border-[var(--border-default)] bg-[var(--surface-hover)] p-8 text-center">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600"
+            className="mx-auto h-12 w-12 text-[var(--text-tertiary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -340,7 +340,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
             />
           </svg>
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">
             No transaction data available for the selected period
           </p>
         </div>

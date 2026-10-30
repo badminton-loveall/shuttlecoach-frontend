@@ -35,7 +35,7 @@
 
 .skill-score-btn:hover:not(:disabled)::before {
   border-color: var(--color-primary);
-  background: rgba(184, 225, 53, 0.15);
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
 /* Selected — filled circle with level colour */
@@ -63,7 +63,7 @@
 .skill-score-btn--active.skill-score-btn--level-3::before {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.3);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 .skill-score-btn--active.skill-score-btn--level-4::before {

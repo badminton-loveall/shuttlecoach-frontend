@@ -113,22 +113,20 @@
 }
 
 .topnav__link:hover {
-  color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.1);
+  color: var(--text-primary);
+  background-color: var(--surface-hover);
 }
 
-/* Active link modifier */
-.topnav__link--active {
-  color: var(--on-primary);
-  background-color: var(--color-primary);
-  font-weight: var(--weight-semibold);
-  box-shadow: 0 2px 8px rgba(184, 225, 53, 0.2);
-}
-
+/* Active link modifier — LoveAll nav style: ink text, gold underline */
+.topnav__link--active,
 .topnav__link--active:hover {
-  background-color: var(--color-primary-hover);
-  color: var(--on-primary);
-  box-shadow: 0 4px 16px rgba(184, 225, 53, 0.3);
+  color: var(--text-primary);
+  background-color: transparent;
+  font-weight: var(--weight-semibold);
+  text-decoration: underline;
+  text-decoration-color: var(--la-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 8px;
 }
 
 /* Dropdown trigger button styling */
@@ -197,13 +195,13 @@
 
 .topnav__dropdown-item:hover {
   color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.08);
+  background-color: var(--surface-hover);
 }
 
 .topnav__dropdown-item--active {
   color: var(--color-primary-dark);
   font-weight: var(--weight-semibold);
-  background-color: rgba(184, 225, 53, 0.1);
+  background-color: var(--surface-hover);
 }
 
 /* ============================================================================
@@ -235,14 +233,14 @@
 }
 
 .topnav__avatar-btn:hover {
-  box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
 .topnav__user-avatar {
   width: 38px;
   height: 38px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  background: var(--color-primary);
   color: var(--on-primary);
   display: flex;
   align-items: center;
@@ -314,7 +312,7 @@
 
 .topnav__profile-item:hover {
   color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.08);
+  background-color: var(--surface-hover);
 }
 
 .topnav__profile-item--danger {
@@ -449,7 +447,7 @@
 .topnav__drawer-link:hover,
 .topnav__drawer-link--active {
   color: var(--color-primary-dark);
-  background-color: rgba(184, 225, 53, 0.1);
+  background-color: var(--surface-hover);
   font-weight: var(--weight-semibold);
 }
 

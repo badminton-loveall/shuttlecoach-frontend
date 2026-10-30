@@ -6,7 +6,7 @@
 
 /* CRITICAL: font imports must come before tailwindcss */
 /* LoveAll Design System fonts */
-@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 /* Import Tailwind CSS directives */
 @import "tailwindcss";
@@ -50,6 +50,39 @@
   --color-gold-500: #B8975A;
   --color-gold-700: #7E6331;
   --color-lime: #B8E135;
+  /* Tailwind color scales → LoveAll semantic tones, so the app's existing
+     red/amber/green/blue/purple-* classes read as danger/warning/success/
+     info/gold in the design system's muted palette. */
+  --color-red-50: #FBF1EF; --color-red-100: #F6E4E1; --color-red-200: #EDCBC6; --color-red-300: #E0A69F; --color-red-400: #C9706A; --color-red-500: #B04A44; --color-red-600: #9B2C2C; --color-red-700: #842525; --color-red-800: #6B1F1F; --color-red-900: #4D1A18; --color-red-950: #301B19;
+  --color-rose-50: #FBF1EF; --color-rose-100: #F6E4E1; --color-rose-200: #EDCBC6; --color-rose-300: #E0A69F; --color-rose-400: #C9706A; --color-rose-500: #B04A44; --color-rose-600: #9B2C2C; --color-rose-700: #842525; --color-rose-800: #6B1F1F; --color-rose-900: #4D1A18; --color-rose-950: #301B19;
+  --color-pink-50: #FBF1EF; --color-pink-100: #F6E4E1; --color-pink-200: #EDCBC6; --color-pink-300: #E0A69F; --color-pink-400: #C9706A; --color-pink-500: #B04A44; --color-pink-600: #9B2C2C; --color-pink-700: #842525; --color-pink-800: #6B1F1F; --color-pink-900: #4D1A18; --color-pink-950: #301B19;
+  --color-orange-50: #FBF6EC; --color-orange-100: #F6ECD9; --color-orange-200: #EDD9B0; --color-orange-300: #E2C080; --color-orange-400: #D1A04F; --color-orange-500: #A8721F; --color-orange-600: #8A5A12; --color-orange-700: #744B0F; --color-orange-800: #5E3D0D; --color-orange-900: #45300F; --color-orange-950: #2B2315;
+  --color-amber-50: #FBF6EC; --color-amber-100: #F6ECD9; --color-amber-200: #EDD9B0; --color-amber-300: #E2C080; --color-amber-400: #D1A04F; --color-amber-500: #A8721F; --color-amber-600: #8A5A12; --color-amber-700: #744B0F; --color-amber-800: #5E3D0D; --color-amber-900: #45300F; --color-amber-950: #2B2315;
+  --color-yellow-50: #FBF6EC; --color-yellow-100: #F6ECD9; --color-yellow-200: #EDD9B0; --color-yellow-300: #E2C080; --color-yellow-400: #D1A04F; --color-yellow-500: #A8721F; --color-yellow-600: #8A5A12; --color-yellow-700: #744B0F; --color-yellow-800: #5E3D0D; --color-yellow-900: #45300F; --color-yellow-950: #2B2315;
+  --color-green-50: #EEF4F0; --color-green-100: #E6EFE8; --color-green-200: #B9D3C2; --color-green-300: #8CC7A4; --color-green-400: #5E9A7A; --color-green-500: #3B7A5C; --color-green-600: #2F6B4F; --color-green-700: #24563F; --color-green-800: #1F4D3A; --color-green-900: #183E2F; --color-green-950: #152A1F;
+  --color-emerald-50: #EEF4F0; --color-emerald-100: #E6EFE8; --color-emerald-200: #B9D3C2; --color-emerald-300: #8CC7A4; --color-emerald-400: #5E9A7A; --color-emerald-500: #3B7A5C; --color-emerald-600: #2F6B4F; --color-emerald-700: #24563F; --color-emerald-800: #1F4D3A; --color-emerald-900: #183E2F; --color-emerald-950: #152A1F;
+  --color-teal-50: #EEF4F0; --color-teal-100: #E6EFE8; --color-teal-200: #B9D3C2; --color-teal-300: #8CC7A4; --color-teal-400: #5E9A7A; --color-teal-500: #3B7A5C; --color-teal-600: #2F6B4F; --color-teal-700: #24563F; --color-teal-800: #1F4D3A; --color-teal-900: #183E2F; --color-teal-950: #152A1F;
+  --color-blue-50: #F1F6F9; --color-blue-100: #E3ECF2; --color-blue-200: #C5D6E3; --color-blue-300: #93BEDB; --color-blue-400: #6E95B1; --color-blue-500: #4A7696; --color-blue-600: #2C5A7A; --color-blue-700: #244B66; --color-blue-800: #1E3D53; --color-blue-900: #1A3142; --color-blue-950: #15232D;
+  --color-sky-50: #F1F6F9; --color-sky-100: #E3ECF2; --color-sky-200: #C5D6E3; --color-sky-300: #93BEDB; --color-sky-400: #6E95B1; --color-sky-500: #4A7696; --color-sky-600: #2C5A7A; --color-sky-700: #244B66; --color-sky-800: #1E3D53; --color-sky-900: #1A3142; --color-sky-950: #15232D;
+  --color-cyan-50: #F1F6F9; --color-cyan-100: #E3ECF2; --color-cyan-200: #C5D6E3; --color-cyan-300: #93BEDB; --color-cyan-400: #6E95B1; --color-cyan-500: #4A7696; --color-cyan-600: #2C5A7A; --color-cyan-700: #244B66; --color-cyan-800: #1E3D53; --color-cyan-900: #1A3142; --color-cyan-950: #15232D;
+  --color-indigo-50: #F1F6F9; --color-indigo-100: #E3ECF2; --color-indigo-200: #C5D6E3; --color-indigo-300: #93BEDB; --color-indigo-400: #6E95B1; --color-indigo-500: #4A7696; --color-indigo-600: #2C5A7A; --color-indigo-700: #244B66; --color-indigo-800: #1E3D53; --color-indigo-900: #1A3142; --color-indigo-950: #15232D;
+  --color-purple-50: #FAF6EE; --color-purple-100: #F3EADB; --color-purple-200: #E6D4B5; --color-purple-300: #D9C39A; --color-purple-400: #C9AB72; --color-purple-500: #A8884C; --color-purple-600: #8A6E3C; --color-purple-700: #7E6331; --color-purple-800: #654F27; --color-purple-900: #4A3A1E; --color-purple-950: #2E2414;
+  --color-violet-50: #FAF6EE; --color-violet-100: #F3EADB; --color-violet-200: #E6D4B5; --color-violet-300: #D9C39A; --color-violet-400: #C9AB72; --color-violet-500: #A8884C; --color-violet-600: #8A6E3C; --color-violet-700: #7E6331; --color-violet-800: #654F27; --color-violet-900: #4A3A1E; --color-violet-950: #2E2414;
+  --color-fuchsia-50: #FAF6EE; --color-fuchsia-100: #F3EADB; --color-fuchsia-200: #E6D4B5; --color-fuchsia-300: #D9C39A; --color-fuchsia-400: #C9AB72; --color-fuchsia-500: #A8884C; --color-fuchsia-600: #8A6E3C; --color-fuchsia-700: #7E6331; --color-fuchsia-800: #654F27; --color-fuchsia-900: #4A3A1E; --color-fuchsia-950: #2E2414;
+  /* Tailwind gray → LoveAll neutrals, so the app's existing gray-* / dark:gray-*
+     classes match the theme: warm light end, Court Green-tinted dark end
+     (700 = dark rule, 800 = dark card, 900 = dark canvas). */
+  --color-gray-50: #FAF7F0;
+  --color-gray-100: #F3EEE2;
+  --color-gray-200: #E3DCCB;
+  --color-gray-300: #CFC4AC;
+  --color-gray-400: #A89D86;
+  --color-gray-500: #6F6656;
+  --color-gray-600: #5A5244;
+  --color-gray-700: #28352E;
+  --color-gray-800: #151F1A;
+  --color-gray-900: #14202B;
+  --color-gray-950: #0F1713;
   /* Warm neutral scale */
   --color-neutral-50: #FAF7F0;
   --color-neutral-100: #F3EEE2;
@@ -256,7 +289,7 @@
 }
 
 /* The app's legacy element rules and same-named utilities (h1, a, input,
-   .bg-primary, .p-4, ...) skip .marketing-scope via :not(.marketing-scope *).
+   .bg-primary, .p-4, ...) skip .marketing-scope via :not(:where(.marketing-scope *)).
    What remains is undoing app-wide token overrides for the design system:
    - design-system.css reuses --font-display as a font *size*;
    - the shadcn @theme inline below maps bg/text/border-primary and *-accent
@@ -338,6 +371,10 @@
 
 html {
   font-size: 16px;
+  /* Only Caslon 400 is loaded, so bold requests on serif headings (many
+     page styles set 700) render at the design's regular weight instead of
+     a synthesized bold. Source Sans ships real 400-700 weights. */
+  font-synthesis-weight: none;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -361,53 +398,60 @@ body {
    TYPOGRAPHY DEFAULTS - Font scale: 12, 16, 18, 24, 36, 42, 64
    ============================================================================ */
 
-h1:not(.marketing-scope *), h2:not(.marketing-scope *), h3:not(.marketing-scope *), h4:not(.marketing-scope *), h5:not(.marketing-scope *), h6:not(.marketing-scope *) {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  font-weight: 700;
+/* LoveAll type: Caslon (regular weight) for page and section titles,
+   Source Sans semibold for small headers (h4-h6). */
+h1:not(:where(.marketing-scope *)), h2:not(:where(.marketing-scope *)), h3:not(:where(.marketing-scope *)), h4:not(:where(.marketing-scope *)), h5:not(:where(.marketing-scope *)), h6:not(:where(.marketing-scope *)) {
+  font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-weight: 600;
   line-height: 1.2;
   margin-bottom: 16px;
   color: inherit;
 }
 
-h1:not(.marketing-scope *) {
-  font-size: 42px;
-  line-height: 1.2;
+h1:not(:where(.marketing-scope *)), h2:not(:where(.marketing-scope *)), h3:not(:where(.marketing-scope *)) {
+  font-family: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
-h2:not(.marketing-scope *) {
+h1:not(:where(.marketing-scope *)) {
+  font-size: 42px;
+  line-height: 1.15;
+}
+
+h2:not(:where(.marketing-scope *)) {
   font-size: 36px;
   line-height: 1.2;
 }
 
-h3:not(.marketing-scope *) {
+h3:not(:where(.marketing-scope *)) {
   font-size: 24px;
   line-height: 1.3;
-  font-weight: 600;
 }
 
-h4:not(.marketing-scope *) {
+h4:not(:where(.marketing-scope *)) {
   font-size: 18px;
   line-height: 1.4;
   font-weight: 600;
 }
 
-p:not(.marketing-scope *) {
+p:not(:where(.marketing-scope *)) {
   margin-bottom: 16px;
 }
 
-a:not(.marketing-scope *) {
+a:not(:where(.marketing-scope *)) {
   color: var(--color-primary-dark);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-a:hover:not(.marketing-scope *) {
+a:hover:not(:where(.marketing-scope *)) {
   color: var(--color-primary);
   text-decoration: underline;
 }
 
-a:focus-visible:not(.marketing-scope *) {
-  outline: 2px solid #B8E135;
+a:focus-visible:not(:where(.marketing-scope *)) {
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -416,49 +460,49 @@ a:focus-visible:not(.marketing-scope *) {
    FORM ELEMENTS - Using spacing scale
    ============================================================================ */
 
-input:not(.marketing-scope *),
-select:not(.marketing-scope *),
-textarea:not(.marketing-scope *),
-button:not(.marketing-scope *) {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+input:not(:where(.marketing-scope *)),
+select:not(:where(.marketing-scope *)),
+textarea:not(:where(.marketing-scope *)),
+button:not(:where(.marketing-scope *)) {
+  font-family: 'Source Sans 3', ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 16px;
 }
 
-input:not(.marketing-scope *),
-select:not(.marketing-scope *),
-textarea:not(.marketing-scope *) {
+input:not(:where(.marketing-scope *)),
+select:not(:where(.marketing-scope *)),
+textarea:not(:where(.marketing-scope *)) {
   width: 100%;
   /* Padding is now controlled per-component via Tailwind utility classes */
   /* padding: 12px 16px; */
-  border: 1px solid #E4E9EC;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background-color: #FFFFFF;
-  color: #0A0D11;
+  background-color: var(--surface-card);
+  color: var(--text-primary);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-input:focus:not(.marketing-scope *),
-select:focus:not(.marketing-scope *),
-textarea:focus:not(.marketing-scope *) {
+input:focus:not(:where(.marketing-scope *)),
+select:focus:not(:where(.marketing-scope *)),
+textarea:focus:not(:where(.marketing-scope *)) {
   outline: none;
-  border-color: #B8E135;
-  box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.3);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
-input:disabled:not(.marketing-scope *),
-select:disabled:not(.marketing-scope *),
-textarea:disabled:not(.marketing-scope *) {
-  background-color: #F1F4F6;
+input:disabled:not(:where(.marketing-scope *)),
+select:disabled:not(:where(.marketing-scope *)),
+textarea:disabled:not(:where(.marketing-scope *)) {
+  background-color: var(--surface-hover);
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-input:not(.marketing-scope *)::placeholder,
-textarea:not(.marketing-scope *)::placeholder {
-  color: #9CA8B3;
+input:not(:where(.marketing-scope *))::placeholder,
+textarea:not(:where(.marketing-scope *))::placeholder {
+  color: var(--text-tertiary);
 }
 
-button:not(.marketing-scope *) {
+button:not(:where(.marketing-scope *)) {
   cursor: pointer;
   border: none;
   border-radius: 6px;
@@ -466,12 +510,12 @@ button:not(.marketing-scope *) {
   transition: all 0.2s ease;
 }
 
-button:focus-visible:not(.marketing-scope *) {
-  outline: 2px solid #B8E135;
+button:focus-visible:not(:where(.marketing-scope *)) {
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
 
-button:disabled:not(.marketing-scope *) {
+button:disabled:not(:where(.marketing-scope *)) {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -503,7 +547,7 @@ button:disabled:not(.marketing-scope *) {
    ============================================================================ */
 
 /* Display utilities */
-.sr-only:not(.marketing-scope *) {
+.sr-only:not(:where(.marketing-scope *)) {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -516,74 +560,74 @@ button:disabled:not(.marketing-scope *) {
 }
 
 /* Flexbox utilities */
-.flex-between:not(.marketing-scope *) {
+.flex-between:not(:where(.marketing-scope *)) {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.flex-center:not(.marketing-scope *) {
+.flex-center:not(:where(.marketing-scope *)) {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.flex-start:not(.marketing-scope *) {
+.flex-start:not(:where(.marketing-scope *)) {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-.flex-end:not(.marketing-scope *) {
+.flex-end:not(:where(.marketing-scope *)) {
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 
-.flex-col:not(.marketing-scope *) {
+.flex-col:not(:where(.marketing-scope *)) {
   display: flex;
   flex-direction: column;
 }
 
-.flex-col-reverse:not(.marketing-scope *) {
+.flex-col-reverse:not(:where(.marketing-scope *)) {
   display: flex;
   flex-direction: column-reverse;
 }
 
 /* Grid utilities */
-.grid-auto-fit:not(.marketing-scope *) {
+.grid-auto-fit:not(:where(.marketing-scope *)) {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-.grid-auto-fill:not(.marketing-scope *) {
+.grid-auto-fill:not(:where(.marketing-scope *)) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
 /* Responsive grid */
-.grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
+.grid-cols-1-sm-2-md-3:not(:where(.marketing-scope *)) {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
 @media (min-width: 640px) {
-  .grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
+  .grid-cols-1-sm-2-md-3:not(:where(.marketing-scope *)) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 768px) {
-  .grid-cols-1-sm-2-md-3:not(.marketing-scope *) {
+  .grid-cols-1-sm-2-md-3:not(:where(.marketing-scope *)) {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 /* Container utility */
-.container-max:not(.marketing-scope *) {
+.container-max:not(:where(.marketing-scope *)) {
   max-width: 1280px;
   margin-left: auto;
   margin-right: auto;
@@ -592,29 +636,29 @@ button:disabled:not(.marketing-scope *) {
 }
 
 /* Aspect ratio utilities */
-.aspect-square:not(.marketing-scope *) {
+.aspect-square:not(:where(.marketing-scope *)) {
   aspect-ratio: 1;
 }
 
-.aspect-video:not(.marketing-scope *) {
+.aspect-video:not(:where(.marketing-scope *)) {
   aspect-ratio: 16 / 9;
 }
 
 /* Text utilities */
-.text-truncate:not(.marketing-scope *) {
+.text-truncate:not(:where(.marketing-scope *)) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.text-line-clamp-2:not(.marketing-scope *) {
+.text-line-clamp-2:not(:where(.marketing-scope *)) {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.text-line-clamp-3:not(.marketing-scope *) {
+.text-line-clamp-3:not(:where(.marketing-scope *)) {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -622,198 +666,198 @@ button:disabled:not(.marketing-scope *) {
 }
 
 /* Sizing utilities */
-.w-full:not(.marketing-scope *) {
+.w-full:not(:where(.marketing-scope *)) {
   width: 100%;
 }
 
-.h-full:not(.marketing-scope *) {
+.h-full:not(:where(.marketing-scope *)) {
   height: 100%;
 }
 
-.min-h-screen:not(.marketing-scope *) {
+.min-h-screen:not(:where(.marketing-scope *)) {
   min-height: 100vh;
 }
 
-.h-screen:not(.marketing-scope *) {
+.h-screen:not(:where(.marketing-scope *)) {
   height: 100vh;
 }
 
 /* Opacity utilities */
-.opacity-disabled:not(.marketing-scope *) {
+.opacity-disabled:not(:where(.marketing-scope *)) {
   opacity: 0.5;
 }
 
-.opacity-muted:not(.marketing-scope *) {
+.opacity-muted:not(:where(.marketing-scope *)) {
   opacity: 0.7;
 }
 
 /* Spacing scale utilities with design tokens - Scale: 2, 4, 8, 12, 16, 18, 24, 36, 42, 64 */
-.gap-0-5:not(.marketing-scope *) { gap: 2px; }
-.gap-1:not(.marketing-scope *) { gap: 4px; }
-.gap-2:not(.marketing-scope *) { gap: 8px; }
-.gap-3:not(.marketing-scope *) { gap: 12px; }
-.gap-4:not(.marketing-scope *) { gap: 16px; }
-.gap-4-5:not(.marketing-scope *) { gap: 18px; }
-.gap-6:not(.marketing-scope *) { gap: 24px; }
-.gap-9:not(.marketing-scope *) { gap: 36px; }
-.gap-10-5:not(.marketing-scope *) { gap: 42px; }
-.gap-16:not(.marketing-scope *) { gap: 64px; }
+.gap-0-5:not(:where(.marketing-scope *)) { gap: 2px; }
+.gap-1:not(:where(.marketing-scope *)) { gap: 4px; }
+.gap-2:not(:where(.marketing-scope *)) { gap: 8px; }
+.gap-3:not(:where(.marketing-scope *)) { gap: 12px; }
+.gap-4:not(:where(.marketing-scope *)) { gap: 16px; }
+.gap-4-5:not(:where(.marketing-scope *)) { gap: 18px; }
+.gap-6:not(:where(.marketing-scope *)) { gap: 24px; }
+.gap-9:not(:where(.marketing-scope *)) { gap: 36px; }
+.gap-10-5:not(:where(.marketing-scope *)) { gap: 42px; }
+.gap-16:not(:where(.marketing-scope *)) { gap: 64px; }
 
-.p-0-5:not(.marketing-scope *) { padding: 2px; }
-.p-1:not(.marketing-scope *) { padding: 4px; }
-.p-2:not(.marketing-scope *) { padding: 8px; }
-.p-3:not(.marketing-scope *) { padding: 12px; }
-.p-4:not(.marketing-scope *) { padding: 16px; }
-.p-4-5:not(.marketing-scope *) { padding: 18px; }
-.p-6:not(.marketing-scope *) { padding: 24px; }
-.p-9:not(.marketing-scope *) { padding: 36px; }
-.p-10-5:not(.marketing-scope *) { padding: 42px; }
-.p-16:not(.marketing-scope *) { padding: 64px; }
+.p-0-5:not(:where(.marketing-scope *)) { padding: 2px; }
+.p-1:not(:where(.marketing-scope *)) { padding: 4px; }
+.p-2:not(:where(.marketing-scope *)) { padding: 8px; }
+.p-3:not(:where(.marketing-scope *)) { padding: 12px; }
+.p-4:not(:where(.marketing-scope *)) { padding: 16px; }
+.p-4-5:not(:where(.marketing-scope *)) { padding: 18px; }
+.p-6:not(:where(.marketing-scope *)) { padding: 24px; }
+.p-9:not(:where(.marketing-scope *)) { padding: 36px; }
+.p-10-5:not(:where(.marketing-scope *)) { padding: 42px; }
+.p-16:not(:where(.marketing-scope *)) { padding: 64px; }
 
-.px-0-5:not(.marketing-scope *) { padding-left: 2px; padding-right: 2px; }
-.px-1:not(.marketing-scope *) { padding-left: 4px; padding-right: 4px; }
-.px-2:not(.marketing-scope *) { padding-left: 8px; padding-right: 8px; }
-.px-3:not(.marketing-scope *) { padding-left: 12px; padding-right: 12px; }
-.px-4:not(.marketing-scope *) { padding-left: 16px; padding-right: 16px; }
-.px-4-5:not(.marketing-scope *) { padding-left: 18px; padding-right: 18px; }
-.px-6:not(.marketing-scope *) { padding-left: 24px; padding-right: 24px; }
-.px-9:not(.marketing-scope *) { padding-left: 36px; padding-right: 36px; }
-.px-10-5:not(.marketing-scope *) { padding-left: 42px; padding-right: 42px; }
-.px-16:not(.marketing-scope *) { padding-left: 64px; padding-right: 64px; }
+.px-0-5:not(:where(.marketing-scope *)) { padding-left: 2px; padding-right: 2px; }
+.px-1:not(:where(.marketing-scope *)) { padding-left: 4px; padding-right: 4px; }
+.px-2:not(:where(.marketing-scope *)) { padding-left: 8px; padding-right: 8px; }
+.px-3:not(:where(.marketing-scope *)) { padding-left: 12px; padding-right: 12px; }
+.px-4:not(:where(.marketing-scope *)) { padding-left: 16px; padding-right: 16px; }
+.px-4-5:not(:where(.marketing-scope *)) { padding-left: 18px; padding-right: 18px; }
+.px-6:not(:where(.marketing-scope *)) { padding-left: 24px; padding-right: 24px; }
+.px-9:not(:where(.marketing-scope *)) { padding-left: 36px; padding-right: 36px; }
+.px-10-5:not(:where(.marketing-scope *)) { padding-left: 42px; padding-right: 42px; }
+.px-16:not(:where(.marketing-scope *)) { padding-left: 64px; padding-right: 64px; }
 
-.py-0-5:not(.marketing-scope *) { padding-top: 2px; padding-bottom: 2px; }
-.py-1:not(.marketing-scope *) { padding-top: 4px; padding-bottom: 4px; }
-.py-2:not(.marketing-scope *) { padding-top: 8px; padding-bottom: 8px; }
-.py-3:not(.marketing-scope *) { padding-top: 12px; padding-bottom: 12px; }
-.py-4:not(.marketing-scope *) { padding-top: 16px; padding-bottom: 16px; }
-.py-4-5:not(.marketing-scope *) { padding-top: 18px; padding-bottom: 18px; }
-.py-6:not(.marketing-scope *) { padding-top: 24px; padding-bottom: 24px; }
-.py-9:not(.marketing-scope *) { padding-top: 36px; padding-bottom: 36px; }
-.py-10-5:not(.marketing-scope *) { padding-top: 42px; padding-bottom: 42px; }
-.py-16:not(.marketing-scope *) { padding-top: 64px; padding-bottom: 64px; }
+.py-0-5:not(:where(.marketing-scope *)) { padding-top: 2px; padding-bottom: 2px; }
+.py-1:not(:where(.marketing-scope *)) { padding-top: 4px; padding-bottom: 4px; }
+.py-2:not(:where(.marketing-scope *)) { padding-top: 8px; padding-bottom: 8px; }
+.py-3:not(:where(.marketing-scope *)) { padding-top: 12px; padding-bottom: 12px; }
+.py-4:not(:where(.marketing-scope *)) { padding-top: 16px; padding-bottom: 16px; }
+.py-4-5:not(:where(.marketing-scope *)) { padding-top: 18px; padding-bottom: 18px; }
+.py-6:not(:where(.marketing-scope *)) { padding-top: 24px; padding-bottom: 24px; }
+.py-9:not(:where(.marketing-scope *)) { padding-top: 36px; padding-bottom: 36px; }
+.py-10-5:not(:where(.marketing-scope *)) { padding-top: 42px; padding-bottom: 42px; }
+.py-16:not(:where(.marketing-scope *)) { padding-top: 64px; padding-bottom: 64px; }
 
-.m-0-5:not(.marketing-scope *) { margin: 2px; }
-.m-1:not(.marketing-scope *) { margin: 4px; }
-.m-2:not(.marketing-scope *) { margin: 8px; }
-.m-3:not(.marketing-scope *) { margin: 12px; }
-.m-4:not(.marketing-scope *) { margin: 16px; }
-.m-4-5:not(.marketing-scope *) { margin: 18px; }
-.m-6:not(.marketing-scope *) { margin: 24px; }
-.m-9:not(.marketing-scope *) { margin: 36px; }
-.m-10-5:not(.marketing-scope *) { margin: 42px; }
-.m-16:not(.marketing-scope *) { margin: 64px; }
+.m-0-5:not(:where(.marketing-scope *)) { margin: 2px; }
+.m-1:not(:where(.marketing-scope *)) { margin: 4px; }
+.m-2:not(:where(.marketing-scope *)) { margin: 8px; }
+.m-3:not(:where(.marketing-scope *)) { margin: 12px; }
+.m-4:not(:where(.marketing-scope *)) { margin: 16px; }
+.m-4-5:not(:where(.marketing-scope *)) { margin: 18px; }
+.m-6:not(:where(.marketing-scope *)) { margin: 24px; }
+.m-9:not(:where(.marketing-scope *)) { margin: 36px; }
+.m-10-5:not(:where(.marketing-scope *)) { margin: 42px; }
+.m-16:not(:where(.marketing-scope *)) { margin: 64px; }
 
-.mx-auto:not(.marketing-scope *) {
+.mx-auto:not(:where(.marketing-scope *)) {
   margin-left: auto;
   margin-right: auto;
 }
 
-.mt-auto:not(.marketing-scope *) {
+.mt-auto:not(:where(.marketing-scope *)) {
   margin-top: auto;
 }
 
-.mb-auto:not(.marketing-scope *) {
+.mb-auto:not(:where(.marketing-scope *)) {
   margin-bottom: auto;
 }
 
 /* Rounded utilities - Using scale: 8, 12, 16, 24 */
-.rounded-sm:not(.marketing-scope *) {
+.rounded-sm:not(:where(.marketing-scope *)) {
   border-radius: 8px;
 }
 
-.rounded-md:not(.marketing-scope *) {
+.rounded-md:not(:where(.marketing-scope *)) {
   border-radius: 12px;
 }
 
-.rounded-lg:not(.marketing-scope *) {
+.rounded-lg:not(:where(.marketing-scope *)) {
   border-radius: 16px;
 }
 
-.rounded-xl:not(.marketing-scope *) {
+.rounded-xl:not(:where(.marketing-scope *)) {
   border-radius: 24px;
 }
 
-.rounded-full:not(.marketing-scope *) {
+.rounded-full:not(:where(.marketing-scope *)) {
   border-radius: 999px;
 }
 
 /* Shadow utilities */
-.shadow-card:not(.marketing-scope *) {
+.shadow-card:not(:where(.marketing-scope *)) {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
-.shadow-float:not(.marketing-scope *) {
+.shadow-float:not(:where(.marketing-scope *)) {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
 }
 
-.shadow-focus:not(.marketing-scope *) {
-  box-shadow: 0 0 0 3px rgba(184, 225, 53, 0.3);
+.shadow-focus:not(:where(.marketing-scope *)) {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
-.shadow-overlay:not(.marketing-scope *) {
+.shadow-overlay:not(:where(.marketing-scope *)) {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 /* Color utilities - WCAG AA compliant */
-.bg-primary:not(.marketing-scope *) {
-  background-color: #B8E135;
+.bg-primary:not(:where(.marketing-scope *)) {
+  background-color: var(--color-primary);
 }
 
-.bg-primary-dark:not(.marketing-scope *) {
-  background-color: #9ac61a;
+.bg-primary-dark:not(:where(.marketing-scope *)) {
+  background-color: var(--color-primary-hover);
 }
 
-.bg-success:not(.marketing-scope *) {
-  background-color: #22C55E;
+.bg-success:not(:where(.marketing-scope *)) {
+  background-color: var(--color-success);
 }
 
-.bg-warning:not(.marketing-scope *) {
-  background-color: #F59E0B;
+.bg-warning:not(:where(.marketing-scope *)) {
+  background-color: var(--color-warning);
 }
 
-.bg-danger:not(.marketing-scope *) {
-  background-color: #EF4444;
+.bg-danger:not(:where(.marketing-scope *)) {
+  background-color: var(--color-danger);
 }
 
-.bg-info:not(.marketing-scope *) {
-  background-color: #3B82F6;
+.bg-info:not(:where(.marketing-scope *)) {
+  background-color: var(--color-info);
 }
 
-.text-primary:not(.marketing-scope *) {
-  color: #B8E135;
+.text-primary:not(:where(.marketing-scope *)) {
+  color: var(--color-primary);
 }
 
-.text-success:not(.marketing-scope *) {
-  color: #22C55E;
+.text-success:not(:where(.marketing-scope *)) {
+  color: var(--color-success);
 }
 
-.text-warning:not(.marketing-scope *) {
-  color: #F59E0B;
+.text-warning:not(:where(.marketing-scope *)) {
+  color: var(--color-warning);
 }
 
-.text-danger:not(.marketing-scope *) {
-  color: #EF4444;
+.text-danger:not(:where(.marketing-scope *)) {
+  color: var(--color-danger);
 }
 
-.text-info:not(.marketing-scope *) {
-  color: #3B82F6;
+.text-info:not(:where(.marketing-scope *)) {
+  color: var(--color-info);
 }
 
 /* Border utilities */
-.border-primary:not(.marketing-scope *) {
-  border-color: #B8E135;
+.border-primary:not(:where(.marketing-scope *)) {
+  border-color: var(--color-primary);
 }
 
-.border-danger:not(.marketing-scope *) {
-  border-color: #EF4444;
+.border-danger:not(:where(.marketing-scope *)) {
+  border-color: var(--color-danger);
 }
 
-.border-warning:not(.marketing-scope *) {
-  border-color: #F59E0B;
+.border-warning:not(:where(.marketing-scope *)) {
+  border-color: var(--color-warning);
 }
 
-.border-info:not(.marketing-scope *) {
-  border-color: #3B82F6;
+.border-info:not(:where(.marketing-scope *)) {
+  border-color: var(--color-info);
 }
 
 /* ============================================================================
@@ -828,16 +872,16 @@ button:disabled:not(.marketing-scope *) {
    with tokens keeps them in sync with whichever theme is actually active,
    explicit toggle or OS default alike. */
 
-input:not(.marketing-scope *),
-select:not(.marketing-scope *),
-textarea:not(.marketing-scope *) {
+input:not(:where(.marketing-scope *)),
+select:not(:where(.marketing-scope *)),
+textarea:not(:where(.marketing-scope *)) {
   background-color: var(--surface-card);
   color: var(--text-primary);
   border-color: var(--border-default);
 }
 
-input:not(.marketing-scope *)::placeholder,
-textarea:not(.marketing-scope *)::placeholder {
+input:not(:where(.marketing-scope *))::placeholder,
+textarea:not(:where(.marketing-scope *))::placeholder {
   color: var(--text-tertiary);
 }
 
@@ -847,7 +891,7 @@ textarea:not(.marketing-scope *)::placeholder {
 
 @media print {
   body {
-    background-color: #FFFFFF;
+    background-color: var(--surface-card);
     color: #1B2B4E;
   }
 

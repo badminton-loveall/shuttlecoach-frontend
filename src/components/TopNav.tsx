@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useAccountingAccess } from '../hooks/useAccountingAccess';
 import CenterSwitcher from './CenterSwitcher';
 import { ThemeToggle } from './ThemeToggle';
-import logoImg from '../assets/logo.png';
+import { Logo } from '../marketing/components/brand/Logo';
 import './TopNav.css';
 
 /**
@@ -235,8 +235,9 @@ export const TopNav: React.FC = () => {
     <nav className="topnav">
       <div className="topnav__container">
         {/* Logo / Brand — hidden on mobile in favor of a back button on subpages */}
-        <Link to="/" className={`topnav__logo${showBack ? ' topnav__logo--hidden-mobile' : ''}`}>
-          <img src={logoImg} alt="LoveAll Badminton Zone" className="topnav__logo-img" />
+        <Link to="/" aria-label="LoveAll, home" className={`topnav__logo${showBack ? ' topnav__logo--hidden-mobile' : ''}`}>
+          {/* marketing-scope: resolves the serif wordmark font (see globals.css) */}
+          <Logo size="sm" className="marketing-scope" />
         </Link>
 
         {showBack && (

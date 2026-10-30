@@ -139,9 +139,9 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
   if (isLoading) {
     return (
       <div className="space-y-4 p-6">
-        <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
-        <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2" />
-        <div className="h-4 bg-gray-100 rounded animate-pulse w-2/3" />
+        <div className="h-6 bg-[var(--border-default)] rounded animate-pulse w-3/4" />
+        <div className="h-4 bg-[var(--surface-hover)] rounded animate-pulse w-1/2" />
+        <div className="h-4 bg-[var(--surface-hover)] rounded animate-pulse w-2/3" />
       </div>
     );
   }
@@ -164,11 +164,11 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
         {/* Personal Information Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Personal Information</h3>
+          <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Personal Information</h3>
           <div className="space-y-4">
             {/* Name Field - Always editable */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Name *
               </label>
               <input
@@ -179,8 +179,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 placeholder="Enter coach name"
                 aria-invalid={!!errors.name}
                 aria-describedby={errors.name ? 'name-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.name ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] ${
+                  errors.name ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -193,7 +193,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Email
               </label>
               <input
@@ -204,8 +204,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 placeholder="Enter email address"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? 'email-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] ${
+                  errors.email ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -218,7 +218,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Phone Field */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Phone
               </label>
               <input
@@ -229,8 +229,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 placeholder="Enter phone number"
                 aria-invalid={!!errors.phone}
                 aria-describedby={errors.phone ? 'phone-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] ${
+                  errors.phone ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -245,11 +245,11 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
         {/* Professional Information Section */}
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">Professional Information</h3>
+          <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Professional Information</h3>
           <div className="space-y-4">
             {/* Specialization Field */}
             <div>
-              <label htmlFor="specialization" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="specialization" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Specialization
               </label>
               <input
@@ -260,8 +260,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 placeholder="Enter specialization"
                 aria-invalid={!!errors.specialization}
                 aria-describedby={errors.specialization ? 'specialization-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.specialization ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] ${
+                  errors.specialization ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -274,7 +274,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Qualifications Field */}
             <div>
-              <label htmlFor="qualifications" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="qualifications" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Qualifications
               </label>
               <textarea
@@ -285,8 +285,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 rows={3}
                 aria-invalid={!!errors.qualifications}
                 aria-describedby={errors.qualifications ? 'qualifications-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  errors.qualifications ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] resize-none ${
+                  errors.qualifications ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -299,7 +299,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Certifications Field */}
             <div>
-              <label htmlFor="certifications" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="certifications" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Certifications
               </label>
               <textarea
@@ -310,8 +310,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 rows={3}
                 aria-invalid={!!errors.certifications}
                 aria-describedby={errors.certifications ? 'certifications-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  errors.certifications ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] resize-none ${
+                  errors.certifications ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -324,7 +324,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
             {/* Bio Field */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="bio" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                 Bio
               </label>
               <textarea
@@ -335,8 +335,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                 rows={4}
                 aria-invalid={!!errors.bio}
                 aria-describedby={errors.bio ? 'bio-error' : undefined}
-                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
-                  errors.bio ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] resize-none ${
+                  errors.bio ? 'border-red-500' : 'border-[var(--border-strong)]'
                 }`}
                 disabled={isSubmitting}
               />
@@ -355,7 +355,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
             type="button"
             onClick={handleCancel}
             disabled={isSubmitting}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 border border-[var(--border-strong)] rounded-lg text-base font-medium text-[var(--text-primary)] hover:bg-[var(--surface-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Cancel profile editing"
           >
             Cancel
@@ -363,7 +363,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2 bg-blue-600 rounded-lg text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-[var(--color-primary)] rounded-lg text-base font-medium text-[var(--on-primary)] hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Save profile changes"
           >
             {isSubmitting ? 'Saving...' : 'Save Changes'}
@@ -381,7 +381,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
         <div className="flex justify-end">
           <button
             onClick={() => setIsEditing(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-[var(--color-primary)] text-[var(--on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
             aria-label="Edit profile"
           >
             Edit Profile
@@ -391,27 +391,27 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
       {/* Personal Information Section */}
       <div>
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">Personal Information</h3>
+        <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Personal Information</h3>
         <div className="space-y-4">
           {/* Name - Always show */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">Name</label>
-            <p className="text-base text-gray-900">{coach.name}</p>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Name</label>
+            <p className="text-base text-[var(--text-primary)]">{coach.name}</p>
           </div>
 
           {/* Email - Show if available, hide entire field if empty */}
           {coach.email && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Email</label>
-              <p className="text-base text-gray-900">{coach.email}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Email</label>
+              <p className="text-base text-[var(--text-primary)]">{coach.email}</p>
             </div>
           )}
 
           {/* Phone - Show if available, hide entire field if empty */}
           {coach.phone && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Phone</label>
-              <p className="text-base text-gray-900">{coach.phone}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Phone</label>
+              <p className="text-base text-[var(--text-primary)]">{coach.phone}</p>
             </div>
           )}
         </div>
@@ -419,37 +419,37 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
       {/* Professional Information Section */}
       <div>
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">Professional Information</h3>
+        <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Professional Information</h3>
         <div className="space-y-4">
           {/* Specialization - Show only if available */}
           {coach.specialization && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Specialization</label>
-              <p className="text-base text-gray-900">{coach.specialization}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Specialization</label>
+              <p className="text-base text-[var(--text-primary)]">{coach.specialization}</p>
             </div>
           )}
 
           {/* Qualifications - Show only if available */}
           {coach.qualifications && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Qualifications</label>
-              <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.qualifications}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Qualifications</label>
+              <p className="text-base text-[var(--text-primary)] whitespace-pre-wrap">{coach.qualifications}</p>
             </div>
           )}
 
           {/* Certifications - Show only if available */}
           {coach.certifications && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Certifications</label>
-              <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.certifications}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Certifications</label>
+              <p className="text-base text-[var(--text-primary)] whitespace-pre-wrap">{coach.certifications}</p>
             </div>
           )}
 
           {/* Bio - Show only if available */}
           {coach.bio && (
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-2">Bio</label>
-              <p className="text-base text-gray-900 whitespace-pre-wrap">{coach.bio}</p>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Bio</label>
+              <p className="text-base text-[var(--text-primary)] whitespace-pre-wrap">{coach.bio}</p>
             </div>
           )}
         </div>
@@ -457,11 +457,11 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
       {/* Role & Permissions Section */}
       <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">Role & Permissions</h3>
+        <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Role & Permissions</h3>
         <div className="space-y-4">
           {/* Role Badge */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">User Role</label>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">User Role</label>
             <div className="inline-block">
               <span
                 className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
@@ -469,7 +469,7 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
                     ? 'bg-blue-100 text-blue-800'
                     : coach.role === 'ASSISTANT_COACH'
                       ? 'bg-purple-100 text-purple-800'
-                      : 'bg-gray-100 text-gray-800'
+                      : 'bg-[var(--surface-hover)] text-[var(--text-primary)]'
                 }`}
               >
                 {coach.role === 'HEAD_COACH'
@@ -483,14 +483,14 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
           {/* Role Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
               Permission Description
             </label>
-            <p className="text-base text-gray-700 leading-relaxed">{getRoleDescription(coach.role)}</p>
+            <p className="text-base text-[var(--text-primary)] leading-relaxed">{getRoleDescription(coach.role)}</p>
           </div>
 
           {/* Note: Role changes are admin-only */}
-          <p className="text-sm text-gray-500 italic pt-2">
+          <p className="text-sm text-[var(--text-secondary)] italic pt-2">
             Role changes are managed by administrators only.
           </p>
         </div>
@@ -498,19 +498,19 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
 
       {/* Account Information Section */}
       <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">Account Information</h3>
+        <h3 className="text-lg font-semibold mb-4 text-[var(--text-primary)]">Account Information</h3>
         <div className="space-y-4 text-sm">
           <div>
-            <span className="text-gray-600">User ID:</span>
-            <p className="text-gray-900 font-mono text-xs mt-1">{coach.id}</p>
+            <span className="text-[var(--text-secondary)]">User ID:</span>
+            <p className="text-[var(--text-primary)] font-mono text-xs mt-1">{coach.id}</p>
           </div>
           <div>
-            <span className="text-gray-600">Username:</span>
-            <p className="text-gray-900 font-mono">{coach.username}</p>
+            <span className="text-[var(--text-secondary)]">Username:</span>
+            <p className="text-[var(--text-primary)] font-mono">{coach.username}</p>
           </div>
           <div>
-            <span className="text-gray-600">Account Created:</span>
-            <p className="text-gray-900">
+            <span className="text-[var(--text-secondary)]">Account Created:</span>
+            <p className="text-[var(--text-primary)]">
               {new Date(coach.createdAt).toLocaleDateString('en-IN', {
                 year: 'numeric',
                 month: 'short',
@@ -519,8 +519,8 @@ export const CoachProfileTab: React.FC<CoachProfileTabProps> = ({
             </p>
           </div>
           <div>
-            <span className="text-gray-600">Last Active:</span>
-            <p className="text-gray-900">
+            <span className="text-[var(--text-secondary)]">Last Active:</span>
+            <p className="text-[var(--text-primary)]">
               {new Date(coach.lastActive).toLocaleDateString('en-IN', {
                 year: 'numeric',
                 month: 'short',

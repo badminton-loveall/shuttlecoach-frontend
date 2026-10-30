@@ -281,7 +281,7 @@ export const QuickAttendanceWidget: React.FC<QuickAttendanceWidgetProps> = ({
               width: '100%',
               padding: 'var(--space-sm) var(--space-md)',
               backgroundColor: allMarked ? 'var(--color-primary)' : 'var(--border-default)',
-              color: allMarked ? '#fff' : 'var(--text-secondary)',
+              color: allMarked ? 'var(--on-primary)' : 'var(--text-secondary)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               fontWeight: 600,
@@ -345,11 +345,11 @@ function getToggleStyle(isActive: boolean, status: AttendanceStatus): React.CSSP
 
   switch (status) {
     case 'PRESENT':
-      return { ...baseStyle, backgroundColor: '#16a34a', color: '#fff', border: '1px solid #16a34a' };
+      return { ...baseStyle, backgroundColor: 'var(--color-success)', color: 'var(--la-canvas)', border: '1px solid var(--color-success)' };
     case 'ABSENT':
-      return { ...baseStyle, backgroundColor: '#dc2626', color: '#fff', border: '1px solid #dc2626' };
+      return { ...baseStyle, backgroundColor: 'var(--color-danger)', color: 'var(--la-canvas)', border: '1px solid var(--color-danger)' };
     case 'LATE':
-      return { ...baseStyle, backgroundColor: '#eab308', color: '#fff', border: '1px solid #eab308' };
+      return { ...baseStyle, backgroundColor: 'var(--color-warning)', color: 'var(--la-canvas)', border: '1px solid var(--color-warning)' };
     default:
       return baseStyle;
   }

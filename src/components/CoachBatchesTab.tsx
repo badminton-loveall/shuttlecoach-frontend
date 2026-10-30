@@ -118,12 +118,12 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
     return (
       <div className="p-6 space-y-4">
         {[1, 2, 3].map(i => (
-          <div key={i} className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-            <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4" />
-            <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2" />
+          <div key={i} className="bg-[var(--surface-card)] rounded-lg border border-[var(--border-default)] p-6 space-y-4">
+            <div className="h-6 bg-[var(--border-default)] rounded animate-pulse w-3/4" />
+            <div className="h-4 bg-[var(--surface-hover)] rounded animate-pulse w-1/2" />
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               {[1, 2, 3, 4].map(j => (
-                <div key={j} className="h-4 bg-gray-100 rounded animate-pulse" />
+                <div key={j} className="h-4 bg-[var(--surface-hover)] rounded animate-pulse" />
               ))}
             </div>
           </div>
@@ -150,8 +150,8 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
               d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V7a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
             />
           </svg>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Batches Assigned</h3>
-          <p className="text-gray-600 text-center mb-6 max-w-sm">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">No Batches Assigned</h3>
+          <p className="text-[var(--text-secondary)] text-center mb-6 max-w-sm">
             This coach does not have any batches assigned yet. 
             {canManageBatches
               ? ' Click the "Add Batch" button to assign batches.'
@@ -159,7 +159,7 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
           </p>
           {canManageBatches && (
             <button
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-6 py-2 bg-[var(--color-primary)] text-[var(--on-primary)] rounded-lg font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
               aria-label="Add new batch"
               onClick={() => setShowAddBatchModal(true)}
             >
@@ -189,11 +189,11 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
         {/* Header with Add Batch Button */}
         {canManageBatches && (
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)]">
               Assigned Batches ({batches.length})
             </h3>
             <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 bg-[var(--color-primary)] text-[var(--on-primary)] rounded-lg text-sm font-medium hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]"
               aria-label="Add new batch"
               onClick={() => setShowAddBatchModal(true)}
             >
@@ -220,8 +220,8 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
 
         {/* Info message for read-only users */}
         {!canManageBatches && batches.length > 0 && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600">
+          <div className="mt-6 p-4 bg-[var(--surface-hover)] rounded-lg border border-[var(--border-default)]">
+            <p className="text-sm text-[var(--text-secondary)]">
               You can view batch information in read-only mode. To manage batch assignments, contact your administrator.
             </p>
           </div>
@@ -248,7 +248,7 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
         >
           <dialog 
             open
-            className="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4"
+            className="bg-[var(--surface-card)] rounded-lg shadow-xl max-w-sm w-full mx-4"
             aria-labelledby="remove-batch-title"
             aria-describedby="remove-batch-description"
           >
@@ -258,10 +258,10 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4v2m0 0V9m0 0v8m0-8h-.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 id="remove-batch-title" className="text-lg font-semibold text-gray-900 text-center mb-2">
+              <h3 id="remove-batch-title" className="text-lg font-semibold text-[var(--text-primary)] text-center mb-2">
                 Unassign Batch?
               </h3>
-              <p id="remove-batch-description" className="text-gray-600 text-center mb-6">
+              <p id="remove-batch-description" className="text-[var(--text-secondary)] text-center mb-6">
                 Are you sure you want to unassign <strong>{batchToRemove.name}</strong> from this coach? This action cannot be undone.
               </p>
               {removeError && (
@@ -280,7 +280,7 @@ export const CoachBatchesTab: React.FC<CoachBatchesTabProps> = ({
                     setBatchToRemove(null);
                   }}
                   disabled={removingBatchId === batchToRemove.id}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-[var(--border-default)] text-[var(--text-primary)] rounded-lg font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Cancel batch unassignment"
                 >
                   Cancel

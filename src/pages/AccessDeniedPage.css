@@ -56,7 +56,7 @@
 }
 
 .btn-back:hover {
-  background-color: #a8d124;
+  background-color: var(--color-primary-hover);
   transform: translateY(-2px);
 }
 

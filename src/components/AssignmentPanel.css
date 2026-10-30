@@ -174,7 +174,7 @@
 .btn-assign:hover:not(:disabled) {
   background: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(184, 225, 53, 0.3);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 .btn-assign:active:not(:disabled) { transform: translateY(0); }
@@ -237,7 +237,7 @@
 
 .assignment-item.active {
   border-color: var(--color-primary);
-  background: rgba(184, 225, 53, 0.08);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .assignment-item.batch-item {
@@ -251,7 +251,7 @@
 @media (prefers-color-scheme: dark) {
   .assignment-item { background: var(--surface-dark-hover); border-color: var(--border-dark); }
   .assignment-item:hover { background: var(--surface-dark-card); border-color: var(--color-primary); }
-  .assignment-item.active { background: rgba(184, 225, 53, 0.12); }
+  .assignment-item.active { background: color-mix(in srgb, var(--color-primary) 12%, transparent); }
 }
 
 .item-content {

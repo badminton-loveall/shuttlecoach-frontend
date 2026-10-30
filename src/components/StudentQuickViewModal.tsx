@@ -110,10 +110,10 @@ export const StudentQuickViewModal: React.FC<StudentQuickViewModalProps> = ({
               <img
                 src={student.profilePhoto}
                 alt={student.fullName}
-                style={{ height: '64px', width: '64px', borderRadius: 'var(--radius-pill)', objectFit: 'cover' }}
+                style={{ height: '64px', width: '64px', borderRadius: '50%', objectFit: 'cover' }}
               />
             ) : (
-              <div style={{ height: '64px', width: '64px', borderRadius: 'var(--radius-pill)', backgroundColor: 'var(--feedback-info-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ height: '64px', width: '64px', borderRadius: '50%', backgroundColor: 'var(--feedback-info-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: 'var(--font-h3)', fontWeight: 'var(--weight-medium)', color: 'var(--color-info-text)' }}>
                   {student.fullName.charAt(0).toUpperCase()}
                 </span>

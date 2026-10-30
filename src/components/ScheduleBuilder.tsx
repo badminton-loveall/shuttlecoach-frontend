@@ -259,7 +259,7 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
     <div className="space-y-6" data-testid="schedule-builder">
       {/* Day-of-Week Toggles */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
           Training Days
         </label>
         <div className="flex gap-2" role="group" aria-label="Day of week selection">
@@ -271,10 +271,10 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               disabled={readOnly}
               aria-label={fullLabel}
               aria-pressed={selectedDays.has(day)}
-              className={`w-10 h-10 rounded-full text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 ${
+              className={`w-10 h-10 rounded-full text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-1 ${
                 selectedDays.has(day)
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-[var(--color-primary)] text-[var(--on-primary)] hover:bg-[var(--color-primary-hover)]'
+                  : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] hover:bg-[var(--border-default)]'
               } ${readOnly ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
             >
               {label}
@@ -286,7 +286,7 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
       {/* Time Slots by Day */}
       {slotsByDay.length > 0 && (
         <div className="space-y-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[var(--text-primary)]">
             Session Time Slots
           </label>
 
@@ -297,14 +297,14 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               style={{ border: '1px solid var(--border-default)' }}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-800">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
                   {label}
                 </span>
                 {!readOnly && (
                   <button
                     type="button"
                     onClick={() => handleAddSlot(day)}
-                    className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                     aria-label={`Add another slot on ${label}`}
                   >
                     + Add Slot
@@ -325,10 +325,10 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                         value={slot.startTime}
                         onChange={(e) => handleSlotTimeChange(slot.id, 'startTime', e.target.value)}
                         disabled={readOnly}
-                        className="rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+                        className="rounded-md bg-[var(--surface-card)] px-3 py-1.5 text-sm text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-60"
                         style={{ border: '1px solid var(--border-default)' }}
                       />
-                      <span className="text-gray-500 text-sm">to</span>
+                      <span className="text-[var(--text-secondary)] text-sm">to</span>
                       <label className="sr-only" htmlFor={`end-${slot.id}`}>
                         End time for {label} slot {idx + 1}
                       </label>
@@ -338,7 +338,7 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                         value={slot.endTime}
                         onChange={(e) => handleSlotTimeChange(slot.id, 'endTime', e.target.value)}
                         disabled={readOnly}
-                        className="rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+                        className="rounded-md bg-[var(--surface-card)] px-3 py-1.5 text-sm text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-60"
                         style={{ border: '1px solid var(--border-default)' }}
                       />
                     </div>
@@ -372,14 +372,14 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
 
       {/* Recurrence Configuration */}
       <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-[var(--text-primary)]">
           Recurrence
         </label>
 
         <div className="rounded-lg p-4 space-y-4" style={{ border: '1px solid var(--border-default)' }}>
           {/* Repeat Every */}
           <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-700">Repeat every</span>
+            <span className="text-sm text-[var(--text-primary)]">Repeat every</span>
             <input
               type="number"
               min={1}
@@ -387,18 +387,18 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
               value={recurrence.repeatEvery}
               onChange={(e) => handleRepeatEveryChange(parseInt(e.target.value, 10) || 1)}
               disabled={readOnly}
-              className="w-16 rounded-md bg-white px-2 py-1.5 text-sm text-center text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+              className="w-16 rounded-md bg-[var(--surface-card)] px-2 py-1.5 text-sm text-center text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-60"
               style={{ border: '1px solid var(--border-default)' }}
               aria-label="Repeat interval in weeks"
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-[var(--text-primary)]">
               week{recurrence.repeatEvery > 1 ? 's' : ''}
             </span>
           </div>
 
           {/* End Condition */}
           <div className="space-y-3">
-            <span className="text-sm text-gray-700">Ends</span>
+            <span className="text-sm text-[var(--text-primary)]">Ends</span>
 
             <div className="flex flex-col gap-3 ml-1">
               {/* Never */}
@@ -410,9 +410,9 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   checked={recurrence.endType === 'never'}
                   onChange={() => handleEndTypeChange('never')}
                   disabled={readOnly}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--border-focus)]"
                 />
-                <span className="text-sm text-gray-700">Never</span>
+                <span className="text-sm text-[var(--text-primary)]">Never</span>
               </label>
 
               {/* On Date */}
@@ -424,16 +424,16 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   checked={recurrence.endType === 'on_date'}
                   onChange={() => handleEndTypeChange('on_date')}
                   disabled={readOnly}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--border-focus)]"
                 />
-                <span className="text-sm text-gray-700">On date</span>
+                <span className="text-sm text-[var(--text-primary)]">On date</span>
                 {recurrence.endType === 'on_date' && (
                   <input
                     type="date"
                     value={recurrence.endDate || ''}
                     onChange={(e) => handleEndDateChange(e.target.value)}
                     disabled={readOnly}
-                    className="ml-2 rounded-md bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+                    className="ml-2 rounded-md bg-[var(--surface-card)] px-3 py-1.5 text-sm text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-60"
                     style={{ border: '1px solid var(--border-default)' }}
                     aria-label="End date"
                   />
@@ -449,9 +449,9 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                   checked={recurrence.endType === 'after_count'}
                   onChange={() => handleEndTypeChange('after_count')}
                   disabled={readOnly}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                  className="w-4 h-4 text-[var(--color-primary)] focus:ring-[var(--border-focus)]"
                 />
-                <span className="text-sm text-gray-700">After</span>
+                <span className="text-sm text-[var(--text-primary)]">After</span>
                 {recurrence.endType === 'after_count' && (
                   <>
                     <input
@@ -461,11 +461,11 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
                       value={recurrence.occurrenceCount || 10}
                       onChange={(e) => handleOccurrenceCountChange(parseInt(e.target.value, 10) || 1)}
                       disabled={readOnly}
-                      className="w-16 rounded-md bg-white px-2 py-1.5 text-sm text-center text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-60"
+                      className="w-16 rounded-md bg-[var(--surface-card)] px-2 py-1.5 text-sm text-center text-[var(--text-primary)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-60"
                       style={{ border: '1px solid var(--border-default)' }}
                       aria-label="Number of occurrences"
                     />
-                    <span className="text-sm text-gray-700">occurrences</span>
+                    <span className="text-sm text-[var(--text-primary)]">occurrences</span>
                   </>
                 )}
               </label>
@@ -481,7 +481,7 @@ export const ScheduleBuilder: React.FC<ScheduleBuilderProps> = ({
             type="button"
             onClick={handleSave}
             disabled={!hasSlots || hasTimeErrors || isSaving}
-            className="px-4 py-2 rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 rounded-md text-sm font-medium text-[var(--on-primary)] bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSaving ? 'Saving...' : 'Save Schedule'}
           </button>

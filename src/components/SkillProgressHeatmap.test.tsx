@@ -124,19 +124,19 @@ describe('SkillProgressHeatmap', () => {
     render(<SkillProgressHeatmap matrix={matrix} onSkillClick={mockOnSkillClick} />);
 
     const cell0 = screen.getByTestId('score-cell-bh-short-service-wk1');
-    expect(cell0).toHaveStyle({ backgroundColor: '#FEE2E2' });
+    expect(cell0).toHaveStyle({ backgroundColor: '#F6E4E1' });
 
     const cell1 = screen.getByTestId('score-cell-bh-short-service-wk2');
-    expect(cell1).toHaveStyle({ backgroundColor: '#FED7AA' });
+    expect(cell1).toHaveStyle({ backgroundColor: '#F3DCC4' });
 
     const cell2 = screen.getByTestId('score-cell-bh-short-service-wk3');
-    expect(cell2).toHaveStyle({ backgroundColor: '#FEF08A' });
+    expect(cell2).toHaveStyle({ backgroundColor: '#EDD9B0' });
 
     const cell3 = screen.getByTestId('score-cell-bh-short-service-wk4');
-    expect(cell3).toHaveStyle({ backgroundColor: '#BBF7D0' });
+    expect(cell3).toHaveStyle({ backgroundColor: '#B9D3C2' });
 
     const cell4 = screen.getByTestId('score-cell-bh-short-service-wk5');
-    expect(cell4).toHaveStyle({ backgroundColor: '#16A34A' });
+    expect(cell4).toHaveStyle({ backgroundColor: '#2F6B4F' });
   });
 
   it('shows tooltip on hover with week number, cycle, and score label', () => {

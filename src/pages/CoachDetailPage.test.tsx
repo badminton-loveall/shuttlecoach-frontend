@@ -768,7 +768,7 @@ describe('CoachDetailPage - End-to-End Integration (Task 16.1)', () => {
     const code = fs.readFileSync('./src/pages/CoachDetailPage.tsx', 'utf-8');
     // Tab content area with responsive styling
     expect(code).toContain('coach-detail-content');
-    expect(code).toContain('bg-white');
+    expect(code).toContain('bg-[var(--surface-card)]');
   });
 
   it('should validate coachId before rendering', () => {

@@ -5,19 +5,19 @@
 
 /* Block */
 .fee-alerts {
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   padding: 0;
   border: 1px solid;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--surface-card);
 }
 
 /* Modifiers */
 .fee-alerts--danger {
-  border-color: #fecaca;
-  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.08);
+  border-color: var(--color-danger-light);
+  box-shadow: var(--shadow-card);
 }
 
 /* Elements */
@@ -51,20 +51,20 @@
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.02em;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .fee-alerts__title--danger {
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .fee-alerts__count {
   font-size: 12px;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: 12px;
-  background: #fee2e2;
-  color: #dc2626;
+  border-radius: var(--radius-sm);
+  background: var(--feedback-danger-light);
+  color: var(--color-danger);
   white-space: nowrap;
 }
 
@@ -72,13 +72,13 @@
   font-size: 13px;
   margin: 0;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   padding: 0 24px 16px 24px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .fee-alerts__subtitle--danger {
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 /* Grid/Table List */
@@ -97,8 +97,8 @@
   font-size: 14px;
   padding: 14px 24px;
   border: none;
-  border-bottom: 1px solid #f3f4f6;
-  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-default);
+  background-color: var(--surface-card);
   transition: all 0.15s ease;
 }
 
@@ -107,12 +107,12 @@
 }
 
 .fee-alerts__list-item:hover {
-  background-color: #fef2f2;
+  background-color: var(--feedback-danger-light);
 }
 
 .fee-alerts__student-name {
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -122,7 +122,7 @@
 
 .fee-alerts__amount {
   font-weight: 700;
-  color: #dc2626;
+  color: var(--color-danger);
   white-space: nowrap;
   margin: 0;
   font-size: 14px;
@@ -134,9 +134,9 @@
   padding: 12px 24px;
   font-size: 13px;
   font-weight: 600;
-  color: #dc2626;
-  border-bottom: 1px solid #f3f4f6;
-  background-color: #fef2f2;
+  color: var(--color-danger);
+  border-bottom: 1px solid var(--border-default);
+  background-color: var(--feedback-danger-light);
 }
 
 .fee-alerts__view-btn {
@@ -144,54 +144,54 @@
   padding: 16px 24px;
   font-size: 14px;
   font-weight: 600;
-  color: #dc2626;
-  background: #ffffff;
+  color: var(--color-danger);
+  background: var(--surface-card);
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
   width: 100%;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid var(--border-default);
 }
 
 .fee-alerts__view-btn:hover {
-  background-color: #fef2f2;
-  color: #991b1b;
+  background-color: var(--feedback-danger-light);
+  color: var(--color-danger);
 }
 
 /* Light mode - clean grid styling */
 @media (prefers-color-scheme: light) {
   .fee-alerts {
-    background: #ffffff;
+    background: var(--surface-card);
   }
 
   .fee-alerts--danger {
-    border-color: #fecaca;
+    border-color: var(--color-danger-light);
   }
 
   .fee-alerts__subtitle {
-    border-bottom-color: #f3f4f6;
+    border-bottom-color: var(--border-default);
   }
 
   .fee-alerts__list-item {
-    background-color: #ffffff;
-    border-bottom-color: #f3f4f6;
+    background-color: var(--surface-card);
+    border-bottom-color: var(--border-default);
   }
 
   .fee-alerts__list-item:hover {
-    background-color: #fef2f2;
+    background-color: var(--feedback-danger-light);
   }
 
   .fee-alerts__view-btn {
-    border-top-color: #f3f4f6;
+    border-top-color: var(--border-default);
   }
 
   .fee-alerts__view-btn:hover {
-    background-color: #fef2f2;
+    background-color: var(--feedback-danger-light);
   }
 
   .fee-alerts__more-text {
-    background-color: #fef2f2;
-    border-bottom-color: #f3f4f6;
+    background-color: var(--feedback-danger-light);
+    border-bottom-color: var(--border-default);
   }
 }

@@ -1,3 +1,5 @@
+import { SITE_URL } from "../utils/meta";
+
 export const APP_URL = "/login";
 export const CONTACT_EMAIL = "hello@loveall.co.in";
 
@@ -11,28 +13,28 @@ export const taglines = [
 
 export const images = {
   coachJunior: {
-    src: "/cb28ae56-a9a2-4213-8491-862f3f56e6e7.jpg",
+    src: "/coach-with-junior.jpg",
     alt: "A head coach crouches beside a junior player, adjusting the grip on his racket on a wooden badminton court.",
     width: 1200,
-    height: 900
+    height: 896
   },
   footworkDrill: {
-    src: "/c6ad8267-bb55-43d6-b388-88c9396b840a.jpg",
+    src: "/footwork-drill.jpg",
     alt: "Junior players run a footwork drill between cones on the court lines while a coach watches.",
-    width: 1200,
-    height: 800
+    width: 1264,
+    height: 848
   },
   shuttle: {
-    src: "/95cbd237-ce88-4e6b-aa60-76ca2c975e3c.jpg",
+    src: "/shuttle-on-court.jpg",
     alt: "A white feather shuttlecock resting on the line of a wooden badminton court.",
-    width: 960,
-    height: 1200
+    width: 928,
+    height: 1152
   },
   veteranCoach: {
-    src: "/df0cb013-647b-427e-8b69-3534ae6cb0aa.jpg",
+    src: "/veteran-coach.jpg",
     alt: "A senior badminton coach holding a clipboard stands courtside in a sunlit academy hall.",
-    width: 960,
-    height: 1200
+    width: 928,
+    height: 1152
   }
 };
 
@@ -47,8 +49,8 @@ export const structuredData = [
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "LoveAll",
-  url: "https://www.loveall.co.in",
-  logo: "https://www.loveall.co.in/logo.png",
+  url: SITE_URL,
+  logo: `${SITE_URL}/icon-512.png`,
   email: CONTACT_EMAIL,
   areaServed: "IN",
   slogan: taglines[0]
@@ -57,7 +59,7 @@ export const structuredData = [
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "LoveAll",
-  url: "https://www.loveall.co.in",
+  url: SITE_URL,
   applicationCategory: "BusinessApplication",
   applicationSubCategory: "Sports academy training management",
   operatingSystem: "Web browser",

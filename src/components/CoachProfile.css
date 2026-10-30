@@ -278,8 +278,8 @@
 @media (prefers-color-scheme: dark) {
   .form-error-banner {
     background: rgba(239, 68, 68, 0.1);
-    border-color: #fca5a5;
-    color: #fca5a5;
+    border-color: var(--color-danger-light);
+    color: var(--color-danger-light);
   }
 }
 
@@ -333,7 +333,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(184, 225, 53, 0.1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .form-input.error {
@@ -513,7 +513,7 @@
 
 .student-card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 2px 6px rgba(184, 225, 53, 0.1);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .student-avatar {
@@ -614,7 +614,9 @@
   margin-bottom: 16px;
 }
 
-.stat-card {
+/* Scoped to the payments grid: a bare .stat-card here leaked onto the
+   dashboard StatCard component (centered text, colored side borders). */
+.payment-stats-grid .stat-card {
   padding: 12px;
   background: var(--surface-hover);
   border: 1px solid var(--border-default);
@@ -623,45 +625,45 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card {
+  .payment-stats-grid .stat-card {
     background: var(--surface-dark-hover);
     border-color: var(--border-dark);
   }
 }
 
-.stat-card .stat-label {
+.payment-stats-grid .stat-card .stat-label {
   font-size: var(--font-xs);
   color: var(--text-secondary);
   margin: 0 0 4px 0;
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card .stat-label {
+  .payment-stats-grid .stat-card .stat-label {
     color: var(--text-dark-secondary);
   }
 }
 
-.stat-card .stat-value {
+.payment-stats-grid .stat-card .stat-value {
   font-size: var(--font-lg);
   font-weight: var(--weight-bold);
   color: var(--text-primary);
 }
 
 @media (prefers-color-scheme: dark) {
-  .stat-card .stat-value {
+  .payment-stats-grid .stat-card .stat-value {
     color: var(--text-dark-primary);
   }
 }
 
-.stat-card--success {
+.payment-stats-grid .stat-card--success {
   border-left: 3px solid var(--color-success);
 }
 
-.stat-card--warning {
+.payment-stats-grid .stat-card--warning {
   border-left: 3px solid var(--color-warning);
 }
 
-.stat-card--danger {
+.payment-stats-grid .stat-card--danger {
   border-left: 3px solid var(--color-danger);
 }
 
@@ -813,7 +815,7 @@
 @media (prefers-color-scheme: dark) {
   .badge--success {
     background: rgba(34, 197, 94, 0.15);
-    color: #86efac;
+    color: var(--color-success-light);
   }
 }
 
@@ -825,7 +827,7 @@
 @media (prefers-color-scheme: dark) {
   .badge--warning {
     background: rgba(245, 158, 11, 0.15);
-    color: #fcd34d;
+    color: var(--color-warning-light);
   }
 }
 
@@ -837,7 +839,7 @@
 @media (prefers-color-scheme: dark) {
   .badge--danger {
     background: rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
+    color: var(--color-danger-light);
   }
 }
 
@@ -849,7 +851,7 @@
 @media (prefers-color-scheme: dark) {
   .badge--info {
     background: rgba(59, 130, 246, 0.15);
-    color: #93c5fd;
+    color: var(--color-info-light);
   }
 }
 
@@ -1222,7 +1224,7 @@
 
 @media (prefers-color-scheme: dark) {
   .amount-value {
-    color: #fca5a5;
+    color: var(--color-danger-light);
   }
 }
 
@@ -1365,8 +1367,8 @@
 
 @media (prefers-color-scheme: dark) {
   .btn-edit {
-    color: #93c5fd;
-    border-color: #93c5fd;
+    color: var(--color-info-light);
+    border-color: var(--color-info-light);
   }
 }
 
@@ -1387,8 +1389,8 @@
 
 @media (prefers-color-scheme: dark) {
   .btn-delete {
-    color: #fca5a5;
-    border-color: #fca5a5;
+    color: var(--color-danger-light);
+    border-color: var(--color-danger-light);
   }
 }
 

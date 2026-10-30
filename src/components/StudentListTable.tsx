@@ -25,15 +25,15 @@ interface StudentListTableProps {
 const getSkillLevelBadgeClass = (skillLevel: string): string => {
   switch (skillLevel) {
     case 'Beginner':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      return 'bg-[var(--la-info-bg)] text-[var(--la-info)]';
     case 'Intermediate':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      return 'bg-[var(--la-warning-bg)] text-[var(--la-warning)]';
     case 'Advanced':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      return 'bg-[var(--surface-hover)] text-[var(--la-accent-ink)]';
     case 'Professional':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      return 'bg-[var(--la-success-bg)] text-[var(--la-success)]';
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      return 'bg-[var(--surface-hover)] text-[var(--text-secondary)]';
   }
 };
 
@@ -70,37 +70,37 @@ export const StudentListTable: React.FC<StudentListTableProps> = ({
     name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="table-card-wrapper bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+    <div className="table-card-wrapper bg-[var(--surface-card)] rounded-lg border border-[var(--border-default)] shadow-[var(--shadow-card)] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full table-responsive-cards">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+          <thead className="bg-[var(--surface-hover)]">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Student Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Batch
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Skill Level
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Assigned Coach
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-[var(--surface-card)] divide-y divide-[var(--border-default)]">
             {students.map((student) => (
               <tr
                 key={student.id}
                 onClick={() => onStudentClick?.(student.id)}
-                className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${onStudentClick ? 'cursor-pointer' : ''}`}
+                className={`hover:bg-[var(--surface-hover)] transition-colors ${onStudentClick ? 'cursor-pointer' : ''}`}
               >
                 <td className="px-6 py-4 whitespace-nowrap" data-label="Student">
                   <div className="flex items-center">
@@ -113,20 +113,20 @@ export const StudentListTable: React.FC<StudentListTableProps> = ({
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <span className="text-sm font-medium text-[var(--text-primary)]">
                             {getInitials(student.fullName)}
                           </span>
                         </div>
                       )}
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      <div className="text-sm font-medium text-[var(--text-primary)]">
                         {student.fullName}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Batch">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]" data-label="Batch">
                   {getBatchName ? getBatchName(student.batchId) : student.batchId || '—'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap" data-label="Skill Level">
@@ -136,10 +136,10 @@ export const StudentListTable: React.FC<StudentListTableProps> = ({
                     {student.skillLevel}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400" data-label="Coach">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]" data-label="Coach">
                   {student.assignedCoachId ? coachNameById.get(student.assignedCoachId) || 'Unknown' : '—'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize" data-label="Status">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)] capitalize" data-label="Status">
                   {student.status || 'active'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm" data-label="">

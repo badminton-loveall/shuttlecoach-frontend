@@ -77,17 +77,6 @@ export interface Sport {
   description: string;
 }
 
-export interface PricingTier {
-  id: string;
-  name: string;
-  audience: string;
-  price: string;
-  priceNote: string;
-  features: string[];
-  cta: string;
-  recommended?: boolean;
-}
-
 export type FaqTopic = "privacy" | "onboarding" | "devices" | "pricing" | "sports";
 
 export interface Faq {

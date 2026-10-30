@@ -53,7 +53,7 @@ describe('Keyboard Navigation - Tab Key Through Interactive Elements (Property 2
     );
     
     // Verify focus rings on buttons
-    expect(profileCode).toContain('focus:ring-2 focus:ring-blue-500');
+    expect(profileCode).toContain('focus:ring-2 focus:ring-[var(--border-focus)]');
     expect(batchesCode).toContain('focus:ring-2');
   });
 

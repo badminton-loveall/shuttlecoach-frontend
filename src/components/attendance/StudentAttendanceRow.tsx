@@ -123,7 +123,7 @@ function getButtonStyle(
     return {
       ...base,
       backgroundColor: 'var(--color-primary)',
-      color: 'var(--text-primary)',
+      color: 'var(--on-primary)',
       borderColor: 'var(--color-primary)',
     };
   }
@@ -132,7 +132,7 @@ function getButtonStyle(
   return {
     ...base,
     backgroundColor: 'var(--color-danger)',
-    color: '#fff',
+    color: 'var(--la-canvas)',
     borderColor: 'var(--color-danger)',
   };
 }

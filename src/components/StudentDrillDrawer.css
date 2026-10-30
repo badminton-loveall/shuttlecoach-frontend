@@ -152,7 +152,7 @@
 
 .student-drill-drawer__error-text {
   font-size: var(--font-sm);
-  color: var(--color-danger, #ef4444);
+  color: var(--color-danger, var(--color-danger));
   margin: 0;
 }
 

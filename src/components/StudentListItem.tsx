@@ -48,7 +48,7 @@ export const StudentListItem: React.FC<StudentListItemProps> = ({
 
   return (
     <div
-      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-[var(--surface-card)] border border-[var(--border-default)] rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
       onClick={handleItemClick}
       onKeyDown={handleItemKeyDown}
       role="button"
@@ -67,7 +67,7 @@ export const StudentListItem: React.FC<StudentListItemProps> = ({
               />
             ) : (
               <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
                   {student.fullName.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -76,27 +76,27 @@ export const StudentListItem: React.FC<StudentListItemProps> = ({
 
           {/* Student Info */}
           <div className="flex-1 min-w-0">
-            <h4 className="text-base font-semibold text-gray-900 truncate">
+            <h4 className="text-base font-semibold text-[var(--text-primary)] truncate">
               {student.fullName}
             </h4>
 
             {/* Student Details Grid */}
             <div className="mt-2 grid grid-cols-2 gap-3 lg:grid-cols-4 text-sm">
               <div>
-                <span className="text-gray-600">Batch:</span>
-                <p className="text-gray-900 font-medium">{student.batchId || '—'}</p>
+                <span className="text-[var(--text-secondary)]">Batch:</span>
+                <p className="text-[var(--text-primary)] font-medium">{student.batchId || '—'}</p>
               </div>
               <div>
-                <span className="text-gray-600">Skill Level:</span>
-                <p className="text-gray-900 font-medium">{student.skillLevel}</p>
+                <span className="text-[var(--text-secondary)]">Skill Level:</span>
+                <p className="text-[var(--text-primary)] font-medium">{student.skillLevel}</p>
               </div>
               <div>
-                <span className="text-gray-600">Performance:</span>
-                <p className="text-gray-900 font-medium">{performanceStatus}</p>
+                <span className="text-[var(--text-secondary)]">Performance:</span>
+                <p className="text-[var(--text-primary)] font-medium">{performanceStatus}</p>
               </div>
               <div>
-                <span className="text-gray-600">Age:</span>
-                <p className="text-gray-900 font-medium">{student.age} yrs</p>
+                <span className="text-[var(--text-secondary)]">Age:</span>
+                <p className="text-[var(--text-primary)] font-medium">{student.age} yrs</p>
               </div>
             </div>
           </div>

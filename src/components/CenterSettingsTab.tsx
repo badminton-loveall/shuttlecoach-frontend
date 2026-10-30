@@ -243,7 +243,7 @@ const CenterSettingsTab: React.FC = () => {
             style={{
               padding: '10px 24px', fontSize: 'var(--font-sm)', fontWeight: 'var(--weight-semibold)',
               backgroundColor: saving || slugValue === originalSlug ? 'var(--surface-hover)' : 'var(--color-primary)',
-              color: saving || slugValue === originalSlug ? 'var(--text-tertiary)' : 'var(--text-primary)',
+              color: saving || slugValue === originalSlug ? 'var(--text-tertiary)' : 'var(--on-primary)',
               border: 'none', borderRadius: 'var(--radius-pill)',
               cursor: saving || slugValue === originalSlug ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s', fontFamily: 'var(--font-body)',
@@ -314,7 +314,7 @@ const CenterSettingsTab: React.FC = () => {
               fontSize: 'var(--font-xs)', fontWeight: 'var(--weight-semibold)',
               padding: '2px 8px', borderRadius: 'var(--radius-pill)',
               backgroundColor: center?.isActive ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-              color: center?.isActive ? '#22c55e' : '#ef4444',
+              color: center?.isActive ? 'var(--color-success)' : 'var(--color-danger)',
             }}>
               {center?.isActive ? 'Active' : 'Inactive'}
             </span>

@@ -11,6 +11,7 @@ import { SKILL_CATEGORIES, SKILL_DEFINITIONS_STRUCTURED } from '../data/skillDef
 import { calculateCategoryAverage } from '../utils/skillUtils';
 import type { SkillScores, SkillCategory } from '../types';
 import './SkillRadarChart.css';
+import { CHART_COLORS } from '../constants/chartColors';
 
 /**
  * SkillRadarChart
@@ -38,7 +39,7 @@ const CATEGORY_DISPLAY_LABELS: Record<SkillCategory, string> = {
   rally: 'Rally',
 };
 
-const ELECTRIC_LIME = '#B8E135';
+const ELECTRIC_LIME = CHART_COLORS.series[0];
 
 function buildRadarData(scores: SkillScores): RadarDataPoint[] {
   return SKILL_CATEGORIES.map((category) => {
@@ -70,16 +71,16 @@ export const SkillRadarChart: React.FC<SkillRadarChartProps> = ({ scores }) => {
       <div className="skill-radar-chart__container">
         <ResponsiveContainer width="100%" height={300}>
           <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
-            <PolarGrid stroke="#E4E9EC" />
+            <PolarGrid stroke={CHART_COLORS.grid} strokeOpacity={0.5} />
             <PolarAngleAxis
               dataKey="category"
-              tick={{ fill: '#4A5662', fontSize: 12 }}
+              tick={{ fill: CHART_COLORS.axis, fontSize: 12 }}
             />
             <PolarRadiusAxis
               angle={90}
               domain={[0, 4]}
               tickCount={5}
-              tick={{ fill: '#4A5662', fontSize: 10 }}
+              tick={{ fill: CHART_COLORS.axis, fontSize: 10 }}
             />
             <Radar
               name="Average"

@@ -29,7 +29,7 @@ function getHeatmapColor(rate: number): string {
   if (rate >= 60) return 'bg-yellow-300yellow-600';
   if (rate >= 40) return 'bg-orange-300orange-600';
   if (rate > 0) return 'bg-red-300red-600';
-  return 'bg-gray-200';
+  return 'bg-[var(--border-default)]';
 }
 
 /**
@@ -57,7 +57,7 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-500">Loading training patterns...</p>
+          <p className="text-sm text-[var(--text-secondary)]">Loading training patterns...</p>
         </div>
       </div>
     );
@@ -78,7 +78,7 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
       <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-5 h-5 text-[var(--text-tertiary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -91,7 +91,7 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
               d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
             />
           </svg>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             No training pattern data available for the selected period.
           </p>
         </div>
@@ -115,10 +115,10 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
       {/* Attendance Heatmap */}
       {data.attendanceHeatmap.length > 0 && (
         <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
+          <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">
             Attendance Heatmap
           </h3>
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[var(--text-secondary)] mb-3">
             Attendance rate by day of week and curriculum week
           </p>
 
@@ -126,13 +126,13 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
             <table className="text-xs" role="grid" aria-label="Attendance heatmap by day and week">
               <thead>
                 <tr>
-                  <th className="px-2 py-1 text-left text-gray-600 font-medium">
+                  <th className="px-2 py-1 text-left text-[var(--text-secondary)] font-medium">
                     Day
                   </th>
                   {weekNumbers.map((week) => (
                     <th
                       key={week}
-                      className="px-2 py-1 text-center text-gray-600 font-medium"
+                      className="px-2 py-1 text-center text-[var(--text-secondary)] font-medium"
                     >
                       W{week}
                     </th>
@@ -142,7 +142,7 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
               <tbody>
                 {DAY_LABELS.map((dayLabel, dayIndex) => (
                   <tr key={dayIndex}>
-                    <td className="px-2 py-1 text-gray-700 font-medium">
+                    <td className="px-2 py-1 text-[var(--text-primary)] font-medium">
                       {dayLabel}
                     </td>
                     {weekNumbers.map((week) => {
@@ -166,7 +166,7 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
           </div>
 
           {/* Legend */}
-          <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+          <div className="mt-3 flex items-center gap-2 text-xs text-[var(--text-secondary)]">
             <span>Low</span>
             <div className="flex gap-0.5">
               <div className="w-4 h-4 rounded bg-red-300red-600" />
@@ -183,10 +183,10 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
       {/* Category Distribution */}
       {data.categoryDistributions.length > 0 && (
         <div className="rounded-lg" style={{ backgroundColor: 'var(--surface-card)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: 'var(--space-lg)', boxShadow: 'var(--shadow-card)' }}>
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
+          <h3 className="text-base font-semibold text-[var(--text-primary)] mb-4">
             Training Category Distribution
           </h3>
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-[var(--text-secondary)] mb-3">
             Proportion of training time by skill category
           </p>
 
@@ -194,8 +194,8 @@ export const TrainingPatternHeatmap: React.FC<TrainingPatternHeatmapProps> = ({
             {data.categoryDistributions.map((cat, idx) => (
               <div key={cat.category}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-700">{cat.category}</span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-sm text-[var(--text-primary)]">{cat.category}</span>
+                  <span className="text-xs text-[var(--text-secondary)]">
                     {cat.proportion.toFixed(1)}% ({cat.drillCount} drills)
                   </span>
                 </div>

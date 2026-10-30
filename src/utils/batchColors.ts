@@ -10,15 +10,16 @@ import type { SkillLevel } from '../types';
 
 /**
  * Predefined 6-color palette for coach batch colors.
- * Colors are chosen for visual distinctness in both light and dark themes.
+ * LoveAll mid-tones (see constants/chartColors.ts), distinct in both light
+ * and dark themes.
  */
 export const BATCH_COLOR_PALETTE = [
-  '#3B82F6', // blue
-  '#F97316', // orange
-  '#8B5CF6', // purple
-  '#10B981', // emerald
-  '#EF4444', // red
-  '#F59E0B', // amber
+  '#3F8463', // court green
+  '#4A7FA8', // info blue
+  '#C08A3E', // amber
+  '#8C6A8E', // plum
+  '#C0605A', // clay red
+  '#B8975A', // gold
 ] as const;
 
 /**

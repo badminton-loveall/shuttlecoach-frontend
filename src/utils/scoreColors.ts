@@ -8,11 +8,11 @@ import type { SkillScore } from '../constants/skillCatalog';
 
 /** Color mapping for each score level */
 const SCORE_COLORS: Record<SkillScore, string> = {
-  0: '#FEE2E2',
-  1: '#FED7AA',
-  2: '#FEF08A',
-  3: '#BBF7D0',
-  4: '#16A34A',
+  0: '#F6E4E1',
+  1: '#F3DCC4',
+  2: '#EDD9B0',
+  3: '#B9D3C2',
+  4: '#2F6B4F',
 };
 
 /** Human-readable labels for each score level */
