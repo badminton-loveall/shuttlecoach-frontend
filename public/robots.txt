@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /login
+Disallow: /style-guide
 
 Sitemap: https://www.loveall.co.in/sitemap.xml

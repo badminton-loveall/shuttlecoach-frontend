@@ -23,7 +23,6 @@ export const footerNav: {heading: string;links: NavItem[];}[] = [
   links: [
   { label: "About LoveAll", to: "/about" },
   { label: "Request a demo", to: "/contact" },
-  { label: "Log in", to: "/login" },
-  { label: "Design system", to: "/style-guide" }]
+  { label: "Log in", to: "/login" }]
 
 }];

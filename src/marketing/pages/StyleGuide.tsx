@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { useTheme, type ThemePreference } from "@/contexts/ThemeContext";
 import { PageHeader } from "../components/sections/PageHeader";
@@ -31,6 +32,15 @@ export function StyleGuidePage() {
     description: "The LoveAll design system: brand, colour tokens, typography, spacing, motifs and components.",
     path: "/style-guide"
   });
+
+  // Internal reference page: not linked from the site and kept out of search.
+  useEffect(() => {
+    const tag = document.createElement("meta");
+    tag.name = "robots";
+    tag.content = "noindex, nofollow";
+    document.head.appendChild(tag);
+    return () => tag.remove();
+  }, []);
 
   return (
     <>
