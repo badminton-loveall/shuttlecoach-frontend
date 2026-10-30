@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /login
 
-Sitemap: https://loveall.co.in/sitemap.xml
+Sitemap: https://www.loveall.co.in/sitemap.xml
